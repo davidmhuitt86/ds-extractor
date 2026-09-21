@@ -71,3 +71,17 @@ Not yet implemented:
 
 The implementation must keep conductor detection, topology reconstruction,
 and wire identity as separate stages.
+
+
+## Development GUI
+
+The Windows build includes an optional development instrument:
+
+    dx-extractor-gui
+
+It uses OpenCV HighGUI and the native Windows file picker. It displays the
+source diagram, overlays detected conductor segments, and can display topology
+nodes. The GUI is a thin client over libeke_dx_wire and contains no extraction
+algorithms.
+
+This is not the final OEP/EKE user interface.

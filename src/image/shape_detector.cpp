@@ -152,7 +152,7 @@ void detect_rectangles(
 
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(
-        closed, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+        closed, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
 
     const double image_area =
         static_cast<double>(binary.cols) * binary.rows;
@@ -241,7 +241,58 @@ void detect_rectangles(
         const double interior_density =
             region_density(binary, interior);
 
-        if (interior_density > 0.22)
+        if (interior_density > config.rectangle_max_interior_ink_density ||
+            interior_density < config.rectangle_min_interior_ink_density)
+            continue;
+
+        // Require actual disconnected content inside the enclosure. This
+        // is a strong discriminator against empty rectangular wire loops:
+        // component labels/symbols normally leave at least one compact
+        // interior connected component.
+        cv::Mat interior_components;
+        cv::Mat interior_labels;
+        cv::Mat interior_stats;
+        cv::Mat interior_centroids;
+        const int interior_count = cv::connectedComponentsWithStats(
+            interior_image,
+            interior_labels,
+            interior_stats,
+            interior_centroids,
+            8,
+            CV_32S);
+
+        int isolated_components = 0;
+        for (int component = 1; component < interior_count; ++component) {
+            const int cx = interior_stats.at<int>(
+                component, cv::CC_STAT_LEFT);
+            const int cy = interior_stats.at<int>(
+                component, cv::CC_STAT_TOP);
+            const int cw = interior_stats.at<int>(
+                component, cv::CC_STAT_WIDTH);
+            const int ch = interior_stats.at<int>(
+                component, cv::CC_STAT_HEIGHT);
+            const int area = interior_stats.at<int>(
+                component, cv::CC_STAT_AREA);
+
+            if (area < 2 ||
+                cx <= 0 ||
+                cy <= 0 ||
+                cx + cw >= interior.cols ||
+                cy + ch >= interior.rows)
+                continue;
+
+            const int major = (std::max)(cw, ch);
+            const int minor = (std::max)(1, (std::min)(cw, ch));
+
+            if (static_cast<double>(major) / minor >
+                config.rectangle_max_interior_component_aspect)
+                continue;
+
+            ++isolated_components;
+        }
+
+        if (isolated_components <
+            config.rectangle_min_interior_components)
             continue;
 
         // Long internal horizontal/vertical structures are characteristic
@@ -270,16 +321,17 @@ void detect_rectangles(
         if (internal_line_density > 0.08)
             continue;
 
-        const double border_density =
-            ring_density(binary, bounds, inset);
-
         const double confidence =
             (std::min)(
                 0.99,
                 0.55 +
                 0.25 * minimum_side +
-                0.15 * (1.0 - interior_density) +
-                0.05 * (1.0 - internal_line_density));
+                0.10 * (1.0 - interior_density) +
+                0.05 * (1.0 - internal_line_density) +
+                0.10 * (std::min)(
+                    1.0,
+                    static_cast<double>(isolated_components) /
+                    (std::max)(1, config.rectangle_min_interior_components)));
 
         add_region(
             result, ShapeKind::Rectangle, bounds,

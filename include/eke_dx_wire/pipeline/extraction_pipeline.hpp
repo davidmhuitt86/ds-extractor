@@ -5,6 +5,7 @@
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
+#include "eke_dx_wire/image/shape_detector.hpp"
 
 #include <string>
 
@@ -12,6 +13,7 @@ namespace eke::dx::wire {
 
 struct ExtractionConfig {
     MorphologyConfig morphology {};
+    ShapeDetectorConfig shapes {};
     GeometryNormalizationConfig geometry {};
     TopologyConfig topology {};
     GapInterpretationConfig gap_interpretation {};

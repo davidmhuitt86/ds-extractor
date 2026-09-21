@@ -3,27 +3,10 @@
 #include "eke_dx_wire/core/ids.hpp"
 
 #include <algorithm>
-#include <cstddef>
 #include <sstream>
 #include <utility>
 
 namespace eke::dx::wire {
-namespace {
-
-const char* endpoint_kind_name(EndpointKind kind) {
-    switch (kind) {
-    case EndpointKind::GeometricConductorEnd: return "geometric_conductor_end";
-    case EndpointKind::ComponentTerminal: return "component_terminal";
-    case EndpointKind::ConnectorTerminal: return "connector_terminal";
-    case EndpointKind::Splice: return "splice";
-    case EndpointKind::Ground: return "ground";
-    case EndpointKind::ExternalConnection: return "external_connection";
-    case EndpointKind::Unresolved: return "unresolved";
-    }
-    return "unresolved";
-}
-
-} // namespace
 
 EndpointArtifacts EndpointReconstructor::reconstruct(
     const std::vector<TopologyNode>& nodes,

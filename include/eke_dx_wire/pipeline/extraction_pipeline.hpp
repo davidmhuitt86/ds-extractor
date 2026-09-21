@@ -4,6 +4,7 @@
 #include "eke_dx_wire/image/morphology_detector.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
+#include "eke_dx_wire/topology/gap_interpreter.hpp"
 
 #include <string>
 
@@ -13,6 +14,7 @@ struct ExtractionConfig {
     MorphologyConfig morphology {};
     GeometryNormalizationConfig geometry {};
     TopologyConfig topology {};
+    GapInterpretationConfig gap_interpretation {};
 };
 
 class ExtractionPipeline {

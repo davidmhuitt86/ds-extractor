@@ -76,8 +76,8 @@ void extract(GuiState& state) {
 }
 
 cv::Mat render(const GuiState& state, cv::Size canvas_size) {
-    canvas_size.width = std::max(canvas_size.width, 800);
-    canvas_size.height = std::max(canvas_size.height, 600);
+    canvas_size.width = (std::max)(canvas_size.width, 800);
+    canvas_size.height = (std::max)(canvas_size.height, 600);
 
     cv::Mat canvas(canvas_size, CV_8UC3, cv::Scalar(245, 245, 245));
     cv::rectangle(canvas, {0, 0}, {canvas.cols, kToolbarHeight},
@@ -105,13 +105,13 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
     }
 
     const int available_h = canvas.rows - kToolbarHeight - 32;
-    const double scale = std::min(
+    const double scale = (std::min)(
         static_cast<double>(canvas.cols - 32) / state.source.cols,
         static_cast<double>(available_h) / state.source.rows);
 
     const cv::Size display_size(
-        std::max(1, static_cast<int>(state.source.cols * scale)),
-        std::max(1, static_cast<int>(state.source.rows * scale)));
+        (std::max)(1, static_cast<int>(state.source.cols * scale)),
+        (std::max)(1, static_cast<int>(state.source.rows * scale)));
 
     const cv::Point offset(
         (canvas.cols - display_size.width) / 2,

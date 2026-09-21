@@ -115,7 +115,8 @@ enum class ViewMode {
     VerticalMask,
     Conductors,
     Topology,
-    Endpoints
+    Endpoints,
+    Shapes
 };
 
 struct GuiState {
@@ -308,6 +309,8 @@ cv::Mat make_view(const GuiState& state) {
         return state.detection.horizontal_mask;
     case ViewMode::VerticalMask:
         return state.detection.vertical_mask;
+    case ViewMode::Shapes:
+        return state.detection.shapes.exclusion_mask;
     default:
         return state.source;
     }
@@ -361,6 +364,30 @@ void overlay_endpoints(
 
         cv::circle(display, p, 5, cv::Scalar(0, 215, 255), 1, cv::LINE_AA);
         cv::circle(display, p, 2, cv::Scalar(0, 215, 255), cv::FILLED, cv::LINE_AA);
+    }
+}
+
+
+void overlay_shapes(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+
+    for (const auto& region : state.detection.shapes.regions) {
+        cv::Rect r(
+            static_cast<int>(region.bounds.x * scale),
+            static_cast<int>(region.bounds.y * scale),
+            static_cast<int>(region.bounds.width * scale),
+            static_cast<int>(region.bounds.height * scale));
+
+        const cv::Scalar color =
+            region.kind == ShapeKind::Rectangle
+                ? cv::Scalar(255, 120, 0)
+                : region.kind == ShapeKind::Circle
+                    ? cv::Scalar(180, 0, 255)
+                    : cv::Scalar(0, 220, 180);
+
+        cv::rectangle(display, r, color, 2, cv::LINE_AA);
     }
 }
 
@@ -434,6 +461,16 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
         } else if (state.view == ViewMode::Endpoints) {
             overlay_conductors(color_view, state, scale);
             overlay_endpoints(color_view, state, scale);
+        } else if (state.view == ViewMode::Shapes) {
+            color_view = state.source.empty()
+                ? color_view
+                : (state.source.channels() == 1
+                    ? [&]() { cv::Mat t; cv::cvtColor(state.source, t, cv::COLOR_GRAY2BGR); return t; }()
+                    : state.source.channels() == 4
+                        ? [&]() { cv::Mat t; cv::cvtColor(state.source, t, cv::COLOR_BGRA2BGR); return t; }()
+                        : state.source.clone());
+            cv::resize(color_view, color_view, display_size, 0, 0, cv::INTER_AREA);
+            overlay_shapes(color_view, state, scale);
         }
 
         const int ox = (image_width - color_view.cols) / 2;
@@ -498,6 +535,8 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
 
     draw_button(panel, {18, button_y + 76, 88, 30},
                 "ENDPOINTS", state.view == ViewMode::Endpoints);
+    draw_button(panel, {114, button_y + 76, 88, 30},
+                "SHAPES", state.view == ViewMode::Shapes);
 
     cv::rectangle(
         canvas,
@@ -517,7 +556,8 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             "    Nodes: " + std::to_string(state.topology.nodes.size()) +
             "    Edges: " + std::to_string(state.topology.edges.size()) +
             "    Gaps bridged: " + std::to_string(state.gap_interpretation.inferred_edges.size()) +
-            "    Endpoints: " + std::to_string(state.endpoints.candidates.size());
+            "    Endpoints: " + std::to_string(state.endpoints.candidates.size()) +
+            "    Shapes: " + std::to_string(state.detection.shapes.regions.size());
     }
 
     cv::putText(
@@ -616,6 +656,8 @@ void handle_mouse(
                     state.view = ViewMode::Topology;
             } else if (bx >= 18 && bx < 106) {
                 state.view = ViewMode::Endpoints;
+            } else if (bx >= 114 && bx < 202) {
+                state.view = ViewMode::Shapes;
             }
         }
     }
@@ -693,6 +735,7 @@ int main(int argc, char** argv) {
             if (key == '5') state.view = ViewMode::Conductors;
             if (key == '6') state.view = ViewMode::Topology;
             if (key == '7') state.view = ViewMode::Endpoints;
+            if (key == '8') state.view = ViewMode::Shapes;
         }
 
         cv::destroyAllWindows();

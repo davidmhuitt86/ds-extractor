@@ -80,6 +80,10 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-gap-interpreter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-gap-interpreter COMMAND dx-wire-test-gap-interpreter)
 
+    add_executable(dx-wire-test-shape-detector tests/test_shape_detector.cpp)
+    target_link_libraries(dx-wire-test-shape-detector PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-shape-detector COMMAND dx-wire-test-shape-detector)
+
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

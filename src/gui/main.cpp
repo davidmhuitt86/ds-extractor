@@ -8,7 +8,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#include <commdlg.h>
+#include <shobjidl.h>
+#include <shellapi.h>
 #endif
 
 #include <algorithm>
@@ -32,31 +33,69 @@ constexpr int kStatusHeight = 54;
 
 #ifdef _WIN32
 std::string open_image_dialog() {
-    wchar_t buffer[32768] = {};
-    OPENFILENAMEW dialog{};
-    dialog.lStructSize = sizeof(dialog);
-    dialog.lpstrFile = buffer;
-    dialog.nMaxFile = static_cast<DWORD>(std::size(buffer));
-    dialog.lpstrFilter =
-        L"Image Files\0*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff\0"
-        L"All Files\0*.*\0";
-    dialog.nFilterIndex = 1;
-    dialog.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST |
-                   OFN_HIDEREADONLY;
-    if (!GetOpenFileNameW(&dialog)) return {};
+    gui_log("DIALOG: enter");
 
-    const int length = WideCharToMultiByte(
-        CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
-    if (length <= 0) return {};
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+    const bool initialized = SUCCEEDED(hr);
+    if (FAILED(hr) && hr != RPC_E_CHANGED_MODE) {
+        gui_log("DIALOG: CoInitializeEx failed hr=" + std::to_string(static_cast<long>(hr)));
+        return {};
+    }
 
-    // The first call includes the terminating null in the required size.
-    // Allocate the full buffer for the second call, then remove the null.
-    std::string utf8(static_cast<std::size_t>(length), '\0');
-    const int converted = WideCharToMultiByte(
-        CP_UTF8, 0, buffer, -1, utf8.data(), length, nullptr, nullptr);
-    if (converted <= 0) return {};
-    utf8.resize(static_cast<std::size_t>(converted - 1));
-    return utf8;
+    IFileOpenDialog* dialog = nullptr;
+    hr = CoCreateInstance(
+        CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER,
+        IID_PPV_ARGS(&dialog));
+    if (FAILED(hr)) {
+        gui_log("DIALOG: CoCreateInstance failed hr=" + std::to_string(static_cast<long>(hr)));
+        if (initialized) CoUninitialize();
+        return {};
+    }
+
+    COMDLG_FILTERSPEC filters[] = {
+        {L"Image Files", L"*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff"},
+        {L"All Files", L"*.*"}
+    };
+    dialog->SetFileTypes(static_cast<UINT>(std::size(filters)), filters);
+    dialog->SetFileTypeIndex(1);
+    dialog->SetOptions(FOS_FORCEFILESYSTEM | FOS_FILEMUSTEXIST | FOS_PATHMUSTEXIST);
+
+    gui_log("DIALOG: showing IFileOpenDialog");
+    hr = dialog->Show(nullptr);
+    gui_log("DIALOG: Show returned hr=" + std::to_string(static_cast<long>(hr)));
+
+    std::string result;
+    if (SUCCEEDED(hr)) {
+        IShellItem* item = nullptr;
+        hr = dialog->GetResult(&item);
+        gui_log("DIALOG: GetResult hr=" + std::to_string(static_cast<long>(hr)));
+
+        if (SUCCEEDED(hr) && item != nullptr) {
+            PWSTR path = nullptr;
+            hr = item->GetDisplayName(SIGDN_FILESYSPATH, &path);
+            gui_log("DIALOG: GetDisplayName hr=" + std::to_string(static_cast<long>(hr)));
+
+            if (SUCCEEDED(hr) && path != nullptr) {
+                const int length = WideCharToMultiByte(
+                    CP_UTF8, 0, path, -1, nullptr, 0, nullptr, nullptr);
+                if (length > 0) {
+                    result.resize(static_cast<std::size_t>(length - 1));
+                    if (WideCharToMultiByte(
+                            CP_UTF8, 0, path, -1, result.data(), length,
+                            nullptr, nullptr) <= 0) {
+                        result.clear();
+                    }
+                }
+                CoTaskMemFree(path);
+            }
+            item->Release();
+        }
+    }
+
+    dialog->Release();
+    if (initialized) CoUninitialize();
+    gui_log("DIALOG: exit path length=" + std::to_string(result.size()));
+    return result;
 }
 #else
 std::string open_image_dialog() {

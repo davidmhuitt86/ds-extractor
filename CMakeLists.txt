@@ -23,6 +23,7 @@ add_library(eke_dx_wire
     src/image/morphology_detector.cpp
     src/image/conductor_normalizer.cpp
     src/topology/topology_reconstructor.cpp
+    src/topology/gap_interpreter.cpp
     src/topology/endpoint_reconstructor.cpp
     src/export/svg_exporter.cpp
     src/export/topology_exporter.cpp

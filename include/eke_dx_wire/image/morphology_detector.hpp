@@ -1,6 +1,7 @@
 #pragma once
 
 #include "eke_dx_wire/core/model.hpp"
+#include "eke_dx_wire/image/shape_detector.hpp"
 
 #include <opencv2/core.hpp>
 #include <vector>
@@ -20,6 +21,7 @@ struct DetectionArtifacts {
     cv::Mat binary;
     cv::Mat horizontal_mask;
     cv::Mat vertical_mask;
+    ShapeDetectionArtifacts shapes;
     std::vector<ConductorSegment> conductor_segments;
 };
 
@@ -30,7 +32,8 @@ public:
     [[nodiscard]] DetectionArtifacts detect(
         const cv::Mat& normalized,
         const std::string& source_id,
-        int page = 0) const;
+        int page = 0,
+        const cv::Mat& exclusion_mask = {}) const;
 
 private:
     MorphologyConfig config_;

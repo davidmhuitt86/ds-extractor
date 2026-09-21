@@ -11,13 +11,6 @@
 namespace eke::dx::wire {
 namespace {
 
-bool inside(const cv::Rect& outer, const cv::Rect& inner) {
-    return outer.x <= inner.x &&
-           outer.y <= inner.y &&
-           outer.x + outer.width >= inner.x + inner.width &&
-           outer.y + outer.height >= inner.y + inner.height;
-}
-
 BoundingBox to_box(const cv::Rect& r) {
     return {r.x, r.y, r.width, r.height};
 }

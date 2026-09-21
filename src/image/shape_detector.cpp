@@ -249,7 +249,7 @@ void detect_rectangles(
         // is a strong discriminator against empty rectangular wire loops:
         // component labels/symbols normally leave at least one compact
         // interior connected component.
-        cv::Mat interior_components;
+        cv::Mat interior_image = binary(interior);
         cv::Mat interior_labels;
         cv::Mat interior_stats;
         cv::Mat interior_centroids;
@@ -271,14 +271,14 @@ void detect_rectangles(
                 component, cv::CC_STAT_WIDTH);
             const int ch = interior_stats.at<int>(
                 component, cv::CC_STAT_HEIGHT);
-            const int area = interior_stats.at<int>(
+            const int component_area = interior_stats.at<int>(
                 component, cv::CC_STAT_AREA);
 
-            if (area < 2 ||
+            if (component_area < 2 ||
                 cx <= 0 ||
                 cy <= 0 ||
-                cx + cw >= interior.cols ||
-                cy + ch >= interior.rows)
+                cx + cw >= interior_image.cols ||
+                cy + ch >= interior_image.rows)
                 continue;
 
             const int major = (std::max)(cw, ch);
@@ -298,7 +298,6 @@ void detect_rectangles(
         // Long internal horizontal/vertical structures are characteristic
         // of wire fields and table/grid regions rather than clean component
         // enclosures. Reject candidates dominated by such structures.
-        cv::Mat interior_image = binary(interior);
         cv::Mat hline;
         cv::Mat vline;
 

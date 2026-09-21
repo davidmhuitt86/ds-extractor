@@ -22,7 +22,6 @@ add_library(eke_dx_wire
     src/image/normalizer.cpp
     src/image/morphology_detector.cpp
     src/image/conductor_normalizer.cpp
-    src/image/conductor_normalizer.cpp
     src/topology/topology_reconstructor.cpp
     src/export/svg_exporter.cpp
     src/export/topology_exporter.cpp
@@ -70,9 +69,6 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-conductor-normalizer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-conductor-normalizer COMMAND dx-wire-test-conductor-normalizer)
 
-    add_executable(dx-wire-test-conductor-normalizer tests/test_conductor_normalizer.cpp)
-    target_link_libraries(dx-wire-test-conductor-normalizer PRIVATE eke_dx_wire)
-    add_test(NAME dx-wire-test-conductor-normalizer COMMAND dx-wire-test-conductor-normalizer)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

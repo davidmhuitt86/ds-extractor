@@ -12,12 +12,19 @@
 #endif
 
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 #include <string>
 
 using namespace eke::dx::wire;
 
 namespace {
+void gui_log(const std::string& message) {
+    std::ofstream out("dx-extractor-gui.log", std::ios::app);
+    out << message << '\\n';
+    out.flush();
+}
+
 constexpr char kWindow[] = "DS Extractor - Calibration Workbench";
 constexpr int kToolbarHeight = 48;
 constexpr int kPanelWidth = 330;
@@ -92,14 +99,26 @@ struct Slider {
 };
 
 void load_image(GuiState& state, const std::string& path) {
-    if (path.empty()) return;
+    gui_log("LOAD: enter");
+    if (path.empty()) {
+        gui_log("LOAD: empty path");
+        return;
+    }
+    gui_log("LOAD: path=" + path);
 
-    state.source = ImageLoader::load(path);
+    gui_log("LOAD: calling ImageLoader::load");
+    cv::Mat image = ImageLoader::load(path);
+    gui_log("LOAD: ImageLoader returned rows=" + std::to_string(image.rows) +
+            " cols=" + std::to_string(image.cols) +
+            " channels=" + std::to_string(image.channels()));
+    state.source = std::move(image);
+    gui_log("LOAD: state.source assigned");
     state.normalized.release();
     state.detection = {};
     state.topology = {};
     state.image_path = path;
     state.extracted = false;
+    gui_log("LOAD: state updated; exit");
 }
 
 void extract(GuiState& state) {
@@ -537,6 +556,7 @@ int main(int argc, char** argv) {
                 cv::getWindowImageRect(kWindow).size();
 
             state.canvas_width = (std::max)(size.width, 1100);
+            gui_log("LOOP: render");
             cv::imshow(kWindow, render(state, size));
 
             const int key = cv::waitKey(30);
@@ -549,7 +569,9 @@ int main(int argc, char** argv) {
             if (state.request_open) {
                 state.request_open = false;
                 try {
+                    gui_log("OPEN: calling file dialog");
                     const std::string path = open_image_dialog();
+                    gui_log("OPEN: dialog returned; path length=" + std::to_string(path.size()));
                     if (!path.empty())
                         load_image(state, path);
                 } catch (const std::exception& e) {

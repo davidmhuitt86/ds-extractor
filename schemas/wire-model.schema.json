@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EKE-DX-WIRE Wire Model",
+  "type": "object",
+  "required": ["source_id", "page", "image_width", "image_height", "segments"],
+  "properties": {
+    "source_id": {"type": "string"},
+    "page": {"type": "integer", "minimum": 0},
+    "image_width": {"type": "integer", "minimum": 1},
+    "image_height": {"type": "integer", "minimum": 1},
+    "segments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "geometry", "thickness_px"],
+        "properties": {
+          "id": {"type": "string"},
+          "geometry": {
+            "type": "object",
+            "required": ["a", "b"],
+            "properties": {
+              "a": {
+                "type": "object",
+                "required": ["x", "y"],
+                "properties": {
+                  "x": {"type": "number"},
+                  "y": {"type": "number"}
+                }
+              },
+              "b": {
+                "type": "object",
+                "required": ["x", "y"],
+                "properties": {
+                  "x": {"type": "number"},
+                  "y": {"type": "number"}
+                }
+              }
+            }
+          },
+          "thickness_px": {"type": "number", "minimum": 0},
+          "heavy_cable": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

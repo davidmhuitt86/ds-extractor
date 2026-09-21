@@ -1,0 +1,10 @@
+^C:\USERS\DAVID\DOWNLOADS\EXTRACTION\EKE-DX-WIRE_IMPLEMENTATION_BASELINE_0.1.0\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/david/Downloads/extraction/EKE-DX-WIRE_implementation_baseline_0.1.0 -BC:/Users/david/Downloads/extraction/EKE-DX-WIRE_implementation_baseline_0.1.0/build --check-stamp-file C:/Users/david/Downloads/extraction/EKE-DX-WIRE_implementation_baseline_0.1.0/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

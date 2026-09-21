@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\david\Downloads\extraction\EKE-DX-WIRE_implementation_baseline_0.1.0\tests\test_geometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\david\Downloads\extraction\EKE-DX-WIRE_implementation_baseline_0.1.0\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{C2FECAFF-BECF-38F5-9C1B-4AA34507E3C1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

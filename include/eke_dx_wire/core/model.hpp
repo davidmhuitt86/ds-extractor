@@ -41,7 +41,6 @@ struct ConductorSegment {
     double thickness_px = 0.0;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     Provenance provenance {};
-    // All source evidence contributing to a normalized conductor.
     std::vector<Provenance> provenance_history;
     bool heavy_cable = false;
 };
@@ -50,8 +49,6 @@ struct TopologyNode {
     std::string id;
     Point2D position {};
     TopologyNodeType type = TopologyNodeType::Unresolved;
-
-    // A crossing is a geometric node but is not an electrical connection.
     bool electrically_connective = true;
 };
 
@@ -62,12 +59,28 @@ struct TopologyEdge {
     std::string conductor_segment;
 };
 
+struct EndpointEvidence {
+    BoundingBox source_region {};
+    int local_ink_pixels = 0;
+    int local_pixel_count = 0;
+    double local_ink_density = 0.0;
+    int forward_ink_pixels = 0;
+    int forward_pixel_count = 0;
+    double forward_ink_density = 0.0;
+    int transverse_ink_pixels = 0;
+    int transverse_pixel_count = 0;
+    double transverse_ink_density = 0.0;
+    bool near_image_boundary = false;
+};
+
 struct EndpointCandidate {
     std::string id;
     std::string node_id;
+    Point2D position {};
     EndpointKind kind = EndpointKind::Unresolved;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     std::vector<std::string> incident_edges;
+    EndpointEvidence evidence {};
 };
 
 struct Wire {

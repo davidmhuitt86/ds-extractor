@@ -81,6 +81,7 @@ struct GuiState {
     int active_slider = -1;
     bool dragging = false;
     int canvas_width = 1400;
+    bool request_open = false;
 };
 
 struct Slider {
@@ -440,7 +441,7 @@ void handle_mouse(
     if (event == cv::EVENT_LBUTTONDOWN) {
         if (y < kToolbarHeight) {
             if (x >= 10 && x < 100)
-                load_image(state, open_image_dialog());
+                state.request_open = true;
             else if (x >= 110 && x < 205)
                 extract(state);
             else if (x >= 215 && x < 305)
@@ -540,6 +541,22 @@ int main(int argc, char** argv) {
 
             const int key = cv::waitKey(30);
 
+            // Do not invoke the native Windows file dialog from the OpenCV
+            // mouse callback.  The callback runs inside HighGUI's event
+            // dispatch, and re-entering a native modal dialog there can cause
+            // instability when control returns to HighGUI.  Queue the request
+            // in the callback and service it from the main loop instead.
+            if (state.request_open) {
+                state.request_open = false;
+                try {
+                    const std::string path = open_image_dialog();
+                    if (!path.empty())
+                        load_image(state, path);
+                } catch (const std::exception& e) {
+                    std::cerr << "open error: " << e.what() << '\\n';
+                }
+            }
+
             if (key == 27 || key == 'q' || key == 'Q')
                 break;
 
@@ -547,7 +564,7 @@ int main(int argc, char** argv) {
                 extract(state);
 
             if (key == 'o' || key == 'O')
-                load_image(state, open_image_dialog());
+                state.request_open = true;
 
             if (key == '1') state.view = ViewMode::Source;
             if (key == '2') state.view = ViewMode::Binary;

@@ -1,6 +1,7 @@
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/image/morphology_detector.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
+#include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 

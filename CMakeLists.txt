@@ -40,6 +40,13 @@ endif()
 add_executable(dx-extract src/app/main.cpp)
 target_link_libraries(dx-extract PRIVATE eke_dx_wire)
 
+if(WIN32)
+    add_executable(dx-extractor-gui WIN32 src/gui/main.cpp)
+    target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire
+        opencv_highgui opencv_imgproc opencv_imgcodecs)
+    target_link_libraries(dx-extractor-gui PRIVATE comdlg32)
+endif()
+
 if(DX_WIRE_BUILD_TESTS)
     enable_testing()
 

@@ -31,6 +31,8 @@ struct ConductorSegment {
     double thickness_px = 0.0;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     Provenance provenance {};
+    // All source evidence contributing to a normalized conductor.
+    std::vector<Provenance> provenance_history;
     bool heavy_cable = false;
 };
 

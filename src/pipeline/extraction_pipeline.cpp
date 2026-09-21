@@ -32,7 +32,8 @@ WireModel ExtractionPipeline::run(
 
     EndpointReconstructor endpoints;
     const EndpointArtifacts endpoint_artifacts =
-        endpoints.reconstruct(graph.nodes, graph.edges, source_id, 0);
+        endpoints.reconstruct(
+            graph.nodes, graph.edges, normalized, source_id, 0);
 
     WireModel model;
     model.source_id = source_id;
@@ -44,10 +45,9 @@ WireModel ExtractionPipeline::run(
     model.edges = graph.edges;
     model.endpoint_candidates = endpoint_artifacts.candidates;
 
-    // Endpoint candidates are not yet true engineering endpoints. They are
-    // geometric evidence that a conductor terminates in the extracted graph.
-    // Component, connector, splice, ground, and external-connection evidence
-    // must be resolved before constructing Wire objects.
+    // Endpoint candidates remain evidence-bearing geometric candidates.
+    // Semantic component/connector/splice/ground classification and Wire
+    // construction remain later stages.
     return model;
 }
 

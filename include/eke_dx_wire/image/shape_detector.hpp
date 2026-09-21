@@ -52,8 +52,11 @@ struct ShapeDetectorConfig {
     double circle_param2 = 14.0;
     int circle_min_radius = 3;
     int circle_max_radius = 60;
-    double circle_min_edge_support = 0.35;
-    double circle_max_interior_ink_density = 0.45;
+    double circle_min_edge_support = 0.65;
+    double circle_max_interior_ink_density = 0.30;
+    double circle_min_circularity = 0.65;
+    double circle_max_aspect_ratio = 1.35;
+    double circle_min_area = 25.0;
 
     // Chassis-ground candidate validation.
     int ground_min_bar_length = 5;

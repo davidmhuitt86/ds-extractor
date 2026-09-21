@@ -1,14 +1,21 @@
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 
+#include <opencv2/core.hpp>
+
 #include <algorithm>
 #include <cassert>
 
 using namespace eke::dx::wire;
 
-static TopologyNode node(const char* id, TopologyNodeType type) {
+static TopologyNode node(
+    const char* id,
+    TopologyNodeType type,
+    double x = 0.0,
+    double y = 0.0) {
     TopologyNode n;
     n.id = id;
     n.type = type;
+    n.position = {x, y};
     return n;
 }
 
@@ -68,8 +75,6 @@ int main() {
             EndpointReconstructor().reconstruct(
                 nodes, edges, "fixture");
 
-        // The junction is not an endpoint. All three geometric conductor
-        // ends remain candidates; wire identity is deliberately deferred.
         assert(result.candidates.size() == 3);
         assert(std::none_of(
             result.candidates.begin(),
@@ -77,6 +82,39 @@ int main() {
             [](const EndpointCandidate& candidate) {
                 return candidate.node_id == "j";
             }));
+    }
+
+    {
+        cv::Mat source(50, 50, CV_8UC1, cv::Scalar(255));
+        cv::line(source, {5, 25}, {20, 25}, cv::Scalar(0), 1);
+        cv::rectangle(source, {27, 22}, {32, 28}, cv::Scalar(0), cv::FILLED);
+
+        std::vector<TopologyNode> nodes{
+            node("a", TopologyNodeType::ConductorEnd, 20, 25),
+            node("b", TopologyNodeType::Continuation, 5, 25)
+        };
+
+        std::vector<TopologyEdge> edges{
+            edge("e1", "a", "b")
+        };
+
+        const auto result =
+            EndpointReconstructor().reconstruct(
+                nodes, edges, source, "fixture");
+
+        assert(result.candidates.size() == 1);
+
+        const auto& evidence = result.candidates.front().evidence;
+        assert(evidence.local_pixel_count > 0);
+        assert(evidence.local_ink_pixels > 0);
+        assert(evidence.local_ink_density > 0.0);
+        assert(evidence.forward_pixel_count > 0);
+        assert(evidence.forward_ink_pixels > 0);
+        assert(evidence.forward_ink_density > 0.0);
+        assert(evidence.source_region.x == 10);
+        assert(evidence.source_region.y == 15);
+        assert(evidence.source_region.width == 21);
+        assert(evidence.source_region.height == 21);
     }
 
     return 0;

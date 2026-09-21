@@ -128,6 +128,7 @@ struct GuiState {
     bool dragging = false;
     int canvas_width = 1400;
     bool request_open = false;
+    bool render_trace_pending = false;
 };
 
 struct Slider {
@@ -157,6 +158,7 @@ void load_image(GuiState& state, const std::string& path) {
     state.topology = {};
     state.image_path = path;
     state.extracted = false;
+    state.render_trace_pending = true;
     gui_log("LOAD: state updated; exit");
 }
 
@@ -312,7 +314,10 @@ void overlay_topology(
     }
 }
 
-cv::Mat render(const GuiState& state, cv::Size canvas_size) {
+cv::Mat render(GuiState& state, cv::Size canvas_size) {
+    const bool trace = state.render_trace_pending;
+    if (trace) gui_log("RENDER 1: enter");
+
     canvas_size.width = (std::max)(canvas_size.width, 1100);
     canvas_size.height = (std::max)(canvas_size.height, 760);
 
@@ -322,6 +327,8 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
     cv::rectangle(
         canvas, {0, 0}, {canvas.cols, kToolbarHeight},
         cv::Scalar(35, 35, 35), cv::FILLED);
+
+    if (trace) gui_log("RENDER 2: canvas created");
 
     auto toolbar_button = [&](int x, int width, const std::string& label) {
         cv::rectangle(
@@ -343,7 +350,10 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
     const int image_height =
         canvas.rows - kToolbarHeight - kStatusHeight;
 
+    if (trace) gui_log("RENDER 3: toolbar and geometry complete");
     cv::Mat view = make_view(state);
+    if (trace) gui_log("RENDER 4: make_view complete; empty=" + std::to_string(view.empty()) +
+                       " channels=" + std::to_string(view.empty() ? 0 : view.channels()));
 
     if (!view.empty()) {
         cv::Mat color_view;
@@ -361,17 +371,28 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
                                      std::to_string(view.channels()));
         }
 
+        if (trace) gui_log("RENDER 5: channel conversion complete; rows=" +
+                           std::to_string(color_view.rows) + " cols=" +
+                           std::to_string(color_view.cols) + " channels=" +
+                           std::to_string(color_view.channels()));
+
         const double scale = (std::min)(
             static_cast<double>(image_width - 24) / color_view.cols,
             static_cast<double>(image_height - 24) / color_view.rows);
+
+        if (trace) gui_log("RENDER 6: scale=" + std::to_string(scale));
 
         const cv::Size display_size(
             (std::max)(1, static_cast<int>(color_view.cols * scale)),
             (std::max)(1, static_cast<int>(color_view.rows * scale)));
 
+        if (trace) gui_log("RENDER 7: display size=" + std::to_string(display_size.width) +
+                           "x" + std::to_string(display_size.height));
+
         cv::resize(
             color_view, color_view, display_size,
             0, 0, cv::INTER_AREA);
+        if (trace) gui_log("RENDER 8: resize complete");
 
         if (state.view == ViewMode::Conductors)
             overlay_conductors(color_view, state, scale);
@@ -379,14 +400,19 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
             overlay_conductors(color_view, state, scale);
             overlay_topology(color_view, state, scale);
         }
+        if (trace) gui_log("RENDER 9: overlays complete");
 
         const int ox = (image_width - color_view.cols) / 2;
         const int oy =
             kToolbarHeight +
             (image_height - color_view.rows) / 2;
 
+        if (trace) gui_log("RENDER 10: ROI=" + std::to_string(ox) + "," +
+                           std::to_string(oy) + " " + std::to_string(color_view.cols) +
+                           "x" + std::to_string(color_view.rows));
         color_view.copyTo(canvas(
             cv::Rect(ox, oy, color_view.cols, color_view.rows)));
+        if (trace) gui_log("RENDER 11: copyTo complete");
     } else {
         cv::putText(
             canvas, "Open a wiring diagram to begin.",
@@ -405,6 +431,7 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
     cv::Mat panel = canvas(cv::Rect(
         panel_left, kToolbarHeight,
         kPanelWidth, canvas.rows - kToolbarHeight - kStatusHeight));
+    if (trace) gui_log("RENDER 12: panel ROI complete");
 
     cv::putText(
         panel, "CALIBRATION", {18, 34},
@@ -422,6 +449,7 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
     for (int i = 0;
          i < static_cast<int>(parameter_sliders.size()); ++i)
         draw_slider(panel, i, parameter_sliders[i]);
+    if (trace) gui_log("RENDER 13: sliders complete");
 
     draw_button(panel, {18, 507, 135, 34}, "RUN EXTRACT");
     draw_button(panel, {165, 507, 135, 34}, "RESET");
@@ -440,6 +468,7 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
                 "WIRES", state.view == ViewMode::Conductors);
     draw_button(panel, {210, button_y + 38, 88, 30},
                 "TOPOLOGY", state.view == ViewMode::Topology);
+    if (trace) gui_log("RENDER 14: panel buttons complete");
 
     cv::rectangle(
         canvas,
@@ -464,6 +493,8 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
             "    Nodes: " + std::to_string(nodes) +
             "    Edges: " + std::to_string(edges);
     }
+
+    if (trace) gui_log("RENDER 15: status text prepared");
 
     cv::putText(
         canvas, status,
@@ -493,6 +524,12 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
             {12, canvas.rows - 9},
             cv::FONT_HERSHEY_SIMPLEX, 0.43,
             cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
+    }
+
+    if (trace) {
+        gui_log("RENDER 16: status rendering complete");
+        state.render_trace_pending = false;
+        gui_log("RENDER 17: return");
     }
 
     return canvas;
@@ -603,7 +640,6 @@ int main(int argc, char** argv) {
                 cv::getWindowImageRect(kWindow).size();
 
             state.canvas_width = (std::max)(size.width, 1100);
-            gui_log("LOOP: render");
             cv::imshow(kWindow, render(state, size));
 
             const int key = cv::waitKey(30);

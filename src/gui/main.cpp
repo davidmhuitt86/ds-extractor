@@ -348,10 +348,18 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
     if (!view.empty()) {
         cv::Mat color_view;
 
-        if (view.channels() == 1)
+        if (view.channels() == 1) {
             cv::cvtColor(view, color_view, cv::COLOR_GRAY2BGR);
-        else
+        } else if (view.channels() == 3) {
             color_view = view.clone();
+        } else if (view.channels() == 4) {
+            // The source PNG may contain an alpha channel.  The workbench
+            // canvas is CV_8UC3, so normalize BGRA input before compositing.
+            cv::cvtColor(view, color_view, cv::COLOR_BGRA2BGR);
+        } else {
+            throw std::runtime_error("Unsupported display channel count: " +
+                                     std::to_string(view.channels()));
+        }
 
         const double scale = (std::min)(
             static_cast<double>(image_width - 24) / color_view.cols,

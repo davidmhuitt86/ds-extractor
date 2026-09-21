@@ -3,6 +3,7 @@
 #include "eke_dx_wire/core/ids.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <cmath>
 #include <sstream>
 #include <unordered_map>

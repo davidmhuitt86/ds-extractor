@@ -2,6 +2,7 @@
 
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
+#include "eke_dx_wire/topology/topology_reconstructor.hpp"
 
 namespace eke::dx::wire {
 
@@ -19,15 +20,22 @@ WireModel ExtractionPipeline::run(
     const DetectionArtifacts detected =
         detector.detect(normalized, source_id, 0);
 
+    TopologyReconstructor topology(config_.topology);
+    const TopologyArtifacts graph =
+        topology.reconstruct(detected.conductor_segments, source_id, 0);
+
     WireModel model;
     model.source_id = source_id;
     model.page = 0;
     model.image_width = normalized.cols;
     model.image_height = normalized.rows;
     model.conductor_segments = detected.conductor_segments;
+    model.nodes = graph.nodes;
+    model.edges = graph.edges;
 
-    // v0.1 ends at observable conductor extraction.
-    // Topology and endpoint-to-endpoint wire identity are later stages.
+    // Wire identity remains a later semantic stage. In particular, a
+    // junction is not a wire endpoint and a crossing is not an electrical
+    // connection.
     return model;
 }
 

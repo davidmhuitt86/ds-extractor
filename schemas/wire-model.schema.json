@@ -9,76 +9,9 @@
     "page": {"type": "integer", "minimum": 0},
     "image_width": {"type": "integer", "minimum": 1},
     "image_height": {"type": "integer", "minimum": 1},
-    "conductor_segments": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "geometry", "thickness_px"],
-        "properties": {
-          "id": {"type": "string"},
-          "geometry": {
-            "type": "object",
-            "required": ["a", "b"],
-            "properties": {
-              "a": {"$ref": "#/$defs/point"},
-              "b": {"$ref": "#/$defs/point"}
-            }
-          },
-          "thickness_px": {"type": "number", "minimum": 0},
-          "heavy_cable": {"type": "boolean"}
-        }
-      }
-    },
-    "nodes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "position", "type"],
-        "properties": {
-          "id": {"type": "string"},
-          "position": {"$ref": "#/$defs/point"},
-          "type": {"type": "string"}
-        }
-      }
-    },
-    "edges": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "from_node", "to_node", "conductor_segment"],
-        "properties": {
-          "id": {"type": "string"},
-          "from_node": {"type": "string"},
-          "to_node": {"type": "string"},
-          "conductor_segment": {"type": "string"}
-        }
-      }
-    },
-    "wires": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["id", "start_endpoint", "end_endpoint",
-                     "topology_edges", "conductor_segments"],
-        "properties": {
-          "id": {"type": "string"},
-          "start_endpoint": {"type": "string"},
-          "end_endpoint": {"type": "string"},
-          "topology_edges": {"type": "array", "items": {"type": "string"}},
-          "conductor_segments": {"type": "array", "items": {"type": "string"}},
-          "heavy_cable": {"type": "boolean"}
-        }
-      }
-    }
-  },
-  "$defs": {
-    "point": {
-      "type": "object",
-      "required": ["x", "y"],
-      "properties": {
-        "x": {"type": "number"},
-        "y": {"type": "number"}
-      }
-    }
+    "conductor_segments": {"type": "array"},
+    "nodes": {"type": "array"},
+    "edges": {"type": "array"},
+    "wires": {"type": "array"}
   }
 }

@@ -22,8 +22,10 @@ void SvgExporter::export_segments(
         << "height="" << model.image_height << "" "
         << "viewBox="0 0 " << model.image_width << " "
         << model.image_height << "">\n";
+
     out << "  <g id="conductor-layer" fill="none" stroke="black" "
         << "stroke-linecap="round" stroke-linejoin="round">\n";
+
     out << std::setprecision(4);
 
     for (const auto& segment : model.conductor_segments) {
@@ -36,7 +38,8 @@ void SvgExporter::export_segments(
             << "" data-object-type="conductor-segment"/>\n";
     }
 
-    out << "  </g>\n</svg>\n";
+    out << "  </g>\n";
+    out << "</svg>\n";
 }
 
 } // namespace eke::dx::wire

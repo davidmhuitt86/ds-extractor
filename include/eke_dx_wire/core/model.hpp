@@ -38,6 +38,9 @@ struct TopologyNode {
     std::string id;
     Point2D position {};
     TopologyNodeType type = TopologyNodeType::Unresolved;
+
+    // A crossing is a geometric node but is not an electrical connection.
+    bool electrically_connective = true;
 };
 
 struct TopologyEdge {
@@ -63,14 +66,9 @@ struct WireModel {
     int image_width = 0;
     int image_height = 0;
 
-    // Observable conductor geometry. These are NOT wire identities.
     std::vector<ConductorSegment> conductor_segments;
-
-    // Connectivity graph, independent of SVG rendering.
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;
-
-    // Endpoint-to-endpoint engineering objects derived from topology.
     std::vector<Wire> wires;
 };
 

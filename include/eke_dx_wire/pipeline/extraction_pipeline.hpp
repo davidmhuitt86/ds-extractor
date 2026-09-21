@@ -2,6 +2,7 @@
 
 #include "eke_dx_wire/core/model.hpp"
 #include "eke_dx_wire/image/morphology_detector.hpp"
+#include "eke_dx_wire/topology/topology_reconstructor.hpp"
 
 #include <string>
 
@@ -9,6 +10,7 @@ namespace eke::dx::wire {
 
 struct ExtractionConfig {
     MorphologyConfig morphology {};
+    TopologyConfig topology {};
 };
 
 class ExtractionPipeline {

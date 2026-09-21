@@ -452,9 +452,9 @@ void handle_mouse(
         const int panel_x = x - panel_left;
 
         if (x >= panel_left &&
-            y >= kToolbarHeight + 87 && y < kToolbarHeight + 535) {
+            y >= kToolbarHeight + 135 && y < kToolbarHeight + 535) {
 
-            const int index = (y - (kToolbarHeight + 87)) / 64;
+            const int index = (y - (kToolbarHeight + 135)) / 64;
             if (index >= 0 && index < 6) {
                 state.active_slider = index;
                 state.dragging = true;

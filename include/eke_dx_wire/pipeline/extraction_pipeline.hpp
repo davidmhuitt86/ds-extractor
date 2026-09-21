@@ -11,7 +11,7 @@ namespace eke::dx::wire {
 
 struct ExtractionConfig {
     MorphologyConfig morphology {};
-    GeometryNormalizationConfig geometry {};
+    ConductorNormalizationConfig geometry {};
     TopologyConfig topology {};
 };
 

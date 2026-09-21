@@ -1,6 +1,7 @@
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 
 #include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include <algorithm>
 #include <cassert>

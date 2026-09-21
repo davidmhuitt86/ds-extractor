@@ -1,6 +1,7 @@
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/image/morphology_detector.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
+#include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
@@ -177,9 +178,14 @@ void extract(GuiState& state) {
 
     state.normalized = ImageNormalizer::normalize(state.source);
 
+    ShapeDetector shape_detector;
+    const ShapeDetectionArtifacts shapes =
+        shape_detector.detect(state.normalized, state.image_path, 0);
+
     MorphologyWireDetector detector(state.config);
     state.detection = detector.detect(
-        state.normalized, state.image_path, 0);
+        state.normalized, state.image_path, 0, shapes.exclusion_mask);
+    state.detection.shapes = shapes;
 
     ConductorNormalizer normalizer;
     state.normalized_conductors = normalizer.normalize(

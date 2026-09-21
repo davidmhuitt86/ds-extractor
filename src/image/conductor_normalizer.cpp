@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -106,6 +107,18 @@ ConductorSegment merge_pair(
 
     merged.thickness_px = std::max(a.thickness_px, b.thickness_px);
     merged.heavy_cable = a.heavy_cable || b.heavy_cable;
+
+    merged.provenance_history = a.provenance_history;
+    if (merged.provenance_history.empty())
+        merged.provenance_history.push_back(a.provenance);
+
+    if (!b.provenance_history.empty()) {
+        merged.provenance_history.insert(
+            merged.provenance_history.end(),
+            b.provenance_history.begin(), b.provenance_history.end());
+    } else {
+        merged.provenance_history.push_back(b.provenance);
+    }
     if (confidence_rank(b.confidence) > confidence_rank(a.confidence))
         merged.confidence = b.confidence;
 

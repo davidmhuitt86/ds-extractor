@@ -20,7 +20,7 @@ WireModel ExtractionPipeline::run(
     const cv::Mat source = ImageLoader::load(image_path);
     const cv::Mat normalized = ImageNormalizer::normalize(source);
 
-    ShapeDetector shape_detector;
+    ShapeDetector shape_detector(config_.shapes);
     const ShapeDetectionArtifacts shapes =
         shape_detector.detect(normalized, source_id, 0);
 

@@ -1,5 +1,6 @@
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/image/morphology_detector.hpp"
+#include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 
@@ -118,6 +119,7 @@ struct GuiState {
     cv::Mat source;
     cv::Mat normalized;
     DetectionArtifacts detection;
+    std::vector<ConductorSegment> normalized_conductors;
     TopologyArtifacts topology;
 
     MorphologyConfig config {};
@@ -155,6 +157,7 @@ void load_image(GuiState& state, const std::string& path) {
     gui_log("LOAD: state.source assigned");
     state.normalized.release();
     state.detection = {};
+    state.normalized_conductors.clear();
     state.topology = {};
     state.image_path = path;
     state.extracted = false;
@@ -171,9 +174,13 @@ void extract(GuiState& state) {
     state.detection = detector.detect(
         state.normalized, state.image_path, 0);
 
+    ConductorNormalizer normalizer;
+    state.normalized_conductors = normalizer.normalize(
+        state.detection.conductor_segments);
+
     TopologyReconstructor topology;
     state.topology = topology.reconstruct(
-        state.detection.conductor_segments, state.image_path, 0);
+        state.normalized_conductors, state.image_path, 0);
 
     state.extracted = true;
 }
@@ -283,7 +290,7 @@ void overlay_conductors(
     const GuiState& state,
     double scale) {
 
-    for (const auto& segment : state.detection.conductor_segments) {
+    for (const auto& segment : state.normalized_conductors) {
         cv::Point a(
             static_cast<int>(segment.geometry.a.x * scale),
             static_cast<int>(segment.geometry.a.y * scale));

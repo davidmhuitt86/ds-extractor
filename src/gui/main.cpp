@@ -112,7 +112,8 @@ enum class ViewMode {
     HorizontalMask,
     VerticalMask,
     Conductors,
-    Topology
+    Topology,
+    Endpoints
 };
 
 struct GuiState {
@@ -188,7 +189,7 @@ void extract(GuiState& state) {
     EndpointReconstructor endpoint_reconstructor;
     state.endpoints = endpoint_reconstructor.reconstruct(
         state.topology.nodes, state.topology.edges,
-        state.image_path, 0);
+        state.normalized, state.image_path, 0);
 
     state.extracted = true;
 }
@@ -329,6 +330,21 @@ void overlay_topology(
     }
 }
 
+void overlay_endpoints(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+
+    for (const auto& endpoint : state.endpoints.candidates) {
+        cv::Point p(
+            static_cast<int>(endpoint.position.x * scale),
+            static_cast<int>(endpoint.position.y * scale));
+
+        cv::circle(display, p, 5, cv::Scalar(0, 215, 255), 1, cv::LINE_AA);
+        cv::circle(display, p, 2, cv::Scalar(0, 215, 255), cv::FILLED, cv::LINE_AA);
+    }
+}
+
 cv::Mat render(GuiState& state, cv::Size canvas_size) {
     const bool trace = state.render_trace_pending;
     if (trace) gui_log("RENDER 1: enter");
@@ -342,8 +358,6 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     cv::rectangle(
         canvas, {0, 0}, {canvas.cols, kToolbarHeight},
         cv::Scalar(35, 35, 35), cv::FILLED);
-
-    if (trace) gui_log("RENDER 2: canvas created");
 
     auto toolbar_button = [&](int x, int width, const std::string& label) {
         cv::rectangle(
@@ -365,10 +379,7 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     const int image_height =
         canvas.rows - kToolbarHeight - kStatusHeight;
 
-    if (trace) gui_log("RENDER 3: toolbar and geometry complete");
     cv::Mat view = make_view(state);
-    if (trace) gui_log("RENDER 4: make_view complete; empty=" + std::to_string(view.empty()) +
-                       " channels=" + std::to_string(view.empty() ? 0 : view.channels()));
 
     if (!view.empty()) {
         cv::Mat color_view;
@@ -384,48 +395,35 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
                                      std::to_string(view.channels()));
         }
 
-        if (trace) gui_log("RENDER 5: channel conversion complete; rows=" +
-                           std::to_string(color_view.rows) + " cols=" +
-                           std::to_string(color_view.cols) + " channels=" +
-                           std::to_string(color_view.channels()));
-
         const double scale = (std::min)(
             static_cast<double>(image_width - 24) / color_view.cols,
             static_cast<double>(image_height - 24) / color_view.rows);
-
-        if (trace) gui_log("RENDER 6: scale=" + std::to_string(scale));
 
         const cv::Size display_size(
             (std::max)(1, static_cast<int>(color_view.cols * scale)),
             (std::max)(1, static_cast<int>(color_view.rows * scale)));
 
-        if (trace) gui_log("RENDER 7: display size=" + std::to_string(display_size.width) +
-                           "x" + std::to_string(display_size.height));
-
         cv::resize(
             color_view, color_view, display_size,
             0, 0, cv::INTER_AREA);
-        if (trace) gui_log("RENDER 8: resize complete");
 
         if (state.view == ViewMode::Conductors)
             overlay_conductors(color_view, state, scale);
         else if (state.view == ViewMode::Topology) {
             overlay_conductors(color_view, state, scale);
             overlay_topology(color_view, state, scale);
+        } else if (state.view == ViewMode::Endpoints) {
+            overlay_conductors(color_view, state, scale);
+            overlay_endpoints(color_view, state, scale);
         }
-        if (trace) gui_log("RENDER 9: overlays complete");
 
         const int ox = (image_width - color_view.cols) / 2;
         const int oy =
             kToolbarHeight +
             (image_height - color_view.rows) / 2;
 
-        if (trace) gui_log("RENDER 10: ROI=" + std::to_string(ox) + "," +
-                           std::to_string(oy) + " " + std::to_string(color_view.cols) +
-                           "x" + std::to_string(color_view.rows));
         color_view.copyTo(canvas(
             cv::Rect(ox, oy, color_view.cols, color_view.rows)));
-        if (trace) gui_log("RENDER 11: copyTo complete");
     } else {
         cv::putText(
             canvas, "Open a wiring diagram to begin.",
@@ -443,7 +441,6 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     cv::Mat panel = canvas(cv::Rect(
         panel_left, kToolbarHeight,
         kPanelWidth, canvas.rows - kToolbarHeight - kStatusHeight));
-    if (trace) gui_log("RENDER 12: panel ROI complete");
 
     cv::putText(
         panel, "CALIBRATION", {18, 34},
@@ -461,7 +458,6 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     for (int i = 0;
          i < static_cast<int>(parameter_sliders.size()); ++i)
         draw_slider(panel, i, parameter_sliders[i]);
-    if (trace) gui_log("RENDER 13: sliders complete");
 
     draw_button(panel, {18, 507, 135, 34}, "RUN EXTRACT");
     draw_button(panel, {165, 507, 135, 34}, "RESET");
@@ -480,7 +476,9 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
                 "WIRES", state.view == ViewMode::Conductors);
     draw_button(panel, {210, button_y + 38, 88, 30},
                 "TOPOLOGY", state.view == ViewMode::Topology);
-    if (trace) gui_log("RENDER 14: panel buttons complete");
+
+    draw_button(panel, {18, button_y + 76, 88, 30},
+                "ENDPOINTS", state.view == ViewMode::Endpoints);
 
     cv::rectangle(
         canvas,
@@ -495,20 +493,12 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             ? "No source loaded"
             : "Ready - adjust parameters, then RUN EXTRACT";
     } else {
-        const std::size_t segments =
-            state.normalized_conductors.size();
-        const std::size_t nodes = state.topology.nodes.size();
-        const std::size_t edges = state.topology.edges.size();
-        const std::size_t endpoints = state.endpoints.candidates.size();
-
         status =
-            "Conductors: " + std::to_string(segments) +
-            "    Nodes: " + std::to_string(nodes) +
-            "    Edges: " + std::to_string(edges) +
-            "    Endpoints: " + std::to_string(endpoints);
+            "Conductors: " + std::to_string(state.normalized_conductors.size()) +
+            "    Nodes: " + std::to_string(state.topology.nodes.size()) +
+            "    Edges: " + std::to_string(state.topology.edges.size()) +
+            "    Endpoints: " + std::to_string(state.endpoints.candidates.size());
     }
-
-    if (trace) gui_log("RENDER 15: status text prepared");
 
     cv::putText(
         canvas, status,
@@ -538,12 +528,6 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             {12, canvas.rows - 9},
             cv::FONT_HERSHEY_SIMPLEX, 0.43,
             cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
-    }
-
-    if (trace) {
-        gui_log("RENDER 16: status rendering complete");
-        state.render_trace_pending = false;
-        gui_log("RENDER 17: return");
     }
 
     return canvas;
@@ -596,7 +580,7 @@ void handle_mouse(
 
         if (x >= panel_left &&
             y >= kToolbarHeight + 562 &&
-            y < kToolbarHeight + 630) {
+            y < kToolbarHeight + 668) {
             const int bx = panel_x;
 
             if (y < kToolbarHeight + 592) {
@@ -604,12 +588,14 @@ void handle_mouse(
                 else if (bx >= 114 && bx < 202) state.view = ViewMode::Binary;
                 else if (bx >= 210 && bx < 298)
                     state.view = ViewMode::HorizontalMask;
-            } else {
+            } else if (y < kToolbarHeight + 630) {
                 if (bx >= 18 && bx < 106) state.view = ViewMode::VerticalMask;
                 else if (bx >= 114 && bx < 202)
                     state.view = ViewMode::Conductors;
                 else if (bx >= 210 && bx < 298)
                     state.view = ViewMode::Topology;
+            } else if (bx >= 18 && bx < 106) {
+                state.view = ViewMode::Endpoints;
             }
         }
     }
@@ -686,6 +672,7 @@ int main(int argc, char** argv) {
             if (key == '4') state.view = ViewMode::VerticalMask;
             if (key == '5') state.view = ViewMode::Conductors;
             if (key == '6') state.view = ViewMode::Topology;
+            if (key == '7') state.view = ViewMode::Endpoints;
         }
 
         cv::destroyAllWindows();

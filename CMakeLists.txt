@@ -23,6 +23,7 @@ add_library(eke_dx_wire
     src/image/morphology_detector.cpp
     src/topology/topology_reconstructor.cpp
     src/export/svg_exporter.cpp
+    src/export/topology_exporter.cpp
     src/pipeline/extraction_pipeline.cpp
 )
 

@@ -2,15 +2,36 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "EKE-DX-WIRE Reconstruction Model",
   "type": "object",
-  "required": ["source_id", "page", "image_width", "image_height",
-               "conductor_segments", "nodes", "edges", "wires"],
+  "required": [
+    "source_id", "page", "image_width", "image_height",
+    "conductor_segments", "nodes", "edges", "wires"
+  ],
   "properties": {
     "source_id": {"type": "string"},
     "page": {"type": "integer", "minimum": 0},
     "image_width": {"type": "integer", "minimum": 1},
     "image_height": {"type": "integer", "minimum": 1},
     "conductor_segments": {"type": "array"},
-    "nodes": {"type": "array"},
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "position", "type", "electrically_connective"],
+        "properties": {
+          "id": {"type": "string"},
+          "position": {
+            "type": "object",
+            "required": ["x", "y"],
+            "properties": {
+              "x": {"type": "number"},
+              "y": {"type": "number"}
+            }
+          },
+          "type": {"type": "string"},
+          "electrically_connective": {"type": "boolean"}
+        }
+      }
+    },
     "edges": {"type": "array"},
     "wires": {"type": "array"}
   }

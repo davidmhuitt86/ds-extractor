@@ -79,11 +79,12 @@ bool mergeable(
 
 ConductorSegment merge_pair(
     const ConductorSegment& a,
-    const ConductorSegment& b) {
+    const ConductorSegment& b,
+    double tolerance) {
 
     ConductorSegment merged = a;
 
-    if (horizontal(a, 0.75)) {
+    if (horizontal(a, tolerance)) {
         const double y = (a.geometry.a.y + b.geometry.a.y) * 0.5;
         const double x0 = std::min({
             a.geometry.a.x, a.geometry.b.x,
@@ -165,7 +166,6 @@ std::vector<ConductorSegment> ConductorNormalizer::normalize(
 
         if (confidence_rank(candidate.confidence) >
             confidence_rank(duplicate->confidence)) {
-            candidate.provenance.stage = "geometry.normalized";
             *duplicate = candidate;
         }
 
@@ -192,7 +192,8 @@ std::vector<ConductorSegment> ConductorNormalizer::normalize(
                     continue;
                 }
 
-                working[i] = merge_pair(working[i], working[j]);
+                working[i] = merge_pair(
+                    working[i], working[j], config_.collinear_tolerance);
                 working.erase(working.begin() +
                               static_cast<std::ptrdiff_t>(j));
                 changed = true;

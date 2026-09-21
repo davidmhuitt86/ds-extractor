@@ -5,6 +5,7 @@
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
+#include "eke_dx_wire/topology/gap_interpreter.hpp"
 
 namespace eke::dx::wire {
 
@@ -27,8 +28,18 @@ WireModel ExtractionPipeline::run(
         normalizer.normalize(detected.conductor_segments);
 
     TopologyReconstructor topology(config_.topology);
-    const TopologyArtifacts graph =
+    TopologyArtifacts graph =
         topology.reconstruct(normalized_segments, source_id, 0);
+
+    GapInterpreter gap_interpreter(config_.gap_interpretation);
+    const GapInterpretationArtifacts gap_artifacts =
+        gap_interpreter.interpret(
+            graph.nodes, graph.edges, normalized, source_id, 0);
+
+    graph.edges.insert(
+        graph.edges.end(),
+        gap_artifacts.inferred_edges.begin(),
+        gap_artifacts.inferred_edges.end());
 
     EndpointReconstructor endpoints;
     const EndpointArtifacts endpoint_artifacts =

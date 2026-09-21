@@ -37,7 +37,10 @@ struct ShapeDetectorConfig {
     double rectangle_max_area_ratio = 0.20;
     int rectangle_min_width = 15;
     int rectangle_min_height = 12;
-    double rectangle_max_interior_ink_density = 0.35;
+    double rectangle_max_interior_ink_density = 0.22;
+    double rectangle_min_interior_ink_density = 0.005;
+    int rectangle_min_interior_components = 1;
+    int rectangle_max_interior_component_aspect = 8;
     double rectangle_min_border_ink_density = 0.08;
     double rectangle_min_perimeter_ratio = 0.55;
     double rectangle_max_perimeter_ratio = 1.60;

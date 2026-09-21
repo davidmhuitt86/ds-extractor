@@ -1,6 +1,5 @@
 #include "eke_dx_wire/export/svg_exporter.hpp"
 #include "eke_dx_wire/image/image_loader.hpp"
-#include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
 
 #include <filesystem>
@@ -13,7 +12,7 @@ using namespace eke::dx::wire;
 
 static void usage() {
     std::cout
-        << "dx-extract 0.1.0\n\n"
+        << "dx-extract 0.1.1-foundation\n\n"
         << "Usage:\n"
         << "  dx-extract inspect <image>\n"
         << "  dx-extract extract <image> --output <directory>\n";
@@ -48,15 +47,19 @@ static int extract(const std::string& image_path, const std::string& output) {
     std::ofstream manifest(fs::path(output) / "project.json");
     manifest << "{\n"
              << "  \"format\": \"eke-dx-wire-project\",\n"
-             << "  \"version\": \"0.1.0\",\n"
+             << "  \"version\": \"0.1.1-foundation\",\n"
              << "  \"source\": \"" << image_path << "\",\n"
              << "  \"page\": " << model.page << ",\n"
              << "  \"image_width\": " << model.image_width << ",\n"
              << "  \"image_height\": " << model.image_height << ",\n"
-             << "  \"segment_count\": " << model.segments.size() << "\n"
+             << "  \"conductor_segment_count\": "
+             << model.conductor_segments.size() << ",\n"
+             << "  \"wire_count\": " << model.wires.size() << "\n"
              << "}\n";
 
-    std::cout << "extracted segments: " << model.segments.size() << "\n"
+    std::cout << "extracted conductor segments: "
+              << model.conductor_segments.size() << "\n"
+              << "reconstructed wires: " << model.wires.size() << "\n"
               << "output: "
               << (fs::path(output) / "output" / "wires.svg").string()
               << "\n";

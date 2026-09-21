@@ -1,3 +1,0 @@
-dx-wire-test-geometry 1 0.0229713
-dx-wire-test-ids 1 0.022156
----

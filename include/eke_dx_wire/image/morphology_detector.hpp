@@ -20,7 +20,7 @@ struct DetectionArtifacts {
     cv::Mat binary;
     cv::Mat horizontal_mask;
     cv::Mat vertical_mask;
-    std::vector<WireSegment> segments;
+    std::vector<ConductorSegment> conductor_segments;
 };
 
 class MorphologyWireDetector {

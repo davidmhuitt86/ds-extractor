@@ -24,12 +24,10 @@ WireModel ExtractionPipeline::run(
     model.page = 0;
     model.image_width = normalized.cols;
     model.image_height = normalized.rows;
-    model.segments = detected.segments;
+    model.conductor_segments = detected.conductor_segments;
 
-    // Stage intentionally stops here in v0.1.0.
-    // Subsequent stages consume model.segments and add:
-    // clipping -> merging -> snapping -> topology -> paths -> validation.
-
+    // v0.1 ends at observable conductor extraction.
+    // Topology and endpoint-to-endpoint wire identity are later stages.
     return model;
 }
 

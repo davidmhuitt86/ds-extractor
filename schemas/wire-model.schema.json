@@ -1,14 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "EKE-DX-WIRE Wire Model",
+  "title": "EKE-DX-WIRE Reconstruction Model",
   "type": "object",
-  "required": ["source_id", "page", "image_width", "image_height", "segments"],
+  "required": ["source_id", "page", "image_width", "image_height",
+               "conductor_segments", "nodes", "edges", "wires"],
   "properties": {
     "source_id": {"type": "string"},
     "page": {"type": "integer", "minimum": 0},
     "image_width": {"type": "integer", "minimum": 1},
     "image_height": {"type": "integer", "minimum": 1},
-    "segments": {
+    "conductor_segments": {
       "type": "array",
       "items": {
         "type": "object",
@@ -19,27 +20,64 @@
             "type": "object",
             "required": ["a", "b"],
             "properties": {
-              "a": {
-                "type": "object",
-                "required": ["x", "y"],
-                "properties": {
-                  "x": {"type": "number"},
-                  "y": {"type": "number"}
-                }
-              },
-              "b": {
-                "type": "object",
-                "required": ["x", "y"],
-                "properties": {
-                  "x": {"type": "number"},
-                  "y": {"type": "number"}
-                }
-              }
+              "a": {"$ref": "#/$defs/point"},
+              "b": {"$ref": "#/$defs/point"}
             }
           },
           "thickness_px": {"type": "number", "minimum": 0},
           "heavy_cable": {"type": "boolean"}
         }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "position", "type"],
+        "properties": {
+          "id": {"type": "string"},
+          "position": {"$ref": "#/$defs/point"},
+          "type": {"type": "string"}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "from_node", "to_node", "conductor_segment"],
+        "properties": {
+          "id": {"type": "string"},
+          "from_node": {"type": "string"},
+          "to_node": {"type": "string"},
+          "conductor_segment": {"type": "string"}
+        }
+      }
+    },
+    "wires": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "start_endpoint", "end_endpoint",
+                     "topology_edges", "conductor_segments"],
+        "properties": {
+          "id": {"type": "string"},
+          "start_endpoint": {"type": "string"},
+          "end_endpoint": {"type": "string"},
+          "topology_edges": {"type": "array", "items": {"type": "string"}},
+          "conductor_segments": {"type": "array", "items": {"type": "string"}},
+          "heavy_cable": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "point": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"}
       }
     }
   }

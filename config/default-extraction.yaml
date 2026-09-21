@@ -1,4 +1,9 @@
-version: 1
+version: 2
+
+expected:
+  # Optional user-supplied ground truth for calibration/validation.
+  # This never instructs the extractor to fabricate component objects.
+  components: null
 
 preprocess:
   adaptive_threshold:

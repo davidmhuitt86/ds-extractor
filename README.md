@@ -1,103 +1,73 @@
 # EKE-DX-WIRE — Deterministic Wire Reconstruction Engine
 
-Version: 0.1.0  
+Version: 0.1.1-foundation  
 Language: C++23  
 Build: CMake 3.24+  
-Primary CV dependency: OpenCV 4.x
+Primary CV dependency: OpenCV 5.x
 
-## Purpose
+## Foundation model
 
-EKE-DX-WIRE reconstructs electrical diagram conductors as structured engineering
-objects. The image is evidence; the reconstructed geometry and topology are the
-engineering artifact.
+The detector extracts observable **conductor geometry**. A detected line
+segment is not automatically a wire.
 
-This repository is the implementation baseline derived from:
+The domain model distinguishes:
 
-- EKE-DX-WIRE-001 — Deterministic Wire Reconstruction Specification
-- EKE-DX-WIRE-ARCH-001 — System Architecture
-- EKE-DX-WIRE-SW-001 — Software Architecture and Modules
-- EKE-DX-WIRE-ALG-001 — Algorithm and Processing Specification
-- EKE-DX-WIRE-MDL-001 — Domain Model and Intermediate Representation
+- ConductorSegment — observed/drawn conductor geometry.
+- TopologyNode — a point in the connectivity graph.
+- TopologyEdge — graph connectivity backed by conductor geometry.
+- Wire — an endpoint-to-endpoint engineering trace.
 
-## Current baseline
+### Normative wire identity rule
 
-Implemented in 0.1.0:
+A wire is one continuous conductor traced from one true endpoint to another
+true endpoint.
+
+A splice/junction is an internal topology node. It does not terminate or
+divide a wire.
+
+Example:
+
+    Terminal A ---------o--------- Terminal B
+                        |
+                        +--------- Terminal C
+
+The intended wire identities are:
+
+    Wire 1: Terminal A -> Terminal B
+    Wire 2: Terminal A -> Terminal C
+
+The shared conductor section may therefore participate in multiple
+endpoint-to-endpoint wire traces.
+
+This is why wire identity cannot be assigned during pixel detection.
+
+## Current implementation
+
+Implemented:
 
 - C++23/CMake project structure.
-- `dx-extract inspect` command.
-- `dx-extract extract` command.
-- deterministic image normalization.
-- horizontal/vertical morphological wire-mask extraction.
-- connected-component segment candidates.
-- centerline segment generation for orthogonal candidates.
-- SVG export of reconstructed candidate centerlines.
-- artifact directory layout.
-- deterministic serialization of the core wire model.
-- unit tests for geometry and deterministic ID generation.
+- raster image inspection/extraction.
+- adaptive thresholding.
+- horizontal/vertical morphology.
+- connected-component conductor candidates.
+- centerline generation.
+- vector SVG projection.
+- deterministic candidate IDs.
+- separate geometry and ID tests.
 
-Not yet complete:
+Not yet implemented:
 
-- automatic non-wire region detection.
-- robust clipping against component/connector regions.
+- PDF-native source rendering.
+- non-wire region detection/clipping.
+- collinear merging.
 - endpoint snapping.
-- junction/crossing classification.
-- full topology graph construction.
-- routed polyline chaining.
-- heavy-cable classifier.
-- GUI review application.
-- PDF-native page/field analysis.
-- final EKE/OEP package export.
+- topology graph construction.
+- true component/terminal endpoint attachment.
+- endpoint-to-endpoint wire reconstruction.
+- junction/crossing semantics.
+- heavy-cable classification.
+- complete validation/overlay.
+- GUI.
 
-The architecture intentionally keeps these as separate stages rather than hiding
-them inside one monolithic "converter".
-
-## Build
-
-Requirements:
-
-- C++23 compiler.
-- CMake 3.24 or newer.
-- OpenCV 4.x.
-
-Example:
-
-```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-ctest --test-dir build --output-on-failure
-```
-
-## CLI
-
-```text
-dx-extract inspect <image>
-dx-extract extract <image> --output <project-directory>
-```
-
-Example:
-
-```bash
-dx-extract inspect trx300_page.png
-dx-extract extract trx300_page.png --output trx300_project
-```
-
-The extraction command writes:
-
-```text
-project/
-├── project.json
-├── artifacts/
-│   ├── normalized/
-│   ├── masks/
-│   ├── segments/
-│   └── validation/
-└── output/
-    └── wires.svg
-```
-
-## Design rule
-
-The SVG is not the source of truth.
-
-The source of truth is the structured intermediate representation and, ultimately,
-the topology graph. SVG is an editable/renderable projection of that model.
+The implementation must keep conductor detection, topology reconstruction,
+and wire identity as separate stages.

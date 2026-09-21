@@ -4,7 +4,6 @@
 
 #include <opencv2/imgproc.hpp>
 #include <algorithm>
-#include <cmath>
 #include <sstream>
 
 namespace eke::dx::wire {
@@ -20,13 +19,9 @@ DetectionArtifacts MorphologyWireDetector::detect(
     DetectionArtifacts result;
 
     cv::adaptiveThreshold(
-        normalized,
-        result.binary,
-        255,
-        cv::ADAPTIVE_THRESH_GAUSSIAN_C,
-        cv::THRESH_BINARY_INV,
-        config_.adaptive_block_size,
-        config_.adaptive_c);
+        normalized, result.binary, 255,
+        cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV,
+        config_.adaptive_block_size, config_.adaptive_c);
 
     const cv::Mat h_kernel = cv::getStructuringElement(
         cv::MORPH_RECT,
@@ -36,11 +31,8 @@ DetectionArtifacts MorphologyWireDetector::detect(
         cv::MORPH_RECT,
         cv::Size(1, config_.vertical_kernel_length));
 
-    cv::morphologyEx(
-        result.binary, result.horizontal_mask, cv::MORPH_OPEN, h_kernel);
-
-    cv::morphologyEx(
-        result.binary, result.vertical_mask, cv::MORPH_OPEN, v_kernel);
+    cv::morphologyEx(result.binary, result.horizontal_mask, cv::MORPH_OPEN, h_kernel);
+    cv::morphologyEx(result.binary, result.vertical_mask, cv::MORPH_OPEN, v_kernel);
 
     auto extract = [&](const cv::Mat& mask, bool horizontal) {
         cv::Mat labels, stats, centroids;
@@ -53,7 +45,6 @@ DetectionArtifacts MorphologyWireDetector::detect(
             const int w = stats.at<int>(i, cv::CC_STAT_WIDTH);
             const int h = stats.at<int>(i, cv::CC_STAT_HEIGHT);
             const int area = stats.at<int>(i, cv::CC_STAT_AREA);
-
             const int major = horizontal ? w : h;
 
             if (area < config_.minimum_component_area ||
@@ -62,19 +53,14 @@ DetectionArtifacts MorphologyWireDetector::detect(
             }
 
             Segment2D geometry;
-
             if (horizontal) {
                 const double cy = y + (h - 1) * 0.5;
-                geometry = {
-                    {static_cast<double>(x), cy},
-                    {static_cast<double>(x + w - 1), cy}
-                };
+                geometry = {{static_cast<double>(x), cy},
+                            {static_cast<double>(x + w - 1), cy}};
             } else {
                 const double cx = x + (w - 1) * 0.5;
-                geometry = {
-                    {cx, static_cast<double>(y)},
-                    {cx, static_cast<double>(y + h - 1)}
-                };
+                geometry = {{cx, static_cast<double>(y)},
+                            {cx, static_cast<double>(y + h - 1)}};
             }
 
             std::ostringstream canonical;
@@ -82,31 +68,29 @@ DetectionArtifacts MorphologyWireDetector::detect(
                       << geometry.a.x << "," << geometry.a.y << "-"
                       << geometry.b.x << "," << geometry.b.y;
 
-            WireSegment segment;
-            segment.id = stable_id("wire-segment", canonical.str());
+            ConductorSegment segment;
+            segment.id = stable_id("conductor-segment", canonical.str());
             segment.geometry = geometry;
             segment.thickness_px = horizontal ? h : w;
             segment.confidence = ConfidenceClass::Medium;
             segment.provenance.source_id = source_id;
             segment.provenance.page = page;
             segment.provenance.source_region = {x, y, w, h};
-            segment.provenance.stage = horizontal
-                ? "morphology.horizontal"
-                : "morphology.vertical";
+            segment.provenance.stage =
+                horizontal ? "morphology.horizontal" : "morphology.vertical";
 
-            result.segments.push_back(std::move(segment));
+            result.conductor_segments.push_back(std::move(segment));
         }
     };
 
     extract(result.horizontal_mask, true);
     extract(result.vertical_mask, false);
 
-    std::sort(
-        result.segments.begin(),
-        result.segments.end(),
-        [](const WireSegment& a, const WireSegment& b) {
-            return a.id < b.id;
-        });
+    std::sort(result.conductor_segments.begin(),
+              result.conductor_segments.end(),
+              [](const ConductorSegment& a, const ConductorSegment& b) {
+                  return a.id < b.id;
+              });
 
     return result;
 }

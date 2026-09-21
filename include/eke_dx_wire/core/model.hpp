@@ -2,21 +2,15 @@
 
 #include "eke_dx_wire/core/geometry.hpp"
 
-#include <cstdint>
 #include <string>
 #include <vector>
 
 namespace eke::dx::wire {
 
-enum class ConfidenceClass {
-    High,
-    Medium,
-    Low,
-    Unresolved
-};
+enum class ConfidenceClass { High, Medium, Low, Unresolved };
 
 enum class TopologyNodeType {
-    Endpoint,
+    ConductorEnd,
     Continuation,
     Junction,
     Crossing,
@@ -31,20 +25,12 @@ struct Provenance {
     std::string stage;
 };
 
-struct WireSegment {
+struct ConductorSegment {
     std::string id;
     Segment2D geometry {};
     double thickness_px = 0.0;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     Provenance provenance {};
-    bool heavy_cable = false;
-};
-
-struct WirePath {
-    std::string id;
-    std::vector<Point2D> points;
-    double thickness_px = 0.0;
-    ConfidenceClass confidence = ConfidenceClass::Unresolved;
     bool heavy_cable = false;
 };
 
@@ -58,7 +44,17 @@ struct TopologyEdge {
     std::string id;
     std::string from_node;
     std::string to_node;
-    std::string wire_path;
+    std::string conductor_segment;
+};
+
+struct Wire {
+    std::string id;
+    std::string start_endpoint;
+    std::string end_endpoint;
+    std::vector<std::string> topology_edges;
+    std::vector<std::string> conductor_segments;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    bool heavy_cable = false;
 };
 
 struct WireModel {
@@ -67,10 +63,15 @@ struct WireModel {
     int image_width = 0;
     int image_height = 0;
 
-    std::vector<WireSegment> segments;
-    std::vector<WirePath> paths;
+    // Observable conductor geometry. These are NOT wire identities.
+    std::vector<ConductorSegment> conductor_segments;
+
+    // Connectivity graph, independent of SVG rendering.
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;
+
+    // Endpoint-to-endpoint engineering objects derived from topology.
+    std::vector<Wire> wires;
 };
 
 } // namespace eke::dx::wire

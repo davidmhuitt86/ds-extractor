@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 project(EKE_DX_WIRE
-    VERSION 0.1.0
+    VERSION 0.1.1
     DESCRIPTION "Deterministic engineering diagram wire reconstruction engine"
     LANGUAGES CXX
 )
@@ -25,18 +25,9 @@ add_library(eke_dx_wire
     src/pipeline/extraction_pipeline.cpp
 )
 
-target_include_directories(eke_dx_wire
-    PUBLIC
-        ${PROJECT_SOURCE_DIR}/include
-)
+target_include_directories(eke_dx_wire PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_link_libraries(eke_dx_wire
-    PUBLIC
-        opencv_core
-        opencv_imgproc
-        opencv_imgcodecs
-)
-
+target_link_libraries(eke_dx_wire PUBLIC opencv_core opencv_imgproc opencv_imgcodecs)
 target_compile_features(eke_dx_wire PUBLIC cxx_std_23)
 
 if(MSVC)
@@ -45,36 +36,17 @@ else()
     target_compile_options(eke_dx_wire PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-add_executable(dx-extract
-    src/app/main.cpp
-)
-
+add_executable(dx-extract src/app/main.cpp)
 target_link_libraries(dx-extract PRIVATE eke_dx_wire)
 
 if(DX_WIRE_BUILD_TESTS)
     enable_testing()
-
-add_executable(dx-wire-test-geometry
-    tests/test_geometry.cpp
-)
-
-target_link_libraries(dx-wire-test-geometry PRIVATE eke_dx_wire)
-
-add_test(
-    NAME dx-wire-test-geometry
-    COMMAND dx-wire-test-geometry
-)
-
-add_executable(dx-wire-test-ids
-    tests/test_ids.cpp
-)
-
-target_link_libraries(dx-wire-test-ids PRIVATE eke_dx_wire)
-
-add_test(
-    NAME dx-wire-test-ids
-    COMMAND dx-wire-test-ids
-)
+    add_executable(dx-wire-test-geometry tests/test_geometry.cpp)
+    target_link_libraries(dx-wire-test-geometry PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-geometry COMMAND dx-wire-test-geometry)
+    add_executable(dx-wire-test-ids tests/test_ids.cpp)
+    target_link_libraries(dx-wire-test-ids PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-ids COMMAND dx-wire-test-ids)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

@@ -42,9 +42,13 @@ std::string open_image_dialog() {
         CP_UTF8, 0, buffer, -1, nullptr, 0, nullptr, nullptr);
     if (length <= 0) return {};
 
-    std::string utf8(static_cast<std::size_t>(length - 1), '\0');
-    WideCharToMultiByte(
+    // The first call includes the terminating null in the required size.
+    // Allocate the full buffer for the second call, then remove the null.
+    std::string utf8(static_cast<std::size_t>(length), '\0');
+    const int converted = WideCharToMultiByte(
         CP_UTF8, 0, buffer, -1, utf8.data(), length, nullptr, nullptr);
+    if (converted <= 0) return {};
+    utf8.resize(static_cast<std::size_t>(converted - 1));
     return utf8;
 }
 #else

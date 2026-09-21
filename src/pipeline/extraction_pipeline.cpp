@@ -3,6 +3,7 @@
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
+#include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
@@ -19,9 +20,15 @@ WireModel ExtractionPipeline::run(
     const cv::Mat source = ImageLoader::load(image_path);
     const cv::Mat normalized = ImageNormalizer::normalize(source);
 
+    ShapeDetector shape_detector;
+    const ShapeDetectionArtifacts shapes =
+        shape_detector.detect(normalized, source_id, 0);
+
     MorphologyWireDetector detector(config_.morphology);
-    const DetectionArtifacts detected =
-        detector.detect(normalized, source_id, 0);
+    DetectionArtifacts detected =
+        detector.detect(
+            normalized, source_id, 0, shapes.exclusion_mask);
+    detected.shapes = shapes;
 
     ConductorNormalizer normalizer(config_.geometry);
     const std::vector<ConductorSegment> normalized_segments =

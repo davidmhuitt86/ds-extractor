@@ -4,6 +4,7 @@
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
+#include "eke_dx_wire/topology/gap_interpreter.hpp"
 
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -123,6 +124,7 @@ struct GuiState {
     DetectionArtifacts detection;
     std::vector<ConductorSegment> normalized_conductors;
     TopologyArtifacts topology;
+    GapInterpretationArtifacts gap_interpretation;
     EndpointArtifacts endpoints;
 
     MorphologyConfig config {};
@@ -162,6 +164,7 @@ void load_image(GuiState& state, const std::string& path) {
     state.detection = {};
     state.normalized_conductors.clear();
     state.topology = {};
+    state.gap_interpretation = {};
     state.endpoints = {};
     state.image_path = path;
     state.extracted = false;
@@ -185,6 +188,16 @@ void extract(GuiState& state) {
     TopologyReconstructor topology;
     state.topology = topology.reconstruct(
         state.normalized_conductors, state.image_path, 0);
+
+    GapInterpreter gap_interpreter;
+    state.gap_interpretation = gap_interpreter.interpret(
+        state.topology.nodes, state.topology.edges,
+        state.normalized, state.image_path, 0);
+
+    state.topology.edges.insert(
+        state.topology.edges.end(),
+        state.gap_interpretation.inferred_edges.begin(),
+        state.gap_interpretation.inferred_edges.end());
 
     EndpointReconstructor endpoint_reconstructor;
     state.endpoints = endpoint_reconstructor.reconstruct(
@@ -497,6 +510,7 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             "Conductors: " + std::to_string(state.normalized_conductors.size()) +
             "    Nodes: " + std::to_string(state.topology.nodes.size()) +
             "    Edges: " + std::to_string(state.topology.edges.size()) +
+            "    Gaps bridged: " + std::to_string(state.gap_interpretation.inferred_edges.size()) +
             "    Endpoints: " + std::to_string(state.endpoints.candidates.size());
     }
 

@@ -17,25 +17,20 @@ BoundingBox to_box(const cv::Rect& r) {
 }
 
 double region_density(const cv::Mat& binary, const cv::Rect& requested) {
-    const cv::Rect image_rect(0, 0, binary.cols, binary.rows);
-    const cv::Rect region = requested & image_rect;
+    const cv::Rect region = requested &
+        cv::Rect(0, 0, binary.cols, binary.rows);
     if (region.empty())
         return 0.0;
-
     return cv::mean(binary(region))[0] / 255.0;
 }
 
-double ring_density(
-    const cv::Mat& binary,
-    const cv::Rect& bounds,
-    int thickness = 2) {
+double ring_density(const cv::Mat& binary, const cv::Rect& bounds, int thickness) {
+    const cv::Rect clipped = bounds &
+        cv::Rect(0, 0, binary.cols, binary.rows);
 
-    const cv::Rect image_rect(0, 0, binary.cols, binary.rows);
-    const cv::Rect clipped = bounds & image_rect;
     if (clipped.width <= 2 * thickness ||
-        clipped.height <= 2 * thickness) {
+        clipped.height <= 2 * thickness)
         return 0.0;
-    }
 
     const cv::Rect inner(
         clipped.x + thickness,
@@ -49,11 +44,51 @@ double ring_density(
     if (outer_area <= inner_area)
         return 0.0;
 
-    const double outer_sum = cv::sum(binary(clipped))[0];
-    const double inner_sum = cv::sum(binary(inner))[0];
-
-    return (outer_sum - inner_sum) /
+    return (cv::sum(binary(clipped))[0] -
+            cv::sum(binary(inner))[0]) /
            ((outer_area - inner_area) * 255.0);
+}
+
+double side_support(
+    const cv::Mat& binary,
+    const cv::Point& a,
+    const cv::Point& b,
+    int band) {
+
+    const int length = static_cast<int>(
+        std::ceil(std::hypot(
+            static_cast<double>(b.x - a.x),
+            static_cast<double>(b.y - a.y))));
+
+    if (length < 2)
+        return 0.0;
+
+    int supported = 0;
+    int samples = 0;
+
+    for (int i = 0; i <= length; ++i) {
+        const double t = static_cast<double>(i) / length;
+        const int x = cvRound(a.x + t * (b.x - a.x));
+        const int y = cvRound(a.y + t * (b.y - a.y));
+
+        const int x0 = (std::max)(0, x - band);
+        const int y0 = (std::max)(0, y - band);
+        const int x1 = (std::min)(binary.cols, x + band + 1);
+        const int y1 = (std::min)(binary.rows, y + band + 1);
+
+        if (x1 <= x0 || y1 <= y0)
+            continue;
+
+        ++samples;
+        if (cv::countNonZero(
+                binary(cv::Rect(x0, y0, x1 - x0, y1 - y0))) > 0) {
+            ++supported;
+        }
+    }
+
+    return samples > 0
+        ? static_cast<double>(supported) / samples
+        : 0.0;
 }
 
 void add_region(
@@ -128,22 +163,23 @@ void detect_rectangles(
             continue;
 
         const cv::Rect bounds = cv::boundingRect(contour);
+
         if (bounds.width < config.rectangle_min_width ||
-            bounds.height < config.rectangle_min_height) {
+            bounds.height < config.rectangle_min_height)
             continue;
-        }
 
         const double bounds_area =
             static_cast<double>(bounds.area());
 
         if (bounds_area <= 0.0 ||
-            bounds_area > image_area * config.rectangle_max_area_ratio) {
+            bounds_area > image_area * config.rectangle_max_area_ratio)
             continue;
-        }
+
+        const double perimeter = cv::arcLength(contour, true);
+        if (perimeter <= 0.0)
+            continue;
 
         std::vector<cv::Point> polygon;
-        const double perimeter = cv::arcLength(contour, true);
-
         cv::approxPolyDP(
             contour, polygon,
             config.rectangle_epsilon * perimeter,
@@ -158,26 +194,40 @@ void detect_rectangles(
 
         const double expected_perimeter =
             2.0 * (bounds.width + bounds.height);
-
-        if (expected_perimeter <= 0.0)
-            continue;
-
         const double perimeter_ratio =
             perimeter / expected_perimeter;
 
         if (perimeter_ratio < config.rectangle_min_perimeter_ratio ||
-            perimeter_ratio > config.rectangle_max_perimeter_ratio) {
+            perimeter_ratio > config.rectangle_max_perimeter_ratio)
             continue;
-        }
 
-        // A real schematic enclosure generally has a relatively quiet
-        // interior and a stronger ink boundary. Dense wire/text clusters
-        // tend to fail this contrast test.
-        const int inset = (std::min)({
-            3,
-            bounds.width / 4,
-            bounds.height / 4
-        });
+        // Validate the four actual enclosure sides. A contour created by
+        // crossing wires or text often has a rectangular bounding box but
+        // does not have continuous support on all four sides.
+        const cv::Point tl(bounds.x, bounds.y);
+        const cv::Point tr(bounds.x + bounds.width - 1, bounds.y);
+        const cv::Point br(
+            bounds.x + bounds.width - 1,
+            bounds.y + bounds.height - 1);
+        const cv::Point bl(bounds.x, bounds.y + bounds.height - 1);
+
+        const double top = side_support(
+            binary, tl, tr, 2);
+        const double right = side_support(
+            binary, tr, br, 2);
+        const double bottom = side_support(
+            binary, bl, br, 2);
+        const double left = side_support(
+            binary, tl, bl, 2);
+
+        const double minimum_side =
+            (std::min)({top, right, bottom, left});
+
+        if (minimum_side < 0.65)
+            continue;
+
+        const int inset =
+            (std::min)({3, bounds.width / 4, bounds.height / 4});
 
         if (inset < 1)
             continue;
@@ -190,34 +240,50 @@ void detect_rectangles(
 
         const double interior_density =
             region_density(binary, interior);
+
+        if (interior_density > 0.22)
+            continue;
+
+        // Long internal horizontal/vertical structures are characteristic
+        // of wire fields and table/grid regions rather than clean component
+        // enclosures. Reject candidates dominated by such structures.
+        cv::Mat interior_image = binary(interior);
+        cv::Mat hline;
+        cv::Mat vline;
+
+        cv::morphologyEx(
+            interior_image, hline, cv::MORPH_OPEN,
+            cv::getStructuringElement(
+                cv::MORPH_RECT, {9, 1}));
+
+        cv::morphologyEx(
+            interior_image, vline, cv::MORPH_OPEN,
+            cv::getStructuringElement(
+                cv::MORPH_RECT, {1, 9}));
+
+        const double internal_line_density =
+            static_cast<double>(
+                cv::countNonZero(hline) +
+                cv::countNonZero(vline)) /
+            (2.0 * static_cast<double>(interior.area()));
+
+        if (internal_line_density > 0.08)
+            continue;
+
         const double border_density =
             ring_density(binary, bounds, inset);
 
-        if (interior_density >
-            config.rectangle_max_interior_ink_density) {
-            continue;
-        }
-
-        if (border_density <
-            config.rectangle_min_border_ink_density) {
-            continue;
-        }
-
-        const double interior_score =
-            1.0 - (std::min)(1.0, interior_density /
-                config.rectangle_max_interior_ink_density);
-
-        const double border_score =
-            (std::min)(1.0, border_density /
-                config.rectangle_min_border_ink_density);
-
         const double confidence =
-            0.60 + 0.20 * interior_score + 0.20 * border_score;
+            (std::min)(
+                0.99,
+                0.55 +
+                0.25 * minimum_side +
+                0.15 * (1.0 - interior_density) +
+                0.05 * (1.0 - internal_line_density));
 
         add_region(
             result, ShapeKind::Rectangle, bounds,
-            (std::min)(0.99, confidence),
-            source_id, page);
+            confidence, source_id, page);
     }
 }
 
@@ -242,9 +308,8 @@ double circle_edge_support(
         const int y = cvRound(cy + radius * std::sin(angle));
 
         if (x < 0 || y < 0 ||
-            x >= binary.cols || y >= binary.rows) {
+            x >= binary.cols || y >= binary.rows)
             continue;
-        }
 
         ++valid;
 
@@ -320,12 +385,12 @@ void detect_circles(
             region_density(binary, interior);
 
         if (interior_density >
-            config.circle_max_interior_ink_density) {
+            config.circle_max_interior_ink_density)
             continue;
-        }
 
         const double confidence =
-            (std::min)(0.99,
+            (std::min)(
+                0.99,
                 0.55 +
                 0.25 * edge_support +
                 0.20 * (1.0 - interior_density));
@@ -371,9 +436,8 @@ void detect_ground_symbols(
 
         if (w < config.ground_min_bar_length ||
             w > config.ground_max_bar_length ||
-            h > 5) {
+            h > 5)
             continue;
-        }
 
         bars.push_back({{x, y, w, h}, x + w / 2});
     }
@@ -437,11 +501,10 @@ void detect_ground_symbols(
                 if (!decreasing)
                     continue;
 
-                // Require a short vertical stem immediately above the
-                // widest bar. This eliminates most coincidental bar triples.
                 const int stem_x = bars[i].center_x;
                 const int stem_y0 =
-                    (std::max)(0,
+                    (std::max)(
+                        0,
                         bars[i].bounds.y -
                         config.ground_stem_search_height);
                 const int stem_y1 = bars[i].bounds.y;
@@ -458,10 +521,7 @@ void detect_ground_symbols(
                     sx0, stem_y0,
                     sx1 - sx0, stem_y1 - stem_y0);
 
-                const int stem_ink =
-                    cv::countNonZero(binary(stem_region));
-
-                if (stem_ink < 2)
+                if (cv::countNonZero(binary(stem_region)) < 2)
                     continue;
 
                 cv::Rect bounds =
@@ -500,7 +560,6 @@ ShapeDetectionArtifacts ShapeDetector::detect(
     int page) const {
 
     ShapeDetectionArtifacts result;
-
     if (normalized.empty())
         return result;
 

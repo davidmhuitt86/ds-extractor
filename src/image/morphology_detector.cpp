@@ -3,6 +3,8 @@
 #include "eke_dx_wire/core/ids.hpp"
 
 #include <opencv2/imgproc.hpp>
+
+#include <stdexcept>
 #include <algorithm>
 #include <sstream>
 
@@ -14,7 +16,8 @@ MorphologyWireDetector::MorphologyWireDetector(MorphologyConfig config)
 DetectionArtifacts MorphologyWireDetector::detect(
     const cv::Mat& normalized,
     const std::string& source_id,
-    int page) const {
+    int page,
+    const cv::Mat& exclusion_mask) const {
 
     DetectionArtifacts result;
 
@@ -31,8 +34,19 @@ DetectionArtifacts MorphologyWireDetector::detect(
         cv::MORPH_RECT,
         cv::Size(1, config_.vertical_kernel_length));
 
-    cv::morphologyEx(result.binary, result.horizontal_mask, cv::MORPH_OPEN, h_kernel);
-    cv::morphologyEx(result.binary, result.vertical_mask, cv::MORPH_OPEN, v_kernel);
+    cv::Mat wire_binary = result.binary.clone();
+    if (!exclusion_mask.empty()) {
+        if (exclusion_mask.size() != result.binary.size() ||
+            exclusion_mask.type() != CV_8UC1) {
+            throw std::runtime_error("Invalid shape exclusion mask");
+        }
+
+        wire_binary.setTo(0, exclusion_mask);
+    }
+
+    cv::morphologyEx(
+        wire_binary, result.horizontal_mask, cv::MORPH_OPEN, h_kernel);
+    cv::morphologyEx(wire_binary, result.vertical_mask, cv::MORPH_OPEN, v_kernel);
 
     auto extract = [&](const cv::Mat& mask, bool horizontal) {
         cv::Mat labels, stats, centroids;

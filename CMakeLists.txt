@@ -13,7 +13,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(DX_WIRE_BUILD_TESTS "Build unit tests" ON)
 option(DX_WIRE_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 
-find_package(OpenCV 5 REQUIRED COMPONENTS core imgproc imgcodecs)
+find_package(OpenCV 5 REQUIRED COMPONENTS core imgproc imgcodecs highgui)
 
 add_library(eke_dx_wire
     src/core/geometry.cpp

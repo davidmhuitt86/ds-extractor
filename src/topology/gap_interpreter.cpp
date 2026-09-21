@@ -97,13 +97,13 @@ bool collinear_facing(
 
     if (horizontal) {
         return (a_dir_x * dx > 0.0) &&
-               (b_dir_x * -dx > 0.0) &&
+               (b_dir_x * dx > 0.0) &&
                std::abs(a_dir_y) <= tolerance &&
                std::abs(b_dir_y) <= tolerance;
     }
 
     return (a_dir_y * dy > 0.0) &&
-           (b_dir_y * -dy > 0.0) &&
+           (b_dir_y * dy > 0.0) &&
            std::abs(a_dir_x) <= tolerance &&
            std::abs(b_dir_x) <= tolerance;
 }

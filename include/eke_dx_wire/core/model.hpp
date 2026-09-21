@@ -18,6 +18,16 @@ enum class TopologyNodeType {
     Unresolved
 };
 
+enum class EndpointKind {
+    GeometricConductorEnd,
+    ComponentTerminal,
+    ConnectorTerminal,
+    Splice,
+    Ground,
+    ExternalConnection,
+    Unresolved
+};
+
 struct Provenance {
     std::string source_id;
     int page = 0;
@@ -52,6 +62,14 @@ struct TopologyEdge {
     std::string conductor_segment;
 };
 
+struct EndpointCandidate {
+    std::string id;
+    std::string node_id;
+    EndpointKind kind = EndpointKind::Unresolved;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    std::vector<std::string> incident_edges;
+};
+
 struct Wire {
     std::string id;
     std::string start_endpoint;
@@ -71,6 +89,7 @@ struct WireModel {
     std::vector<ConductorSegment> conductor_segments;
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;
+    std::vector<EndpointCandidate> endpoint_candidates;
     std::vector<Wire> wires;
 };
 

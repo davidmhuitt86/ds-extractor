@@ -388,48 +388,63 @@ void detect_circles(
     const std::string& source_id,
     int page) {
 
-    cv::Mat blurred;
-    cv::GaussianBlur(normalized, blurred, {5, 5}, 1.2);
+    (void)normalized;
 
-    std::vector<cv::Vec3f> circles;
-    cv::HoughCircles(
-        blurred, circles, cv::HOUGH_GRADIENT,
-        config.circle_dp,
-        config.circle_min_dist,
-        config.circle_param1,
-        config.circle_param2,
-        config.circle_min_radius,
-        config.circle_max_radius);
+    // HoughCircles is intentionally not used here. On wiring diagrams it
+    // readily interprets wire intersections, connector holes, text glyphs,
+    // and other repeated geometry as circles. Closed contour geometry gives
+    // us stronger evidence that the circle is an actual drawn symbol.
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(
+        binary, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
-    for (const auto& circle : circles) {
-        const int x = static_cast<int>(std::lround(circle[0]));
-        const int y = static_cast<int>(std::lround(circle[1]));
-        const int r = static_cast<int>(std::lround(circle[2]));
-
-        if (r < config.circle_min_radius)
+    for (const auto& contour : contours) {
+        const double area = cv::contourArea(contour);
+        if (area < config.circle_min_area)
             continue;
 
-        const cv::Rect bounds(
-            x - r - 1, y - r - 1,
-            2 * r + 3, 2 * r + 3);
-
-        const cv::Rect image_rect(
-            0, 0, normalized.cols, normalized.rows);
-
-        const cv::Rect clipped = bounds & image_rect;
-
-        if (clipped.width < 2 || clipped.height < 2)
+        const double perimeter = cv::arcLength(contour, true);
+        if (perimeter <= 0.0)
             continue;
+
+        const double circularity =
+            4.0 * CV_PI * area / (perimeter * perimeter);
+
+        if (circularity < config.circle_min_circularity)
+            continue;
+
+        const cv::Rect bounds = cv::boundingRect(contour);
+        if (bounds.width <= 0 || bounds.height <= 0)
+            continue;
+
+        const double aspect =
+            static_cast<double>((std::max)(bounds.width, bounds.height)) /
+            static_cast<double>((std::min)(bounds.width, bounds.height));
+
+        if (aspect > config.circle_max_aspect_ratio)
+            continue;
+
+        float radius = 0.0F;
+        cv::Point2f center;
+        cv::minEnclosingCircle(contour, center, radius);
+
+        if (radius < config.circle_min_radius ||
+            radius > config.circle_max_radius)
+            continue;
+
+        const int cx = cvRound(center.x);
+        const int cy = cvRound(center.y);
+        const int r = cvRound(radius);
 
         const double edge_support =
-            circle_edge_support(binary, x, y, r);
+            circle_edge_support(binary, cx, cy, r);
 
         if (edge_support < config.circle_min_edge_support)
             continue;
 
         const int inset = (std::max)(2, r / 3);
         const cv::Rect interior(
-            x - inset, y - inset,
+            cx - inset, cy - inset,
             2 * inset + 1, 2 * inset + 1);
 
         const double interior_density =
@@ -439,12 +454,20 @@ void detect_circles(
             config.circle_max_interior_ink_density)
             continue;
 
+        const cv::Rect image_rect(
+            0, 0, normalized.cols, normalized.rows);
+
+        const cv::Rect clipped = bounds & image_rect;
+        if (clipped.width < 2 || clipped.height < 2)
+            continue;
+
         const double confidence =
             (std::min)(
                 0.99,
-                0.55 +
-                0.25 * edge_support +
-                0.20 * (1.0 - interior_density));
+                0.50 +
+                0.20 * circularity +
+                0.20 * edge_support +
+                0.10 * (1.0 - interior_density));
 
         add_region(
             result, ShapeKind::Circle, clipped,

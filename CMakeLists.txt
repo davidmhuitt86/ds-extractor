@@ -75,6 +75,10 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-endpoint-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-endpoint-reconstructor COMMAND dx-wire-test-endpoint-reconstructor)
 
+    add_executable(dx-wire-test-gap-interpreter tests/test_gap_interpreter.cpp)
+    target_link_libraries(dx-wire-test-gap-interpreter PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-gap-interpreter COMMAND dx-wire-test-gap-interpreter)
+
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

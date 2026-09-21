@@ -41,7 +41,9 @@ add_executable(dx-extract src/app/main.cpp)
 target_link_libraries(dx-extract PRIVATE eke_dx_wire)
 
 if(WIN32)
-    add_executable(dx-extractor-gui WIN32 src/gui/main.cpp)
+    # The GUI uses a normal C++ main() entry point. Do not mark this target
+    # as WIN32, which changes the MSVC entry point to WinMain().
+    add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire
         opencv_highgui opencv_imgproc opencv_imgcodecs)
     target_link_libraries(dx-extractor-gui PRIVATE comdlg32)

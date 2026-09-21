@@ -3,6 +3,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include <algorithm>
+#include <cstdint>
 #include <cassert>
 
 using namespace eke::dx::wire;

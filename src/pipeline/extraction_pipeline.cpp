@@ -4,6 +4,7 @@
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
+#include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 
 namespace eke::dx::wire {
 
@@ -29,6 +30,10 @@ WireModel ExtractionPipeline::run(
     const TopologyArtifacts graph =
         topology.reconstruct(normalized_segments, source_id, 0);
 
+    EndpointReconstructor endpoints;
+    const EndpointArtifacts endpoint_artifacts =
+        endpoints.reconstruct(graph.nodes, graph.edges, source_id, 0);
+
     WireModel model;
     model.source_id = source_id;
     model.page = 0;
@@ -37,10 +42,12 @@ WireModel ExtractionPipeline::run(
     model.conductor_segments = normalized_segments;
     model.nodes = graph.nodes;
     model.edges = graph.edges;
+    model.endpoint_candidates = endpoint_artifacts.candidates;
 
-    // Wire identity remains a later semantic stage. In particular, a
-    // junction is not a wire endpoint and a crossing is not an electrical
-    // connection.
+    // Endpoint candidates are not yet true engineering endpoints. They are
+    // geometric evidence that a conductor terminates in the extracted graph.
+    // Component, connector, splice, ground, and external-connection evidence
+    // must be resolved before constructing Wire objects.
     return model;
 }
 

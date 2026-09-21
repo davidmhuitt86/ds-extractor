@@ -1,9 +1,9 @@
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/image/morphology_detector.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
-#include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
+#include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -122,6 +122,7 @@ struct GuiState {
     DetectionArtifacts detection;
     std::vector<ConductorSegment> normalized_conductors;
     TopologyArtifacts topology;
+    EndpointArtifacts endpoints;
 
     MorphologyConfig config {};
     bool extracted = false;
@@ -160,6 +161,7 @@ void load_image(GuiState& state, const std::string& path) {
     state.detection = {};
     state.normalized_conductors.clear();
     state.topology = {};
+    state.endpoints = {};
     state.image_path = path;
     state.extracted = false;
     state.render_trace_pending = true;
@@ -183,12 +185,18 @@ void extract(GuiState& state) {
     state.topology = topology.reconstruct(
         state.normalized_conductors, state.image_path, 0);
 
+    EndpointReconstructor endpoint_reconstructor;
+    state.endpoints = endpoint_reconstructor.reconstruct(
+        state.topology.nodes, state.topology.edges,
+        state.image_path, 0);
+
     state.extracted = true;
 }
 
 void reset_parameters(GuiState& state) {
     state.config = MorphologyConfig {};
     state.extracted = false;
+    state.endpoints = {};
 }
 
 std::vector<Slider> sliders(GuiState& state) {
@@ -220,7 +228,6 @@ void set_slider_from_mouse(GuiState& state, int index, int mouse_x) {
     int value = static_cast<int>(
         s[index].min + t * (s[index].max - s[index].min) + 0.5);
 
-    // OpenCV adaptiveThreshold requires an odd block size > 1.
     if (index == 2) {
         value = (std::max)(3, value);
         if ((value & 1) == 0) ++value;
@@ -371,8 +378,6 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
         } else if (view.channels() == 3) {
             color_view = view.clone();
         } else if (view.channels() == 4) {
-            // The source PNG may contain an alpha channel.  The workbench
-            // canvas is CV_8UC3, so normalize BGRA input before compositing.
             cv::cvtColor(view, color_view, cv::COLOR_BGRA2BGR);
         } else {
             throw std::runtime_error("Unsupported display channel count: " +
@@ -428,7 +433,6 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             cv::Scalar(70, 70, 70), 1, cv::LINE_AA);
     }
 
-    // Calibration panel.
     const int panel_left = canvas.cols - kPanelWidth;
     cv::rectangle(
         canvas,
@@ -492,14 +496,16 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             : "Ready - adjust parameters, then RUN EXTRACT";
     } else {
         const std::size_t segments =
-            state.detection.conductor_segments.size();
+            state.normalized_conductors.size();
         const std::size_t nodes = state.topology.nodes.size();
         const std::size_t edges = state.topology.edges.size();
+        const std::size_t endpoints = state.endpoints.candidates.size();
 
         status =
-            "Segments: " + std::to_string(segments) +
+            "Conductors: " + std::to_string(segments) +
             "    Nodes: " + std::to_string(nodes) +
-            "    Edges: " + std::to_string(edges);
+            "    Edges: " + std::to_string(edges) +
+            "    Endpoints: " + std::to_string(endpoints);
     }
 
     if (trace) gui_log("RENDER 15: status text prepared");
@@ -514,15 +520,15 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
         std::string detail =
             "H: " +
             std::to_string(std::count_if(
-                state.detection.conductor_segments.begin(),
-                state.detection.conductor_segments.end(),
+                state.normalized_conductors.begin(),
+                state.normalized_conductors.end(),
                 [](const ConductorSegment& s) {
                     return s.geometry.a.y == s.geometry.b.y;
                 })) +
             "   V: " +
             std::to_string(std::count_if(
-                state.detection.conductor_segments.begin(),
-                state.detection.conductor_segments.end(),
+                state.normalized_conductors.begin(),
+                state.normalized_conductors.end(),
                 [](const ConductorSegment& s) {
                     return s.geometry.a.x == s.geometry.b.x;
                 }));
@@ -626,7 +632,7 @@ void on_mouse(int event, int x, int y, int flags, void* userdata) {
     try {
         handle_mouse(*state, event, x, y);
     } catch (const std::exception& e) {
-        std::cerr << "error: " << e.what() << '\n';
+        std::cerr << "error: " << e.what() << '\\n';
     }
 }
 
@@ -652,11 +658,6 @@ int main(int argc, char** argv) {
 
             const int key = cv::waitKey(30);
 
-            // Do not invoke the native Windows file dialog from the OpenCV
-            // mouse callback.  The callback runs inside HighGUI's event
-            // dispatch, and re-entering a native modal dialog there can cause
-            // instability when control returns to HighGUI.  Queue the request
-            // in the callback and service it from the main loop instead.
             if (state.request_open) {
                 state.request_open = false;
                 try {
@@ -690,7 +691,7 @@ int main(int argc, char** argv) {
         cv::destroyAllWindows();
         return 0;
     } catch (const std::exception& e) {
-        std::cerr << "error: " << e.what() << '\n';
+        std::cerr << "error: " << e.what() << '\\n';
         return 1;
     }
 }

@@ -3,6 +3,7 @@
 #include "eke_dx_wire/core/ids.hpp"
 
 #include <opencv2/imgproc.hpp>
+#include <opencv2/geometry/2d.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -11,6 +12,8 @@
 namespace eke::dx::wire {
 namespace {
 
+// OpenCV 5 places contour geometry primitives in geometry/2d.hpp.
+// The remainder of this file is unchanged.
 BoundingBox to_box(const cv::Rect& r) {
     return {r.x, r.y, r.width, r.height};
 }

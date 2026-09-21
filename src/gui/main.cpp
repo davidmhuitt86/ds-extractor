@@ -76,6 +76,7 @@ struct GuiState {
 
     int active_slider = -1;
     bool dragging = false;
+    int canvas_width = 1400;
 };
 
 struct Slider {
@@ -323,21 +324,24 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
     }
 
     // Calibration panel.
+    const int panel_left = canvas.cols - kPanelWidth;
     cv::rectangle(
         canvas,
-        {canvas.cols - kPanelWidth, kToolbarHeight},
+        {panel_left, kToolbarHeight},
         {canvas.cols, canvas.rows - kStatusHeight},
         cv::Scalar(42, 42, 42), cv::FILLED);
 
+    cv::Mat panel = canvas(cv::Rect(
+        panel_left, kToolbarHeight,
+        kPanelWidth, canvas.rows - kToolbarHeight - kStatusHeight));
+
     cv::putText(
-        canvas, "CALIBRATION",
-        {canvas.cols - kPanelWidth + 18, 82},
+        panel, "CALIBRATION", {18, 34},
         cv::FONT_HERSHEY_SIMPLEX, 0.72,
         cv::Scalar(245, 245, 245), 1, cv::LINE_AA);
 
     cv::putText(
-        canvas, "Morphology detector",
-        {canvas.cols - kPanelWidth + 18, 105},
+        panel, "Morphology detector", {18, 57},
         cv::FONT_HERSHEY_SIMPLEX, 0.48,
         cv::Scalar(160, 160, 160), 1, cv::LINE_AA);
 
@@ -346,37 +350,24 @@ cv::Mat render(const GuiState& state, cv::Size canvas_size) {
 
     for (int i = 0;
          i < static_cast<int>(parameter_sliders.size()); ++i)
-        draw_slider(canvas, i, parameter_sliders[i]);
+        draw_slider(panel, i, parameter_sliders[i]);
 
-    draw_button(
-        canvas,
-        {canvas.cols - kPanelWidth + 18, 555, 135, 34},
-        "RUN EXTRACT");
+    draw_button(panel, {18, 507, 135, 34}, "RUN EXTRACT");
+    draw_button(panel, {165, 507, 135, 34}, "RESET");
 
-    draw_button(
-        canvas,
-        {canvas.cols - kPanelWidth + 165, 555, 135, 34},
-        "RESET");
-
-    const int button_y = 610;
-    draw_button(canvas,
-                {canvas.cols - kPanelWidth + 18, button_y, 88, 30},
+    const int button_y = 562;
+    draw_button(panel, {18, button_y, 88, 30},
                 "SOURCE", state.view == ViewMode::Source);
-    draw_button(canvas,
-                {canvas.cols - kPanelWidth + 114, button_y, 88, 30},
+    draw_button(panel, {114, button_y, 88, 30},
                 "BINARY", state.view == ViewMode::Binary);
-    draw_button(canvas,
-                {canvas.cols - kPanelWidth + 210, button_y, 88, 30},
+    draw_button(panel, {210, button_y, 88, 30},
                 "H-MASK", state.view == ViewMode::HorizontalMask);
 
-    draw_button(canvas,
-                {canvas.cols - kPanelWidth + 18, button_y + 38, 88, 30},
+    draw_button(panel, {18, button_y + 38, 88, 30},
                 "V-MASK", state.view == ViewMode::VerticalMask);
-    draw_button(canvas,
-                {canvas.cols - kPanelWidth + 114, button_y + 38, 88, 30},
+    draw_button(panel, {114, button_y + 38, 88, 30},
                 "WIRES", state.view == ViewMode::Conductors);
-    draw_button(canvas,
-                {canvas.cols - kPanelWidth + 210, button_y + 38, 88, 30},
+    draw_button(panel, {210, button_y + 38, 88, 30},
                 "TOPOLOGY", state.view == ViewMode::Topology);
 
     cv::rectangle(
@@ -457,12 +448,13 @@ void handle_mouse(
             return;
         }
 
-        const int panel_x = x - (1200 - kPanelWidth);
+        const int panel_left = state.canvas_width - kPanelWidth;
+        const int panel_x = x - panel_left;
 
-        if (x >= 1200 - kPanelWidth &&
-            y >= 135 && y < 535) {
+        if (x >= panel_left &&
+            y >= kToolbarHeight + 87 && y < kToolbarHeight + 535) {
 
-            const int index = (y - 135) / 64;
+            const int index = (y - (kToolbarHeight + 87)) / 64;
             if (index >= 0 && index < 6) {
                 state.active_slider = index;
                 state.dragging = true;
@@ -471,8 +463,8 @@ void handle_mouse(
             return;
         }
 
-        if (x >= 1200 - kPanelWidth &&
-            y >= 555 && y < 595) {
+        if (x >= panel_left &&
+            y >= kToolbarHeight + 507 && y < kToolbarHeight + 547) {
             if (panel_x >= 18 && panel_x < 153)
                 extract(state);
             else if (panel_x >= 165 && panel_x < 300)
@@ -480,10 +472,12 @@ void handle_mouse(
             return;
         }
 
-        if (x >= 1200 - kPanelWidth && y >= 610 && y < 678) {
+        if (x >= panel_left &&
+            y >= kToolbarHeight + 562 &&
+            y < kToolbarHeight + 630) {
             const int bx = panel_x;
 
-            if (y < 640) {
+            if (y < kToolbarHeight + 592) {
                 if (bx >= 18 && bx < 106) state.view = ViewMode::Source;
                 else if (bx >= 114 && bx < 202) state.view = ViewMode::Binary;
                 else if (bx >= 210 && bx < 298)
@@ -499,7 +493,8 @@ void handle_mouse(
     }
 
     if (event == cv::EVENT_MOUSEMOVE && state.dragging) {
-        const int panel_x = x - (1200 - kPanelWidth);
+        const int panel_left = state.canvas_width - kPanelWidth;
+        const int panel_x = x - panel_left;
         set_slider_from_mouse(state, state.active_slider, panel_x);
     }
 
@@ -536,6 +531,7 @@ int main(int argc, char** argv) {
             const cv::Size size =
                 cv::getWindowImageRect(kWindow).size();
 
+            state.canvas_width = (std::max)(size.width, 1100);
             cv::imshow(kWindow, render(state, size));
 
             const int key = cv::waitKey(30);

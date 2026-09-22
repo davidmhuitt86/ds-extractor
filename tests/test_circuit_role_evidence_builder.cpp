@@ -55,5 +55,86 @@ int main() {
     assert(result[0].source == "endpoint-semantic");
     assert(result[1].source == "endpoint-semantic");
 
+    {
+        auto labelled = endpoint(
+            "LABEL-G",
+            EndpointKind::ComponentTerminal,
+            TerminalRole::ComponentTerminal,
+            ConfidenceClass::High);
+        labelled.function_label = "gnd";
+
+        const auto labelled_result =
+            CircuitRoleEvidenceBuilder().build({labelled});
+
+        assert(labelled_result.size() == 1);
+        assert(labelled_result.front().endpoint_id == "LABEL-G");
+        assert(labelled_result.front().role == DistributionRole::Ground);
+        assert(labelled_result.front().source == "endpoint-label");
+    }
+
+    {
+        auto labelled = endpoint(
+            "LABEL-P",
+            EndpointKind::ConnectorTerminal,
+            TerminalRole::ConnectorTerminal,
+            ConfidenceClass::Medium);
+        labelled.terminal_name = "B+";
+
+        const auto labelled_result =
+            CircuitRoleEvidenceBuilder().build({labelled});
+
+        assert(labelled_result.size() == 1);
+        assert(labelled_result.front().role == DistributionRole::PowerFeed);
+        assert(labelled_result.front().confidence == ConfidenceClass::Medium);
+    }
+
+    {
+        auto labelled = endpoint(
+            "LABEL-S",
+            EndpointKind::ComponentTerminal,
+            TerminalRole::ComponentTerminal,
+            ConfidenceClass::High);
+        labelled.function_label = "shared-function-feed";
+
+        const auto labelled_result =
+            CircuitRoleEvidenceBuilder().build({labelled});
+
+        assert(labelled_result.size() == 1);
+        assert(
+            labelled_result.front().role ==
+            DistributionRole::SharedFunctionFeed);
+    }
+
+    {
+        auto conflicting = endpoint(
+            "CONFLICT",
+            EndpointKind::ComponentTerminal,
+            TerminalRole::ComponentTerminal,
+            ConfidenceClass::High);
+        conflicting.terminal_name = "GND";
+        conflicting.function_label = "B+";
+
+        const auto conflicting_result =
+            CircuitRoleEvidenceBuilder().build({conflicting});
+
+        // Conflicting explicit semantic annotations must not be resolved by
+        // lexical or enum ordering.
+        assert(conflicting_result.empty());
+    }
+
+    {
+        auto unresolved = endpoint(
+            "UNRESOLVED",
+            EndpointKind::ComponentTerminal,
+            TerminalRole::ComponentTerminal,
+            ConfidenceClass::Unresolved);
+        unresolved.function_label = "GND";
+
+        const auto unresolved_result =
+            CircuitRoleEvidenceBuilder().build({unresolved});
+
+        assert(unresolved_result.empty());
+    }
+
     return 0;
 }

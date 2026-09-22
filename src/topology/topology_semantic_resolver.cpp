@@ -30,14 +30,22 @@ std::vector<TopologyNode> TopologySemanticResolver::resolve(
         }
 
         const auto it = by_node.find(item.node_id);
-        if (it == by_node.end() ||
-            confidence_rank(item.confidence) >
-                confidence_rank(it->second->confidence)) {
+        if (it == by_node.end()) {
             by_node[item.node_id] = &item;
+            continue;
         }
-        // Equal-strength conflicting evidence is deliberately not resolved
-        // by ordering. It remains absent from the selected map only when a
-        // higher-confidence item replaces it; callers must avoid conflicts.
+
+        const int incoming = confidence_rank(item.confidence);
+        const int existing = confidence_rank(it->second->confidence);
+
+        if (incoming > existing) {
+            by_node[item.node_id] = &item;
+        } else if (
+            incoming == existing &&
+            item.state != it->second->state) {
+            // Equal-strength conflicting evidence must remain unresolved.
+            by_node.erase(it);
+        }
     }
 
     std::vector<TopologyNode> result = nodes;

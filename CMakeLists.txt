@@ -25,7 +25,9 @@ add_library(eke_dx_wire
     src/image/shape_detector.cpp
     src/topology/topology_reconstructor.cpp
     src/topology/gap_interpreter.cpp
-    src/topology/endpoint_reconstructor.cpp\n    src/topology/wire_reconstructor.cpp
+    src/topology/endpoint_reconstructor.cpp
+    src/topology/wire_reconstructor.cpp
+    src/topology/distribution_decomposer.cpp
     src/export/svg_exporter.cpp
     src/export/topology_exporter.cpp
     src/pipeline/extraction_pipeline.cpp
@@ -45,8 +47,6 @@ add_executable(dx-extract src/app/main.cpp)
 target_link_libraries(dx-extract PRIVATE eke_dx_wire)
 
 if(WIN32)
-    # The GUI uses a normal C++ main() entry point. Do not mark this target
-    # as WIN32, which changes the MSVC entry point to WinMain().
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire
         opencv_highgui opencv_imgproc opencv_imgcodecs)
@@ -76,14 +76,21 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-endpoint-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-endpoint-reconstructor COMMAND dx-wire-test-endpoint-reconstructor)
 
-    add_executable(dx-wire-test-wire-reconstructor tests/test_wire_reconstructor.cpp)\n    target_link_libraries(dx-wire-test-wire-reconstructor PRIVATE eke_dx_wire)\n    add_test(NAME dx-wire-test-wire-reconstructor COMMAND dx-wire-test-wire-reconstructor)\n\n    add_executable(dx-wire-test-gap-interpreter tests/test_gap_interpreter.cpp)
+    add_executable(dx-wire-test-wire-reconstructor tests/test_wire_reconstructor.cpp)
+    target_link_libraries(dx-wire-test-wire-reconstructor PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-wire-reconstructor COMMAND dx-wire-test-wire-reconstructor)
+
+    add_executable(dx-wire-test-distribution-decomposer tests/test_distribution_decomposer.cpp)
+    target_link_libraries(dx-wire-test-distribution-decomposer PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-distribution-decomposer COMMAND dx-wire-test-distribution-decomposer)
+
+    add_executable(dx-wire-test-gap-interpreter tests/test_gap_interpreter.cpp)
     target_link_libraries(dx-wire-test-gap-interpreter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-gap-interpreter COMMAND dx-wire-test-gap-interpreter)
 
     add_executable(dx-wire-test-shape-detector tests/test_shape_detector.cpp)
     target_link_libraries(dx-wire-test-shape-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-shape-detector COMMAND dx-wire-test-shape-detector)
-
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

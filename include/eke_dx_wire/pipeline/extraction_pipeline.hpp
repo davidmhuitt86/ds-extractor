@@ -6,6 +6,7 @@
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
+#include "eke_dx_wire/topology/distribution_decomposer.hpp"
 
 #include <string>
 
@@ -17,6 +18,7 @@ struct ExtractionConfig {
     GeometryNormalizationConfig geometry {};
     TopologyConfig topology {};
     GapInterpretationConfig gap_interpretation {};
+    DistributionDecompositionConfig distribution {};
 };
 
 class ExtractionPipeline {

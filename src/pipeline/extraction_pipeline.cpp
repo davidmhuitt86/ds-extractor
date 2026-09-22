@@ -6,7 +6,11 @@
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
-#include "eke_dx_wire/topology/gap_interpreter.hpp"\n#include "eke_dx_wire/topology/wire_reconstructor.hpp"
+#include "eke_dx_wire/topology/gap_interpreter.hpp"
+#include "eke_dx_wire/topology/wire_reconstructor.hpp"
+#include "eke_dx_wire/topology/distribution_decomposer.hpp"
+
+#include <algorithm>
 
 namespace eke::dx::wire {
 
@@ -73,6 +77,29 @@ WireModel ExtractionPipeline::run(
             source_id,
             0);
     model.wires = wire_artifacts.wires;
+
+    DistributionDecomposer distribution_decomposer(config_.distribution);
+    const DistributionDecompositionArtifacts distribution_artifacts =
+        distribution_decomposer.decompose(
+            graph.nodes,
+            graph.edges,
+            endpoint_artifacts.candidates,
+            normalized_segments,
+            source_id,
+            0);
+
+    model.electrical_nets = distribution_artifacts.nets;
+    model.wires.insert(
+        model.wires.end(),
+        distribution_artifacts.wires.begin(),
+        distribution_artifacts.wires.end());
+
+    std::sort(
+        model.wires.begin(),
+        model.wires.end(),
+        [](const Wire& a, const Wire& b) {
+            return a.id < b.id;
+        });
 
     return model;
 }

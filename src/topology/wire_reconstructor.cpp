@@ -197,9 +197,6 @@ WireReconstructionArtifacts WireReconstructor::reconstruct(
             }
         }
 
-        std::sort(wire.topology_edges.begin(), wire.topology_edges.end());
-        std::sort(wire.conductor_segments.begin(), wire.conductor_segments.end());
-
         result.wires.push_back(std::move(wire));
         consumed_edges.insert(path_edges.begin(), path_edges.end());
     }

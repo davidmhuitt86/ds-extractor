@@ -1,6 +1,7 @@
 #pragma once
 
 #include "eke_dx_wire/core/geometry.hpp"
+#include "eke_dx_wire/image/component_candidate_classifier.hpp"
 
 #include <string>
 #include <vector>
@@ -135,6 +136,7 @@ struct WireModel {
     int image_width = 0;
     int image_height = 0;
 
+    std::vector<ComponentCandidate> component_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;

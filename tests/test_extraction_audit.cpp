@@ -28,8 +28,8 @@ int main() {
     EndpointCandidate connector;
     connector.kind = EndpointKind::ConnectorTerminal;
 
-    EndpointCandidate ground;
-    ground.kind = EndpointKind::Ground;
+    EndpointCandidate ground_endpoint;
+    ground_endpoint.kind = EndpointKind::Ground;
 
     EndpointCandidate external;
     external.kind = EndpointKind::ExternalConnection;
@@ -41,7 +41,7 @@ int main() {
     unresolved.kind = EndpointKind::Unresolved;
 
     model.endpoint_candidates = {
-        geometric, component, connector, ground,
+        geometric, component, connector, ground_endpoint,
         external, splice, unresolved
     };
 

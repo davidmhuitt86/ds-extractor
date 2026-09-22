@@ -25,7 +25,7 @@ add_library(eke_dx_wire
     src/image/shape_detector.cpp
     src/topology/topology_reconstructor.cpp
     src/topology/gap_interpreter.cpp
-    src/topology/endpoint_reconstructor.cpp
+    src/topology/endpoint_reconstructor.cpp\n    src/topology/wire_reconstructor.cpp
     src/export/svg_exporter.cpp
     src/export/topology_exporter.cpp
     src/pipeline/extraction_pipeline.cpp
@@ -76,7 +76,7 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-endpoint-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-endpoint-reconstructor COMMAND dx-wire-test-endpoint-reconstructor)
 
-    add_executable(dx-wire-test-gap-interpreter tests/test_gap_interpreter.cpp)
+    add_executable(dx-wire-test-wire-reconstructor tests/test_wire_reconstructor.cpp)\n    target_link_libraries(dx-wire-test-wire-reconstructor PRIVATE eke_dx_wire)\n    add_test(NAME dx-wire-test-wire-reconstructor COMMAND dx-wire-test-wire-reconstructor)\n\n    add_executable(dx-wire-test-gap-interpreter tests/test_gap_interpreter.cpp)
     target_link_libraries(dx-wire-test-gap-interpreter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-gap-interpreter COMMAND dx-wire-test-gap-interpreter)
 

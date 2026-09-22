@@ -1,0 +1,12 @@
+{
+  "format": "eke-dx-wire-project",
+  "version": "0.1.2",
+  "source": "C:\dev\ds-extractor\samples\trx300OGD.png",
+  "page": 0,
+  "image_width": 1056,
+  "image_height": 816,
+  "conductor_segment_count": 364,
+  "topology_node_count": 857,
+  "topology_edge_count": 1025,
+  "wire_count": 0
+}

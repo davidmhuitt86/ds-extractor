@@ -76,9 +76,12 @@ struct ShapeDetectorConfig {
     int ground_min_bar_length = 5;
     int ground_max_bar_length = 35;
     int ground_max_height = 30;
-    int ground_min_bar_spacing = 3;
-    int ground_max_bar_spacing = 12;
-    double ground_width_ratio_tolerance = 0.20;
+    int ground_min_bar_spacing = 2;
+    int ground_max_bar_spacing = 14;
+    int ground_min_bars = 2;
+    int ground_max_bars = 3;
+    double ground_width_ratio_tolerance = 0.15;
+    double ground_min_width_difference = 0.15;
     int ground_stem_search_height = 14;
     int ground_min_exclusion_height = 12;
 };

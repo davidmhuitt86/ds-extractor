@@ -41,6 +41,7 @@ add_library(eke_dx_wire
     src/topology/circuit_role_evidence_builder.cpp
     src/topology/semantic_evidence_associator.cpp
     src/topology/text_evidence_interpreter.cpp
+    src/topology/text_recognition_provider.cpp
     src/topology/wire_model_validator.cpp
     src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp
@@ -134,6 +135,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-semantic-evidence-associator COMMAND dx-wire-test-semantic-evidence-associator)
     target_link_libraries(dx-wire-test-text-evidence-interpreter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-text-evidence-interpreter COMMAND dx-wire-test-text-evidence-interpreter)
+
+    add_executable(dx-wire-test-text-recognition-provider tests/test_text_recognition_provider.cpp)
+    target_link_libraries(dx-wire-test-text-recognition-provider PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-text-recognition-provider COMMAND dx-wire-test-text-recognition-provider)
     target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
 

@@ -137,7 +137,11 @@ TextEvidenceInterpreter::interpret(
         evidence.normalized_text = normalized;
         evidence.kind = kind;
         evidence.confidence = observation.confidence;
-        evidence.source = "lexical-text-interpretation";
+        evidence.source =
+            "lexical-text-interpretation:" +
+            (observation.provider.empty()
+                ? "unspecified"
+                : observation.provider);
 
         result.push_back(std::move(evidence));
     }

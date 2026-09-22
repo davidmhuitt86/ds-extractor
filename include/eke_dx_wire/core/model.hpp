@@ -271,6 +271,10 @@ struct TextRecognitionEvidence {
     std::string text_region_id;
     std::string raw_text;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
+
+    // Recognition provenance is preserved at the evidence boundary so
+    // downstream semantic interpretation never has to infer its source.
+    std::string provider;
 };
 
 struct TextSemanticEvidence {

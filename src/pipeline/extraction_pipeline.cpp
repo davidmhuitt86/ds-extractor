@@ -24,16 +24,23 @@
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
 #include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
+#include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
 
 #include <algorithm>
+#include <memory>
 #include <unordered_set>
+#include <utility>
 
 namespace eke::dx::wire {
 
 ExtractionPipeline::ExtractionPipeline(ExtractionConfig config)
-    : config_(config) {}
+    : config_(std::move(config)),
+      text_recognition_provider_(
+          config_.text_recognition_provider
+              ? config_.text_recognition_provider
+              : std::make_shared<NullTextRecognitionProvider>()) {}
 
 WireModel ExtractionPipeline::run(
     const std::string& image_path,
@@ -138,14 +145,61 @@ WireModel ExtractionPipeline::run(
     model.image_height = normalized.rows;
     model.component_candidates = component_candidates;
     model.text_regions = text_regions.regions;
-    SemanticEvidenceAssociator semantic_associator;
-    model.semantic_associations = semantic_associator.associate(
-        model.text_regions,
-        model.component_candidates,
-        model.endpoint_candidates);
-    TextEvidenceInterpreter text_interpreter;
-    model.text_semantic_evidence = text_interpreter.interpret(
-        model.text_recognition_evidence);
+
+    // AP-WIRE-008: recognition is an explicit provider boundary. The
+    // provider receives detected regions plus the normalized source image
+    // and returns only recognized-text evidence. It cannot mutate topology.
+    const std::vector<TextRecognitionEvidence> recognized =
+        text_recognition_provider_->recognize(
+            normalized,
+            model.text_regions,
+            source_id,
+            0);
+
+    std::unordered_set<std::string> known_text_regions;
+    known_text_regions.reserve(model.text_regions.size());
+    for (const auto& region : model.text_regions) {
+        known_text_regions.insert(region.id);
+    }
+
+    const std::string provider_id =
+        text_recognition_provider_->provider_id();
+
+    for (const auto& evidence : recognized) {
+        // Provider output is evidence, not authority. The pipeline only
+        // accepts observations that refer to an actual detected text region
+        // and contain usable recognition confidence/text.
+        if (evidence.text_region_id.empty() ||
+            evidence.raw_text.empty() ||
+            evidence.confidence == ConfidenceClass::Unresolved ||
+            known_text_regions.find(evidence.text_region_id) ==
+                known_text_regions.end()) {
+            continue;
+        }
+
+        TextRecognitionEvidence accepted = evidence;
+        if (accepted.provider.empty()) {
+            accepted.provider = provider_id;
+        }
+        model.text_recognition_evidence.push_back(std::move(accepted));
+    }
+
+    std::sort(
+        model.text_recognition_evidence.begin(),
+        model.text_recognition_evidence.end(),
+        [](const TextRecognitionEvidence& a, const TextRecognitionEvidence& b) {
+            if (a.text_region_id != b.text_region_id) {
+                return a.text_region_id < b.text_region_id;
+            }
+            if (a.raw_text != b.raw_text) {
+                return a.raw_text < b.raw_text;
+            }
+            if (a.confidence != b.confidence) {
+                return static_cast<int>(a.confidence) <
+                    static_cast<int>(b.confidence);
+            }
+            return a.provider < b.provider;
+        });
     model.conductor_segments = normalized_segments;
     model.rejected_geometry = std::move(rejected_geometry);
     model.nodes = graph.nodes;
@@ -172,6 +226,19 @@ WireModel ExtractionPipeline::run(
         semantic_resolver.resolve(
             endpoint_artifacts.candidates,
             semantic_evidence);
+
+    // AP-WIRE-006/AP-WIRE-008: associations are created only after endpoint
+    // reconstruction and semantic endpoint resolution, so recognized text
+    // can be spatially related to the actual endpoint objects.
+    SemanticEvidenceAssociator semantic_associator;
+    model.semantic_associations = semantic_associator.associate(
+        model.text_regions,
+        model.component_candidates,
+        model.endpoint_candidates);
+
+    TextEvidenceInterpreter text_interpreter;
+    model.text_semantic_evidence = text_interpreter.interpret(
+        model.text_recognition_evidence);
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

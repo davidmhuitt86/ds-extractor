@@ -232,6 +232,19 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    out << "  ],\n  \"text_recognition_evidence\": [\n";
+    for (std::size_t i = 0; i < model.text_recognition_evidence.size(); ++i) {
+        const auto& evidence = model.text_recognition_evidence[i];
+        out << "    {\n"
+            << "      \"text_region_id\": \"" << json_escape(evidence.text_region_id) << "\",\n"
+            << "      \"raw_text\": \"" << json_escape(evidence.raw_text) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(evidence.confidence) << "\",\n"
+            << "      \"provider\": \"" << json_escape(evidence.provider) << "\"\n"
+            << "    }";
+        if (i + 1 != model.text_recognition_evidence.size()) out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"semantic_associations\": [\n";
     for (std::size_t i = 0; i < model.semantic_associations.size(); ++i) {
         const auto& association = model.semantic_associations[i];

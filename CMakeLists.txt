@@ -32,6 +32,7 @@ add_library(eke_dx_wire
     src/topology/wire_reconstructor.cpp
     src/topology/distribution_decomposer.cpp
     src/topology/terminal_semantic_resolver.cpp
+    src/topology/terminal_semantic_evidence_builder.cpp
     src/topology/terminal_location_detector.cpp
     src/topology/circuit_role_resolver.cpp
     src/topology/wire_model_validator.cpp
@@ -98,6 +99,9 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-terminal-semantic-resolver tests/test_terminal_semantic_resolver.cpp)
     target_link_libraries(dx-wire-test-terminal-semantic-resolver PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-semantic-resolver COMMAND dx-wire-test-terminal-semantic-resolver)
+    add_executable(dx-wire-test-terminal-semantic-evidence-builder tests/test_terminal_semantic_evidence_builder.cpp)
+    target_link_libraries(dx-wire-test-terminal-semantic-evidence-builder PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-terminal-semantic-evidence-builder COMMAND dx-wire-test-terminal-semantic-evidence-builder)
 
     add_executable(dx-wire-test-terminal-location-detector tests/test_terminal_location_detector.cpp)
     add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)

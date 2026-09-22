@@ -8,22 +8,6 @@
 
 namespace eke::dx::wire {
 
-enum class ComponentCandidateKind {
-    Enclosure,
-    CircularSymbol,
-    ChassisGround,
-    PrimitiveSymbol,
-    Unknown
-};
-
-struct ComponentCandidate {
-    std::string id;
-    ComponentCandidateKind kind = ComponentCandidateKind::Unknown;
-    std::vector<std::string> shape_ids;
-    BoundingBox bounds {};
-    ConfidenceClass confidence = ConfidenceClass::Unresolved;
-};
-
 class ComponentCandidateClassifier {
 public:
     [[nodiscard]] std::vector<ComponentCandidate> classify(

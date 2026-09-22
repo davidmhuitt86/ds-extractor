@@ -32,7 +32,7 @@ WireModel ExtractionPipeline::run(
     const ShapeDetectionArtifacts shapes =
         shape_detector.detect(normalized, source_id, 0);
 
-    TextRegionDetector text_detector;
+    TextRegionDetector text_detector(config_.text);
     const TextDetectionArtifacts text_regions =
         text_detector.detect(normalized, source_id, 0);
 

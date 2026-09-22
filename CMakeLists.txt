@@ -135,6 +135,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-semantic-evidence-associator COMMAND dx-wire-test-semantic-evidence-associator)
     target_link_libraries(dx-wire-test-text-evidence-interpreter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-text-evidence-interpreter COMMAND dx-wire-test-text-evidence-interpreter)
+
+    add_executable(dx-wire-test-text-recognition-provider tests/test_text_recognition_provider.cpp)
+    target_link_libraries(dx-wire-test-text-recognition-provider PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-text-recognition-provider COMMAND dx-wire-test-text-recognition-provider)
     target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
 

@@ -15,6 +15,8 @@
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
+#include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
+#include "eke_dx_wire/topology/terminal_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
@@ -110,12 +112,25 @@ WireModel ExtractionPipeline::run(
             endpoint_artifacts.candidates);
     model.terminal_candidates = terminal_artifacts.candidates;
 
+    // AP-SEMANTIC-001: convert independently located terminal candidates
+    // into semantic evidence, then resolve endpoint identity before any
+    // downstream stage consumes endpoint kinds.
+    TerminalSemanticEvidenceBuilder semantic_evidence_builder;
+    const std::vector<TerminalSemanticEvidence> semantic_evidence =
+        semantic_evidence_builder.build(model.terminal_candidates);
+
+    TerminalSemanticResolver semantic_resolver;
+    model.endpoint_candidates =
+        semantic_resolver.resolve(
+            endpoint_artifacts.candidates,
+            semantic_evidence);
+
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =
         wire_reconstructor.reconstruct(
             graph.nodes,
             graph.edges,
-            endpoint_artifacts.candidates,
+            model.endpoint_candidates,
             normalized_segments,
             source_id,
             0);

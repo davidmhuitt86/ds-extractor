@@ -1,6 +1,7 @@
 #pragma once
 
 #include "eke_dx_wire/core/model.hpp"
+#include "eke_dx_wire/topology/terminal_semantic_resolver.hpp"
 
 #include <vector>
 

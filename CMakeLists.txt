@@ -25,6 +25,7 @@ add_library(eke_dx_wire
     src/image/conductor_normalizer.cpp
     src/image/conductor_evidence_evaluator.cpp
     src/image/rejected_geometry_classifier.cpp
+    src/image/geometry_ownership_classifier.cpp
     src/image/shape_detector.cpp
     src/image/text_region_detector.cpp
     src/topology/topology_reconstructor.cpp
@@ -93,6 +94,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-rejected-geometry-classifier tests/test_rejected_geometry_classifier.cpp)
     target_link_libraries(dx-wire-test-rejected-geometry-classifier PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-rejected-geometry-classifier COMMAND dx-wire-test-rejected-geometry-classifier)
+
+    add_executable(dx-wire-test-geometry-ownership-classifier tests/test_geometry_ownership_classifier.cpp)
+    target_link_libraries(dx-wire-test-geometry-ownership-classifier PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-geometry-ownership-classifier COMMAND dx-wire-test-geometry-ownership-classifier)
 
     add_executable(dx-wire-test-endpoint-reconstructor tests/test_endpoint_reconstructor.cpp)
     target_link_libraries(dx-wire-test-endpoint-reconstructor PRIVATE eke_dx_wire)

@@ -184,6 +184,38 @@ int main() {
         assert(found);
     }
 
+    {
+        WireModel model;
+        model.endpoint_candidates = {
+            endpoint("A", "n1"),
+            endpoint("B", "n2")
+        };
+        model.nodes = {
+            {"n1", {0, 0}, TopologyNodeType::ConductorEnd, true},
+            {"n2", {10, 0}, TopologyNodeType::ConductorEnd, true}
+        };
+        model.edges = {
+            {"e1", "n1", "n2", "s1"}
+        };
+        model.conductor_segments = {segment("s1")};
+        model.wires = {
+            {"duplicate", "A", "B", {"e1"}, {"s1"},
+             ConfidenceClass::Medium, false},
+            {"duplicate", "A", "B", {"e1"}, {"s1"},
+             ConfidenceClass::Medium, false}
+        };
+
+        const auto report = WireModelValidator().validate(model);
+        assert(!report.valid);
+        bool found = false;
+        for (const auto& item : report.issues) {
+            if (item.code == "WIRE-DUPLICATE-ID") {
+                found = true;
+            }
+        }
+        assert(found);
+    }
+
     std::cout << "wire model validator tests passed\n";
     return 0;
 }

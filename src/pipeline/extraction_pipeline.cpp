@@ -4,6 +4,7 @@
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
+#include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
@@ -34,6 +35,10 @@ WireModel ExtractionPipeline::run(
             normalized, source_id, 0, shapes.exclusion_mask);
     detected.shapes = shapes;
 
+    ComponentCandidateClassifier component_classifier;
+    const std::vector<ComponentCandidate> component_candidates =
+        component_classifier.classify(shapes);
+
     ConductorNormalizer normalizer(config_.geometry);
     const std::vector<ConductorSegment> normalized_segments =
         normalizer.normalize(detected.conductor_segments);
@@ -62,6 +67,7 @@ WireModel ExtractionPipeline::run(
     model.page = 0;
     model.image_width = normalized.cols;
     model.image_height = normalized.rows;
+    model.component_candidates = component_candidates;
     model.conductor_segments = normalized_segments;
     model.nodes = graph.nodes;
     model.edges = graph.edges;

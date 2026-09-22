@@ -7,12 +7,6 @@
 
 namespace eke::dx::wire {
 
-struct TextRecognitionEvidence {
-    std::string text_region_id;
-    std::string raw_text;
-    ConfidenceClass confidence = ConfidenceClass::Unresolved;
-};
-
 class TextEvidenceInterpreter {
 public:
     [[nodiscard]] std::vector<TextSemanticEvidence> interpret(

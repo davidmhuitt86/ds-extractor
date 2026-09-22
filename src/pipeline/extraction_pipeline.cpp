@@ -15,6 +15,7 @@
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
+#include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 
 #include <algorithm>
 
@@ -67,6 +68,11 @@ WireModel ExtractionPipeline::run(
     TopologyReconstructor topology(config_.topology);
     TopologyArtifacts graph =
         topology.reconstruct(normalized_segments, source_id, 0);
+
+    TopologySemanticResolver topology_semantic_resolver;
+    graph.nodes = topology_semantic_resolver.resolve(
+        graph.nodes,
+        {});
 
     GapInterpreter gap_interpreter(config_.gap_interpretation);
     const GapInterpretationArtifacts gap_artifacts =

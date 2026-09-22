@@ -267,6 +267,12 @@ enum class TextSemanticKind {
     Unknown
 };
 
+struct TextRecognitionEvidence {
+    std::string text_region_id;
+    std::string raw_text;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
 struct TextSemanticEvidence {
     std::string id;
     std::string text_region_id;

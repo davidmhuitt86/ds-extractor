@@ -16,6 +16,7 @@
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
+#include "eke_dx_wire/topology/wire_model_validator.hpp"
 
 #include <algorithm>
 
@@ -148,6 +149,9 @@ WireModel ExtractionPipeline::run(
         [](const Wire& a, const Wire& b) {
             return a.id < b.id;
         });
+
+    WireModelValidator validator;
+    model.wire_validation = validator.validate(model);
 
     return model;
 }

@@ -14,9 +14,16 @@ enum class ShapeKind {
     ChassisGround
 };
 
+enum class ShapeRole {
+    Primitive,
+    Enclosure,
+    Exclusion
+};
+
 struct ShapeRegion {
     std::string id;
     ShapeKind kind = ShapeKind::Rectangle;
+    ShapeRole role = ShapeRole::Primitive;
     BoundingBox bounds {};
     double confidence = 0.0;
 };
@@ -45,6 +52,13 @@ struct ShapeDetectorConfig {
     double rectangle_min_perimeter_ratio = 0.55;
     double rectangle_max_perimeter_ratio = 1.60;
 
+    // A geometric rectangle is not automatically a wire-exclusion region.
+    // Small rectangles are retained as primitives so connector contacts,
+    // switch cells, and similar graphics remain available to later stages.
+    double rectangle_min_exclusion_area = 600.0;
+    int rectangle_min_exclusion_width = 25;
+    int rectangle_min_exclusion_height = 20;
+
     // Circular candidate validation.
     int circle_dp = 1;
     double circle_min_dist = 12.0;
@@ -66,6 +80,7 @@ struct ShapeDetectorConfig {
     int ground_max_bar_spacing = 12;
     double ground_width_ratio_tolerance = 0.20;
     int ground_stem_search_height = 14;
+    int ground_min_exclusion_height = 12;
 };
 
 class ShapeDetector {

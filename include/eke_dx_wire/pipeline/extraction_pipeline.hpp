@@ -5,6 +5,7 @@
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/conductor_evidence_evaluator.hpp"
 #include "eke_dx_wire/image/rejected_geometry_classifier.hpp"
+#include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
@@ -24,6 +25,7 @@ struct ExtractionConfig {
     GeometryNormalizationConfig geometry {};
     ConductorEvidenceConfig conductor_evidence {};
     GeometryClassificationConfig rejected_geometry_classification {};
+    GeometryOwnershipConfig geometry_ownership {};
     TopologyConfig topology {};
     GapInterpretationConfig gap_interpretation {};
     DistributionDecompositionConfig distribution {};

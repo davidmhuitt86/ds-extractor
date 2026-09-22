@@ -11,6 +11,24 @@
 namespace fs = std::filesystem;
 using namespace eke::dx::wire;
 
+static std::string json_escape(const std::string& value) {
+    std::string result;
+    result.reserve(value.size());
+
+    for (const char ch : value) {
+        switch (ch) {
+        case '\\': result += "\\\\"; break;
+        case '"': result += "\\""; break;
+        case '\n': result += "\\n"; break;
+        case '\r': result += "\\r"; break;
+        case '\t': result += "\\t"; break;
+        default: result += ch; break;
+        }
+    }
+
+    return result;
+}
+
 static void usage() {
     std::cout
         << "dx-extract 0.1.2\n\n"

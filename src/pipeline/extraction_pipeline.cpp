@@ -21,6 +21,7 @@
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
+#include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
 
@@ -182,12 +183,21 @@ WireModel ExtractionPipeline::run(
             source_id,
             0);
 
+    // AP-NETWORK-002: circuit-role inference consumes explicit semantic
+    // evidence, not topology shape or endpoint count. At this stage the
+    // builder can only promote roles already established on endpoints.
+    // Future symbol/text/function interpretation stages may contribute
+    // additional CircuitRoleEvidence without changing the resolver.
+    CircuitRoleEvidenceBuilder role_evidence_builder;
+    const std::vector<CircuitRoleEvidence> role_evidence =
+        role_evidence_builder.build(model.endpoint_candidates);
+
     CircuitRoleResolver circuit_role_resolver;
     const CircuitRoleResolutionArtifacts role_artifacts =
         circuit_role_resolver.resolve(
             distribution_artifacts.nets,
             model.endpoint_candidates,
-            {});
+            role_evidence);
 
     model.electrical_nets = role_artifacts.nets;
     model.wires.insert(

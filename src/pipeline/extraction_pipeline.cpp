@@ -14,6 +14,7 @@
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
+#include "eke_dx_wire/topology/circuit_role_resolver.hpp"
 
 #include <algorithm>
 
@@ -122,7 +123,14 @@ WireModel ExtractionPipeline::run(
             source_id,
             0);
 
-    model.electrical_nets = distribution_artifacts.nets;
+    CircuitRoleResolver circuit_role_resolver;
+    const CircuitRoleResolutionArtifacts role_artifacts =
+        circuit_role_resolver.resolve(
+            distribution_artifacts.nets,
+            endpoint_artifacts.candidates,
+            {});
+
+    model.electrical_nets = role_artifacts.nets;
     model.wires.insert(
         model.wires.end(),
         distribution_artifacts.wires.begin(),

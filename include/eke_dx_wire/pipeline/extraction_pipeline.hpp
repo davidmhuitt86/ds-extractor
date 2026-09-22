@@ -12,7 +12,9 @@
 #include "eke_dx_wire/image/text_region_detector.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
+#include "eke_dx_wire/topology/text_recognition_provider.hpp"
 
+#include <memory>
 #include <string>
 
 namespace eke::dx::wire {
@@ -29,6 +31,10 @@ struct ExtractionConfig {
     TopologyConfig topology {};
     GapInterpretationConfig gap_interpretation {};
     DistributionDecompositionConfig distribution {};
+
+    // AP-WIRE-008: recognition is an injectable boundary. The default is
+    // deliberately no-op so the extractor never invents OCR results.
+    std::shared_ptr<const TextRecognitionProvider> text_recognition_provider;
 };
 
 class ExtractionPipeline {
@@ -41,6 +47,7 @@ public:
 
 private:
     ExtractionConfig config_;
+    std::shared_ptr<const TextRecognitionProvider> text_recognition_provider_;
 };
 
 } // namespace eke::dx::wire

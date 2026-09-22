@@ -13,6 +13,7 @@
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
+#include "eke_dx_wire/topology/terminal_location_detector.hpp"
 
 #include <algorithm>
 
@@ -92,6 +93,13 @@ WireModel ExtractionPipeline::run(
     model.nodes = graph.nodes;
     model.edges = graph.edges;
     model.endpoint_candidates = endpoint_artifacts.candidates;
+
+    TerminalLocationDetector terminal_detector(config_.terminals);
+    const TerminalLocationArtifacts terminal_artifacts =
+        terminal_detector.detect(
+            component_candidates,
+            endpoint_artifacts.candidates);
+    model.terminal_candidates = terminal_artifacts.candidates;
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

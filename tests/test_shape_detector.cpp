@@ -21,6 +21,13 @@ int main() {
     cv::line(image, {210, 67}, {230, 67}, cv::Scalar(0), 2);
     cv::line(image, {215, 74}, {225, 74}, cv::Scalar(0), 2);
 
+    // Low-quality variant: one of the three ground bars is missing.
+    // The remaining two bars still have aligned centers, decreasing width,
+    // and a conductor/stem above the upper bar.
+    cv::line(image, {280, 100}, {280, 114}, cv::Scalar(0), 2);
+    cv::line(image, {268, 116}, {292, 116}, cv::Scalar(0), 2);
+    cv::line(image, {273, 123}, {287, 123}, cv::Scalar(0), 2);
+
     const auto result =
         ShapeDetector().detect(image, "fixture", 0);
 

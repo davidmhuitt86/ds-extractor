@@ -127,7 +127,8 @@ WireModel ExtractionPipeline::run(
     const TerminalLocationArtifacts terminal_artifacts =
         terminal_detector.detect(
             component_candidates,
-            endpoint_artifacts.candidates);
+            endpoint_artifacts.candidates,
+            rejected_geometry);
     model.terminal_candidates = terminal_artifacts.candidates;
 
     // AP-SEMANTIC-001: convert independently located terminal candidates

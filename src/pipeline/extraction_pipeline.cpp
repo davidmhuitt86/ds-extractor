@@ -6,6 +6,7 @@
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/conductor_evidence_evaluator.hpp"
 #include "eke_dx_wire/image/rejected_geometry_classifier.hpp"
+#include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
@@ -67,14 +68,30 @@ WireModel ExtractionPipeline::run(
     const std::vector<ComponentCandidate> component_candidates =
         component_classifier.classify(shapes);
 
+    // AP-GEOMETRY-006: determine whether line-like geometry is actually
+    // owned by a graphical object before it can enter conductor topology.
+    // Endpoint proximity alone is not ownership; real wires commonly
+    // terminate at component and connector boundaries.
+    GeometryOwnershipClassifier ownership_classifier(config_.geometry_ownership);
+    const GeometryOwnershipArtifacts ownership =
+        ownership_classifier.classify(
+            detected.conductor_segments,
+            component_candidates,
+            text_regions.regions);
+
     ConductorEvidenceEvaluator evidence_evaluator(config_.conductor_evidence);
     const ConductorEvidenceArtifacts evidence =
         evidence_evaluator.evaluate(
-            detected.conductor_segments,
+            ownership.conductor_candidates,
             normalized);
 
     std::vector<RejectedGeometryEvidence> rejected_geometry =
-        evidence.rejected;
+        ownership.rejected;
+    rejected_geometry.insert(
+        rejected_geometry.end(),
+        evidence.rejected.begin(),
+        evidence.rejected.end());
+
     RejectedGeometryClassifier rejected_classifier(
         config_.rejected_geometry_classification);
     rejected_classifier.classify(

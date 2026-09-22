@@ -108,7 +108,7 @@ int main() {
     {
         // Cycles are not a distribution tree and remain unresolved.
         std::vector<TopologyNode> nodes{
-            {"a", {0, 0}, TopologyNodeType::Ground, true},
+            {"a", {0, 0}, TopologyNodeType::ConductorEnd, true},
             {"s1", {10, 0}, TopologyNodeType::Splice, true},
             {"s2", {20, 0}, TopologyNodeType::Splice, true},
             {"b", {30, 0}, TopologyNodeType::ConductorEnd, true}

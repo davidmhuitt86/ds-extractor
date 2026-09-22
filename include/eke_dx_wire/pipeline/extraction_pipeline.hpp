@@ -3,6 +3,7 @@
 #include "eke_dx_wire/core/model.hpp"
 #include "eke_dx_wire/image/morphology_detector.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
+#include "eke_dx_wire/image/conductor_evidence_evaluator.hpp"
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
@@ -20,6 +21,7 @@ struct ExtractionConfig {
     TextDetectorConfig text {};
     TerminalLocationConfig terminals {};
     GeometryNormalizationConfig geometry {};
+    ConductorEvidenceConfig conductor_evidence {};
     TopologyConfig topology {};
     GapInterpretationConfig gap_interpretation {};
     DistributionDecompositionConfig distribution {};

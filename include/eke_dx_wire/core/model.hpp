@@ -164,6 +164,26 @@ struct ElectricalNet {
     std::string anchor_endpoint;
 };
 
+enum class WireValidationSeverity {
+    Warning,
+    Error
+};
+
+struct WireValidationIssue {
+    WireValidationSeverity severity = WireValidationSeverity::Error;
+    std::string code;
+    std::string object_id;
+    std::string detail;
+};
+
+struct WireValidationReport {
+    bool valid = true;
+    std::size_t wires_checked = 0;
+    std::size_t valid_wires = 0;
+    std::size_t electrical_nets_checked = 0;
+    std::vector<WireValidationIssue> issues;
+};
+
 struct WireModel {
     std::string source_id;
     int page = 0;
@@ -179,6 +199,7 @@ struct WireModel {
     std::vector<EndpointCandidate> endpoint_candidates;
     std::vector<ElectricalNet> electrical_nets;
     std::vector<Wire> wires;
+    WireValidationReport wire_validation;
 };
 
 } // namespace eke::dx::wire

@@ -65,6 +65,7 @@ struct ConductorSegment {
 
 enum class RejectedGeometryClass {
     ComponentAssociated,
+    ConnectorAssociated,
     TextAssociated,
     Unresolved
 };

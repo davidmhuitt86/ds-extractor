@@ -84,6 +84,8 @@ void TopologyExporter::export_json(
         switch (classification) {
         case RejectedGeometryClass::ComponentAssociated:
             return "component_associated";
+        case RejectedGeometryClass::ConnectorAssociated:
+            return "connector_associated";
         case RejectedGeometryClass::TextAssociated:
             return "text_associated";
         case RejectedGeometryClass::Unresolved:

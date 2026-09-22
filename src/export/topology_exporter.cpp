@@ -94,6 +94,26 @@ void TopologyExporter::export_json(
         return "unresolved";
     };
 
+    auto association_target_kind_name = [](SemanticAssociationTargetKind kind) {
+        switch (kind) {
+        case SemanticAssociationTargetKind::Component:
+            return "component";
+        case SemanticAssociationTargetKind::Endpoint:
+            return "endpoint";
+        }
+        return "endpoint";
+    };
+
+    auto association_relation_name = [](SemanticAssociationRelation relation) {
+        switch (relation) {
+        case SemanticAssociationRelation::LabelToComponent:
+            return "label_to_component";
+        case SemanticAssociationRelation::LabelToEndpoint:
+            return "label_to_endpoint";
+        }
+        return "label_to_endpoint";
+    };
+
     auto distribution_role_name = [](DistributionRole role) {
         switch (role) {
         case DistributionRole::Ground: return "ground";
@@ -194,6 +214,22 @@ void TopologyExporter::export_json(
         }
         out << "]\n    }";
         if (i + 1 != model.wires.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"semantic_associations\": [\n";
+    for (std::size_t i = 0; i < model.semantic_associations.size(); ++i) {
+        const auto& association = model.semantic_associations[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(association.id) << "\",\n"
+            << "      \"text_region_id\": \"" << json_escape(association.text_region_id) << "\",\n"
+            << "      \"target_id\": \"" << json_escape(association.target_id) << "\",\n"
+            << "      \"target_kind\": \"" << association_target_kind_name(association.target_kind) << "\",\n"
+            << "      \"relation\": \"" << association_relation_name(association.relation) << "\",\n"
+            << "      \"distance\": " << association.distance << ",\n"
+            << "      \"confidence\": \"" << confidence_name(association.confidence) << "\"\n"
+            << "    }";
+        if (i + 1 != model.semantic_associations.size()) out << ",";
         out << "\n";
     }
 

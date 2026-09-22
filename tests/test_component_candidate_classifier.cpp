@@ -12,7 +12,7 @@ int main() {
     enclosure.id = "shape-1";
     enclosure.kind = ShapeKind::Rectangle;
     enclosure.role = ShapeRole::Enclosure;
-    enclosure.bounds = BoundingBox{10.0, 20.0, 100.0, 50.0};
+    enclosure.bounds = BoundingBox{10, 20, 100, 50};
     enclosure.confidence = 0.95;
     shapes.regions.push_back(enclosure);
 
@@ -20,7 +20,7 @@ int main() {
     circle.id = "shape-2";
     circle.kind = ShapeKind::Circle;
     circle.role = ShapeRole::Primitive;
-    circle.bounds = BoundingBox{120.0, 20.0, 20.0, 20.0};
+    circle.bounds = BoundingBox{120, 20, 20, 20};
     circle.confidence = 0.80;
     shapes.regions.push_back(circle);
 
@@ -28,7 +28,7 @@ int main() {
     ground.id = "shape-3";
     ground.kind = ShapeKind::ChassisGround;
     ground.role = ShapeRole::Exclusion;
-    ground.bounds = BoundingBox{150.0, 20.0, 20.0, 25.0};
+    ground.bounds = BoundingBox{150, 20, 20, 25};
     ground.confidence = 0.70;
     shapes.regions.push_back(ground);
 
@@ -36,7 +36,7 @@ int main() {
     primitive.id = "shape-4";
     primitive.kind = ShapeKind::Rectangle;
     primitive.role = ShapeRole::Primitive;
-    primitive.bounds = BoundingBox{180.0, 20.0, 20.0, 20.0};
+    primitive.bounds = BoundingBox{180, 20, 20, 20};
     primitive.confidence = 0.40;
     shapes.regions.push_back(primitive);
 

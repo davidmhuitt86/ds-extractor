@@ -7,23 +7,6 @@
 
 namespace eke::dx::wire {
 
-enum class TerminalCandidateKind {
-    ComponentBoundary,
-    ConnectorBoundary,
-    GroundConnection,
-    Unknown
-};
-
-struct TerminalCandidate {
-    std::string id;
-    std::string endpoint_id;
-    std::string component_candidate_id;
-    TerminalCandidateKind kind = TerminalCandidateKind::Unknown;
-    Point2D position {};
-    double distance_to_component = 0.0;
-    ConfidenceClass confidence = ConfidenceClass::Unresolved;
-};
-
 struct TerminalLocationArtifacts {
     std::vector<TerminalCandidate> candidates;
 };

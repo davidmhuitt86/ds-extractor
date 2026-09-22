@@ -94,6 +94,7 @@ double side_support(
 void add_region(
     ShapeDetectionArtifacts& result,
     ShapeKind kind,
+    ShapeRole role,
     const cv::Rect& bounds,
     double confidence,
     const std::string& source_id,
@@ -124,12 +125,14 @@ void add_region(
     std::ostringstream canonical;
     canonical << source_id << ":" << page << ":"
               << static_cast<int>(kind) << ":"
+              << static_cast<int>(role) << ":"
               << bounds.x << "," << bounds.y << ","
               << bounds.width << "," << bounds.height;
 
     ShapeRegion region;
     region.id = stable_id("shape-region", canonical.str());
     region.kind = kind;
+    region.role = role;
     region.bounds = to_box(bounds);
     region.confidence = confidence;
 
@@ -332,9 +335,20 @@ void detect_rectangles(
                     static_cast<double>(isolated_components) /
                     (std::max)(1, config.rectangle_min_interior_components)));
 
+        const bool enclosure =
+            static_cast<double>(bounds.area()) >=
+                config.rectangle_min_exclusion_area &&
+            bounds.width >= config.rectangle_min_exclusion_width &&
+            bounds.height >= config.rectangle_min_exclusion_height;
+
         add_region(
-            result, ShapeKind::Rectangle, bounds,
-            confidence, source_id, page);
+            result,
+            ShapeKind::Rectangle,
+            enclosure ? ShapeRole::Enclosure : ShapeRole::Primitive,
+            bounds,
+            confidence,
+            source_id,
+            page);
     }
 }
 
@@ -470,8 +484,13 @@ void detect_circles(
                 0.10 * (1.0 - interior_density));
 
         add_region(
-            result, ShapeKind::Circle, clipped,
-            confidence, source_id, page);
+            result,
+            ShapeKind::Circle,
+            ShapeRole::Primitive,
+            clipped,
+            confidence,
+            source_id,
+            page);
     }
 }
 
@@ -616,8 +635,13 @@ void detect_ground_symbols(
                         bounds.height + 10);
 
                 add_region(
-                    result, ShapeKind::ChassisGround,
-                    bounds, 0.90, source_id, page);
+                    result,
+                    ShapeKind::ChassisGround,
+                    ShapeRole::Exclusion,
+                    bounds,
+                    0.90,
+                    source_id,
+                    page);
             }
         }
     }
@@ -655,6 +679,12 @@ ShapeDetectionArtifacts ShapeDetector::detect(
         cv::Mat::zeros(normalized.size(), CV_8UC1);
 
     for (const auto& region : result.regions) {
+        // Candidate geometry and wire exclusion are deliberately separate.
+        // Primitive symbols remain visible in SHAPES but do not erase the
+        // conductor field.
+        if (region.role == ShapeRole::Primitive)
+            continue;
+
         const cv::Rect bounds(
             region.bounds.x,
             region.bounds.y,

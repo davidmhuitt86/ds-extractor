@@ -90,6 +90,10 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-conductor-evidence-evaluator PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-conductor-evidence-evaluator COMMAND dx-wire-test-conductor-evidence-evaluator)
 
+    add_executable(dx-wire-test-rejected-geometry-classifier tests/test_rejected_geometry_classifier.cpp)
+    target_link_libraries(dx-wire-test-rejected-geometry-classifier PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-rejected-geometry-classifier COMMAND dx-wire-test-rejected-geometry-classifier)
+
     add_executable(dx-wire-test-endpoint-reconstructor tests/test_endpoint_reconstructor.cpp)
     target_link_libraries(dx-wire-test-endpoint-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-endpoint-reconstructor COMMAND dx-wire-test-endpoint-reconstructor)

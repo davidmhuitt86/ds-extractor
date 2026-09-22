@@ -1,7 +1,5 @@
 #include "eke_dx_wire/image/text_region_detector.hpp"
 
-#include "eke_dx_wire/core/ids.hpp"
-
 #include <opencv2/imgproc.hpp>
 
 #include <algorithm>
@@ -56,6 +54,8 @@ TextDetectionArtifacts TextRegionDetector::detect(
     } else {
         cv::cvtColor(normalized, gray, cv::COLOR_BGR2GRAY);
     }
+
+    artifacts.exclusion_mask = cv::Mat::zeros(gray.size(), CV_8UC1);
 
     cv::Mat binary;
     cv::threshold(

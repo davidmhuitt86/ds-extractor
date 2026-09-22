@@ -63,6 +63,14 @@ struct ConductorSegment {
     bool heavy_cable = false;
 };
 
+struct RejectedGeometryEvidence {
+    std::string id;
+    Segment2D geometry {};
+    std::string reason;
+    double measurement = 0.0;
+    Provenance provenance {};
+};
+
 struct TopologyNode {
     std::string id;
     Point2D position {};
@@ -248,6 +256,7 @@ struct WireModel {
     std::vector<TextRegion> text_regions;
     std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
+    std::vector<RejectedGeometryEvidence> rejected_geometry;
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;
     std::vector<EndpointCandidate> endpoint_candidates;

@@ -30,6 +30,7 @@ add_library(eke_dx_wire
     src/topology/wire_reconstructor.cpp
     src/topology/distribution_decomposer.cpp
     src/topology/terminal_semantic_resolver.cpp
+    src/topology/terminal_location_detector.cpp
     src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp
     src/export/topology_exporter.cpp
@@ -90,6 +91,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-terminal-semantic-resolver tests/test_terminal_semantic_resolver.cpp)
     target_link_libraries(dx-wire-test-terminal-semantic-resolver PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-semantic-resolver COMMAND dx-wire-test-terminal-semantic-resolver)
+
+    add_executable(dx-wire-test-terminal-location-detector tests/test_terminal_location_detector.cpp)
+    target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
 
     add_executable(dx-wire-test-component-candidate-classifier tests/test_component_candidate_classifier.cpp)
     target_link_libraries(dx-wire-test-component-candidate-classifier PRIVATE eke_dx_wire)

@@ -7,9 +7,11 @@
 namespace eke::dx::wire {
 
 /**
- * AP-NETWORK-002: converts already-established endpoint semantics into
- * circuit-role evidence. This stage does not infer circuit function from
- * topology, endpoint count, geometry, or component class alone.
+ * AP-WIRE-005: converts already-established endpoint semantics into
+ * circuit-role evidence. Explicit endpoint role, terminal/function labels,
+ * and other semantic annotations may contribute evidence. This stage does
+ * not infer circuit function from topology shape, endpoint count, geometry,
+ * component class, or wire color alone.
  */
 class CircuitRoleEvidenceBuilder {
 public:

@@ -311,10 +311,10 @@ WireValidationReport WireModelValidator::validate(
         }
 
         if (!net.anchor_endpoint.empty() &&
-            !std::binary_search(
+            std::find(
                 net.endpoint_ids.begin(),
                 net.endpoint_ids.end(),
-                net.anchor_endpoint)) {
+                net.anchor_endpoint) == net.endpoint_ids.end()) {
             issue(
                 report, WireValidationSeverity::Error,
                 "NET-ANCHOR-MISSING", net.id,

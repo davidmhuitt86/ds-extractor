@@ -13,6 +13,7 @@ enum class TopologyNodeType {
     ConductorEnd,
     Continuation,
     Junction,
+    Splice,
     Crossing,
     ComponentBoundary,
     Unresolved

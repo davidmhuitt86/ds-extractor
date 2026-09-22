@@ -26,6 +26,7 @@
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
 
 #include <algorithm>
+#include <unordered_set>
 
 namespace eke::dx::wire {
 
@@ -200,10 +201,25 @@ WireModel ExtractionPipeline::run(
             role_evidence);
 
     model.electrical_nets = role_artifacts.nets;
-    model.wires.insert(
-        model.wires.end(),
-        distribution_artifacts.wires.begin(),
-        distribution_artifacts.wires.end());
+
+    // AP-WIRE-004: ordinary endpoint-to-endpoint reconstruction and
+    // distribution decomposition may discover the same physical path from
+    // different traversal strategies. Wire identity is deterministic from
+    // its source/page/endpoints, so duplicate IDs represent the same wire
+    // artifact and must not be emitted twice.
+    std::unordered_set<std::string> emitted_wire_ids;
+    emitted_wire_ids.reserve(
+        model.wires.size() + distribution_artifacts.wires.size());
+
+    for (const auto& wire : model.wires) {
+        emitted_wire_ids.insert(wire.id);
+    }
+
+    for (const auto& wire : distribution_artifacts.wires) {
+        if (emitted_wire_ids.insert(wire.id).second) {
+            model.wires.push_back(wire);
+        }
+    }
 
     std::sort(
         model.wires.begin(),

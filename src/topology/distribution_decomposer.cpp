@@ -174,8 +174,22 @@ DistributionDecompositionArtifacts DistributionDecomposer::decompose(
         // no splice. This allows a direct ground-to-terminal connection to
         // become a grounded net without inventing source selection for
         // unanchored components.
-        if (component_endpoints.size() < 2 ||
-            (splice_nodes.empty() && anchors.empty())) {
+        // A splice by itself does not make a connected component a
+        // distribution net. A two-terminal component is still an ordinary
+        // endpoint-to-endpoint wire even when its geometry passes through one
+        // or more splice nodes. Distribution decomposition is reserved for
+        // explicitly anchored components or multi-terminal distribution
+        // structures. This prevents the decomposer from manufacturing
+        // unresolved ElectricalNet objects for ordinary wires.
+        if (component_endpoints.size() < 2) {
+            continue;
+        }
+
+        if (anchors.empty() && component_endpoints.size() == 2) {
+            continue;
+        }
+
+        if (splice_nodes.empty() && anchors.empty()) {
             continue;
         }
 

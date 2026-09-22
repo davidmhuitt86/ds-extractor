@@ -4,7 +4,8 @@
 
 #include <algorithm>
 #include <cmath>
-#include <sstream>\n#include <unordered_map>
+#include <sstream>
+#include <unordered_map>
 #include <utility>
 
 namespace eke::dx::wire {

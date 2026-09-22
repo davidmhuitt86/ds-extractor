@@ -29,7 +29,8 @@ public:
 
     [[nodiscard]] TerminalLocationArtifacts detect(
         const std::vector<ComponentCandidate>& components,
-        const std::vector<EndpointCandidate>& endpoints) const;
+        const std::vector<EndpointCandidate>& endpoints,
+        const std::vector<RejectedGeometryEvidence>& rejected_geometry = {}) const;
 
 private:
     TerminalLocationConfig config_;

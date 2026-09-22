@@ -5,6 +5,9 @@
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
+#include "eke_dx_wire/image/text_region_detector.hpp"
+
+#include <opencv2/core.hpp>
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
@@ -29,10 +32,26 @@ WireModel ExtractionPipeline::run(
     const ShapeDetectionArtifacts shapes =
         shape_detector.detect(normalized, source_id, 0);
 
+    TextRegionDetector text_detector;
+    const TextDetectionArtifacts text_regions =
+        text_detector.detect(normalized, source_id, 0);
+
+    cv::Mat combined_exclusion = shapes.exclusion_mask.clone();
+    if (combined_exclusion.empty()) {
+        combined_exclusion = cv::Mat::zeros(
+            normalized.size(), CV_8UC1);
+    }
+    if (!text_regions.exclusion_mask.empty()) {
+        cv::bitwise_or(
+            combined_exclusion,
+            text_regions.exclusion_mask,
+            combined_exclusion);
+    }
+
     MorphologyWireDetector detector(config_.morphology);
     DetectionArtifacts detected =
         detector.detect(
-            normalized, source_id, 0, shapes.exclusion_mask);
+            normalized, source_id, 0, combined_exclusion);
     detected.shapes = shapes;
 
     ComponentCandidateClassifier component_classifier;

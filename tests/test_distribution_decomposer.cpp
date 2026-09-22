@@ -74,6 +74,34 @@ int main() {
     }
 
     {
+        // An anchored direct connection is a valid electrical net even
+        // without a splice. The ground endpoint supplies the net identity.
+        std::vector<TopologyNode> nodes{
+            {"g", {0, 0}, TopologyNodeType::ConductorEnd, true},
+            {"a", {20, 0}, TopologyNodeType::ConductorEnd, true}
+        };
+
+        std::vector<TopologyEdge> edges{
+            {"e1", "g", "a", "s1"}
+        };
+
+        const auto result = DistributionDecomposer().decompose(
+            nodes,
+            edges,
+            {endpoint("G", "g", EndpointKind::Ground),
+             endpoint("A", "a", EndpointKind::ComponentTerminal)},
+            {segment("s1", {0, 0}, {20, 0})},
+            "fixture-direct-ground");
+
+        assert(result.nets.size() == 1);
+        assert(result.nets.front().anchor_endpoint == "G");
+        assert(result.nets.front().role == DistributionRole::Ground);
+        assert(result.wires.size() == 1);
+        assert(result.wires.front().start_endpoint == "G");
+        assert(result.wires.front().end_endpoint == "A");
+    }
+
+    {
         // Without a semantic source/anchor, do not invent A->B vs A->C.
         std::vector<TopologyNode> nodes{
             {"a", {0, 0}, TopologyNodeType::ConductorEnd, true},

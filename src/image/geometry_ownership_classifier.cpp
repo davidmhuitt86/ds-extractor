@@ -81,6 +81,32 @@ double segment_inside_length(
     return (t1 - t0) * length;
 }
 
+bool point_strictly_inside_rect(
+    const Point2D& point,
+    const BoundingBox& box) {
+
+    constexpr double epsilon = 1e-9;
+    const double left = static_cast<double>(box.x);
+    const double right = left + box.width;
+    const double top = static_cast<double>(box.y);
+    const double bottom = top + box.height;
+
+    // Boundary contact is deliberately not treated as graphical ownership.
+    // A conductor that terminates at an object's boundary is exactly the
+    // interaction we need to preserve for downstream terminal semantics.
+    return point.x > left + epsilon &&
+           point.x < right - epsilon &&
+           point.y > top + epsilon &&
+           point.y < bottom - epsilon;
+}
+
+bool both_endpoints_strictly_inside(
+    const Segment2D& segment,
+    const BoundingBox& box) {
+    return point_strictly_inside_rect(segment.a, box) &&
+           point_strictly_inside_rect(segment.b, box);
+}
+
 double overlap_fraction(
     const Segment2D& segment,
     const BoundingBox& box) {
@@ -208,12 +234,35 @@ GeometryOwnershipArtifacts GeometryOwnershipClassifier::classify(
             }
         }
 
-        const bool component_owned =
+        // AP-GEOMETRY-007: overlap alone is not sufficient to establish
+        // graphical ownership. A conductor may cross an object's bounding
+        // box, enter an object and terminate at its boundary, or be detected
+        // from geometry that partially overlaps an object. Those are all
+        // conductor/object interactions, not proof that the entire line-like
+        // geometry belongs to the object.
+        //
+        // Ownership is therefore limited to geometry whose two true geometric
+        // ends lie strictly inside the same object bounds. Boundary contact
+        // remains conductor evidence so terminal-location and semantic stages
+        // can interpret the attachment later.
+        const bool component_geometry_internal =
             owner_component != nullptr &&
+            both_endpoints_strictly_inside(
+                candidate.geometry,
+                owner_component->bounds);
+
+        const bool text_geometry_internal =
+            owner_text != nullptr &&
+            both_endpoints_strictly_inside(
+                candidate.geometry,
+                owner_text->bounds);
+
+        const bool component_owned =
+            component_geometry_internal &&
             best_component_overlap >= config_.component_overlap_fraction;
 
         const bool text_owned =
-            owner_text != nullptr &&
+            text_geometry_internal &&
             best_text_overlap >= config_.text_overlap_fraction;
 
         // When both object classes overlap the geometry, retain the more

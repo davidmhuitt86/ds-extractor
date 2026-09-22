@@ -56,7 +56,7 @@ std::vector<ComponentCandidate> ComponentCandidateClassifier::classify(
         candidate.kind = classify_kind(shape);
         candidate.shape_ids.push_back(shape.id);
         candidate.bounds = shape.bounds;
-        candidate.confidence = classify_confidence(shape.confidence);
+        candidate.confidence = classify_confidence(shape);
         result.push_back(std::move(candidate));
     }
 

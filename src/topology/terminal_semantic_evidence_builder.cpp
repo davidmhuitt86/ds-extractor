@@ -1,6 +1,8 @@
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
+#include "eke_dx_wire/topology/terminal_semantic_resolver.hpp"
 
 #include <algorithm>
+#include <utility>
 
 namespace eke::dx::wire {
 

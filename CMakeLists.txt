@@ -33,6 +33,7 @@ add_library(eke_dx_wire
     src/topology/terminal_semantic_resolver.cpp
     src/topology/terminal_location_detector.cpp
     src/topology/circuit_role_resolver.cpp
+    src/topology/wire_model_validator.cpp
     src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp
     src/export/topology_exporter.cpp
@@ -101,6 +102,9 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)
     target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
+
+    target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
     target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
 
@@ -119,6 +123,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-text-region-detector tests/test_text_region_detector.cpp)
     target_link_libraries(dx-wire-test-text-region-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-text-region-detector COMMAND dx-wire-test-text-region-detector)
+    
+    add_executable(dx-wire-test-wire-model-validator tests/test_wire_model_validator.cpp)
+    target_link_libraries(dx-wire-test-wire-model-validator PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-wire-model-validator COMMAND dx-wire-test-wire-model-validator)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

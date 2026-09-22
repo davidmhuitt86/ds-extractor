@@ -25,6 +25,7 @@ add_library(eke_dx_wire
     src/image/shape_detector.cpp
     src/image/text_region_detector.cpp
     src/topology/topology_reconstructor.cpp
+    src/topology/topology_semantic_resolver.cpp
     src/topology/gap_interpreter.cpp
     src/topology/endpoint_reconstructor.cpp
     src/topology/wire_reconstructor.cpp
@@ -70,6 +71,9 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-ids COMMAND dx-wire-test-ids)
 
     add_executable(dx-wire-test-topology tests/test_topology.cpp)
+    add_executable(dx-wire-test-topology-semantic-resolver tests/test_topology_semantic_resolver.cpp)
+    target_link_libraries(dx-wire-test-topology-semantic-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-topology-semantic-resolver COMMAND dx-wire-test-topology-semantic-resolver)
     target_link_libraries(dx-wire-test-topology PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-topology COMMAND dx-wire-test-topology)
 

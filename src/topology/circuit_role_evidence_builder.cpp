@@ -1,6 +1,7 @@
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 
 #include <algorithm>
+#include <utility>
 
 namespace eke::dx::wire {
 

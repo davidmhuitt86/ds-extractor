@@ -29,6 +29,15 @@ enum class EndpointKind {
     Unresolved
 };
 
+enum class TerminalRole {
+    Unknown,
+    ComponentTerminal,
+    ConnectorTerminal,
+    GroundTerminal,
+    PowerSource,
+    ExternalConnection
+};
+
 enum class DistributionRole {
     Unknown,
     Ground,
@@ -86,9 +95,18 @@ struct EndpointCandidate {
     std::string node_id;
     Point2D position {};
     EndpointKind kind = EndpointKind::Unresolved;
+    TerminalRole terminal_role = TerminalRole::Unknown;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     std::vector<std::string> incident_edges;
     EndpointEvidence evidence {};
+
+    // Semantic attachment fields are populated only when independent
+    // component/terminal evidence exists. Pixel geometry alone must not
+    // invent component identity or terminal function.
+    std::string component_id;
+    std::string terminal_name;
+    std::string function_label;
+    std::string wire_color;
 };
 
 struct Wire {

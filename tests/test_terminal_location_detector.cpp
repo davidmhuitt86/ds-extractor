@@ -49,6 +49,25 @@ int main() {
     assert(ground_result.candidates.front().kind ==
         TerminalCandidateKind::GroundConnection);
 
+    // AP-SEMANTIC-006 regression: a conductor endpoint represented inside
+    // a detected component symbol is still a terminal attachment. The old
+    // boundary-distance calculation rejected this when the endpoint was
+    // more than 8 px from the outer rectangle.
+    EndpointCandidate interior;
+    interior.id = "endpoint-interior";
+    interior.position = Point2D{120.0, 115.0};
+
+    const auto interior_result = detector.detect(
+        {component},
+        {interior});
+
+    assert(interior_result.candidates.size() == 1);
+    assert(interior_result.candidates.front().endpoint_id ==
+        "endpoint-interior");
+    assert(interior_result.candidates.front().distance_to_component == 0.0);
+    assert(interior_result.candidates.front().confidence ==
+        ConfidenceClass::High);
+
     std::cout << "terminal location detector tests passed\n";
     return 0;
 }

@@ -94,6 +94,21 @@ void TopologyExporter::export_json(
         return "unresolved";
     };
 
+    auto text_semantic_kind_name = [](TextSemanticKind kind) {
+        switch (kind) {
+        case TextSemanticKind::GroundLabel: return "ground_label";
+        case TextSemanticKind::PowerFeedLabel: return "power_feed_label";
+        case TextSemanticKind::SharedFunctionFeedLabel: return "shared_function_feed_label";
+        case TextSemanticKind::ComponentLabel: return "component_label";
+        case TextSemanticKind::ConnectorLabel: return "connector_label";
+        case TextSemanticKind::TerminalLabel: return "terminal_label";
+        case TextSemanticKind::WireColorLabel: return "wire_color_label";
+        case TextSemanticKind::FunctionLabel: return "function_label";
+        case TextSemanticKind::Unknown: return "unknown";
+        }
+        return "unknown";
+    };
+
     auto association_target_kind_name = [](SemanticAssociationTargetKind kind) {
         switch (kind) {
         case SemanticAssociationTargetKind::Component:
@@ -230,6 +245,22 @@ void TopologyExporter::export_json(
             << "      \"confidence\": \"" << confidence_name(association.confidence) << "\"\n"
             << "    }";
         if (i + 1 != model.semantic_associations.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"text_semantic_evidence\": [\n";
+    for (std::size_t i = 0; i < model.text_semantic_evidence.size(); ++i) {
+        const auto& evidence = model.text_semantic_evidence[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(evidence.id) << "\",\n"
+            << "      \"text_region_id\": \"" << json_escape(evidence.text_region_id) << "\",\n"
+            << "      \"raw_text\": \"" << json_escape(evidence.raw_text) << "\",\n"
+            << "      \"normalized_text\": \"" << json_escape(evidence.normalized_text) << "\",\n"
+            << "      \"kind\": \"" << text_semantic_kind_name(evidence.kind) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(evidence.confidence) << "\",\n"
+            << "      \"source\": \"" << json_escape(evidence.source) << "\"\n"
+            << "    }";
+        if (i + 1 != model.text_semantic_evidence.size()) out << ",";
         out << "\n";
     }
 

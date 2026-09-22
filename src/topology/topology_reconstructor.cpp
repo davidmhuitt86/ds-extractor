@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <sstream>
+#include <sstream>\n#include <unordered_map>
 #include <utility>
 
 namespace eke::dx::wire {
@@ -244,6 +244,26 @@ TopologyArtifacts TopologyReconstructor::reconstruct(
             edge.to_node = b.id;
             edge.conductor_segment = segments[i].id;
             result.edges.push_back(std::move(edge));
+        }
+    }
+
+    // A splice is a connective topology node with three or more
+    // reconstructed conductor edges. It is an electrical distribution
+    // node, not a wire endpoint. Classify it only after edge splitting so
+    // the actual graph degree is available; a T-connection may originate
+    // from one interior segment plus one segment endpoint.
+    std::unordered_map<std::string, std::size_t> degree;
+    degree.reserve(result.nodes.size());
+    for (const auto& edge : result.edges) {
+        ++degree[edge.from_node];
+        ++degree[edge.to_node];
+    }
+
+    for (auto& node : result.nodes) {
+        if (node.type == TopologyNodeType::Junction &&
+            node.electrically_connective &&
+            degree[node.id] >= 3) {
+            node.type = TopologyNodeType::Splice;
         }
     }
 

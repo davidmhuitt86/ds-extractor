@@ -37,6 +37,7 @@ static int extract(const std::string& image_path, const std::string& output) {
     fs::create_directories(fs::path(output) / "artifacts" / "segments");
     fs::create_directories(fs::path(output) / "artifacts" / "topology");
     fs::create_directories(fs::path(output) / "artifacts" / "validation");
+    fs::create_directories(fs::path(output) / "artifacts" / "audit");
     fs::create_directories(fs::path(output) / "output");
 
     ExtractionPipeline pipeline;
@@ -49,6 +50,58 @@ static int extract(const std::string& image_path, const std::string& output) {
     TopologyExporter::export_json(
         model,
         (fs::path(output) / "artifacts" / "topology" / "topology.json").string());
+
+    const ExtractionAudit& audit = model.audit;
+    std::ofstream audit_file(
+        fs::path(output) / "artifacts" / "audit" / "extraction_audit.json");
+    audit_file << "{\n"
+               << "  \"conductor_segments\": " << audit.conductor_segments << ",\n"
+               << "  \"topology_nodes\": " << audit.topology_nodes << ",\n"
+               << "  \"topology_edges\": " << audit.topology_edges << ",\n"
+               << "  \"topology_node_types\": {\n"
+               << "    \"conductor_end\": " << audit.conductor_end_nodes << ",\n"
+               << "    \"continuation\": " << audit.continuation_nodes << ",\n"
+               << "    \"junction\": " << audit.junction_nodes << ",\n"
+               << "    \"splice\": " << audit.splice_nodes << ",\n"
+               << "    \"crossing\": " << audit.crossing_nodes << ",\n"
+               << "    \"component_boundary\": " << audit.component_boundary_nodes << ",\n"
+               << "    \"unresolved\": " << audit.unresolved_nodes << "\n"
+               << "  },\n"
+               << "  \"endpoint_candidates\": " << audit.endpoint_candidates << ",\n"
+               << "  \"endpoint_kinds\": {\n"
+               << "    \"geometric\": " << audit.geometric_endpoints << ",\n"
+               << "    \"component_terminal\": " << audit.component_terminals << ",\n"
+               << "    \"connector_terminal\": " << audit.connector_terminals << ",\n"
+               << "    \"ground\": " << audit.ground_endpoints << ",\n"
+               << "    \"external_connection\": " << audit.external_connections << ",\n"
+               << "    \"splice\": " << audit.splice_endpoints << ",\n"
+               << "    \"unresolved\": " << audit.unresolved_endpoints << "\n"
+               << "  },\n"
+               << "  \"shapes\": " << audit.shapes << ",\n"
+               << "  \"shape_kinds\": {\n"
+               << "    \"enclosure\": " << audit.enclosure_shapes << ",\n"
+               << "    \"circular\": " << audit.circular_shapes << ",\n"
+               << "    \"chassis_ground\": " << audit.chassis_ground_shapes << ",\n"
+               << "    \"primitive\": " << audit.primitive_shapes << ",\n"
+               << "    \"unknown\": " << audit.unknown_shapes << "\n"
+               << "  },\n"
+               << "  \"wires\": " << audit.wires << ",\n"
+               << "  \"heavy_cable_wires\": " << audit.heavy_cable_wires << ",\n"
+               << "  \"unresolved_wires\": " << audit.unresolved_wires << ",\n"
+               << "  \"electrical_nets\": " << audit.electrical_nets << ",\n"
+               << "  \"net_roles\": {\n"
+               << "    \"ground\": " << audit.ground_nets << ",\n"
+               << "    \"power_feed\": " << audit.power_feed_nets << ",\n"
+               << "    \"shared_function_feed\": " << audit.shared_function_feed_nets << ",\n"
+               << "    \"unresolved\": " << audit.unresolved_nets << "\n"
+               << "  },\n"
+               << "  \"gaps_bridged\": " << audit.gaps_bridged << ",\n"
+               << "  \"validation\": {\n"
+               << "    \"valid_wires\": " << audit.valid_wires << ",\n"
+               << "    \"errors\": " << audit.validation_errors << ",\n"
+               << "    \"warnings\": " << audit.validation_warnings << "\n"
+               << "  }\n"
+               << "}\n";
 
     std::ofstream manifest(fs::path(output) / "project.json");
     manifest << "{\n"
@@ -72,6 +125,12 @@ static int extract(const std::string& image_path, const std::string& output) {
               << "topology nodes: " << model.nodes.size() << "\n"
               << "topology edges: " << model.edges.size() << "\n"
               << "reconstructed wires: " << model.wires.size() << "\n"
+              << "electrical nets: " << model.audit.electrical_nets << "\n"
+              << "endpoint candidates: " << model.audit.endpoint_candidates << "\n"
+              << "validation errors: " << model.audit.validation_errors << "\n"
+              << "validation warnings: " << model.audit.validation_warnings << "\n"
+              << "audit: "
+              << (fs::path(output) / "artifacts" / "audit" / "extraction_audit.json").string() << "\n"
               << "output: "
               << (fs::path(output) / "output" / "wires.svg").string()
               << "\n";

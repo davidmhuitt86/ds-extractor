@@ -108,6 +108,22 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    out << "  ],\n  \"rejected_geometry\": [\n";
+    for (std::size_t i = 0; i < model.rejected_geometry.size(); ++i) {
+        const auto& evidence = model.rejected_geometry[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(evidence.id) << "\",\n"
+            << "      \"x1\": " << evidence.geometry.a.x << ",\n"
+            << "      \"y1\": " << evidence.geometry.a.y << ",\n"
+            << "      \"x2\": " << evidence.geometry.b.x << ",\n"
+            << "      \"y2\": " << evidence.geometry.b.y << ",\n"
+            << "      \"reason\": \"" << json_escape(evidence.reason) << "\",\n"
+            << "      \"measurement\": " << evidence.measurement << "\n"
+            << "    }";
+        if (i + 1 != model.rejected_geometry.size()) out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"edges\": [\n";
     for (std::size_t i = 0; i < model.edges.size(); ++i) {
         const auto& edge = model.edges[i];

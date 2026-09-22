@@ -103,6 +103,11 @@ void RejectedGeometryClassifier::classify(
     const std::vector<TextRegion>& text_regions) const {
 
     for (auto& evidence : rejected) {
+        // Preserve ownership decisions made by AP-GEOMETRY-006. This stage
+        // only fills unresolved association evidence from earlier filters.
+        if (evidence.classification != RejectedGeometryClass::Unresolved)
+            continue;
+
         double best_component = std::numeric_limits<double>::max();
         std::string component_id;
 

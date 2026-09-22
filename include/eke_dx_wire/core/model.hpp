@@ -63,12 +63,20 @@ struct ConductorSegment {
     bool heavy_cable = false;
 };
 
+enum class RejectedGeometryClass {
+    ComponentAssociated,
+    TextAssociated,
+    Unresolved
+};
+
 struct RejectedGeometryEvidence {
     std::string id;
     Segment2D geometry {};
     std::string reason;
     double measurement = 0.0;
     Provenance provenance {};
+    RejectedGeometryClass classification = RejectedGeometryClass::Unresolved;
+    std::string associated_object_id;
 };
 
 struct TopologyNode {

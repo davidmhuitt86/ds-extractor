@@ -39,6 +39,7 @@ add_library(eke_dx_wire
     src/topology/terminal_location_detector.cpp
     src/topology/circuit_role_resolver.cpp
     src/topology/circuit_role_evidence_builder.cpp
+    src/topology/semantic_evidence_associator.cpp
     src/topology/wire_model_validator.cpp
     src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp

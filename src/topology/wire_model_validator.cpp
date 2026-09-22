@@ -64,8 +64,19 @@ WireValidationReport WireModelValidator::validate(
         conductor_by_id.emplace(conductor.id, &conductor);
     }
 
+    std::unordered_set<std::string> wire_ids;
+    wire_ids.reserve(model.wires.size());
+
     for (const auto& wire : model.wires) {
         bool wire_valid = true;
+
+        if (!wire_ids.insert(wire.id).second) {
+            issue(
+                report, WireValidationSeverity::Error,
+                "WIRE-DUPLICATE-ID", wire.id,
+                "wire model contains more than one wire with the same deterministic identity");
+            wire_valid = false;
+        }
 
         const auto start_it = endpoint_by_id.find(wire.start_endpoint);
         const auto end_it = endpoint_by_id.find(wire.end_endpoint);

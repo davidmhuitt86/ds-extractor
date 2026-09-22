@@ -80,6 +80,18 @@ void TopologyExporter::export_json(
         return "unknown";
     };
 
+    auto rejected_geometry_class_name = [](RejectedGeometryClass classification) {
+        switch (classification) {
+        case RejectedGeometryClass::ComponentAssociated:
+            return "component_associated";
+        case RejectedGeometryClass::TextAssociated:
+            return "text_associated";
+        case RejectedGeometryClass::Unresolved:
+            return "unresolved";
+        }
+        return "unresolved";
+    };
+
     auto distribution_role_name = [](DistributionRole role) {
         switch (role) {
         case DistributionRole::Ground: return "ground";
@@ -118,7 +130,9 @@ void TopologyExporter::export_json(
             << "      \"x2\": " << evidence.geometry.b.x << ",\n"
             << "      \"y2\": " << evidence.geometry.b.y << ",\n"
             << "      \"reason\": \"" << json_escape(evidence.reason) << "\",\n"
-            << "      \"measurement\": " << evidence.measurement << "\n"
+            << "      \"measurement\": " << evidence.measurement << ",\n"
+            << "      \"classification\": \"" << rejected_geometry_class_name(evidence.classification) << "\",\n"
+            << "      \"associated_object_id\": \"" << json_escape(evidence.associated_object_id) << "\"\n"
             << "    }";
         if (i + 1 != model.rejected_geometry.size()) out << ",";
         out << "\n";

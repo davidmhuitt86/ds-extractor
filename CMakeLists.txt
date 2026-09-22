@@ -102,9 +102,6 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)
     target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
-
-    target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
-    add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
     target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
 

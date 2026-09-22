@@ -85,6 +85,10 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-conductor-normalizer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-conductor-normalizer COMMAND dx-wire-test-conductor-normalizer)
 
+    add_executable(dx-wire-test-conductor-evidence-evaluator tests/test_conductor_evidence_evaluator.cpp)
+    target_link_libraries(dx-wire-test-conductor-evidence-evaluator PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-conductor-evidence-evaluator COMMAND dx-wire-test-conductor-evidence-evaluator)
+
     add_executable(dx-wire-test-endpoint-reconstructor tests/test_endpoint_reconstructor.cpp)
     target_link_libraries(dx-wire-test-endpoint-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-endpoint-reconstructor COMMAND dx-wire-test-endpoint-reconstructor)

@@ -109,6 +109,23 @@ struct EndpointCandidate {
     std::string wire_color;
 };
 
+
+enum class ComponentCandidateKind {
+    Enclosure,
+    CircularSymbol,
+    ChassisGround,
+    PrimitiveSymbol,
+    Unknown
+};
+
+struct ComponentCandidate {
+    std::string id;
+    ComponentCandidateKind kind = ComponentCandidateKind::Unknown;
+    std::vector<std::string> shape_ids;
+    BoundingBox bounds {};
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
 struct Wire {
     std::string id;
     std::string start_endpoint;
@@ -135,6 +152,7 @@ struct WireModel {
     int image_width = 0;
     int image_height = 0;
 
+    std::vector<ComponentCandidate> component_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;

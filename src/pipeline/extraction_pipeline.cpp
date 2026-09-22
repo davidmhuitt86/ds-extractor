@@ -148,12 +148,57 @@ WireModel ExtractionPipeline::run(
     // AP-WIRE-008: recognition is an explicit provider boundary. The
     // provider receives detected regions plus the normalized source image
     // and returns only recognized-text evidence. It cannot mutate topology.
-    model.text_recognition_evidence =
+    const std::vector<TextRecognitionEvidence> recognized =
         text_recognition_provider_->recognize(
             normalized,
             model.text_regions,
             source_id,
             0);
+
+    std::unordered_set<std::string> known_text_regions;
+    known_text_regions.reserve(model.text_regions.size());
+    for (const auto& region : model.text_regions) {
+        known_text_regions.insert(region.id);
+    }
+
+    const std::string provider_id =
+        text_recognition_provider_->provider_id();
+
+    for (const auto& evidence : recognized) {
+        // Provider output is evidence, not authority. The pipeline only
+        // accepts observations that refer to an actual detected text region
+        // and contain usable recognition confidence/text.
+        if (evidence.text_region_id.empty() ||
+            evidence.raw_text.empty() ||
+            evidence.confidence == ConfidenceClass::Unresolved ||
+            known_text_regions.find(evidence.text_region_id) ==
+                known_text_regions.end()) {
+            continue;
+        }
+
+        TextRecognitionEvidence accepted = evidence;
+        if (accepted.provider.empty()) {
+            accepted.provider = provider_id;
+        }
+        model.text_recognition_evidence.push_back(std::move(accepted));
+    }
+
+    std::sort(
+        model.text_recognition_evidence.begin(),
+        model.text_recognition_evidence.end(),
+        [](const TextRecognitionEvidence& a, const TextRecognitionEvidence& b) {
+            if (a.text_region_id != b.text_region_id) {
+                return a.text_region_id < b.text_region_id;
+            }
+            if (a.raw_text != b.raw_text) {
+                return a.raw_text < b.raw_text;
+            }
+            if (a.confidence != b.confidence) {
+                return static_cast<int>(a.confidence) <
+                    static_cast<int>(b.confidence);
+            }
+            return a.provider < b.provider;
+        });
     model.conductor_segments = normalized_segments;
     model.rejected_geometry = std::move(rejected_geometry);
     model.nodes = graph.nodes;

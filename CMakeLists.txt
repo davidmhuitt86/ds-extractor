@@ -38,6 +38,7 @@ add_library(eke_dx_wire
     src/topology/terminal_semantic_evidence_builder.cpp
     src/topology/terminal_location_detector.cpp
     src/topology/circuit_role_resolver.cpp
+    src/topology/circuit_role_evidence_builder.cpp
     src/topology/wire_model_validator.cpp
     src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp
@@ -120,8 +121,11 @@ if(DX_WIRE_BUILD_TESTS)
 
     add_executable(dx-wire-test-terminal-location-detector tests/test_terminal_location_detector.cpp)
     add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)
+    add_executable(dx-wire-test-circuit-role-evidence-builder tests/test_circuit_role_evidence_builder.cpp)
     target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
+    target_link_libraries(dx-wire-test-circuit-role-evidence-builder PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-circuit-role-evidence-builder COMMAND dx-wire-test-circuit-role-evidence-builder)
     target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
 

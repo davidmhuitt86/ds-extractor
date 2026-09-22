@@ -23,6 +23,7 @@
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
+#include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
 
@@ -142,6 +143,9 @@ WireModel ExtractionPipeline::run(
         model.text_regions,
         model.component_candidates,
         model.endpoint_candidates);
+    TextEvidenceInterpreter text_interpreter;
+    model.text_semantic_evidence = text_interpreter.interpret(
+        model.text_recognition_evidence);
     model.conductor_segments = normalized_segments;
     model.rejected_geometry = std::move(rejected_geometry);
     model.nodes = graph.nodes;

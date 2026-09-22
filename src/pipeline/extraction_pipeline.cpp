@@ -10,6 +10,8 @@
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 
+#include <algorithm>
+
 namespace eke::dx::wire {
 
 ExtractionPipeline::ExtractionPipeline(ExtractionConfig config)

@@ -6,7 +6,7 @@ using namespace eke::dx::wire;
 
 int main() {
     const auto result = TextEvidenceInterpreter().interpret({
-        {"text-1", "GND", ConfidenceClass::High},
+        {"text-1", "GND", ConfidenceClass::High, "test-ocr"},
         {"text-2", "B+", ConfidenceClass::Medium},
         {"text-3", "shared-function-feed", ConfidenceClass::High},
         {"text-4", "IGN", ConfidenceClass::High},
@@ -22,6 +22,7 @@ int main() {
     assert(result[0].text_region_id == "text-1");
     assert(result[0].kind == TextSemanticKind::GroundLabel);
     assert(result[0].normalized_text == "GND");
+    assert(result[0].source == "lexical-text-interpretation:test-ocr");
 
     bool saw_power = false;
     bool saw_shared = false;

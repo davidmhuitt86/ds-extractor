@@ -307,6 +307,7 @@ struct WireModel {
 
     std::vector<ComponentCandidate> component_candidates;
     std::vector<TextRegion> text_regions;
+    std::vector<TextRecognitionEvidence> text_recognition_evidence;
     std::vector<SemanticAssociation> semantic_associations;
     std::vector<TextSemanticEvidence> text_semantic_evidence;
     std::vector<TerminalCandidate> terminal_candidates;

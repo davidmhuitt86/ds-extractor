@@ -102,6 +102,32 @@ int main() {
     }
 
     {
+        // A two-terminal component that happens to contain a splice is still
+        // an ordinary endpoint-to-endpoint wire, not a distribution net.
+        std::vector<TopologyNode> nodes{
+            {"a", {0, 0}, TopologyNodeType::ConductorEnd, true},
+            {"s", {10, 0}, TopologyNodeType::Splice, true},
+            {"b", {20, 0}, TopologyNodeType::ConductorEnd, true}
+        };
+
+        std::vector<TopologyEdge> edges{
+            {"e1", "a", "s", "s1"},
+            {"e2", "s", "b", "s2"}
+        };
+
+        const auto result = DistributionDecomposer().decompose(
+            nodes, edges,
+            {endpoint("A", "a", EndpointKind::ComponentTerminal),
+             endpoint("B", "b", EndpointKind::ComponentTerminal)},
+            {segment("s1", {0,0}, {10,0}),
+             segment("s2", {10,0}, {20,0})},
+            "fixture-two-terminal-splice");
+
+        assert(result.nets.empty());
+        assert(result.wires.empty());
+    }
+
+    {
         // Without a semantic source/anchor, do not invent A->B vs A->C.
         std::vector<TopologyNode> nodes{
             {"a", {0, 0}, TopologyNodeType::ConductorEnd, true},

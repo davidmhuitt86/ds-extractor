@@ -255,6 +255,28 @@ struct ExtractionAudit {
     std::size_t gaps_bridged = 0;
 };
 
+enum class SemanticAssociationTargetKind {
+    Component,
+    Endpoint
+};
+
+enum class SemanticAssociationRelation {
+    LabelToComponent,
+    LabelToEndpoint
+};
+
+struct SemanticAssociation {
+    std::string id;
+    std::string text_region_id;
+    std::string target_id;
+    SemanticAssociationTargetKind target_kind =
+        SemanticAssociationTargetKind::Endpoint;
+    SemanticAssociationRelation relation =
+        SemanticAssociationRelation::LabelToEndpoint;
+    double distance = 0.0;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
 struct WireModel {
     std::string source_id;
     int page = 0;
@@ -263,6 +285,7 @@ struct WireModel {
 
     std::vector<ComponentCandidate> component_candidates;
     std::vector<TextRegion> text_regions;
+    std::vector<SemanticAssociation> semantic_associations;
     std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<RejectedGeometryEvidence> rejected_geometry;

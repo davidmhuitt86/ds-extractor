@@ -41,6 +41,7 @@ add_library(eke_dx_wire
     src/topology/circuit_role_evidence_builder.cpp
     src/topology/semantic_evidence_associator.cpp
     src/topology/text_evidence_interpreter.cpp
+    src/topology/text_recognition_provider.cpp
     src/topology/wire_model_validator.cpp
     src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp

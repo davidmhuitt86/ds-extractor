@@ -1,7 +1,6 @@
 #pragma once
 
 #include "eke_dx_wire/core/geometry.hpp"
-#include "eke_dx_wire/image/component_candidate_classifier.hpp"
 
 #include <string>
 #include <vector>
@@ -108,6 +107,23 @@ struct EndpointCandidate {
     std::string terminal_name;
     std::string function_label;
     std::string wire_color;
+};
+
+
+enum class ComponentCandidateKind {
+    Enclosure,
+    CircularSymbol,
+    ChassisGround,
+    PrimitiveSymbol,
+    Unknown
+};
+
+struct ComponentCandidate {
+    std::string id;
+    ComponentCandidateKind kind = ComponentCandidateKind::Unknown;
+    std::vector<std::string> shape_ids;
+    BoundingBox bounds {};
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
 };
 
 struct Wire {

@@ -1,6 +1,7 @@
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
 
 #include "eke_dx_wire/image/image_loader.hpp"
+#include "eke_dx_wire/core/extraction_audit.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
@@ -152,6 +153,9 @@ WireModel ExtractionPipeline::run(
 
     WireModelValidator validator;
     model.wire_validation = validator.validate(model);
+    model.audit = build_extraction_audit(
+        model,
+        gap_artifacts.inferred_edges.size());
 
     return model;
 }

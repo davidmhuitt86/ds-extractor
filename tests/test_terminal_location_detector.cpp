@@ -68,6 +68,37 @@ int main() {
     assert(interior_result.candidates.front().confidence ==
         ConfidenceClass::High);
 
+    // AP-GEOMETRY-005 regression: a terminal may attach to independently
+    // classified connector/component geometry even when the endpoint is
+    // outside the primitive's outer bounding box.
+    ComponentCandidate connector;
+    connector.id = "connector-1";
+    connector.kind = ComponentCandidateKind::PrimitiveSymbol;
+    connector.bounds = BoundingBox{300, 100, 20, 20};
+
+    EndpointCandidate connector_endpoint;
+    connector_endpoint.id = "endpoint-connector";
+    connector_endpoint.position = Point2D{260.0, 110.0};
+
+    RejectedGeometryEvidence connector_body;
+    connector_body.id = "rejected-connector-body";
+    connector_body.geometry = Segment2D{{260.0, 110.0}, {290.0, 110.0}};
+    connector_body.classification =
+        RejectedGeometryClass::ConnectorAssociated;
+    connector_body.associated_object_id = "connector-1";
+
+    const auto connector_result = detector.detect(
+        {connector},
+        {connector_endpoint},
+        {connector_body});
+
+    assert(connector_result.candidates.size() == 1);
+    assert(connector_result.candidates.front().kind ==
+        TerminalCandidateKind::ConnectorBoundary);
+    assert(connector_result.candidates.front().distance_to_component == 0.0);
+    assert(connector_result.candidates.front().confidence ==
+        ConfidenceClass::High);
+
     std::cout << "terminal location detector tests passed\n";
     return 0;
 }

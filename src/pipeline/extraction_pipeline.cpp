@@ -87,6 +87,7 @@ WireModel ExtractionPipeline::run(
     model.image_width = normalized.cols;
     model.image_height = normalized.rows;
     model.component_candidates = component_candidates;
+    model.text_regions = text_regions.regions;
     model.conductor_segments = normalized_segments;
     model.nodes = graph.nodes;
     model.edges = graph.edges;

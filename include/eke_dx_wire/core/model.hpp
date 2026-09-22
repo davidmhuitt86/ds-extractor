@@ -1,6 +1,7 @@
 #pragma once
 
 #include "eke_dx_wire/core/geometry.hpp"
+#include "eke_dx_wire/image/text_region_detector.hpp"
 
 #include <string>
 #include <vector>
@@ -153,6 +154,7 @@ struct WireModel {
     int image_height = 0;
 
     std::vector<ComponentCandidate> component_candidates;
+    std::vector<TextRegion> text_regions;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;

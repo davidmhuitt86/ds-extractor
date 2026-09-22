@@ -1,6 +1,7 @@
 #pragma once
 
 #include "eke_dx_wire/core/geometry.hpp"
+#include "eke_dx_wire/image/text_region_detector.hpp"
 
 #include <string>
 #include <vector>
@@ -27,6 +28,22 @@ enum class EndpointKind {
     Ground,
     ExternalConnection,
     Unresolved
+};
+
+enum class TerminalRole {
+    Unknown,
+    ComponentTerminal,
+    ConnectorTerminal,
+    GroundTerminal,
+    PowerSource,
+    ExternalConnection
+};
+
+enum class DistributionRole {
+    Unknown,
+    Ground,
+    PowerFeed,
+    SharedFunctionFeed
 };
 
 struct Provenance {
@@ -79,9 +96,52 @@ struct EndpointCandidate {
     std::string node_id;
     Point2D position {};
     EndpointKind kind = EndpointKind::Unresolved;
+    TerminalRole terminal_role = TerminalRole::Unknown;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     std::vector<std::string> incident_edges;
     EndpointEvidence evidence {};
+
+    // Semantic attachment fields are populated only when independent
+    // component/terminal evidence exists. Pixel geometry alone must not
+    // invent component identity or terminal function.
+    std::string component_id;
+    std::string terminal_name;
+    std::string function_label;
+    std::string wire_color;
+};
+
+
+enum class TerminalCandidateKind {
+    ComponentBoundary,
+    ConnectorBoundary,
+    GroundConnection,
+    Unknown
+};
+
+struct TerminalCandidate {
+    std::string id;
+    std::string endpoint_id;
+    std::string component_candidate_id;
+    TerminalCandidateKind kind = TerminalCandidateKind::Unknown;
+    Point2D position {};
+    double distance_to_component = 0.0;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
+enum class ComponentCandidateKind {
+    Enclosure,
+    CircularSymbol,
+    ChassisGround,
+    PrimitiveSymbol,
+    Unknown
+};
+
+struct ComponentCandidate {
+    std::string id;
+    ComponentCandidateKind kind = ComponentCandidateKind::Unknown;
+    std::vector<std::string> shape_ids;
+    BoundingBox bounds {};
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
 };
 
 struct Wire {
@@ -94,17 +154,52 @@ struct Wire {
     bool heavy_cable = false;
 };
 
+struct ElectricalNet {
+    std::string id;
+    std::vector<std::string> endpoint_ids;
+    std::vector<std::string> splice_node_ids;
+    std::vector<std::string> topology_edges;
+    DistributionRole role = DistributionRole::Unknown;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    std::string anchor_endpoint;
+};
+
+enum class WireValidationSeverity {
+    Warning,
+    Error
+};
+
+struct WireValidationIssue {
+    WireValidationSeverity severity = WireValidationSeverity::Error;
+    std::string code;
+    std::string object_id;
+    std::string detail;
+};
+
+struct WireValidationReport {
+    bool valid = true;
+    std::size_t wires_checked = 0;
+    std::size_t valid_wires = 0;
+    std::size_t electrical_nets_checked = 0;
+    std::vector<WireValidationIssue> issues;
+};
+
 struct WireModel {
     std::string source_id;
     int page = 0;
     int image_width = 0;
     int image_height = 0;
 
+    std::vector<ComponentCandidate> component_candidates;
+    std::vector<TextRegion> text_regions;
+    std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;
     std::vector<EndpointCandidate> endpoint_candidates;
+    std::vector<ElectricalNet> electrical_nets;
     std::vector<Wire> wires;
+    WireValidationReport wire_validation;
 };
 
 } // namespace eke::dx::wire

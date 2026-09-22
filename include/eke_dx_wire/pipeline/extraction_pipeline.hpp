@@ -6,6 +6,9 @@
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
+#include "eke_dx_wire/image/text_region_detector.hpp"
+#include "eke_dx_wire/topology/terminal_location_detector.hpp"
+#include "eke_dx_wire/topology/distribution_decomposer.hpp"
 
 #include <string>
 
@@ -14,9 +17,12 @@ namespace eke::dx::wire {
 struct ExtractionConfig {
     MorphologyConfig morphology {};
     ShapeDetectorConfig shapes {};
+    TextDetectorConfig text {};
+    TerminalLocationConfig terminals {};
     GeometryNormalizationConfig geometry {};
     TopologyConfig topology {};
     GapInterpretationConfig gap_interpretation {};
+    DistributionDecompositionConfig distribution {};
 };
 
 class ExtractionPipeline {

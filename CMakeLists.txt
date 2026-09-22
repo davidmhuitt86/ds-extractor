@@ -23,9 +23,18 @@ add_library(eke_dx_wire
     src/image/morphology_detector.cpp
     src/image/conductor_normalizer.cpp
     src/image/shape_detector.cpp
+    src/image/text_region_detector.cpp
     src/topology/topology_reconstructor.cpp
+    src/topology/topology_semantic_resolver.cpp
     src/topology/gap_interpreter.cpp
     src/topology/endpoint_reconstructor.cpp
+    src/topology/wire_reconstructor.cpp
+    src/topology/distribution_decomposer.cpp
+    src/topology/terminal_semantic_resolver.cpp
+    src/topology/terminal_location_detector.cpp
+    src/topology/circuit_role_resolver.cpp
+    src/topology/wire_model_validator.cpp
+    src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp
     src/export/topology_exporter.cpp
     src/pipeline/extraction_pipeline.cpp
@@ -45,8 +54,6 @@ add_executable(dx-extract src/app/main.cpp)
 target_link_libraries(dx-extract PRIVATE eke_dx_wire)
 
 if(WIN32)
-    # The GUI uses a normal C++ main() entry point. Do not mark this target
-    # as WIN32, which changes the MSVC entry point to WinMain().
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire
         opencv_highgui opencv_imgproc opencv_imgcodecs)
@@ -65,6 +72,9 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-ids COMMAND dx-wire-test-ids)
 
     add_executable(dx-wire-test-topology tests/test_topology.cpp)
+    add_executable(dx-wire-test-topology-semantic-resolver tests/test_topology_semantic_resolver.cpp)
+    target_link_libraries(dx-wire-test-topology-semantic-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-topology-semantic-resolver COMMAND dx-wire-test-topology-semantic-resolver)
     target_link_libraries(dx-wire-test-topology PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-topology COMMAND dx-wire-test-topology)
 
@@ -76,6 +86,32 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-endpoint-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-endpoint-reconstructor COMMAND dx-wire-test-endpoint-reconstructor)
 
+    add_executable(dx-wire-test-wire-reconstructor tests/test_wire_reconstructor.cpp)
+    target_link_libraries(dx-wire-test-wire-reconstructor PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-wire-reconstructor COMMAND dx-wire-test-wire-reconstructor)
+
+    add_executable(dx-wire-test-distribution-decomposer tests/test_distribution_decomposer.cpp)
+    target_link_libraries(dx-wire-test-distribution-decomposer PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-distribution-decomposer COMMAND dx-wire-test-distribution-decomposer)
+
+    add_executable(dx-wire-test-terminal-semantic-resolver tests/test_terminal_semantic_resolver.cpp)
+    target_link_libraries(dx-wire-test-terminal-semantic-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-terminal-semantic-resolver COMMAND dx-wire-test-terminal-semantic-resolver)
+
+    add_executable(dx-wire-test-terminal-location-detector tests/test_terminal_location_detector.cpp)
+    add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)
+    target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
+
+    target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
+    target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
+
+    add_executable(dx-wire-test-component-candidate-classifier tests/test_component_candidate_classifier.cpp)
+    target_link_libraries(dx-wire-test-component-candidate-classifier PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-component-candidate-classifier COMMAND dx-wire-test-component-candidate-classifier)
+
     add_executable(dx-wire-test-gap-interpreter tests/test_gap_interpreter.cpp)
     target_link_libraries(dx-wire-test-gap-interpreter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-gap-interpreter COMMAND dx-wire-test-gap-interpreter)
@@ -84,6 +120,13 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-shape-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-shape-detector COMMAND dx-wire-test-shape-detector)
 
+    add_executable(dx-wire-test-text-region-detector tests/test_text_region_detector.cpp)
+    target_link_libraries(dx-wire-test-text-region-detector PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-text-region-detector COMMAND dx-wire-test-text-region-detector)
+    
+    add_executable(dx-wire-test-wire-model-validator tests/test_wire_model_validator.cpp)
+    target_link_libraries(dx-wire-test-wire-model-validator PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-wire-model-validator COMMAND dx-wire-test-wire-model-validator)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

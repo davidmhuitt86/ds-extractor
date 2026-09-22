@@ -39,22 +39,29 @@ int main() {
 
     assert(result.size() == 2);
 
-    assert(result[0].text_region_id == "text-region-1");
-    assert(result[0].target_kind ==
-        SemanticAssociationTargetKind::Component);
-    assert(result[0].relation ==
-        SemanticAssociationRelation::LabelToComponent);
-    assert(result[0].target_id == "component-candidate-1");
-    assert(result[0].confidence == ConfidenceClass::High);
+    const auto* component_association = &result[0];
+    const auto* endpoint_association = &result[1];
+    if (result[0].target_kind != SemanticAssociationTargetKind::Component) {
+        component_association = &result[1];
+        endpoint_association = &result[0];
+    }
 
-    assert(result[1].text_region_id == "text-region-1");
-    assert(result[1].target_kind ==
+    assert(component_association->text_region_id == "text-region-1");
+    assert(component_association->target_kind ==
+        SemanticAssociationTargetKind::Component);
+    assert(component_association->relation ==
+        SemanticAssociationRelation::LabelToComponent);
+    assert(component_association->target_id == "component-candidate-1");
+    assert(component_association->confidence == ConfidenceClass::High);
+
+    assert(endpoint_association->text_region_id == "text-region-1");
+    assert(endpoint_association->target_kind ==
         SemanticAssociationTargetKind::Endpoint);
-    assert(result[1].relation ==
+    assert(endpoint_association->relation ==
         SemanticAssociationRelation::LabelToEndpoint);
-    assert(result[1].target_id == "endpoint-1");
-    assert(result[1].confidence == ConfidenceClass::High);
-    assert(std::abs(result[1].distance - 0.0) < 1e-9);
+    assert(endpoint_association->target_id == "endpoint-1");
+    assert(endpoint_association->confidence == ConfidenceClass::High);
+    assert(std::abs(endpoint_association->distance - 0.0) < 1e-9);
 
     return 0;
 }

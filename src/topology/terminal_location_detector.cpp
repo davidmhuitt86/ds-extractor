@@ -66,6 +66,36 @@ double attachment_distance(
     return point_to_rect_boundary(point, component.bounds);
 }
 
+double point_segment_distance(
+    const Point2D& point,
+    const Segment2D& segment) {
+
+    const double dx = segment.b.x - segment.a.x;
+    const double dy = segment.b.y - segment.a.y;
+    const double length_sq = dx * dx + dy * dy;
+
+    if (length_sq <= 1e-12) {
+        return std::hypot(
+            point.x - segment.a.x,
+            point.y - segment.a.y);
+    }
+
+    const double t = std::clamp(
+        ((point.x - segment.a.x) * dx +
+         (point.y - segment.a.y) * dy) /
+            length_sq,
+        0.0,
+        1.0);
+
+    const Point2D projection{
+        segment.a.x + t * dx,
+        segment.a.y + t * dy};
+
+    return std::hypot(
+        point.x - projection.x,
+        point.y - projection.y);
+}
+
 ConfidenceClass confidence_for_distance(
     double distance,
     const TerminalLocationConfig& config) {
@@ -102,7 +132,8 @@ TerminalLocationDetector::TerminalLocationDetector(
 
 TerminalLocationArtifacts TerminalLocationDetector::detect(
     const std::vector<ComponentCandidate>& components,
-    const std::vector<EndpointCandidate>& endpoints) const {
+    const std::vector<EndpointCandidate>& endpoints,
+    const std::vector<RejectedGeometryEvidence>& rejected_geometry) const {
 
     TerminalLocationArtifacts result;
 
@@ -111,8 +142,30 @@ TerminalLocationArtifacts TerminalLocationDetector::detect(
         const ComponentCandidate* best_component = nullptr;
 
         for (const auto& component : components) {
-            const double distance =
+            double distance =
                 attachment_distance(endpoint.position, component, config_);
+
+            // Rejected geometry that was independently associated with this
+            // component/connector is additional terminal evidence. This is
+            // especially important when a connector body or internal symbol
+            // geometry is not represented by the primitive's outer bounds.
+            for (const auto& evidence : rejected_geometry) {
+                const bool associated =
+                    (evidence.classification ==
+                         RejectedGeometryClass::ComponentAssociated ||
+                     evidence.classification ==
+                         RejectedGeometryClass::ConnectorAssociated) &&
+                    evidence.associated_object_id == component.id;
+
+                if (!associated)
+                    continue;
+
+                distance = (std::min)(
+                    distance,
+                    point_segment_distance(
+                        endpoint.position,
+                        evidence.geometry));
+            }
 
             if (config_.require_component_boundary_proximity &&
                 distance > config_.boundary_tolerance)

@@ -154,7 +154,28 @@ DistributionDecompositionArtifacts DistributionDecomposer::decompose(
         component_endpoints = unique_sorted(std::move(component_endpoints));
         splice_nodes = unique_sorted(std::move(splice_nodes));
 
-        if (splice_nodes.empty() || component_endpoints.size() < 2) {
+        std::vector<const EndpointCandidate*> anchors;
+        std::unordered_map<std::string, const EndpointCandidate*> endpoint_by_id;
+        for (const auto& endpoint : endpoints) {
+            endpoint_by_id.emplace(endpoint.id, &endpoint);
+            if (std::binary_search(
+                    component_endpoints.begin(),
+                    component_endpoints.end(),
+                    endpoint.id) &&
+                anchor_endpoint(endpoint, config_)) {
+                anchors.push_back(&endpoint);
+            }
+        }
+
+        // Ordinary two-terminal wires do not form distribution nets merely
+        // because they are connected. An anchored component is different:
+        // a Ground or ExternalConnection endpoint gives the connected
+        // component an explicit electrical-net identity even when there is
+        // no splice. This allows a direct ground-to-terminal connection to
+        // become a grounded net without inventing source selection for
+        // unanchored components.
+        if (component_endpoints.size() < 2 ||
+            (splice_nodes.empty() && anchors.empty())) {
             continue;
         }
 
@@ -174,19 +195,6 @@ DistributionDecompositionArtifacts DistributionDecomposer::decompose(
         if (component_edges.size() + 1 != component_nodes.size()) {
             result.nets.push_back(std::move(net));
             continue;
-        }
-
-        std::vector<const EndpointCandidate*> anchors;
-        std::unordered_map<std::string, const EndpointCandidate*> endpoint_by_id;
-        for (const auto& endpoint : endpoints) {
-            endpoint_by_id.emplace(endpoint.id, &endpoint);
-            if (std::binary_search(
-                    component_endpoints.begin(),
-                    component_endpoints.end(),
-                    endpoint.id) &&
-                anchor_endpoint(endpoint, config_)) {
-                anchors.push_back(&endpoint);
-            }
         }
 
         if (anchors.size() != 1) {

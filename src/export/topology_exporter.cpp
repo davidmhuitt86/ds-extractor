@@ -55,6 +55,31 @@ void TopologyExporter::export_json(
         return "unresolved";
     };
 
+    auto endpoint_kind_name = [](EndpointKind kind) {
+        switch (kind) {
+        case EndpointKind::GeometricConductorEnd: return "geometric";
+        case EndpointKind::ComponentTerminal: return "component_terminal";
+        case EndpointKind::ConnectorTerminal: return "connector_terminal";
+        case EndpointKind::Splice: return "splice";
+        case EndpointKind::Ground: return "ground";
+        case EndpointKind::ExternalConnection: return "external_connection";
+        case EndpointKind::Unresolved: return "unresolved";
+        }
+        return "unresolved";
+    };
+
+    auto terminal_role_name = [](TerminalRole role) {
+        switch (role) {
+        case TerminalRole::Unknown: return "unknown";
+        case TerminalRole::ComponentTerminal: return "component_terminal";
+        case TerminalRole::ConnectorTerminal: return "connector_terminal";
+        case TerminalRole::GroundTerminal: return "ground_terminal";
+        case TerminalRole::PowerSource: return "power_source";
+        case TerminalRole::ExternalConnection: return "external_connection";
+        }
+        return "unknown";
+    };
+
     auto distribution_role_name = [](DistributionRole role) {
         switch (role) {
         case DistributionRole::Ground: return "ground";
@@ -93,6 +118,26 @@ void TopologyExporter::export_json(
             << "      \"conductor_segment\": \"" << json_escape(edge.conductor_segment) << "\"\n"
             << "    }";
         if (i + 1 != model.edges.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"endpoint_candidates\": [\n";
+    for (std::size_t i = 0; i < model.endpoint_candidates.size(); ++i) {
+        const auto& endpoint = model.endpoint_candidates[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(endpoint.id) << "\",\n"
+            << "      \"node_id\": \"" << json_escape(endpoint.node_id) << "\",\n"
+            << "      \"x\": " << endpoint.position.x << ",\n"
+            << "      \"y\": " << endpoint.position.y << ",\n"
+            << "      \"kind\": \"" << endpoint_kind_name(endpoint.kind) << "\",\n"
+            << "      \"terminal_role\": \"" << terminal_role_name(endpoint.terminal_role) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(endpoint.confidence) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(endpoint.component_id) << "\",\n"
+            << "      \"terminal_name\": \"" << json_escape(endpoint.terminal_name) << "\",\n"
+            << "      \"function_label\": \"" << json_escape(endpoint.function_label) << "\",\n"
+            << "      \"wire_color\": \"" << json_escape(endpoint.wire_color) << "\"\n"
+            << "    }";
+        if (i + 1 != model.endpoint_candidates.size()) out << ",";
         out << "\n";
     }
 

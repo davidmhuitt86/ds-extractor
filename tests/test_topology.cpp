@@ -53,7 +53,16 @@ int main() {
                 assert(node.electrically_connective);
             }
         }
-        assert(junctions == 1);
+        assert(junctions == 0);
+
+        int splices = 0;
+        for (const auto& node : graph.nodes) {
+            if (node.type == TopologyNodeType::Splice) {
+                ++splices;
+                assert(node.electrically_connective);
+            }
+        }
+        assert(splices == 1);
         assert(graph.edges.size() == 3);
     }
 

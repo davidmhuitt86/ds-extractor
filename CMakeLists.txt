@@ -23,6 +23,7 @@ add_library(eke_dx_wire
     src/image/normalizer.cpp
     src/image/morphology_detector.cpp
     src/image/conductor_normalizer.cpp
+    src/image/conductor_evidence_evaluator.cpp
     src/image/shape_detector.cpp
     src/image/text_region_detector.cpp
     src/topology/topology_reconstructor.cpp

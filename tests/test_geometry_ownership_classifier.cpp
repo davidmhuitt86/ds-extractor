@@ -33,11 +33,22 @@ int main() {
         // It must remain a conductor: endpoint proximity is not ownership.
         segment("terminal-wire", {20, 50}, {40, 50}),
 
-        // Most of this line is graphical content inside the component.
+        // Both ends are strictly inside the component: graphical ownership.
         segment("component-owned", {42, 50}, {58, 50}),
 
-        // Same rule for a connector primitive.
+        // The line crosses the component completely. Bounding-box overlap
+        // must not turn a crossing conductor into component-owned geometry.
+        segment("component-crossing", {20, 55}, {70, 55}),
+
+        // The line enters the component and ends internally. It is retained
+        // as conductor evidence for downstream terminal interpretation.
+        segment("component-entering", {20, 45}, {45, 45}),
+
+        // Both ends are strictly inside the connector primitive.
         segment("connector-owned", {82, 50}, {98, 50}),
+
+        // Crossing a connector is not graphical ownership.
+        segment("connector-crossing", {70, 55}, {110, 55}),
 
         // Text-associated line-like geometry.
         segment("text-owned", {122, 45}, {138, 45}),
@@ -56,11 +67,14 @@ int main() {
             {component, connector},
             {text});
 
-    assert(result.conductor_candidates.size() == 2);
+    assert(result.conductor_candidates.size() == 5);
     assert(result.rejected.size() == 3);
 
     assert(result.conductor_candidates[0].id == "terminal-wire");
-    assert(result.conductor_candidates[1].id == "wire");
+    assert(result.conductor_candidates[1].id == "component-crossing");
+    assert(result.conductor_candidates[2].id == "component-entering");
+    assert(result.conductor_candidates[3].id == "connector-crossing");
+    assert(result.conductor_candidates[4].id == "wire");
 
     assert(result.rejected[0].id == "component-owned");
     assert(result.rejected[0].classification ==

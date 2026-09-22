@@ -5,6 +5,7 @@
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/conductor_evidence_evaluator.hpp"
+#include "eke_dx_wire/image/rejected_geometry_classifier.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
@@ -72,6 +73,15 @@ WireModel ExtractionPipeline::run(
             detected.conductor_segments,
             normalized);
 
+    std::vector<RejectedGeometryEvidence> rejected_geometry =
+        evidence.rejected;
+    RejectedGeometryClassifier rejected_classifier(
+        config_.rejected_geometry_classification);
+    rejected_classifier.classify(
+        rejected_geometry,
+        component_candidates,
+        text_regions.regions);
+
     ConductorNormalizer normalizer(config_.geometry);
     const std::vector<ConductorSegment> normalized_segments =
         normalizer.normalize(evidence.accepted);
@@ -108,7 +118,7 @@ WireModel ExtractionPipeline::run(
     model.component_candidates = component_candidates;
     model.text_regions = text_regions.regions;
     model.conductor_segments = normalized_segments;
-    model.rejected_geometry = evidence.rejected;
+    model.rejected_geometry = std::move(rejected_geometry);
     model.nodes = graph.nodes;
     model.edges = graph.edges;
     model.endpoint_candidates = endpoint_artifacts.candidates;

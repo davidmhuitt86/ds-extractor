@@ -111,6 +111,23 @@ struct EndpointCandidate {
 };
 
 
+enum class TerminalCandidateKind {
+    ComponentBoundary,
+    ConnectorBoundary,
+    GroundConnection,
+    Unknown
+};
+
+struct TerminalCandidate {
+    std::string id;
+    std::string endpoint_id;
+    std::string component_candidate_id;
+    TerminalCandidateKind kind = TerminalCandidateKind::Unknown;
+    Point2D position {};
+    double distance_to_component = 0.0;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
 enum class ComponentCandidateKind {
     Enclosure,
     CircularSymbol,
@@ -155,6 +172,7 @@ struct WireModel {
 
     std::vector<ComponentCandidate> component_candidates;
     std::vector<TextRegion> text_regions;
+    std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;

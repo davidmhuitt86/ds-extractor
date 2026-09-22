@@ -499,6 +499,41 @@ struct GroundBar {
     int center_x;
 };
 
+bool ground_bar_width_sequence(
+    const std::vector<GroundBar>& bars,
+    std::size_t begin,
+    std::size_t end,
+    const ShapeDetectorConfig& config) {
+
+    if (end <= begin || end - begin < 2)
+        return false;
+
+    for (std::size_t i = begin + 1; i < end; ++i) {
+        const double previous =
+            static_cast<double>(bars[i - 1].bounds.width);
+        const double current =
+            static_cast<double>(bars[i].bounds.width);
+
+        if (current >= previous)
+            return false;
+
+        const double ratio =
+            current / (std::max)(1.0, previous);
+
+        if (ratio > 1.0 - config.ground_width_ratio_tolerance)
+            return false;
+
+        const double difference =
+            (previous - current) /
+            (std::max)(1.0, previous);
+
+        if (difference < config.ground_min_width_difference)
+            return false;
+    }
+
+    return true;
+}
+
 void detect_ground_symbols(
     const cv::Mat& binary,
     ShapeDetectionArtifacts& result,
@@ -520,6 +555,7 @@ void detect_ground_symbols(
         horizontal, labels, stats, centroids, 8, CV_32S);
 
     std::vector<GroundBar> bars;
+    bars.reserve(static_cast<std::size_t>(count));
 
     for (int i = 1; i < count; ++i) {
         const int x = stats.at<int>(i, cv::CC_STAT_LEFT);
@@ -529,12 +565,15 @@ void detect_ground_symbols(
 
         if (w < config.ground_min_bar_length ||
             w > config.ground_max_bar_length ||
-            h > 5)
+            h > config.ground_max_height)
             continue;
 
         bars.push_back({{x, y, w, h}, x + w / 2});
     }
 
+    // Group candidate bars by near-common centerline. Sorting by X first
+    // makes the grouping deterministic; within a centerline group bars are
+    // ordered from top to bottom.
     std::sort(
         bars.begin(), bars.end(),
         [](const GroundBar& a, const GroundBar& b) {
@@ -543,107 +582,135 @@ void detect_ground_symbols(
             return a.bounds.y < b.bounds.y;
         });
 
-    for (std::size_t i = 0; i < bars.size(); ++i) {
-        for (std::size_t j = i + 1; j < bars.size(); ++j) {
-            const int gap1 =
-                bars[j].bounds.y -
-                (bars[i].bounds.y + bars[i].bounds.height);
+    for (std::size_t i = 0; i < bars.size();) {
+        std::vector<GroundBar> group;
+        group.push_back(bars[i]);
 
-            if (gap1 < config.ground_min_bar_spacing)
-                continue;
+        std::size_t j = i + 1;
+        while (j < bars.size() &&
+               std::abs(bars[j].center_x - bars[i].center_x) <= 3) {
+            group.push_back(bars[j]);
+            ++j;
+        }
 
-            if (gap1 > config.ground_max_bar_spacing)
-                break;
+        std::sort(
+            group.begin(), group.end(),
+            [](const GroundBar& a, const GroundBar& b) {
+                if (a.bounds.y != b.bounds.y)
+                    return a.bounds.y < b.bounds.y;
+                return a.bounds.width > b.bounds.width;
+            });
 
-            for (std::size_t k = j + 1; k < bars.size(); ++k) {
-                const int gap2 =
-                    bars[k].bounds.y -
-                    (bars[j].bounds.y + bars[j].bounds.height);
+        if (group.size() >=
+                static_cast<std::size_t>(config.ground_min_bars)) {
 
-                if (gap2 < config.ground_min_bar_spacing)
-                    continue;
+            const std::size_t max_bars =
+                (std::min)(
+                    group.size(),
+                    static_cast<std::size_t>(config.ground_max_bars));
 
-                if (gap2 > config.ground_max_bar_spacing)
-                    break;
+            for (std::size_t begin = 0;
+                 begin + config.ground_min_bars <= max_bars;
+                 ++begin) {
 
-                const double center_spread =
-                    (std::max)({
-                        std::abs(bars[i].center_x - bars[j].center_x),
-                        std::abs(bars[i].center_x - bars[k].center_x),
-                        std::abs(bars[j].center_x - bars[k].center_x)
-                    });
+                // Prefer the longest valid sequence, then allow a shorter
+                // sequence if image quality has erased one of the bars.
+                for (std::size_t length = max_bars - begin;
+                     length >= static_cast<std::size_t>(
+                         config.ground_min_bars);
+                     --length) {
 
-                if (center_spread > 3.0)
-                    continue;
+                    const std::size_t end = begin + length;
 
-                const double w0 =
-                    static_cast<double>(bars[i].bounds.width);
-                const double w1 =
-                    static_cast<double>(bars[j].bounds.width);
-                const double w2 =
-                    static_cast<double>(bars[k].bounds.width);
+                    bool spacing_ok = true;
+                    for (std::size_t n = begin + 1; n < end; ++n) {
+                        const int gap =
+                            group[n].bounds.y -
+                            (group[n - 1].bounds.y +
+                             group[n - 1].bounds.height);
 
-                const double ratio01 = w1 / (std::max)(1.0, w0);
-                const double ratio12 = w2 / (std::max)(1.0, w1);
+                        if (gap < config.ground_min_bar_spacing ||
+                            gap > config.ground_max_bar_spacing) {
+                            spacing_ok = false;
+                            break;
+                        }
+                    }
 
-                const bool decreasing =
-                    w0 > w1 && w1 > w2 &&
-                    ratio01 <= 1.0 - config.ground_width_ratio_tolerance &&
-                    ratio12 <= 1.0 - config.ground_width_ratio_tolerance;
+                    if (!spacing_ok ||
+                        !ground_bar_width_sequence(
+                            group, begin, end, config)) {
+                        if (length ==
+                            static_cast<std::size_t>(
+                                config.ground_min_bars))
+                            break;
+                        continue;
+                    }
 
-                if (!decreasing)
-                    continue;
+                    const int first_center = group[begin].center_x;
+                    const int stem_y0 =
+                        (std::max)(
+                            0,
+                            group[begin].bounds.y -
+                            config.ground_stem_search_height);
+                    const int stem_y1 = group[begin].bounds.y;
 
-                const int stem_x = bars[i].center_x;
-                const int stem_y0 =
-                    (std::max)(
+                    // The stem may be represented by the wire itself. We
+                    // therefore accept either explicit ink in the stem
+                    // corridor or a conductor-like connection immediately
+                    // above the first bar.
+                    const int stem_width = 4;
+                    const int sx0 =
+                        (std::max)(0, first_center - stem_width);
+                    const int sx1 =
+                        (std::min)(
+                            binary.cols,
+                            first_center + stem_width + 1);
+
+                    if (sx1 <= sx0 || stem_y1 <= stem_y0)
+                        break;
+
+                    const cv::Rect stem_region(
+                        sx0, stem_y0,
+                        sx1 - sx0, stem_y1 - stem_y0);
+
+                    if (cv::countNonZero(binary(stem_region)) < 2)
+                        break;
+
+                    cv::Rect bounds = group[begin].bounds;
+                    for (std::size_t n = begin + 1; n < end; ++n)
+                        bounds |= group[n].bounds;
+
+                    bounds.x = (std::max)(0, bounds.x - 3);
+                    bounds.y = (std::max)(
                         0,
-                        bars[i].bounds.y -
-                        config.ground_stem_search_height);
-                const int stem_y1 = bars[i].bounds.y;
-
-                const int stem_width = 3;
-                const int sx0 = (std::max)(0, stem_x - stem_width);
-                const int sx1 =
-                    (std::min)(binary.cols, stem_x + stem_width + 1);
-
-                if (sx1 <= sx0 || stem_y1 <= stem_y0)
-                    continue;
-
-                const cv::Rect stem_region(
-                    sx0, stem_y0,
-                    sx1 - sx0, stem_y1 - stem_y0);
-
-                if (cv::countNonZero(binary(stem_region)) < 2)
-                    continue;
-
-                cv::Rect bounds =
-                    bars[i].bounds |
-                    bars[j].bounds |
-                    bars[k].bounds;
-
-                bounds.x = (std::max)(0, bounds.x - 3);
-                bounds.y = (std::max)(
-                    0, bounds.y - config.ground_stem_search_height);
-                bounds.width =
-                    (std::min)(
+                        bounds.y - config.ground_stem_search_height);
+                    bounds.width = (std::min)(
                         binary.cols - bounds.x,
                         bounds.width + 6);
-                bounds.height =
-                    (std::min)(
+                    bounds.height = (std::min)(
                         binary.rows - bounds.y,
                         bounds.height + 10);
 
-                add_region(
-                    result,
-                    ShapeKind::ChassisGround,
-                    ShapeRole::Exclusion,
-                    bounds,
-                    0.90,
-                    source_id,
-                    page);
+                    const double confidence =
+                        length >= 3 ? 0.95 : 0.82;
+
+                    add_region(
+                        result,
+                        ShapeKind::ChassisGround,
+                        ShapeRole::Exclusion,
+                        bounds,
+                        confidence,
+                        source_id,
+                        page);
+
+                    // One accepted ground candidate is sufficient for this
+                    // centerline. Do not emit overlapping shorter variants.
+                    break;
+                }
             }
         }
+
+        i = j;
     }
 }
 

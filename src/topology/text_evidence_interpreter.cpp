@@ -31,7 +31,10 @@ std::string normalize_text(const std::string& value) {
     }
 
     while (!result.empty() &&
-           std::ispunct(static_cast<unsigned char>(result.back()))) {
+           (result.back() == '.' ||
+            result.back() == ',' ||
+            result.back() == ':' ||
+            result.back() == ';')) {
         result.pop_back();
     }
 
@@ -55,6 +58,37 @@ TextSemanticKind classify(const std::string& normalized) {
 
     if (normalized == "SHARED FUNCTION FEED") {
         return TextSemanticKind::SharedFunctionFeedLabel;
+    }
+
+    if (normalized == "RED" ||
+        normalized == "BLACK" ||
+        normalized == "WHITE" ||
+        normalized == "GREEN" ||
+        normalized == "BLUE" ||
+        normalized == "YELLOW" ||
+        normalized == "BROWN" ||
+        normalized == "ORANGE" ||
+        normalized == "PINK" ||
+        normalized == "GRAY" ||
+        normalized == "GREY" ||
+        normalized == "PURPLE") {
+        return TextSemanticKind::WireColorLabel;
+    }
+
+    if (normalized == "IGN" ||
+        normalized == "IGNITION" ||
+        normalized == "START" ||
+        normalized == "STARTER" ||
+        normalized == "LIGHT" ||
+        normalized == "LIGHTING" ||
+        normalized == "HEADLIGHT" ||
+        normalized == "BRAKE" ||
+        normalized == "TURN" ||
+        normalized == "HORN" ||
+        normalized == "NEUTRAL" ||
+        normalized == "OIL" ||
+        normalized == "CHARGE") {
+        return TextSemanticKind::FunctionLabel;
     }
 
     // These are deliberately conservative lexical classes. They do not

@@ -24,16 +24,22 @@
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
 #include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
+#include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
 
 #include <algorithm>
+#include <memory>
 #include <unordered_set>
 
 namespace eke::dx::wire {
 
 ExtractionPipeline::ExtractionPipeline(ExtractionConfig config)
-    : config_(config) {}
+    : config_(std::move(config)),
+      text_recognition_provider_(
+          config_.text_recognition_provider
+              ? config_.text_recognition_provider
+              : std::make_shared<NullTextRecognitionProvider>()) {}
 
 WireModel ExtractionPipeline::run(
     const std::string& image_path,
@@ -138,14 +144,16 @@ WireModel ExtractionPipeline::run(
     model.image_height = normalized.rows;
     model.component_candidates = component_candidates;
     model.text_regions = text_regions.regions;
-    SemanticEvidenceAssociator semantic_associator;
-    model.semantic_associations = semantic_associator.associate(
-        model.text_regions,
-        model.component_candidates,
-        model.endpoint_candidates);
-    TextEvidenceInterpreter text_interpreter;
-    model.text_semantic_evidence = text_interpreter.interpret(
-        model.text_recognition_evidence);
+
+    // AP-WIRE-008: recognition is an explicit provider boundary. The
+    // provider receives detected regions plus the normalized source image
+    // and returns only recognized-text evidence. It cannot mutate topology.
+    model.text_recognition_evidence =
+        text_recognition_provider_->recognize(
+            normalized,
+            model.text_regions,
+            source_id,
+            0);
     model.conductor_segments = normalized_segments;
     model.rejected_geometry = std::move(rejected_geometry);
     model.nodes = graph.nodes;
@@ -172,6 +180,19 @@ WireModel ExtractionPipeline::run(
         semantic_resolver.resolve(
             endpoint_artifacts.candidates,
             semantic_evidence);
+
+    // AP-WIRE-006/AP-WIRE-008: associations are created only after endpoint
+    // reconstruction and semantic endpoint resolution, so recognized text
+    // can be spatially related to the actual endpoint objects.
+    SemanticEvidenceAssociator semantic_associator;
+    model.semantic_associations = semantic_associator.associate(
+        model.text_regions,
+        model.component_candidates,
+        model.endpoint_candidates);
+
+    TextEvidenceInterpreter text_interpreter;
+    model.text_semantic_evidence = text_interpreter.interpret(
+        model.text_recognition_evidence);
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

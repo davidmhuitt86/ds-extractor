@@ -141,7 +141,7 @@ WireModel ExtractionPipeline::run(
         distribution_decomposer.decompose(
             graph.nodes,
             graph.edges,
-            endpoint_artifacts.candidates,
+            model.endpoint_candidates,
             normalized_segments,
             source_id,
             0);
@@ -150,7 +150,7 @@ WireModel ExtractionPipeline::run(
     const CircuitRoleResolutionArtifacts role_artifacts =
         circuit_role_resolver.resolve(
             distribution_artifacts.nets,
-            endpoint_artifacts.candidates,
+            model.endpoint_candidates,
             {});
 
     model.electrical_nets = role_artifacts.nets;

@@ -255,6 +255,28 @@ struct ExtractionAudit {
     std::size_t gaps_bridged = 0;
 };
 
+enum class TextSemanticKind {
+    GroundLabel,
+    PowerFeedLabel,
+    SharedFunctionFeedLabel,
+    ComponentLabel,
+    ConnectorLabel,
+    TerminalLabel,
+    WireColorLabel,
+    FunctionLabel,
+    Unknown
+};
+
+struct TextSemanticEvidence {
+    std::string id;
+    std::string text_region_id;
+    std::string raw_text;
+    std::string normalized_text;
+    TextSemanticKind kind = TextSemanticKind::Unknown;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    std::string source;
+};
+
 enum class SemanticAssociationTargetKind {
     Component,
     Endpoint
@@ -286,6 +308,7 @@ struct WireModel {
     std::vector<ComponentCandidate> component_candidates;
     std::vector<TextRegion> text_regions;
     std::vector<SemanticAssociation> semantic_associations;
+    std::vector<TextSemanticEvidence> text_semantic_evidence;
     std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<RejectedGeometryEvidence> rejected_geometry;

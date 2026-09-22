@@ -8,6 +8,19 @@
 namespace eke::dx::wire {
 namespace {
 
+bool point_inside_rect(
+    const Point2D& point,
+    const BoundingBox& box) {
+
+    const double left = static_cast<double>(box.x);
+    const double right = static_cast<double>(box.x + box.width);
+    const double top = static_cast<double>(box.y);
+    const double bottom = static_cast<double>(box.y + box.height);
+
+    return point.x >= left && point.x <= right &&
+           point.y >= top && point.y <= bottom;
+}
+
 double point_to_rect_boundary(
     const Point2D& point,
     const BoundingBox& box) {
@@ -17,9 +30,7 @@ double point_to_rect_boundary(
     const double top = static_cast<double>(box.y);
     const double bottom = static_cast<double>(box.y + box.height);
 
-    const bool inside =
-        point.x >= left && point.x <= right &&
-        point.y >= top && point.y <= bottom;
+    const bool inside = point_inside_rect(point, box);
 
     if (inside) {
         const double dl = point.x - left;
@@ -37,6 +48,22 @@ double point_to_rect_boundary(
         point.y > bottom ? point.y - bottom : 0.0;
 
     return std::sqrt(dx * dx + dy * dy);
+}
+
+double attachment_distance(
+    const Point2D& point,
+    const ComponentCandidate& component,
+    const TerminalLocationConfig& config) {
+
+    // A terminal may be represented by a conductor endpoint landing inside
+    // the detected symbol/enclosure rather than exactly on its outer box.
+    // Treat that as a semantic attachment when explicitly enabled.
+    if (config.allow_interior_attachment &&
+        point_inside_rect(point, component.bounds)) {
+        return 0.0;
+    }
+
+    return point_to_rect_boundary(point, component.bounds);
 }
 
 ConfidenceClass confidence_for_distance(
@@ -85,9 +112,10 @@ TerminalLocationArtifacts TerminalLocationDetector::detect(
 
         for (const auto& component : components) {
             const double distance =
-                point_to_rect_boundary(endpoint.position, component.bounds);
+                attachment_distance(endpoint.position, component, config_);
 
-            if (distance > config_.boundary_tolerance)
+            if (config_.require_component_boundary_proximity &&
+                distance > config_.boundary_tolerance)
                 continue;
 
             if (distance < best_distance ||

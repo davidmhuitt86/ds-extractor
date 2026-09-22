@@ -29,6 +29,13 @@ enum class EndpointKind {
     Unresolved
 };
 
+enum class DistributionRole {
+    Unknown,
+    Ground,
+    PowerFeed,
+    SharedFunctionFeed
+};
+
 struct Provenance {
     std::string source_id;
     int page = 0;
@@ -94,6 +101,16 @@ struct Wire {
     bool heavy_cable = false;
 };
 
+struct ElectricalNet {
+    std::string id;
+    std::vector<std::string> endpoint_ids;
+    std::vector<std::string> splice_node_ids;
+    std::vector<std::string> topology_edges;
+    DistributionRole role = DistributionRole::Unknown;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    std::string anchor_endpoint;
+};
+
 struct WireModel {
     std::string source_id;
     int page = 0;
@@ -104,6 +121,7 @@ struct WireModel {
     std::vector<TopologyNode> nodes;
     std::vector<TopologyEdge> edges;
     std::vector<EndpointCandidate> endpoint_candidates;
+    std::vector<ElectricalNet> electrical_nets;
     std::vector<Wire> wires;
 };
 

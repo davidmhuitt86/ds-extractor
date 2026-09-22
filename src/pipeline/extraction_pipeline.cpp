@@ -4,6 +4,7 @@
 #include "eke_dx_wire/core/extraction_audit.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
+#include "eke_dx_wire/image/conductor_evidence_evaluator.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
@@ -65,9 +66,15 @@ WireModel ExtractionPipeline::run(
     const std::vector<ComponentCandidate> component_candidates =
         component_classifier.classify(shapes);
 
+    ConductorEvidenceEvaluator evidence_evaluator(config_.conductor_evidence);
+    const ConductorEvidenceArtifacts evidence =
+        evidence_evaluator.evaluate(
+            detected.conductor_segments,
+            normalized);
+
     ConductorNormalizer normalizer(config_.geometry);
     const std::vector<ConductorSegment> normalized_segments =
-        normalizer.normalize(detected.conductor_segments);
+        normalizer.normalize(evidence.accepted);
 
     TopologyReconstructor topology(config_.topology);
     TopologyArtifacts graph =
@@ -101,6 +108,7 @@ WireModel ExtractionPipeline::run(
     model.component_candidates = component_candidates;
     model.text_regions = text_regions.regions;
     model.conductor_segments = normalized_segments;
+    model.rejected_geometry = evidence.rejected;
     model.nodes = graph.nodes;
     model.edges = graph.edges;
     model.endpoint_candidates = endpoint_artifacts.candidates;

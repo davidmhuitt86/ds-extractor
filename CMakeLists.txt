@@ -18,6 +18,7 @@ find_package(OpenCV 5 REQUIRED COMPONENTS core imgproc imgcodecs highgui)
 add_library(eke_dx_wire
     src/core/geometry.cpp
     src/core/ids.cpp
+    src/core/extraction_audit.cpp
     src/image/image_loader.cpp
     src/image/normalizer.cpp
     src/image/morphology_detector.cpp
@@ -124,6 +125,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-wire-model-validator tests/test_wire_model_validator.cpp)
     target_link_libraries(dx-wire-test-wire-model-validator PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-wire-model-validator COMMAND dx-wire-test-wire-model-validator)
+
+    add_executable(dx-wire-test-extraction-audit tests/test_extraction_audit.cpp)
+    target_link_libraries(dx-wire-test-extraction-audit PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-extraction-audit COMMAND dx-wire-test-extraction-audit)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

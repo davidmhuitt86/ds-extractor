@@ -1,6 +1,6 @@
 #pragma once
 
-#include "eke_dx_wire/core/geometry.hpp"
+#include "eke_dx_wire/core/model.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 
 #include <string>

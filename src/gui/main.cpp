@@ -152,7 +152,7 @@ bool launch_release_pipeline(bool build_only = false) {
 
     const std::wstring script_path = script.wstring();
     std::wstring command =
-        L"powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"" +
+        L"powershell.exe -NoProfile -NoExit -ExecutionPolicy Bypass -File \"" +
         script_path + L"\"" +
         (build_only ? L" -BuildOnly" : L"");
 

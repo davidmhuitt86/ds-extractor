@@ -43,35 +43,44 @@ This is why wire identity cannot be assigned during pixel detection.
 
 ## Current implementation
 
+The extractor has progressed from conductor geometry extraction into a multi-stage engineering reconstruction pipeline.
+
 Implemented:
 
 - C++23/CMake project structure.
-- raster image inspection/extraction.
+- OpenCV-based raster processing.
+- Native Windows PDF first-page rendering.
 - adaptive thresholding.
 - horizontal/vertical morphology.
-- connected-component conductor candidates.
-- centerline generation.
-- vector SVG projection.
-- deterministic candidate IDs.
-- separate geometry and ID tests.
-
-Not yet implemented:
-
-- PDF-native source rendering.
-- non-wire region detection/clipping.
-- collinear merging.
-- endpoint snapping.
+- conductor candidate detection and normalization.
+- shape detection and non-wire geometry exclusion.
 - topology graph construction.
-- true component/terminal endpoint attachment.
-- endpoint-to-endpoint wire reconstruction.
-- junction/crossing semantics.
-- heavy-cable classification.
-- complete validation/overlay.
-- GUI.
+- gap interpretation.
+- endpoint reconstruction.
+- endpoint semantic reconstruction.
+- connector and connector-terminal modeling.
+- component identity evidence and deterministic resolution.
+- injectable component identity registry/canonicalization boundary.
+- component symbol recognition model boundary.
+- electrical-net resolution.
+- deterministic wire reconstruction.
+- semantic evidence and recognition-provider boundaries.
+- canonical extraction artifacts.
+- structured conductor SVG projection.
+- visual extraction review layers.
+- automatic extraction-review publication to main.
 
-The implementation must keep conductor detection, topology reconstruction,
-and wire identity as separate stages.
+The current system distinguishes observed conductor geometry from engineering wire identity. It does not treat every detected line as a wire.
 
+### Current engineering-model limitation
+
+AP-WIRE-021 currently establishes the component-symbol recognition boundary but does not yet perform deep visual recognition of specific electrical symbols. The latest TRX300 extraction demonstrates that component regions are being detected substantially more reliably than their internal symbol geometry.
+
+The next engineering correction is internal symbol geometry extraction followed by true symbol recognition.
+
+For the complete project history, current metrics, architecture, and remaining gaps, see:
+
+    docs/PROJECT_STATUS_AND_GAP_ANALYSIS.md
 
 ## Development GUI
 
@@ -89,32 +98,37 @@ This is not the final OEP/EKE user interface.
 
 ## Release automation
 
-The Windows development GUI includes a **RELEASE / PR** action.
+The Windows development GUI includes a RELEASE action.
 
-The action closes the GUI and launches:
+The action launches:
 
     tools/dx-release.ps1
 
-The release pipeline:
+The current release validation pipeline:
 
-1. verifies Git and GitHub CLI authentication.
-2. configures the CMake Release build.
-3. builds all Release targets.
-4. runs the complete Release CTest suite.
-5. stops immediately if configuration, compilation, or tests fail.
-6. creates a feature branch when invoked from `main`/ `master`.
-7. commits working-tree changes.
-8. pushes the feature branch.
-9. creates a GitHub pull request targeting `main`.
+1. verifies the repository and main branch.
+2. pulls the latest main.
+3. configures the CMake Release build.
+4. builds all Release targets serially.
+5. runs the complete Release CTest suite.
+6. verifies that the Release GUI exists.
+7. relaunches the GUI.
 
-The pipeline never merges a pull request.
+The release validation workflow does not commit, push, create pull requests, stash changes, or reset the working tree.
 
-The same script can be run directly:
+### Extraction review publication
 
-    powershell -ExecutionPolicy Bypass -File tools/dx-release.ps1
+Each successful extraction generates:
 
-For build/test only:
+    artifacts/extraction_review/
 
-    powershell -ExecutionPolicy Bypass -File tools/dx-release.ps1 -BuildOnly
+with source, wire, wire-color, symbol, terminal, connector, splice, ground, label, topology, bounds, endpoint, recognition, and combined review images plus review_manifest.json.
 
-GitHub CLI (`gh`) must be installed and authenticated for automatic PR creation.
+The review directory is regenerated for each extraction.
+
+The review publisher is:
+
+    tools/dx-publish-review.ps1
+
+It stages only the extraction-review artifacts and publishes the review commit to main. It is intended to make extraction AARs repeatable without manually taking GUI screenshots.
+

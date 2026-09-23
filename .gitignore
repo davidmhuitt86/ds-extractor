@@ -17,3 +17,8 @@ CTestTestfile.cmake
 
 # Local extraction output
 outputs/
+
+# Generated extraction artifacts
+artifacts/
+output/
+project.json

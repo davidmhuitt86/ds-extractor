@@ -24,6 +24,7 @@
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
 #include "eke_dx_wire/topology/semantic_observation_resolver.hpp"
+#include "eke_dx_wire/topology/engineering_object_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
@@ -240,6 +241,14 @@ WireModel ExtractionPipeline::run(
     TextEvidenceInterpreter text_interpreter;
     model.text_semantic_evidence = text_interpreter.interpret(
         model.text_recognition_evidence);
+
+    // AP-WIRE-014: resolve recognized semantic observations to the nearest
+    // engineering object without mutating geometry or topology. Ambiguous
+    // associations remain unresolved and are omitted from the resolved set.
+    EngineeringObjectSemanticResolver object_semantic_resolver;
+    model.engineering_object_semantics = object_semantic_resolver.resolve(
+        model.text_semantic_evidence,
+        model.semantic_associations);
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

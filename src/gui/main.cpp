@@ -912,7 +912,7 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     if (trace) gui_log("RENDER 1: enter");
 
     canvas_size.width = (std::max)(canvas_size.width, 1100);
-    canvas_size.height = (std::max)(canvas_size.height, 900);
+    canvas_size.height = (std::max)(canvas_size.height, 940);
 
     cv::Mat canvas(
         canvas_size, CV_8UC3, cv::Scalar(238, 238, 238));
@@ -1092,7 +1092,11 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     draw_button(panel, {18, 507, 135, 34}, "RUN EXTRACT");
     draw_button(panel, {165, 507, 135, 34}, "RESET");
 
-    const int button_y = 505;
+    const int button_y = 555;
+
+    cv::putText(panel, "VIEW", {18, 550},
+                cv::FONT_HERSHEY_SIMPLEX, 0.46,
+                cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
 
     draw_button(panel, {18, button_y, 84, 28},
                 "SOURCE", state.view == ViewMode::Source);
@@ -1113,36 +1117,32 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     draw_button(panel, {108, button_y + 68, 84, 28},
                 "SHAPES", state.view == ViewMode::Shapes);
 
-    cv::putText(panel, "ENGINEERING LAYERS", {18, 622},
-                cv::FONT_HERSHEY_SIMPLEX, 0.54,
+    cv::putText(panel, "ENGINEERING LAYERS", {18, 666},
+                cv::FONT_HERSHEY_SIMPLEX, 0.52,
                 cv::Scalar(245, 245, 245), 1, cv::LINE_AA);
 
     auto layer_button = [&](int x, int y, const std::string& label, bool active) {
         draw_button(panel, {x, y, 84, 24}, label, active);
     };
 
-    layer_button(18, 632, "BASE", state.layers.base_diagram);
-    layer_button(108, 632, "WIRES", state.layers.wires);
-    layer_button(198, 632, "COLORS", state.layers.wire_colors);
+    layer_button(18, 676, "BASE", state.layers.base_diagram);
+    layer_button(108, 676, "WIRES", state.layers.wires);
+    layer_button(198, 676, "COLORS", state.layers.wire_colors);
 
-    layer_button(18, 660, "SYMBOLS", state.layers.symbols);
-    layer_button(108, 660, "TERMINALS", state.layers.terminals);
-    layer_button(198, 660, "CONNECT", state.layers.connectors);
+    layer_button(18, 704, "SYMBOLS", state.layers.symbols);
+    layer_button(108, 704, "TERMINALS", state.layers.terminals);
+    layer_button(198, 704, "CONNECT", state.layers.connectors);
 
-    layer_button(18, 688, "SPLICES", state.layers.splices);
-    layer_button(108, 688, "GROUNDS", state.layers.grounds);
-    layer_button(198, 688, "LABELS", state.layers.labels);
+    layer_button(18, 732, "SPLICES", state.layers.splices);
+    layer_button(108, 732, "GROUNDS", state.layers.grounds);
+    layer_button(198, 732, "LABELS", state.layers.labels);
 
-    layer_button(18, 716, "DIRECTION", state.layers.wire_direction);
-    layer_button(108, 716, "TOPOLOGY", state.layers.topology);
-    layer_button(198, 716, "BOUNDS", state.layers.component_bounds);
+    layer_button(18, 760, "DIRECTION", state.layers.wire_direction);
+    layer_button(108, 760, "TOPOLOGY", state.layers.topology);
+    layer_button(198, 760, "BOUNDS", state.layers.component_bounds);
 
-    cv::putText(panel, "DIAGNOSTICS", {18, 754},
-                cv::FONT_HERSHEY_SIMPLEX, 0.46,
-                cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
-
-    layer_button(18, 762, "ENDPOINTS", state.layers.endpoint_debug);
-    layer_button(108, 762, "RECOG.", state.layers.recognition_evidence);
+    layer_button(18, 788, "ENDPOINTS", state.layers.endpoint_debug);
+    layer_button(108, 788, "RECOG.", state.layers.recognition_evidence);
 
     cv::rectangle(
         canvas,
@@ -1325,10 +1325,31 @@ void handle_mouse(
         }
 
         if (x >= panel_left &&
-            y >= kToolbarHeight + 632 &&
-            y < kToolbarHeight + 786) {
+            y >= kToolbarHeight + 555 &&
+            y < kToolbarHeight + 651) {
             const int bx = panel_x;
-            const int local_y = y - (kToolbarHeight + 632);
+            const int local_y = y - (kToolbarHeight + 555);
+
+            if (local_y < 28) {
+                if (bx >= 18 && bx < 102) state.view = ViewMode::Source;
+                else if (bx >= 108 && bx < 192) state.view = ViewMode::Binary;
+                else if (bx >= 198 && bx < 282) state.view = ViewMode::HorizontalMask;
+            } else if (local_y < 62) {
+                if (bx >= 18 && bx < 102) state.view = ViewMode::VerticalMask;
+                else if (bx >= 108 && bx < 192) state.view = ViewMode::Conductors;
+                else if (bx >= 198 && bx < 282) state.view = ViewMode::Topology;
+            } else if (bx >= 18 && bx < 102) {
+                state.view = ViewMode::Endpoints;
+            } else if (bx >= 108 && bx < 192) {
+                state.view = ViewMode::Shapes;
+            }
+        }
+
+        if (x >= panel_left &&
+            y >= kToolbarHeight + 676 &&
+            y < kToolbarHeight + 820) {
+            const int bx = panel_x;
+            const int local_y = y - (kToolbarHeight + 676);
             const int row = local_y / 28;
             const int col =
                 bx < 102 ? 0 :
@@ -1448,7 +1469,7 @@ int main(int argc, char** argv) {
                 cv::getWindowImageRect(kWindow).size();
 
             state.canvas_width = (std::max)(size.width, 1100);
-            state.canvas_height = (std::max)(size.height, 900);
+            state.canvas_height = (std::max)(size.height, 940);
             cv::imshow(kWindow, render(state, size));
 
             const int key = cv::waitKey(30);

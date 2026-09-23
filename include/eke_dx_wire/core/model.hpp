@@ -283,6 +283,7 @@ struct ExtractionAudit {
 
     // Components / shapes
     std::size_t shapes = 0;
+    std::size_t component_symbol_recognitions = 0;
     std::size_t enclosure_shapes = 0;
     std::size_t circular_shapes = 0;
     std::size_t chassis_ground_shapes = 0;

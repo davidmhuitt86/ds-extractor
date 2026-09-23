@@ -23,6 +23,9 @@ int main() {
     assert(fs::exists(original));
     assert(fs::is_regular_file(original));
 
+    const cv::Mat image = cv::imread(original.string(), cv::IMREAD_GRAYSCALE);
+    assert(!image.empty());
+
     WireModel model;
     model.source_id = "fixture";
     model.page = 0;
@@ -56,7 +59,7 @@ int main() {
     assert(fs::exists(output / "instructions.md"));
     assert(fs::exists(output / "schema.json"));
     assert(fs::exists(output / "source_normalized.png"));
-    assert(fs::exists(output / "source_original" / "source.png"));
+    assert(fs::exists(output / "source_original" / "trx300ODG.png"));
     assert(fs::exists(output / "regions" / "text-region-test.json"));
     assert(fs::exists(output / "regions" / "crops" / "text-region-test.png"));
 

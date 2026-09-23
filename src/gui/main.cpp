@@ -156,7 +156,7 @@ bool launch_release_pipeline() {
         script_path + L"\"";
 
     std::vector<wchar_t> command_line(command.begin(), command.end());
-    command_line.push_back(L'\\0');
+    command_line.push_back(L'\0');
 
     STARTUPINFOW startup {};
     startup.cb = sizeof(startup);

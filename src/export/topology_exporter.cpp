@@ -360,6 +360,31 @@ void TopologyExporter::export_json(
         if (i + 1 != model.component_identity_resolutions.size()) out << ",";
         out << "\n";
     }
+    out << "  ],\n  \"component_identity_canonicalizations\": [\n";
+    for (std::size_t i = 0; i < model.component_identity_canonicalizations.size(); ++i) {
+        const auto& canonicalization =
+            model.component_identity_canonicalizations[i];
+        const char* status =
+            canonicalization.status ==
+                ComponentIdentityCanonicalizationStatus::Resolved
+                ? "resolved"
+                : canonicalization.status ==
+                    ComponentIdentityCanonicalizationStatus::Conflicted
+                    ? "conflicted"
+                    : "not_found";
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(canonicalization.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(canonicalization.component_id) << "\",\n"
+            << "      \"source_resolution_id\": \"" << json_escape(canonicalization.source_resolution_id) << "\",\n"
+            << "      \"source_identity\": \"" << json_escape(canonicalization.source_identity) << "\",\n"
+            << "      \"canonical_id\": \"" << json_escape(canonicalization.canonical_id) << "\",\n"
+            << "      \"canonical_name\": \"" << json_escape(canonicalization.canonical_name) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(canonicalization.confidence) << "\",\n"
+            << "      \"status\": \"" << status << "\"\n"
+            << "    }";
+        if (i + 1 != model.component_identity_canonicalizations.size()) out << ",";
+        out << "\n";
+    }
     out << "  ],\n  \"electrical_nets\": [\n";
     for (std::size_t i = 0; i < model.electrical_nets.size(); ++i) {
         const auto& net = model.electrical_nets[i];

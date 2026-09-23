@@ -248,6 +248,11 @@ struct WireValidationIssue {
     std::string detail;
 };
 
+struct WireValidationIssueSummary {
+    std::string code;
+    std::size_t count = 0;
+};
+
 struct WireValidationReport {
     bool valid = true;
     std::size_t wires_checked = 0;
@@ -306,6 +311,7 @@ struct ExtractionAudit {
     std::size_t validation_errors = 0;
     std::size_t validation_warnings = 0;
     std::size_t valid_wires = 0;
+    std::vector<WireValidationIssueSummary> validation_warning_summaries;
 
     // Pipeline evidence
     std::size_t gaps_bridged = 0;

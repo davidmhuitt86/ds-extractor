@@ -229,6 +229,44 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    out << "  ],\n  \"endpoint_semantic_reconstructions\": [\n";
+    auto endpoint_reconstruction_status_name =
+        [](EndpointSemanticReconstructionStatus status) {
+            switch (status) {
+            case EndpointSemanticReconstructionStatus::Resolved:
+                return "resolved";
+            case EndpointSemanticReconstructionStatus::Conflicted:
+                return "conflicted";
+            case EndpointSemanticReconstructionStatus::Unresolved:
+                return "unresolved";
+            }
+            return "unresolved";
+        };
+
+    for (std::size_t i = 0;
+         i < model.endpoint_semantic_reconstructions.size(); ++i) {
+        const auto& reconstruction =
+            model.endpoint_semantic_reconstructions[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(reconstruction.id) << "\",\n"
+            << "      \"endpoint_id\": \"" << json_escape(reconstruction.endpoint_id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(reconstruction.component_id) << "\",\n"
+            << "      \"endpoint_kind\": \"" << endpoint_kind_name(reconstruction.endpoint_kind) << "\",\n"
+            << "      \"terminal_role\": \"" << terminal_role_name(reconstruction.terminal_role) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(reconstruction.confidence) << "\",\n"
+            << "      \"status\": \"" << endpoint_reconstruction_status_name(reconstruction.status) << "\",\n"
+            << "      \"evidence_component_ids\": [";
+        for (std::size_t j = 0;
+             j < reconstruction.evidence_component_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(reconstruction.evidence_component_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.endpoint_semantic_reconstructions.size())
+            out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"wires\": [\n";
     for (std::size_t i = 0; i < model.wires.size(); ++i) {
         const auto& wire = model.wires[i];

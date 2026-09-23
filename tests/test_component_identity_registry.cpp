@@ -71,29 +71,33 @@ int main() {
 
     if (canonicalized.size() != 3) return 1;
 
-    const auto find_by_source = [&](const std::string& id) -> const ComponentIdentityCanonicalization& {
+    const auto find_by_source = [&](const std::string& id)
+        -> const ComponentIdentityCanonicalization* {
         for (const auto& item : canonicalized) {
             if (item.source_resolution_id == id) {
-                return item;
+                return &item;
             }
         }
-        return canonicalized.front();
+        return nullptr;
     };
 
-    const auto& resolved = find_by_source("resolution-1");
-    if (resolved.status != ComponentIdentityCanonicalizationStatus::Resolved ||
-        resolved.canonical_id != "component.honda.ignition-switch" ||
-        resolved.canonical_name != "Ignition Switch" ||
-        resolved.confidence != ConfidenceClass::High) return 1;
+    const auto* resolved = find_by_source("resolution-1");
+    if (resolved == nullptr ||
+        resolved->status != ComponentIdentityCanonicalizationStatus::Resolved ||
+        resolved->canonical_id != "component.honda.ignition-switch" ||
+        resolved->canonical_name != "Ignition Switch" ||
+        resolved->confidence != ConfidenceClass::High) return 1;
 
-    const auto& not_found = find_by_source("resolution-2");
-    if (not_found.status != ComponentIdentityCanonicalizationStatus::NotFound ||
-        !not_found.canonical_id.empty() ||
-        not_found.confidence != ConfidenceClass::Unresolved) return 1;
+    const auto* not_found = find_by_source("resolution-2");
+    if (not_found == nullptr ||
+        not_found->status != ComponentIdentityCanonicalizationStatus::NotFound ||
+        !not_found->canonical_id.empty() ||
+        not_found->confidence != ConfidenceClass::Unresolved) return 1;
 
-    const auto& conflicted = find_by_source("resolution-3");
-    if (conflicted.status != ComponentIdentityCanonicalizationStatus::Conflicted ||
-        !conflicted.canonical_id.empty()) return 1;
+    const auto* conflicted = find_by_source("resolution-3");
+    if (conflicted == nullptr ||
+        conflicted->status != ComponentIdentityCanonicalizationStatus::Conflicted ||
+        !conflicted->canonical_id.empty()) return 1;
 
     NullComponentIdentityRegistry null_registry;
     const auto null_result = canonicalizer.canonicalize(

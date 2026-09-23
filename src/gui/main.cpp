@@ -565,7 +565,7 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     toolbar_button(315, 105, "CONDUCTORS");
     toolbar_button(430, 95, "TOPOLOGY");
     toolbar_button(535, 145, "BUILD / TEST");
-    toolbar_button(690, 145, "RELEASE / PR");
+    toolbar_button(690, 145, "RELEASE");
     toolbar_button(845, 42, "ZOOM +");
     toolbar_button(893, 42, "ZOOM -");
     toolbar_button(941, 72, "FIT VIEW");

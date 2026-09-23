@@ -277,6 +277,24 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    out << "  ],\\n  \"engineering_object_semantics\": [\\n";
+    for (std::size_t i = 0; i < model.engineering_object_semantics.size(); ++i) {
+        const auto& resolution = model.engineering_object_semantics[i];
+        out << "    {\\n"
+            << "      \"id\": \"" << json_escape(resolution.id) << "\",\\n"
+            << "      \"text_region_id\": \"" << json_escape(resolution.text_region_id) << "\",\\n"
+            << "      \"target_id\": \"" << json_escape(resolution.target_id) << "\",\\n"
+            << "      \"target_kind\": \"" << association_target_kind_name(resolution.target_kind) << "\",\\n"
+            << "      \"semantic_kind\": \"" << text_semantic_kind_name(resolution.semantic_kind) << "\",\\n"
+            << "      \"raw_text\": \"" << json_escape(resolution.raw_text) << "\",\\n"
+            << "      \"normalized_text\": \"" << json_escape(resolution.normalized_text) << "\",\\n"
+            << "      \"confidence\": \"" << confidence_name(resolution.confidence) << "\",\\n"
+            << "      \"distance\": " << resolution.distance << ",\\n"
+            << "      \"source\": \"" << json_escape(resolution.source) << "\"\\n"
+            << "    }";
+        if (i + 1 != model.engineering_object_semantics.size()) out << ",";
+        out << "\\n";
+    }
     out << "  ],\n  \"electrical_nets\": [\n";
     for (std::size_t i = 0; i < model.electrical_nets.size(); ++i) {
         const auto& net = model.electrical_nets[i];

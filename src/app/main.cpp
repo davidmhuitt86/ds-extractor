@@ -143,11 +143,11 @@ static int extract(const std::string& image_path, const std::string& output, con
             first_net = false;
 
             const DistributionRole baseline_role =
-                baseline_it == baseline_model.electrical_nets.end()
+                baseline_it == baseline_model.value().electrical_nets.end()
                     ? DistributionRole::Unknown
                     : baseline_it->role;
             const ConfidenceClass baseline_confidence =
-                baseline_it == baseline_model.electrical_nets.end()
+                baseline_it == baseline_model.value().electrical_nets.end()
                     ? ConfidenceClass::Unresolved
                     : baseline_it->confidence;
 

@@ -86,7 +86,16 @@ void write_audit(const WireModel& model, const fs::path& path) {
         << "  \"validation\": {\n"
         << "    \"valid_wires\": " << audit.valid_wires << ",\n"
         << "    \"errors\": " << audit.validation_errors << ",\n"
-        << "    \"warnings\": " << audit.validation_warnings << "\n"
+        << "    \"warnings\": " << audit.validation_warnings << ",\n"
+        << "    \"warning_codes\": {\n";
+
+    for (std::size_t i = 0; i < audit.validation_warning_summaries.size(); ++i) {
+        const auto& summary = audit.validation_warning_summaries[i];
+        out << "      \"" << summary.code << "\": " << summary.count
+            << (i + 1 == audit.validation_warning_summaries.size() ? "\n" : ",\n");
+    }
+
+    out << "    }\n"
         << "  }\n"
         << "}\n";
 }

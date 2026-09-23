@@ -211,6 +211,23 @@ enum class ViewMode {
     Shapes
 };
 
+struct DiagramLayerState {
+    bool base_diagram = true;
+    bool wires = true;
+    bool wire_colors = false;
+    bool symbols = true;
+    bool terminals = true;
+    bool connectors = true;
+    bool splices = true;
+    bool grounds = true;
+    bool labels = true;
+    bool wire_direction = false;
+    bool topology = false;
+    bool component_bounds = false;
+    bool endpoint_debug = false;
+    bool recognition_evidence = false;
+};
+
 struct GuiState {
     std::string image_path;
     std::filesystem::path artifact_root;
@@ -221,6 +238,8 @@ struct GuiState {
     TopologyArtifacts topology;
     GapInterpretationArtifacts gap_interpretation;
     EndpointArtifacts endpoints;
+    WireModel model;
+    DiagramLayerState layers {};
 
     MorphologyConfig config {};
     bool extracted = false;
@@ -295,6 +314,7 @@ void load_image(GuiState& state, const std::string& path) {
     state.topology = {};
     state.gap_interpretation = {};
     state.endpoints = {};
+    state.model = {};
     state.image_path = path;
     state.extracted = false;
     state.render_trace_pending = true;
@@ -346,6 +366,8 @@ void extract(GuiState& state) {
     ExtractionPipeline artifact_pipeline(artifact_config);
     const WireModel artifact_model =
         artifact_pipeline.run(state.image_path, state.image_path);
+
+    state.model = artifact_model;
 
     ExtractionArtifactWriter::write(
         artifact_model,
@@ -519,6 +541,327 @@ void overlay_endpoints(
 }
 
 
+std::string normalized_color_name(std::string value) {
+    std::transform(value.begin(), value.end(), value.begin(),
+                   [](unsigned char ch) {
+                       return static_cast<char>(std::tolower(ch));
+                   });
+    value.erase(std::remove_if(value.begin(), value.end(),
+                               [](unsigned char ch) {
+                                   return std::isspace(ch) || ch == '-' || ch == '_';
+                               }),
+                value.end());
+    return value;
+}
+
+cv::Scalar wire_color_scalar(const std::string& value) {
+    const std::string color = normalized_color_name(value);
+    if (color == "black") return cv::Scalar(20, 20, 20);
+    if (color == "white") return cv::Scalar(245, 245, 245);
+    if (color == "red") return cv::Scalar(40, 40, 220);
+    if (color == "orange") return cv::Scalar(20, 150, 240);
+    if (color == "yellow") return cv::Scalar(40, 220, 240);
+    if (color == "green") return cv::Scalar(50, 180, 60);
+    if (color == "blue") return cv::Scalar(220, 80, 40);
+    if (color == "purple" || color == "violet") return cv::Scalar(180, 70, 170);
+    if (color == "pink") return cv::Scalar(190, 100, 220);
+    if (color == "brown") return cv::Scalar(50, 80, 130);
+    if (color == "gray" || color == "grey") return cv::Scalar(130, 130, 130);
+    return cv::Scalar(0, 0, 220);
+}
+
+const EndpointCandidate* find_endpoint(
+    const WireModel& model, const std::string& id) {
+    const auto it = std::find_if(
+        model.endpoint_candidates.begin(),
+        model.endpoint_candidates.end(),
+        [&](const EndpointCandidate& endpoint) {
+            return endpoint.id == id;
+        });
+    return it == model.endpoint_candidates.end() ? nullptr : &*it;
+}
+
+const ComponentCandidate* find_component(
+    const WireModel& model, const std::string& id) {
+    const auto it = std::find_if(
+        model.component_candidates.begin(),
+        model.component_candidates.end(),
+        [&](const ComponentCandidate& component) {
+            return component.id == id;
+        });
+    return it == model.component_candidates.end() ? nullptr : &*it;
+}
+
+void overlay_wire_colors(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    std::unordered_map<std::string, std::string> segment_colors;
+    std::unordered_set<std::string> ambiguous_segments;
+
+    for (const auto& wire : state.model.wires) {
+        const EndpointCandidate* start =
+            find_endpoint(state.model, wire.start_endpoint);
+        const EndpointCandidate* end =
+            find_endpoint(state.model, wire.end_endpoint);
+        const std::string start_color =
+            start ? normalized_color_name(start->wire_color) : std::string {};
+        const std::string end_color =
+            end ? normalized_color_name(end->wire_color) : std::string {};
+
+        std::string color;
+        if (!start_color.empty() && !end_color.empty() &&
+            start_color == end_color) {
+            color = start_color;
+        } else if (!start_color.empty() && end_color.empty()) {
+            color = start_color;
+        } else if (start_color.empty() && !end_color.empty()) {
+            color = end_color;
+        }
+
+        if (color.empty())
+            continue;
+
+        for (const auto& segment_id : wire.conductor_segments) {
+            const auto existing = segment_colors.find(segment_id);
+            if (existing != segment_colors.end() && existing->second != color) {
+                ambiguous_segments.insert(segment_id);
+                segment_colors.erase(existing);
+            } else if (!ambiguous_segments.contains(segment_id)) {
+                segment_colors[segment_id] = color;
+            }
+        }
+    }
+
+    for (const auto& segment : state.model.conductor_segments) {
+        const auto it = segment_colors.find(segment.id);
+        if (it == segment_colors.end())
+            continue;
+
+        cv::Point a(
+            static_cast<int>(segment.geometry.a.x * scale),
+            static_cast<int>(segment.geometry.a.y * scale));
+        cv::Point b(
+            static_cast<int>(segment.geometry.b.x * scale),
+            static_cast<int>(segment.geometry.b.y * scale));
+
+        cv::line(display, a, b, wire_color_scalar(it->second), 3, cv::LINE_AA);
+    }
+}
+
+void overlay_symbols(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& recognition : state.model.component_symbol_recognitions) {
+        const ComponentCandidate* component =
+            find_component(state.model, recognition.component_id);
+        if (!component)
+            continue;
+
+        cv::Rect r(
+            static_cast<int>(component->bounds.x * scale),
+            static_cast<int>(component->bounds.y * scale),
+            (std::max)(1, static_cast<int>(component->bounds.width * scale)),
+            (std::max)(1, static_cast<int>(component->bounds.height * scale)));
+
+        cv::Scalar color(220, 180, 40);
+        if (recognition.symbol_kind == ComponentSymbolKind::ChassisGround)
+            color = cv::Scalar(80, 220, 80);
+        else if (recognition.symbol_kind == ComponentSymbolKind::Enclosure)
+            color = cv::Scalar(220, 120, 40);
+
+        cv::rectangle(display, r, color, 2, cv::LINE_AA);
+    }
+}
+
+void overlay_terminals(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& endpoint : state.model.endpoint_candidates) {
+        cv::Point p(
+            static_cast<int>(endpoint.position.x * scale),
+            static_cast<int>(endpoint.position.y * scale));
+
+        if (endpoint.terminal_role == TerminalRole::ConnectorTerminal) {
+            cv::polylines(display,
+                          std::vector<std::vector<cv::Point>>{
+                              {{p.x, p.y - 6}, {p.x + 6, p.y}, {p.x, p.y + 6},
+                               {p.x - 6, p.y}}},
+                          true, cv::Scalar(255, 180, 40), 2, cv::LINE_AA);
+        } else if (endpoint.terminal_role == TerminalRole::ComponentTerminal) {
+            cv::circle(display, p, 5, cv::Scalar(40, 220, 220), 2, cv::LINE_AA);
+        }
+    }
+}
+
+void overlay_connectors(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& connector : state.model.connector_candidates) {
+        cv::Rect r(
+            static_cast<int>(connector.bounds.x * scale),
+            static_cast<int>(connector.bounds.y * scale),
+            (std::max)(1, static_cast<int>(connector.bounds.width * scale)),
+            (std::max)(1, static_cast<int>(connector.bounds.height * scale)));
+        cv::rectangle(display, r, cv::Scalar(255, 150, 40), 2, cv::LINE_AA);
+    }
+
+    for (const auto& terminal : state.model.connector_terminals) {
+        cv::Point p(
+            static_cast<int>(terminal.position.x * scale),
+            static_cast<int>(terminal.position.y * scale));
+        cv::circle(display, p, 3, cv::Scalar(255, 220, 60), cv::FILLED, cv::LINE_AA);
+    }
+}
+
+void overlay_splices(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& node : state.model.nodes) {
+        if (node.type != TopologyNodeType::Splice &&
+            node.type != TopologyNodeType::Junction)
+            continue;
+
+        cv::Point p(
+            static_cast<int>(node.position.x * scale),
+            static_cast<int>(node.position.y * scale));
+        cv::circle(display, p, 5, cv::Scalar(0, 220, 120), 2, cv::LINE_AA);
+    }
+}
+
+void overlay_grounds(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& endpoint : state.model.endpoint_candidates) {
+        if (endpoint.kind != EndpointKind::Ground)
+            continue;
+
+        cv::Point p(
+            static_cast<int>(endpoint.position.x * scale),
+            static_cast<int>(endpoint.position.y * scale));
+        cv::line(display, {p.x, p.y}, {p.x, p.y + 9},
+                  cv::Scalar(80, 220, 80), 2, cv::LINE_AA);
+        cv::line(display, {p.x - 7, p.y + 9}, {p.x + 7, p.y + 9},
+                  cv::Scalar(80, 220, 80), 2, cv::LINE_AA);
+        cv::line(display, {p.x - 4, p.y + 13}, {p.x + 4, p.y + 13},
+                  cv::Scalar(80, 220, 80), 2, cv::LINE_AA);
+    }
+}
+
+void overlay_labels(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& endpoint : state.model.endpoint_candidates) {
+        std::string label = endpoint.terminal_name;
+        if (label.empty())
+            label = endpoint.function_label;
+        if (label.empty())
+            label = endpoint.wire_color;
+        if (label.empty())
+            continue;
+
+        cv::Point p(
+            static_cast<int>(endpoint.position.x * scale) + 6,
+            static_cast<int>(endpoint.position.y * scale) - 6);
+        cv::putText(display, label, p, cv::FONT_HERSHEY_SIMPLEX, 0.38,
+                    cv::Scalar(245, 245, 245), 1, cv::LINE_AA);
+    }
+
+    for (const auto& component : state.model.component_candidates) {
+        if (component.semantic_labels.empty())
+            continue;
+        cv::Point p(
+            static_cast<int>(component.bounds.x * scale),
+            static_cast<int>(component.bounds.y * scale) - 4);
+        cv::putText(display, component.semantic_labels.front(), p,
+                    cv::FONT_HERSHEY_SIMPLEX, 0.42,
+                    cv::Scalar(245, 245, 245), 1, cv::LINE_AA);
+    }
+}
+
+void overlay_wire_direction(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& wire : state.model.wires) {
+        const EndpointCandidate* start =
+            find_endpoint(state.model, wire.start_endpoint);
+        const EndpointCandidate* end =
+            find_endpoint(state.model, wire.end_endpoint);
+        if (!start || !end)
+            continue;
+
+        const cv::Point a(
+            static_cast<int>(start->position.x * scale),
+            static_cast<int>(start->position.y * scale));
+        const cv::Point b(
+            static_cast<int>(end->position.x * scale),
+            static_cast<int>(end->position.y * scale));
+        const cv::Point mid((a.x + b.x) / 2, (a.y + b.y) / 2);
+        cv::arrowedLine(display, mid, b, cv::Scalar(80, 220, 255),
+                        2, cv::LINE_AA, 0, 0.25);
+    }
+}
+
+void overlay_component_bounds(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& component : state.model.component_candidates) {
+        cv::Rect r(
+            static_cast<int>(component.bounds.x * scale),
+            static_cast<int>(component.bounds.y * scale),
+            (std::max)(1, static_cast<int>(component.bounds.width * scale)),
+            (std::max)(1, static_cast<int>(component.bounds.height * scale)));
+        cv::rectangle(display, r, cv::Scalar(180, 100, 220), 1, cv::LINE_AA);
+    }
+}
+
+void overlay_endpoint_debug(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& endpoint : state.model.endpoint_candidates) {
+        cv::Point p(
+            static_cast<int>(endpoint.position.x * scale),
+            static_cast<int>(endpoint.position.y * scale));
+        const cv::Scalar color =
+            endpoint.kind == EndpointKind::Ground
+                ? cv::Scalar(80, 220, 80)
+                : endpoint.terminal_role == TerminalRole::ConnectorTerminal
+                    ? cv::Scalar(255, 180, 40)
+                    : endpoint.terminal_role == TerminalRole::ComponentTerminal
+                        ? cv::Scalar(40, 220, 220)
+                        : cv::Scalar(0, 215, 255);
+        cv::circle(display, p, 7, color, 1, cv::LINE_AA);
+    }
+}
+
+void overlay_recognition_evidence(
+    cv::Mat& display,
+    const GuiState& state,
+    double scale) {
+    for (const auto& recognition : state.model.component_symbol_recognitions) {
+        const ComponentCandidate* component =
+            find_component(state.model, recognition.component_id);
+        if (!component)
+            continue;
+
+        cv::Rect r(
+            static_cast<int>(component->bounds.x * scale),
+            static_cast<int>(component->bounds.y * scale),
+            (std::max)(1, static_cast<int>(component->bounds.width * scale)),
+            (std::max)(1, static_cast<int>(component->bounds.height * scale)));
+        cv::rectangle(display, r, cv::Scalar(255, 80, 180), 1, cv::LINE_AA);
+    }
+}
+
 void overlay_shapes(
     cv::Mat& display,
     const GuiState& state,
@@ -547,7 +890,7 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     if (trace) gui_log("RENDER 1: enter");
 
     canvas_size.width = (std::max)(canvas_size.width, 1100);
-    canvas_size.height = (std::max)(canvas_size.height, 760);
+    canvas_size.height = (std::max)(canvas_size.height, 900);
 
     cv::Mat canvas(
         canvas_size, CV_8UC3, cv::Scalar(238, 238, 238));
@@ -634,6 +977,38 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             overlay_shapes(color_view, state, scale);
         }
 
+        if (state.view == ViewMode::Source ||
+            state.view == ViewMode::Conductors ||
+            state.view == ViewMode::Topology ||
+            state.view == ViewMode::Endpoints) {
+            if (state.layers.wires)
+                overlay_conductors(color_view, state, scale);
+            if (state.layers.wire_colors)
+                overlay_wire_colors(color_view, state, scale);
+            if (state.layers.symbols)
+                overlay_symbols(color_view, state, scale);
+            if (state.layers.terminals)
+                overlay_terminals(color_view, state, scale);
+            if (state.layers.connectors)
+                overlay_connectors(color_view, state, scale);
+            if (state.layers.splices)
+                overlay_splices(color_view, state, scale);
+            if (state.layers.grounds)
+                overlay_grounds(color_view, state, scale);
+            if (state.layers.labels)
+                overlay_labels(color_view, state, scale);
+            if (state.layers.wire_direction)
+                overlay_wire_direction(color_view, state, scale);
+            if (state.layers.topology)
+                overlay_topology(color_view, state, scale);
+            if (state.layers.component_bounds)
+                overlay_component_bounds(color_view, state, scale);
+            if (state.layers.endpoint_debug)
+                overlay_endpoint_debug(color_view, state, scale);
+            if (state.layers.recognition_evidence)
+                overlay_recognition_evidence(color_view, state, scale);
+        }
+
         const int centered_x = (image_width - color_view.cols) / 2;
         const int centered_y =
             kToolbarHeight +
@@ -709,6 +1084,37 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
                 "ENDPOINTS", state.view == ViewMode::Endpoints);
     draw_button(panel, {114, button_y + 76, 88, 30},
                 "SHAPES", state.view == ViewMode::Shapes);
+
+    cv::putText(panel, "ENGINEERING LAYERS", {18, 666},
+                cv::FONT_HERSHEY_SIMPLEX, 0.58,
+                cv::Scalar(245, 245, 245), 1, cv::LINE_AA);
+
+    auto layer_button = [&](int x, int y, int w,
+                            const std::string& label, bool active) {
+        draw_button(panel, {x, y, w, 25}, label, active);
+    };
+
+    layer_button(18, 678, 88, "WIRES", state.layers.wires);
+    layer_button(114, 678, 88, "COLORS", state.layers.wire_colors);
+    layer_button(210, 678, 88, "SYMBOLS", state.layers.symbols);
+
+    layer_button(18, 707, 88, "TERMINALS", state.layers.terminals);
+    layer_button(114, 707, 88, "CONNECT", state.layers.connectors);
+    layer_button(210, 707, 88, "SPLICES", state.layers.splices);
+
+    layer_button(18, 736, 88, "GROUNDS", state.layers.grounds);
+    layer_button(114, 736, 88, "LABELS", state.layers.labels);
+    layer_button(210, 736, 88, "DIRECTION", state.layers.wire_direction);
+
+    cv::putText(panel, "DIAGNOSTICS", {18, 770},
+                cv::FONT_HERSHEY_SIMPLEX, 0.50,
+                cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
+
+    layer_button(18, 778, 88, "TOPOLOGY", state.layers.topology);
+    layer_button(114, 778, 88, "BOUNDS", state.layers.component_bounds);
+    layer_button(210, 778, 88, "ENDPOINTS", state.layers.endpoint_debug);
+
+    layer_button(18, 807, 88, "RECOG.", state.layers.recognition_evidence);
 
     cv::rectangle(
         canvas,
@@ -892,6 +1298,39 @@ void handle_mouse(
                 state.view = ViewMode::Shapes;
             }
         }
+
+        if (x >= panel_left &&
+            y >= kToolbarHeight + 678 &&
+            y < kToolbarHeight + 836) {
+            const int bx = panel_x;
+            const int local_y = y - (kToolbarHeight + 678);
+            const int row = local_y / 29;
+            const int col =
+                bx < 106 ? 0 :
+                bx < 202 ? 1 :
+                bx < 298 ? 2 : -1;
+
+            if (col >= 0 && row >= 0 && row <= 5) {
+                bool* target = nullptr;
+                if (row == 0) target = col == 0 ? &state.layers.wires :
+                                      col == 1 ? &state.layers.wire_colors :
+                                                 &state.layers.symbols;
+                else if (row == 1) target = col == 0 ? &state.layers.terminals :
+                                           col == 1 ? &state.layers.connectors :
+                                                      &state.layers.splices;
+                else if (row == 2) target = col == 0 ? &state.layers.grounds :
+                                           col == 1 ? &state.layers.labels :
+                                                      &state.layers.wire_direction;
+                else if (row == 3) target = col == 0 ? &state.layers.topology :
+                                           col == 1 ? &state.layers.component_bounds :
+                                                      &state.layers.endpoint_debug;
+                else if (row == 4 && col == 0)
+                    target = &state.layers.recognition_evidence;
+
+                if (target)
+                    *target = !*target;
+            }
+        }
     }
 
     if (event == cv::EVENT_MOUSEMOVE && state.panning) {
@@ -983,7 +1422,7 @@ int main(int argc, char** argv) {
                 cv::getWindowImageRect(kWindow).size();
 
             state.canvas_width = (std::max)(size.width, 1100);
-            state.canvas_height = (std::max)(size.height, 760);
+            state.canvas_height = (std::max)(size.height, 900);
             cv::imshow(kWindow, render(state, size));
 
             const int key = cv::waitKey(30);

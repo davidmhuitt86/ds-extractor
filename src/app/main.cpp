@@ -95,6 +95,7 @@ static int extract(const std::string& image_path, const std::string& output, con
     WireModel model = pipeline.run(image_path, image_path);
 
     if (!recognition_path.empty()) {
+        fs::create_directories(fs::path(output) / "artifacts" / "recognition");
         std::ofstream report(
             fs::path(output) / "artifacts" / "recognition" /
             "semantic_resolution_report.json");

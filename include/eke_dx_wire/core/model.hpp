@@ -378,6 +378,8 @@ struct ComponentIdentityCanonicalization {
         ComponentIdentityCanonicalizationStatus::NotFound;
 };
 
+struct EndpointSemanticReconstruction;
+
 struct WireModel {
     std::string source_id;
     int page = 0;
@@ -394,6 +396,7 @@ struct WireModel {
     std::vector<ComponentIdentityResolution> component_identity_resolutions;
     std::vector<ComponentIdentityCanonicalization> component_identity_canonicalizations;
     std::vector<TerminalCandidate> terminal_candidates;
+    std::vector<EndpointSemanticReconstruction> endpoint_semantic_reconstructions;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<RejectedGeometryEvidence> rejected_geometry;
     std::vector<TopologyNode> nodes;

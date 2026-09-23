@@ -4,6 +4,7 @@ Version: 0.1.1-foundation
 Language: C++23  
 Build: CMake 3.24+  
 Primary CV dependency: OpenCV 5.x
+Also requires: libcurl (for the optional Anthropic vision recognition provider)
 
 ## Foundation model
 

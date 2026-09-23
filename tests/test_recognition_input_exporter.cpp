@@ -2,13 +2,10 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-
 #include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <string>
-#include <vector>
 
 namespace fs = std::filesystem;
 using namespace eke::dx::wire;
@@ -19,30 +16,12 @@ int main() {
     fs::remove_all(root);
     fs::create_directories(root);
 
-    const fs::path original = root / "source.png";
+    const fs::path original =
+        fs::path(DX_WIRE_SOURCE_DIR) / "samples" / "trx300ODG.png";
     const fs::path output = root / "package";
 
-    cv::Mat image = cv::Mat::zeros(80, 100, CV_8UC1);
-    cv::rectangle(image, cv::Rect(20, 20, 20, 10), cv::Scalar(255), 1);
-    std::vector<uchar> encoded_image;
-    if (!cv::imencode(".png", image, encoded_image)) {
-        return 1;
-    }
-    {
-        std::ofstream image_file(original, std::ios::binary);
-        if (!image_file) {
-            return 1;
-        }
-        image_file.write(
-            reinterpret_cast<const char*>(encoded_image.data()),
-            static_cast<std::streamsize>(encoded_image.size()));
-        if (!image_file) {
-            return 1;
-        }
-    }
-    if (!fs::exists(original) || !fs::is_regular_file(original)) {
-        return 1;
-    }
+    assert(fs::exists(original));
+    assert(fs::is_regular_file(original));
 
     WireModel model;
     model.source_id = "fixture";

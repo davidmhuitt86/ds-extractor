@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <vector>
 
 namespace fs = std::filesystem;
 using namespace eke::dx::wire;
@@ -23,7 +24,25 @@ int main() {
 
     cv::Mat image = cv::Mat::zeros(80, 100, CV_8UC1);
     cv::rectangle(image, cv::Rect(20, 20, 20, 10), cv::Scalar(255), 1);
-    assert(cv::imwrite(original.string(), image));
+    std::vector<uchar> encoded_image;
+    if (!cv::imencode(".png", image, encoded_image)) {
+        return 1;
+    }
+    {
+        std::ofstream image_file(original, std::ios::binary);
+        if (!image_file) {
+            return 1;
+        }
+        image_file.write(
+            reinterpret_cast<const char*>(encoded_image.data()),
+            static_cast<std::streamsize>(encoded_image.size()));
+        if (!image_file) {
+            return 1;
+        }
+    }
+    if (!fs::exists(original) || !fs::is_regular_file(original)) {
+        return 1;
+    }
 
     WireModel model;
     model.source_id = "fixture";

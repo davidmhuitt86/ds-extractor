@@ -180,6 +180,8 @@ void TopologyExporter::export_json(
             switch (status) {
             case ComponentSymbolRecognitionStatus::Recognized:
                 return "recognized";
+            case ComponentSymbolRecognitionStatus::GeometricallyClassified:
+                return "geometrically_classified";
             case ComponentSymbolRecognitionStatus::Unresolved:
                 return "unresolved";
             case ComponentSymbolRecognitionStatus::Conflicted:

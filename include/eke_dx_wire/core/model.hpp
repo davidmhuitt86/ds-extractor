@@ -188,8 +188,18 @@ enum class ComponentSymbolKind {
     Unknown
 };
 
+// `Recognized` is reserved for a symbol whose internal visual geometry was
+// actually classified against a known electrical-symbol family (switch,
+// relay, diode, motor, etc.). No current stage produces it.
+//
+// `GeometricallyClassified` is what ComponentSymbolRecognizer currently
+// produces: the component's ComponentCandidateKind (a coarse geometric
+// bucket - enclosure/circular/chassis-ground/primitive) was carried across
+// the model boundary unchanged. It is not evidence that the specific
+// symbol was identified, only that it was not Unknown-shaped.
 enum class ComponentSymbolRecognitionStatus {
     Recognized,
+    GeometricallyClassified,
     Unresolved,
     Conflicted
 };

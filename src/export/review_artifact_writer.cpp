@@ -312,10 +312,23 @@ void render_recognition(cv::Mat& image, const WireModel& model) {
         const cv::Rect r = bounds(component_item->bounds);
         cv::rectangle(image, r, kind_color(item.symbol_kind), 3, cv::LINE_AA);
 
+        const char* status_label = "unresolved";
+        switch (item.status) {
+        case ComponentSymbolRecognitionStatus::Recognized:
+            status_label = "recognized";
+            break;
+        case ComponentSymbolRecognitionStatus::GeometricallyClassified:
+            status_label = "geometry-bucketed";
+            break;
+        case ComponentSymbolRecognitionStatus::Unresolved:
+            status_label = "unresolved";
+            break;
+        case ComponentSymbolRecognitionStatus::Conflicted:
+            status_label = "conflicted";
+            break;
+        }
         const std::string label =
-            std::string(symbol_name(item.symbol_kind)) + " [" +
-            (item.status == ComponentSymbolRecognitionStatus::Recognized
-                 ? "recognized" : "unresolved") + "]";
+            std::string(symbol_name(item.symbol_kind)) + " [" + status_label + "]";
         cv::putText(image, label, {r.x, r.y + r.height + 15},
                     cv::FONT_HERSHEY_SIMPLEX, 0.40,
                     kind_color(item.symbol_kind), 1, cv::LINE_AA);

@@ -22,10 +22,13 @@ ComponentSymbolKind symbol_kind(ComponentCandidateKind kind) {
     return ComponentSymbolKind::Unknown;
 }
 
+// This recognizer only carries the geometric candidate bucket across the
+// model boundary; it does not classify symbol identity, so a non-Unknown
+// kind is reported as GeometricallyClassified rather than Recognized.
 ComponentSymbolRecognitionStatus status_for(ComponentCandidateKind kind) {
     return kind == ComponentCandidateKind::Unknown
         ? ComponentSymbolRecognitionStatus::Unresolved
-        : ComponentSymbolRecognitionStatus::Recognized;
+        : ComponentSymbolRecognitionStatus::GeometricallyClassified;
 }
 
 std::string make_id(const std::string& component_id) {

@@ -7,6 +7,7 @@
 #include <cassert>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 namespace fs = std::filesystem;
@@ -50,8 +51,18 @@ int main() {
     endpoint.confidence = ConfidenceClass::Medium;
     model.endpoint_candidates.push_back(endpoint);
 
-    RecognitionInputExporter::export_package(
-        model, image, original.string(), output.string());
+    try {
+        RecognitionInputExporter::export_package(
+            model, image, original.string(), output.string());
+    }
+    catch (const std::exception& e) {
+        std::cerr << "EXCEPTION: " << e.what() << std::endl;
+        return 1;
+    }
+    catch (...) {
+        std::cerr << "UNKNOWN EXCEPTION" << std::endl;
+        return 2;
+    }
 
     assert(fs::exists(output / "manifest.json"));
     assert(fs::exists(output / "recognition_input.json"));

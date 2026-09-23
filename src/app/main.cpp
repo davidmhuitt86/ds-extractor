@@ -8,6 +8,7 @@
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
 
 #include <filesystem>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <optional>
@@ -15,6 +16,25 @@
 
 namespace fs = std::filesystem;
 using namespace eke::dx::wire;
+#ifdef _WIN32
+static void publish_review_artifacts(const fs::path& project_root) {
+    const fs::path script = project_root / "tools" / "dx-publish-review.ps1";
+    if (!fs::exists(script))
+        return;
+
+    const std::string command =
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"" +
+        script.string() + "\"";
+    std::cout << "publishing extraction review artifacts...\n";
+    const int result = std::system(command.c_str());
+    if (result != 0)
+        std::cerr << "warning: extraction review publish failed with exit code "
+                  << result << "\n";
+}
+#else
+static void publish_review_artifacts(const fs::path&) {}
+#endif
+
 
 static std::string json_escape(const std::string& value) {
     std::string result;
@@ -168,6 +188,8 @@ static int extract(const std::string& image_path, const std::string& output, con
         ImageNormalizer::normalize(ImageLoader::load(image_path)),
         image_path,
         fs::path(output));
+
+    publish_review_artifacts(fs::current_path());
 
     std::cout << "extracted conductor segments: "
               << model.conductor_segments.size() << "\n"

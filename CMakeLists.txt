@@ -41,6 +41,7 @@ add_library(eke_dx_wire
     src/topology/connector_terminal_model.cpp
     src/topology/component_symbol_recognizer.cpp
     src/topology/circuit_role_resolver.cpp
+    src/topology/electrical_net_resolver.cpp
     src/topology/circuit_role_evidence_builder.cpp
     src/topology/semantic_evidence_associator.cpp
     src/topology/semantic_observation_resolver.cpp
@@ -146,6 +147,7 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-terminal-location-detector tests/test_terminal_location_detector.cpp)
     add_executable(dx-wire-test-connector-terminal-model tests/test_connector_terminal_model.cpp)
     add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)
+    add_executable(dx-wire-test-electrical-net-resolver tests/test_electrical_net_resolver.cpp)
     add_executable(dx-wire-test-circuit-role-evidence-builder tests/test_circuit_role_evidence_builder.cpp)
     add_executable(dx-wire-test-semantic-evidence-associator tests/test_semantic_evidence_associator.cpp)
     add_executable(dx-wire-test-text-evidence-interpreter tests/test_text_evidence_interpreter.cpp)
@@ -156,6 +158,8 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-component-identity-resolver tests/test_component_identity_resolver.cpp)
     add_executable(dx-wire-test-component-identity-registry tests/test_component_identity_registry.cpp)
     target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
+    target_link_libraries(dx-wire-test-electrical-net-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-electrical-net-resolver COMMAND dx-wire-test-electrical-net-resolver)
     add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
     target_link_libraries(dx-wire-test-circuit-role-evidence-builder PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-circuit-role-evidence-builder COMMAND dx-wire-test-circuit-role-evidence-builder)

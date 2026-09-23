@@ -333,6 +333,22 @@ enum class ComponentIdentityEvidenceKind {
     ConnectorLabel
 };
 
+enum class ComponentIdentityResolutionStatus {
+    Resolved,
+    Conflicted,
+    Unresolved
+};
+
+struct ComponentIdentityResolution {
+    std::string id;
+    std::string component_id;
+    std::string identity;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    ComponentIdentityResolutionStatus status =
+        ComponentIdentityResolutionStatus::Unresolved;
+    std::vector<std::string> evidence_ids;
+};
+
 struct ComponentIdentityEvidence {
     std::string id;
     std::string component_id;
@@ -357,6 +373,7 @@ struct WireModel {
     std::vector<TextSemanticEvidence> text_semantic_evidence;
     std::vector<EngineeringObjectSemanticResolution> engineering_object_semantics;
     std::vector<ComponentIdentityEvidence> component_identity_evidence;
+    std::vector<ComponentIdentityResolution> component_identity_resolutions;
     std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<RejectedGeometryEvidence> rejected_geometry;

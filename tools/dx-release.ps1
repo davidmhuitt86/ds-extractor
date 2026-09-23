@@ -50,15 +50,6 @@ try {
 
     Write-Host "Current branch: $branch"
 
-    Step "Checking GitHub CLI"
-    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-        Fail "GitHub CLI (gh.exe) is required for automatic PR creation."
-    }
-    gh auth status
-    if ($LASTEXITCODE -ne 0) {
-        Fail "GitHub CLI is not authenticated. Run: gh auth login"
-    }
-
     Step "Configuring Release build"
     Invoke-Checked "cmake" @("-S", ".", "-B", "build")
 
@@ -72,6 +63,15 @@ try {
         Write-Host ""
         Write-Host "[DX-RELEASE] BUILD + TEST COMPLETE" -ForegroundColor Green
         exit 0
+    }
+
+    Step "Checking GitHub CLI"
+    if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
+        Fail "GitHub CLI (gh.exe) is required for automatic PR creation."
+    }
+    gh auth status
+    if ($LASTEXITCODE -ne 0) {
+        Fail "GitHub CLI is not authenticated. Run: gh auth login"
     }
 
     Step "Checking working tree"

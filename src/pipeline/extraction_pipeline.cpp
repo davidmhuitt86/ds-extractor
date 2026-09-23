@@ -16,14 +16,11 @@
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
-#include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
 #include "eke_dx_wire/topology/endpoint_semantic_reconstructor.hpp"
 #include "eke_dx_wire/topology/connector_terminal_model.hpp"
 #include "eke_dx_wire/topology/component_symbol_recognizer.hpp"
-#include "eke_dx_wire/topology/circuit_role_resolver.hpp"
-#include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
 #include "eke_dx_wire/topology/semantic_observation_resolver.hpp"
 #include "eke_dx_wire/topology/engineering_object_semantic_resolver.hpp"
@@ -35,6 +32,7 @@
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
+#include "eke_dx_wire/topology/electrical_net_resolver.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -329,16 +327,6 @@ WireModel ExtractionPipeline::run(
             0);
     model.wires = wire_artifacts.wires;
 
-    DistributionDecomposer distribution_decomposer(config_.distribution);
-    const DistributionDecompositionArtifacts distribution_artifacts =
-        distribution_decomposer.decompose(
-            graph.nodes,
-            graph.edges,
-            model.endpoint_candidates,
-            normalized_segments,
-            source_id,
-            0);
-
     // AP-WIRE-012: recognized role-bearing text is resolved through its
     // spatial endpoint association before it is allowed to influence
     // electrical-net role resolution.
@@ -348,24 +336,20 @@ WireModel ExtractionPipeline::run(
             model.text_semantic_evidence,
             model.semantic_associations);
 
-    // AP-NETWORK-002/AP-WIRE-012: circuit-role inference consumes explicit
-    // endpoint semantics plus deterministically resolved text observations.
-    CircuitRoleEvidenceBuilder role_evidence_builder;
-    std::vector<CircuitRoleEvidence> role_evidence =
-        role_evidence_builder.build(model.endpoint_candidates);
-    role_evidence.insert(
-        role_evidence.end(),
-        observation_evidence.begin(),
-        observation_evidence.end());
-
-    CircuitRoleResolver circuit_role_resolver;
-    const CircuitRoleResolutionArtifacts role_artifacts =
-        circuit_role_resolver.resolve(
-            distribution_artifacts.nets,
+    // AP-WIRE-022: resolve electrical-net topology, role evidence, and
+    // deterministic net membership through one explicit model boundary.
+    ElectricalNetResolver electrical_net_resolver(config_.distribution);
+    const ElectricalNetResolutionArtifacts net_artifacts =
+        electrical_net_resolver.resolve(
+            graph.nodes,
+            graph.edges,
             model.endpoint_candidates,
-            role_evidence);
+            normalized_segments,
+            observation_evidence,
+            source_id,
+            0);
 
-    model.electrical_nets = role_artifacts.nets;
+    model.electrical_nets = net_artifacts.nets;
 
     // AP-WIRE-004: ordinary endpoint-to-endpoint reconstruction and
     // distribution decomposition may discover the same physical path from

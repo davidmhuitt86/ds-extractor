@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
 
 using namespace eke::dx::wire;
 
@@ -118,7 +119,7 @@ std::filesystem::path find_release_script() {
     if (length == 0 || length >= std::size(buffer))
         return {};
 
-    std::filesystem::path directory(buffer, buffer + length);
+    std::filesystem::path directory(std::wstring(buffer, length));
     directory = directory.parent_path();
 
     for (;;) {
@@ -142,7 +143,7 @@ bool launch_release_pipeline() {
     if (script.empty()) {
         MessageBoxW(
             nullptr,
-            L"Could not locate tools\\dx-release.ps1.\\n"
+            L"Could not locate tools\\dx-release.ps1.\n"
             L"Launch the GUI from a ds-extractor working tree.",
             L"DX-Extractor Release",
             MB_OK | MB_ICONERROR);

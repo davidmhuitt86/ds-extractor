@@ -3,6 +3,7 @@
 #include "eke_dx_wire/export/recognition_input_exporter.hpp"
 #include "eke_dx_wire/export/svg_exporter.hpp"
 #include "eke_dx_wire/export/topology_exporter.hpp"
+#include "eke_dx_wire/export/review_artifact_writer.hpp"
 
 #include <fstream>
 #include <stdexcept>
@@ -126,6 +127,7 @@ void ExtractionArtifactWriter::write(
     fs::create_directories(output_root / "artifacts" / "validation");
     fs::create_directories(output_root / "artifacts" / "audit");
     fs::create_directories(output_root / "artifacts" / "recognition");
+    fs::create_directories(output_root / "artifacts" / "extraction_review");
     fs::create_directories(output_root / "output");
 
     RecognitionInputExporter::export_package(
@@ -150,6 +152,11 @@ void ExtractionArtifactWriter::write(
         model,
         image_path,
         output_root / "project.json");
+
+    ReviewArtifactWriter::write(
+        model,
+        normalized,
+        output_root);
 }
 
 } // namespace eke::dx::wire

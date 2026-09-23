@@ -28,6 +28,7 @@
 #include "eke_dx_wire/topology/engineering_object_semantic_applier.hpp"
 #include "eke_dx_wire/topology/component_identity_evidence_builder.hpp"
 #include "eke_dx_wire/topology/component_identity_resolver.hpp"
+#include "eke_dx_wire/topology/component_identity_registry.hpp"
 #include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
@@ -45,7 +46,11 @@ ExtractionPipeline::ExtractionPipeline(ExtractionConfig config)
       text_recognition_provider_(
           config_.text_recognition_provider
               ? config_.text_recognition_provider
-              : std::make_shared<NullTextRecognitionProvider>()) {}
+              : std::make_shared<NullTextRecognitionProvider>()),
+      component_identity_registry_(
+          config_.component_identity_registry
+              ? config_.component_identity_registry
+              : std::make_shared<NullComponentIdentityRegistry>()) {}
 
 WireModel ExtractionPipeline::run(
     const std::string& image_path,
@@ -276,6 +281,15 @@ WireModel ExtractionPipeline::run(
     model.component_identity_resolutions =
         component_identity_resolver.resolve(
             model.component_identity_evidence);
+
+    // AP-WIRE-018: canonicalize only identities explicitly resolved by
+    // AP-WIRE-017. Registry misses and conflicts remain explicit artifacts;
+    // topology and wire identity are never mutated by registry lookup.
+    ComponentIdentityCanonicalizer component_identity_canonicalizer;
+    model.component_identity_canonicalizations =
+        component_identity_canonicalizer.canonicalize(
+            model.component_identity_resolutions,
+            *component_identity_registry_);
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

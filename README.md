@@ -85,3 +85,36 @@ nodes. The GUI is a thin client over libeke_dx_wire and contains no extraction
 algorithms.
 
 This is not the final OEP/EKE user interface.
+
+
+## Release automation
+
+The Windows development GUI includes a **RELEASE / PR** action.
+
+The action closes the GUI and launches:
+
+    tools/dx-release.ps1
+
+The release pipeline:
+
+1. verifies Git and GitHub CLI authentication.
+2. configures the CMake Release build.
+3. builds all Release targets.
+4. runs the complete Release CTest suite.
+5. stops immediately if configuration, compilation, or tests fail.
+6. creates a feature branch when invoked from `main`/ `master`.
+7. commits working-tree changes.
+8. pushes the feature branch.
+9. creates a GitHub pull request targeting `main`.
+
+The pipeline never merges a pull request.
+
+The same script can be run directly:
+
+    powershell -ExecutionPolicy Bypass -File tools/dx-release.ps1
+
+For build/test only:
+
+    powershell -ExecutionPolicy Bypass -File tools/dx-release.ps1 -BuildOnly
+
+GitHub CLI (`gh`) must be installed and authenticated for automatic PR creation.

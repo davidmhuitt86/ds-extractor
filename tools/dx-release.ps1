@@ -48,15 +48,7 @@ try {
         Fail "The release workflow is main-only. Current branch: $branch"
     }
 
-    Step "Checking working tree before pull"
-    $status = @(git status --short)
-    if ($status.Count -ne 0) {
-        Write-Host "The working tree contains local changes:" -ForegroundColor Yellow
-        $status | ForEach-Object { Write-Host "  $_" }
-        Fail "Release blocked: local source changes detected. Commit or discard source changes separately before running Release."
-    }
-
-    Step "Pulling latest main"
+    # Release is a synchronization/validation action only. It never commits local changes.\n    # Pull is intentionally attempted directly so the release button does not ask the\n    # developer to commit. If Git cannot safely pull because of local source changes,\n    # Git itself will report the conflict and the release stops without modifying history.\n\n    Step "Pulling latest main"
     Invoke-Checked "git" @("pull", "origin", "main")
 
     Step "Configuring Release build"

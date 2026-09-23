@@ -54,6 +54,7 @@ public:
 private:
     ExtractionConfig config_;
     std::shared_ptr<const TextRecognitionProvider> text_recognition_provider_;
+    std::shared_ptr<const ComponentIdentityRegistry> component_identity_registry_;
 };
 
 } // namespace eke::dx::wire

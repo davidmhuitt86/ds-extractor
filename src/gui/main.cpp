@@ -89,11 +89,13 @@ std::string open_image_dialog() {
                 const int length = WideCharToMultiByte(
                     CP_UTF8, 0, path, -1, nullptr, 0, nullptr, nullptr);
                 if (length > 0) {
-                    result.resize(static_cast<std::size_t>(length - 1));
+                    std::vector<char> utf8_path(static_cast<std::size_t>(length));
                     if (WideCharToMultiByte(
-                            CP_UTF8, 0, path, -1, result.data(), length,
-                            nullptr, nullptr) <= 0) {
-                        result.clear();
+                            CP_UTF8, 0, path, -1, utf8_path.data(), length,
+                            nullptr, nullptr) > 0) {
+                        result.assign(
+                            utf8_path.data(),
+                            static_cast<std::size_t>(length - 1));
                     }
                 }
                 CoTaskMemFree(path);

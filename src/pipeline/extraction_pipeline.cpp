@@ -27,6 +27,7 @@
 #include "eke_dx_wire/topology/engineering_object_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/engineering_object_semantic_applier.hpp"
 #include "eke_dx_wire/topology/component_identity_evidence_builder.hpp"
+#include "eke_dx_wire/topology/component_identity_resolver.hpp"
 #include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
@@ -268,6 +269,13 @@ WireModel ExtractionPipeline::run(
     model.component_identity_evidence =
         component_identity_builder.build(
             model.engineering_object_semantics);
+
+    // AP-WIRE-017: resolve unambiguous component labels into explicit
+    // engineering identity while preserving conflicts as unresolved.
+    ComponentIdentityResolver component_identity_resolver;
+    model.component_identity_resolutions =
+        component_identity_resolver.resolve(
+            model.component_identity_evidence);
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

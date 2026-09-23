@@ -358,13 +358,13 @@ WireModel ExtractionPipeline::run(
     // artifact and must not be emitted twice.
     std::unordered_set<std::string> emitted_wire_ids;
     emitted_wire_ids.reserve(
-        model.wires.size() + distribution_artifacts.wires.size());
+        model.wires.size() + net_artifacts.wires.size());
 
     for (const auto& wire : model.wires) {
         emitted_wire_ids.insert(wire.id);
     }
 
-    for (const auto& wire : distribution_artifacts.wires) {
+    for (const auto& wire : net_artifacts.wires) {
         if (emitted_wire_ids.insert(wire.id).second) {
             model.wires.push_back(wire);
         }

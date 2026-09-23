@@ -44,10 +44,15 @@ int main() {
         "semantic-object-association:json-observation"
     };
 
+    std::vector<ComponentCandidate> components{component};
+    std::vector<EndpointCandidate> endpoints{endpoint};
+
     applier.apply(
-        {component},
-        {endpoint},
+        components,
+        endpoints,
         {function, color});
+
+    endpoint = endpoints.front();
 
     // The applier enriches existing engineering objects without changing
     // established terminal identity.
@@ -70,14 +75,38 @@ int main() {
         "semantic-object-association:json-observation"
     };
 
+    std::vector<EndpointCandidate> conflicting_endpoints{existing};
     applier.apply(
-        {component},
-        {existing},
+        components,
+        conflicting_endpoints,
         {conflicting});
+
+    existing = conflicting_endpoints.front();
 
     // Existing semantic identity is never overwritten by a later conflicting
     // resolution.
     assert(existing.function_label == "IGNITION");
+
+    EngineeringObjectSemanticResolution component_label{
+        "resolution-4",
+        "text-4",
+        "component-1",
+        SemanticAssociationTargetKind::Component,
+        TextSemanticKind::ComponentLabel,
+        "IGNITION COIL",
+        "IGNITION COIL",
+        ConfidenceClass::High,
+        5.0,
+        "semantic-object-association:json-observation"
+    };
+
+    applier.apply(
+        components,
+        conflicting_endpoints,
+        {component_label});
+
+    assert(components.front().semantic_labels.size() == 1);
+    assert(components.front().semantic_labels.front() == "IGNITION COIL");
 
     return 0;
 }

@@ -24,7 +24,9 @@ int main() {
     assert(fs::is_regular_file(original));
 
     const cv::Mat image = cv::imread(original.string(), cv::IMREAD_GRAYSCALE);
-    assert(!image.empty());
+    if (image.empty()) {
+        return 1;
+    }
 
     WireModel model;
     model.source_id = "fixture";

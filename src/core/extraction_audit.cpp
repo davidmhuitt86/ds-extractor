@@ -1,5 +1,7 @@
 #include "eke_dx_wire/core/extraction_audit.hpp"
 
+#include <map>
+
 namespace eke::dx::wire {
 
 ExtractionAudit build_extraction_audit(
@@ -123,6 +125,18 @@ ExtractionAudit build_extraction_audit(
         } else {
             ++audit.validation_warnings;
         }
+    }
+
+    std::map<std::string, std::size_t> warning_counts;
+    for (const auto& item : model.wire_validation.issues) {
+        if (item.severity == WireValidationSeverity::Warning) {
+            ++warning_counts[item.code];
+        }
+    }
+
+    audit.validation_warning_summaries.reserve(warning_counts.size());
+    for (const auto& [code, count] : warning_counts) {
+        audit.validation_warning_summaries.push_back({code, count});
     }
 
     audit.gaps_bridged = gaps_bridged;

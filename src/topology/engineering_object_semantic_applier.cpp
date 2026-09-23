@@ -3,20 +3,9 @@
 #include <algorithm>
 #include <string>
 #include <unordered_map>
-#include <utility>
 
 namespace eke::dx::wire {
 namespace {
-
-int confidence_rank(ConfidenceClass value) {
-    switch (value) {
-    case ConfidenceClass::High: return 3;
-    case ConfidenceClass::Medium: return 2;
-    case ConfidenceClass::Low: return 1;
-    case ConfidenceClass::Unresolved: return 0;
-    }
-    return 0;
-}
 
 bool assign_if_empty_or_same(
     std::string& destination,
@@ -102,9 +91,12 @@ void EngineeringObjectSemanticApplier::apply(
                 continue;
             }
 
-            // ComponentCandidate currently has no mutable label field. Keep
-            // the resolved observation as the authoritative semantic record;
-            // component geometry itself remains untouched.
+            auto& labels = component_it->second->semantic_labels;
+            if (std::find(labels.begin(), labels.end(),
+                          resolution.normalized_text) == labels.end()) {
+                labels.push_back(resolution.normalized_text);
+                std::sort(labels.begin(), labels.end());
+            }
             continue;
         }
 

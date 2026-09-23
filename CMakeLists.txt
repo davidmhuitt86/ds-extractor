@@ -39,6 +39,7 @@ add_library(eke_dx_wire
     src/topology/terminal_semantic_evidence_builder.cpp
     src/topology/terminal_location_detector.cpp
     src/topology/connector_terminal_model.cpp
+    src/topology/component_symbol_recognizer.cpp
     src/topology/circuit_role_resolver.cpp
     src/topology/circuit_role_evidence_builder.cpp
     src/topology/semantic_evidence_associator.cpp
@@ -189,6 +190,10 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-connector-terminal-model PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
     add_test(NAME dx-wire-test-connector-terminal-model COMMAND dx-wire-test-connector-terminal-model)
+
+    add_executable(dx-wire-test-component-symbol-recognizer tests/test_component_symbol_recognizer.cpp)
+    target_link_libraries(dx-wire-test-component-symbol-recognizer PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-component-symbol-recognizer COMMAND dx-wire-test-component-symbol-recognizer)
 
     add_executable(dx-wire-test-component-candidate-classifier tests/test_component_candidate_classifier.cpp)
     target_link_libraries(dx-wire-test-component-candidate-classifier PRIVATE eke_dx_wire)

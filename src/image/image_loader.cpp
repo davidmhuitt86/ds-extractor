@@ -9,6 +9,7 @@
 #include <roapi.h>
 #include <winrt/Windows.Data.Pdf.h>
 #include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/base.h>
 

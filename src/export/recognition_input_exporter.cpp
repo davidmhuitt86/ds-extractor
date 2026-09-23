@@ -203,15 +203,18 @@ void RecognitionInputExporter::export_package(
 
     const fs::path original_target =
         root / "source_original" / fs::path(original_image_path).filename();
-    std::error_code copy_error;
-    fs::copy_file(
-        original_image_path, original_target,
-        fs::copy_options::overwrite_existing, copy_error);
-    if (copy_error) {
+
+    const cv::Mat original_image = cv::imread(
+        original_image_path,
+        cv::IMREAD_UNCHANGED);
+    if (original_image.empty()) {
         throw std::runtime_error(
-            "Unable to copy original image from \"" + original_image_path
-            + "\" to \"" + original_target.string()
-            + "\": " + copy_error.message());
+            "Unable to read original image: " + original_image_path);
+    }
+
+    if (!cv::imwrite(original_target.string(), original_image)) {
+        throw std::runtime_error(
+            "Unable to write original image copy: " + original_target.string());
     }
 
     if (!cv::imwrite((root / "source_normalized.png").string(), normalized_image))

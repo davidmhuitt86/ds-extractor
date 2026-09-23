@@ -225,6 +225,7 @@ struct GuiState {
     int active_slider = -1;
     bool dragging = false;
     int canvas_width = 1400;
+    int canvas_height = 850;
     bool request_open = false;
     bool request_release = false;
     bool request_build_test = false;
@@ -870,7 +871,7 @@ void handle_mouse(
 
             if (new_zoom != old_zoom) {
                 const int image_width = state.canvas_width - kPanelWidth;
-                const int image_height = 760 - kToolbarHeight - kStatusHeight;
+                const int image_height = state.canvas_height - kToolbarHeight - kStatusHeight;
                 const double fit_scale = (std::min)(
                     static_cast<double>(image_width - 24) / state.source.cols,
                     static_cast<double>(image_height - 24) / state.source.rows);
@@ -937,6 +938,7 @@ int main(int argc, char** argv) {
                 cv::getWindowImageRect(kWindow).size();
 
             state.canvas_width = (std::max)(size.width, 1100);
+            state.canvas_height = (std::max)(size.height, 760);
             cv::imshow(kWindow, render(state, size));
 
             const int key = cv::waitKey(30);

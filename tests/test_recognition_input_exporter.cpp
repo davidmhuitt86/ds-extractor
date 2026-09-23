@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 namespace fs = std::filesystem;
 using namespace eke::dx::wire;
@@ -20,12 +21,13 @@ int main() {
         fs::path(DX_WIRE_SOURCE_DIR) / "samples" / "trx300ODG.png";
     const fs::path output = root / "package";
 
-    if (!fs::exists(original) || !fs::is_regular_file(original)) {
-        std::cerr << "source missing: " << original.string() << "\n";
-        return 1;
-    }
+    std::cerr << "checkpoint: source path\n";
+    assert(fs::exists(original));
+    assert(fs::is_regular_file(original));
 
+    std::cerr << "checkpoint: before imread\n";
     const cv::Mat image = cv::imread(original.string(), cv::IMREAD_GRAYSCALE);
+    std::cerr << "checkpoint: after imread " << image.cols << "x" << image.rows << "\n";
     if (image.empty()) {
         return 1;
     }
@@ -55,31 +57,28 @@ int main() {
     endpoint.confidence = ConfidenceClass::Medium;
     model.endpoint_candidates.push_back(endpoint);
 
+    std::cerr << "checkpoint: before export\n";
     RecognitionInputExporter::export_package(
         model, image, original.string(), output.string());
+    std::cerr << "checkpoint: after export\n";
 
-    std::cerr << "checkpoint: verify outputs\n";
-    if (!fs::exists(output / "manifest.json")) return 1;
-    if (!fs::exists(output / "recognition_input.json")) return 1;
-    if (!fs::exists(output / "instructions.md")) return 1;
-    if (!fs::exists(output / "schema.json")) return 1;
-    if (!fs::exists(output / "source_normalized.png")) return 1;
-    if (!fs::exists(output / "source_original" / "trx300ODG.png")) return 1;
-    if (!fs::exists(output / "regions" / "text-region-test.json")) return 1;
-    if (!fs::exists(output / "regions" / "crops" / "text-region-test.png")) return 1;
+    assert(fs::exists(output / "manifest.json"));
+    assert(fs::exists(output / "recognition_input.json"));
+    assert(fs::exists(output / "instructions.md"));
+    assert(fs::exists(output / "schema.json"));
+    assert(fs::exists(output / "source_normalized.png"));
+    assert(fs::exists(output / "source_original" / "trx300ODG.png"));
+    assert(fs::exists(output / "regions" / "text-region-test.json"));
+    assert(fs::exists(output / "regions" / "crops" / "text-region-test.png"));
 
-    std::cerr << "checkpoint: outputs verified\n";
     std::ifstream manifest(output / "manifest.json");
     const std::string contents(
         (std::istreambuf_iterator<char>(manifest)),
         std::istreambuf_iterator<char>());
 
-    if (contents.find("eke-dx-wire-recognition-input") == std::string::npos) return 1;
-    if (contents.find("text_region_count") == std::string::npos) return 1;
-    std::cerr << "checkpoint: manifest verified\n";
+    assert(contents.find("eke-dx-wire-recognition-input") != std::string::npos);
+    assert(contents.find("text_region_count") != std::string::npos);
 
-    std::cerr << "checkpoint: manifest closed\n";
     fs::remove_all(root);
-    std::cerr << "checkpoint: temp removed\n";
     return 0;
 }

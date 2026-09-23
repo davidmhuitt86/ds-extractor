@@ -63,6 +63,7 @@ void write_audit(const WireModel& model, const fs::path& path) {
         << "    \"unresolved\": " << audit.unresolved_endpoints << "\n"
         << "  },\n"
         << "  \"shapes\": " << audit.shapes << ",\n"
+        << "  \"component_symbol_recognitions\": " << audit.component_symbol_recognitions << ",\n"
         << "  \"shape_kinds\": {\n"
         << "    \"enclosure\": " << audit.enclosure_shapes << ",\n"
         << "    \"circular\": " << audit.circular_shapes << ",\n"
@@ -105,7 +106,8 @@ void write_project(const WireModel& model, const std::string& image_path, const 
         << "  \"conductor_segment_count\": " << model.conductor_segments.size() << ",\n"
         << "  \"topology_node_count\": " << model.nodes.size() << ",\n"
         << "  \"topology_edge_count\": " << model.edges.size() << ",\n"
-        << "  \"wire_count\": " << model.wires.size() << "\n"
+        << "  \"wire_count\": " << model.wires.size() << ",\n"
+        << "  \"component_symbol_recognition_count\": " << model.component_symbol_recognitions.size() << "\n"
         << "}\n";
 }
 

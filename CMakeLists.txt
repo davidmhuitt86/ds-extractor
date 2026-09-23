@@ -42,6 +42,7 @@ add_library(eke_dx_wire
     src/topology/semantic_evidence_associator.cpp
     src/topology/semantic_observation_resolver.cpp
     src/topology/engineering_object_semantic_resolver.cpp
+    src/topology/engineering_object_semantic_applier.cpp
     src/topology/text_evidence_interpreter.cpp
     src/topology/text_recognition_provider.cpp
     src/topology/json_text_recognition_provider.cpp
@@ -134,6 +135,7 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-text-evidence-interpreter tests/test_text_evidence_interpreter.cpp)
     add_executable(dx-wire-test-semantic-observation-resolver tests/test_semantic_observation_resolver.cpp)
     add_executable(dx-wire-test-engineering-object-semantic-resolver tests/test_engineering_object_semantic_resolver.cpp)
+    add_executable(dx-wire-test-engineering-object-semantic-applier tests/test_engineering_object_semantic_applier.cpp)
     target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
     target_link_libraries(dx-wire-test-circuit-role-evidence-builder PRIVATE eke_dx_wire)
@@ -143,6 +145,8 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-text-evidence-interpreter PRIVATE eke_dx_wire)
     target_link_libraries(dx-wire-test-semantic-observation-resolver PRIVATE eke_dx_wire)
     target_link_libraries(dx-wire-test-engineering-object-semantic-resolver PRIVATE eke_dx_wire)
+    target_link_libraries(dx-wire-test-engineering-object-semantic-applier PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-engineering-object-semantic-applier COMMAND dx-wire-test-engineering-object-semantic-applier)
     add_test(NAME dx-wire-test-semantic-observation-resolver COMMAND dx-wire-test-semantic-observation-resolver)
     add_test(NAME dx-wire-test-engineering-object-semantic-resolver COMMAND dx-wire-test-engineering-object-semantic-resolver)
     add_test(NAME dx-wire-test-text-evidence-interpreter COMMAND dx-wire-test-text-evidence-interpreter)

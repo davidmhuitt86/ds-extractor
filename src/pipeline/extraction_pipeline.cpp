@@ -167,19 +167,19 @@ WireModel ExtractionPipeline::run(
     const std::string provider_id =
         text_recognition_provider_->provider_id();
 
-    for (const auto& evidence : recognized) {
+    for (const auto& recognition_evidence : recognized) {
         // Provider output is evidence, not authority. The pipeline only
         // accepts observations that refer to an actual detected text region
         // and contain usable recognition confidence/text.
-        if (evidence.text_region_id.empty() ||
-            evidence.raw_text.empty() ||
-            evidence.confidence == ConfidenceClass::Unresolved ||
-            known_text_regions.find(evidence.text_region_id) ==
+        if (recognition_evidence.text_region_id.empty() ||
+            recognition_evidence.raw_text.empty() ||
+            recognition_evidence.confidence == ConfidenceClass::Unresolved ||
+            known_text_regions.find(recognition_evidence.text_region_id) ==
                 known_text_regions.end()) {
             continue;
         }
 
-        TextRecognitionEvidence accepted = evidence;
+        TextRecognitionEvidence accepted = recognition_evidence;
         if (accepted.provider.empty()) {
             accepted.provider = provider_id;
         }

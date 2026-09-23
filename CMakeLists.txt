@@ -178,6 +178,7 @@ if(DX_WIRE_BUILD_TESTS)
 
     add_executable(dx-wire-test-extraction-audit tests/test_extraction_audit.cpp)
     add_executable(dx-wire-test-recognition-input-exporter tests/test_recognition_input_exporter.cpp)
+    target_compile_definitions(dx-wire-test-recognition-input-exporter PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     target_link_libraries(dx-wire-test-recognition-input-exporter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-recognition-input-exporter COMMAND dx-wire-test-recognition-input-exporter)
     target_link_libraries(dx-wire-test-extraction-audit PRIVATE eke_dx_wire)

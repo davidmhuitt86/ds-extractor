@@ -23,6 +23,7 @@
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
+#include "eke_dx_wire/topology/semantic_observation_resolver.hpp"
 #include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
@@ -261,14 +262,24 @@ WireModel ExtractionPipeline::run(
             source_id,
             0);
 
-    // AP-NETWORK-002: circuit-role inference consumes explicit semantic
-    // evidence, not topology shape or endpoint count. At this stage the
-    // builder can only promote roles already established on endpoints.
-    // Future symbol/text/function interpretation stages may contribute
-    // additional CircuitRoleEvidence without changing the resolver.
+    // AP-WIRE-012: recognized role-bearing text is resolved through its
+    // spatial endpoint association before it is allowed to influence
+    // electrical-net role resolution.
+    SemanticObservationResolver observation_resolver;
+    const std::vector<CircuitRoleEvidence> observation_evidence =
+        observation_resolver.resolve(
+            model.text_semantic_evidence,
+            model.semantic_associations);
+
+    // AP-NETWORK-002/AP-WIRE-012: circuit-role inference consumes explicit
+    // endpoint semantics plus deterministically resolved text observations.
     CircuitRoleEvidenceBuilder role_evidence_builder;
-    const std::vector<CircuitRoleEvidence> role_evidence =
+    std::vector<CircuitRoleEvidence> role_evidence =
         role_evidence_builder.build(model.endpoint_candidates);
+    role_evidence.insert(
+        role_evidence.end(),
+        observation_evidence.begin(),
+        observation_evidence.end());
 
     CircuitRoleResolver circuit_role_resolver;
     const CircuitRoleResolutionArtifacts role_artifacts =

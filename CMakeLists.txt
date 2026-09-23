@@ -40,6 +40,7 @@ add_library(eke_dx_wire
     src/topology/circuit_role_resolver.cpp
     src/topology/circuit_role_evidence_builder.cpp
     src/topology/semantic_evidence_associator.cpp
+    src/topology/semantic_observation_resolver.cpp
     src/topology/text_evidence_interpreter.cpp
     src/topology/text_recognition_provider.cpp
     src/topology/json_text_recognition_provider.cpp
@@ -123,13 +124,14 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-terminal-semantic-resolver COMMAND dx-wire-test-terminal-semantic-resolver)
     add_executable(dx-wire-test-terminal-semantic-evidence-builder tests/test_terminal_semantic_evidence_builder.cpp)
     target_link_libraries(dx-wire-test-terminal-semantic-evidence-builder PRIVATE eke_dx_wire)
-    add_test(NAME dx-wire-test-terminal-semantic-evidence-builder COMMAND dx-wire-test-terminal-semantic-evidence-builder)
+    add_test(NAME dx-wire-test-terminal-semantic-evidence-builder COMMAND dx-wire-test-terminal-semantic-evidence-builder
 
     add_executable(dx-wire-test-terminal-location-detector tests/test_terminal_location_detector.cpp)
     add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)
     add_executable(dx-wire-test-circuit-role-evidence-builder tests/test_circuit_role_evidence_builder.cpp)
     add_executable(dx-wire-test-semantic-evidence-associator tests/test_semantic_evidence_associator.cpp)
     add_executable(dx-wire-test-text-evidence-interpreter tests/test_text_evidence_interpreter.cpp)
+    add_executable(dx-wire-test-semantic-observation-resolver tests/test_semantic_observation_resolver.cpp)
     target_link_libraries(dx-wire-test-circuit-role-resolver PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-circuit-role-resolver COMMAND dx-wire-test-circuit-role-resolver)
     target_link_libraries(dx-wire-test-circuit-role-evidence-builder PRIVATE eke_dx_wire)
@@ -137,6 +139,8 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-semantic-evidence-associator PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-semantic-evidence-associator COMMAND dx-wire-test-semantic-evidence-associator)
     target_link_libraries(dx-wire-test-text-evidence-interpreter PRIVATE eke_dx_wire)
+    target_link_libraries(dx-wire-test-semantic-observation-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-semantic-observation-resolver COMMAND dx-wire-test-semantic-observation-resolver)
     add_test(NAME dx-wire-test-text-evidence-interpreter COMMAND dx-wire-test-text-evidence-interpreter)
 
     add_executable(dx-wire-test-text-recognition-provider tests/test_text_recognition_provider.cpp)

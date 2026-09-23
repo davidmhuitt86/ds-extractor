@@ -66,6 +66,8 @@ ExtractionAudit build_extraction_audit(
     }
 
     audit.shapes = model.component_candidates.size();
+    audit.component_symbol_recognitions =
+        model.component_symbol_recognitions.size();
     for (const auto& component : model.component_candidates) {
         switch (component.kind) {
         case ComponentCandidateKind::Enclosure:

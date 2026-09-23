@@ -1,5 +1,8 @@
 #include "eke_dx_wire/export/review_artifact_writer.hpp"
 
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
+
 #include <algorithm>
 #include <cctype>
 #include <cmath>
@@ -237,7 +240,7 @@ void render_labels(cv::Mat& image, const WireModel& model) {
         cv::putText(
             image,
             item.semantic_labels.front(),
-            point({item.bounds.x, item.bounds.y - 5}),
+            cv::Point(static_cast<int>(item.bounds.x), static_cast<int>(item.bounds.y - 5)),
             cv::FONT_HERSHEY_SIMPLEX,
             0.45,
             cv::Scalar(40, 40, 220),

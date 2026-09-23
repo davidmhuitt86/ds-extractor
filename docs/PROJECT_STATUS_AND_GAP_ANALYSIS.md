@@ -1,0 +1,334 @@
+# EKE-DX-WIRE — Engineering Development Status & Gap Analysis
+
+Repository: davidmhuitt86/ds-extractor  
+Platform: C++23 / CMake / OpenCV  
+Primary target: structured reconstruction of automotive/ATV wiring diagrams  
+Reference diagram: 1988 Honda FourTrax TRX300 wiring diagram  
+Status baseline: current main branch
+
+## 1. Project Objective
+
+EKE-DX-WIRE is being developed as a deterministic extraction and reconstruction engine for poor-quality wiring diagrams. The objective is not raster tracing. The intended result is an engineering representation containing conductor geometry, topology, endpoint candidates, wires, components, symbols, terminals, connectors, splices, electrical nets, labels, semantic evidence, wire colors, provenance, confidence, and eventually a fully structured editable SVG.
+
+Architecture:
+
+Source Image/PDF → Geometry → Topology → Endpoints → Semantic Resolution → Engineering Objects → Structured Diagram Model → Editable SVG → Diagram Studio
+
+## 2. Fundamental Engineering Rule
+
+A wire is an endpoint-to-endpoint engineering trace.
+
+A splice or junction is not itself a wire endpoint. A wire may pass through one or more splices/junctions and continue to its final endpoint. Shared conductor sections may therefore participate in multiple endpoint-to-endpoint traces when a topology branch occurs.
+
+Example:
+
+Terminal A --------o--------- Terminal B
+                   |
+                   +--------- Terminal C
+
+Possible wire identities:
+
+Wire A → B
+Wire A → C
+
+This rule prevents pixel segmentation from defining engineering wire identity.
+
+## 3. Current Architecture
+
+### Geometry
+
+ConductorSegment represents observed conductor geometry. A detected line is not automatically a Wire.
+
+RejectedGeometryEvidence preserves geometry rejected from conductor interpretation, including component-, connector-, text-, and unresolved-associated geometry.
+
+### Topology
+
+TopologyNode represents graph points. Current node types include ConductorEnd, Continuation, Junction, Splice, Crossing, ComponentBoundary, and Unresolved.
+
+TopologyEdge represents graph connectivity backed by conductor geometry.
+
+### Engineering endpoints
+
+EndpointCandidate carries node, position, endpoint kind, terminal role, confidence, incident edges, evidence, optional component association, terminal name, function label, and wire color.
+
+### Wires
+
+Wire contains start endpoint, end endpoint, topology edges, conductor segments, confidence, and heavy-cable state.
+
+### Electrical nets
+
+ElectricalNet contains endpoint membership, splice membership, topology-edge membership, distribution role, confidence, and an optional semantic anchor.
+
+## 4. Implemented Development Stages
+
+The project has progressed from raw conductor extraction toward an explicit engineering-object pipeline.
+
+### Foundation / Geometry
+
+Implemented capabilities include C++23 project structure, CMake build, OpenCV image processing, adaptive thresholding, horizontal and vertical morphology, conductor candidate detection, centerline generation, deterministic IDs, conductor normalization, rejected-geometry evidence, shape detection/exclusion masks, and vector SVG projection.
+
+### Topology Reconstruction
+
+Topology reconstruction is implemented and separated from geometry extraction. The pipeline produces topology nodes, topology edges, continuations, junctions, splices, crossings, and component boundaries. Gap interpretation can infer selected continuation edges across small geometric gaps.
+
+## 5. AP-WIRE Progress
+
+### AP-WIRE-004 — Duplicate Wire Integrity
+Deterministic protection against duplicate wire IDs after distribution decomposition. The validator reports duplicate-wire conditions.
+
+### AP-WIRE-005 — Electrical Network Semantic Resolution
+Established explicit handling of Ground, PowerFeed, and SharedFunctionFeed semantics. Conflicting role evidence is preserved rather than silently resolved.
+
+### AP-WIRE-006 — Semantic Evidence Association
+Established spatial association between recognized semantic evidence and engineering objects without mutating topology.
+
+### AP-WIRE-007 — Text Evidence Interpretation
+Established lexical classification and normalization for GroundLabel, PowerFeedLabel, SharedFunctionFeedLabel, ComponentLabel, ConnectorLabel, TerminalLabel, WireColorLabel, FunctionLabel, and Unknown.
+
+### AP-WIRE-008 — Text Recognition Provider Boundary
+Established an injectable external recognition-provider boundary. OCR is not coupled to the core extractor.
+
+### AP-WIRE-009 — Recognition Evidence Adapter
+Established a sidecar boundary for externally supplied recognition observations.
+
+### AP-WIRE-010 — Recognition Input / Export Package
+Established export of recognition context including source information, regions, coordinates, neighboring geometry, components/endpoints, semantic associations, and recognition instructions.
+
+### AP-WIRE-011 — Recognition Observation Import
+Recognition observations can be imported through the extraction pipeline using JSON observations.
+
+### AP-WIRE-012 — Semantic Observation Resolution
+Recognized role-bearing text is spatially resolved before it can influence circuit-role semantics.
+
+### AP-WIRE-013 — Recognition Loop Measurement
+Established baseline-versus-recognition-assisted measurement and semantic resolution reporting.
+
+### AP-WIRE-014 — Engineering Object Semantic Resolution
+Established deterministic semantic association against engineering objects, including ambiguity/conflict preservation, confidence, and provenance.
+
+### AP-WIRE-015 — Engineering Object Semantic Materialization
+Resolved semantic evidence can populate component labels, terminal names, function labels, and wire-color fields without overwriting conflicting information.
+
+### AP-WIRE-016 — Component Identity Evidence Boundary
+Established explicit identity-bearing evidence from component and connector labels without asserting canonical identity.
+
+### AP-WIRE-017 — Component Identity Resolution
+Established deterministic resolution of explicit identity evidence. One normalized identity resolves; multiple conflicting identities become Conflicted; missing evidence remains Unresolved.
+
+### AP-WIRE-018 — Component Identity Registry & Canonicalization
+Established the boundary between diagram evidence and canonical registry identity. The registry is injectable. The current static registry is a development/test boundary, not yet the production OEP registry.
+
+### AP-WIRE-019 — Endpoint Semantic Reconstruction
+Established explicit reconstruction of endpoint kind, terminal role, component association, confidence, and conflict state without changing conductor geometry, topology, splice semantics, or wire identity.
+
+### AP-WIRE-020 — Connector & Terminal Model
+Established explicit ConnectorCandidate and ConnectorTerminal objects. Connector terminals retain their originating endpoint IDs. Pin numbers and connector identities are not invented.
+
+### AP-WIRE-021 — Component Symbol Recognition Boundary
+Established ComponentSymbolRecognition as an explicit model boundary. Important limitation: the current implementation maps existing ComponentCandidateKind to ComponentSymbolKind. It is not yet true visual recognition of specific electrical symbols.
+
+Supported current categories are Enclosure, CircularSymbol, ChassisGround, PrimitiveSymbol, and Unknown.
+
+The latest TRX300 visual extraction confirmed that the system frequently detects component regions/bounds while failing to reconstruct the internal symbol geometry. This is one of the principal remaining engineering gaps.
+
+### AP-WIRE-022 — Electrical Net Resolution
+Established a single orchestration boundary combining topology/distribution decomposition, endpoint circuit-role evidence, semantic circuit-role evidence, and deterministic net normalization.
+
+Rules include: no invented source, unresolved structures remain unresolved, cyclic structures remain unresolved, anchors must belong to their nets, referenced endpoints must exist, deterministic membership, no fuzzy matching, no OCR, and no topology mutation.
+
+## 6. Latest Extraction Baseline
+
+Latest authoritative extraction used during development:
+
+| Object | Result |
+|---|---:|
+| Conductor segments | 294 |
+| Topology nodes | 693 |
+| Topology edges | 876 |
+| Endpoint candidates | 215 |
+| Component candidates | 109 |
+| Wires | 41 |
+| Electrical nets | 11 |
+| Gap bridges | 4 |
+| Validation errors | 0 |
+| Validation warnings | 31 |
+| Unresolved wires | 0 |
+
+Endpoint semantic distribution included 27 component terminals, 11 connector terminals, 10 ground endpoints, 167 unresolved endpoints, and 0 conflicted endpoints.
+
+The connector model currently represents 10 connector candidates and 11 connector terminals.
+
+These results show that topology and wire reconstruction are materially ahead of component-symbol recognition.
+
+## 7. Current SVG State
+
+The current SVG is still primarily a conductor reconstruction artifact rather than the final structured engineering diagram.
+
+The latest SVG contained 294 line elements, with no path, text, circle, or rectangle elements.
+
+The final SVG must instead represent editable engineering objects and preserve their relationships to the engineering model.
+
+## 8. PDF Support
+
+Native Windows PDF loading has been implemented. The loader detects PDF input, uses Windows Runtime PDF APIs, renders the first page, converts it to an OpenCV image, and sends it through the same extraction pipeline.
+
+The GUI file picker accepts PDF, PNG, JPEG, BMP, and TIFF.
+
+## 9. Development GUI
+
+The Windows development GUI currently provides a native file picker, PDF selection, source display, extraction controls, morphology controls, source/binary/mask/wire/topology views, endpoint and shape views, engineering-layer controls, zoom, fit view, mouse-wheel zoom, middle-mouse pan, reset view, build/test, release, output status, and artifact-path display.
+
+The GUI remains a development/calibration workbench and is not the final Diagram Studio/EKE interface.
+
+## 10. Automatic Visual Extraction Review
+
+A new automated review system generates the following after extraction:
+
+artifacts/extraction_review/
+
+00_source.png
+01_wires.png
+02_wire_colors.png
+03_symbols.png
+04_terminals.png
+05_connectors.png
+06_splices.png
+07_grounds.png
+08_labels.png
+09_topology.png
+10_component_bounds.png
+11_endpoint_debug.png
+12_recognition.png
+13_combined.png
+review_manifest.json
+
+The images are generated directly from the extraction model at source-image resolution, not from the GUI window. The review directory is replaced on every extraction so it represents only the newest run.
+
+The manifest records source, page, dimensions, layer counts, electrical-net count, validation errors/warnings, and generation timestamp.
+
+## 11. Automatic Review Publication
+
+tools/dx-publish-review.ps1 was added.
+
+The intended workflow is:
+
+Extraction → Review generation → Manifest → Git commit → git push origin main
+
+Only artifacts/extraction_review is staged by the publisher. Source code and build products are not staged by this publisher.
+
+If extraction fails, review publication should not occur.
+
+This removes the need to manually screenshot the GUI and send screenshots during iterative extractor development.
+
+## 12. Release / Build Automation
+
+The current Release workflow is a validation/synchronization operation:
+
+RELEASE → verify repository → verify main → git pull origin main → CMake configure → Release build → Release CTest → relaunch GUI
+
+The release workflow does not commit source changes, push source changes, create pull requests, stash changes, or reset changes.
+
+The Release build is intentionally serial because parallel MSBuild previously exposed an artifact-generation race involving test object files.
+
+## 13. Major Remaining Gaps
+
+### Gap 1 — True Component Symbol Recognition
+
+This is currently the largest visible gap. The system detects component regions but does not yet reliably understand the internal symbol geometry.
+
+Required symbol families include switches, relays, motors, generators, lamps, batteries, resistors, diodes, rectifiers, coils, fuses, sensors, connectors, and compound symbols.
+
+### Gap 2 — Internal Symbol Geometry Model
+
+Before reliable classification, the extractor must preserve internal component geometry: bodies, lines, contacts, coils, plates, terminals, arcs, circles, primitives, and their spatial relationships.
+
+### Gap 3 — True Terminal Recognition
+
+Many endpoints remain unresolved. The system must distinguish actual component terminals, connector pins, wire continuation points, graphic intersections, symbol-internal geometry, ground connections, and unresolved endpoints.
+
+### Gap 4 — Wire Semantic Completion
+
+The 41 current wires need richer semantics such as wire color, stripe/color combination, gauge where observable, source component, destination component, source/destination terminals, electrical net, function, confidence, evidence, and provenance.
+
+### Gap 5 — Wire Color Recognition
+
+The model contains wire-color fields and recognition boundaries, but reliable automatic extraction across the entire diagram has not yet been demonstrated.
+
+### Gap 6 — Label Recognition
+
+OCR/recognition-provider integration exists, but the latest TRX300 extraction has not yet demonstrated comprehensive recognized-text evidence.
+
+### Gap 7 — Production Component Registry
+
+The registry boundary exists, but the production OEP/EKE component registry has not yet been connected. The current static registry is a development/test mechanism.
+
+### Gap 8 — Complete Structured SVG
+
+The current SVG is primarily line geometry. The final output must contain editable wires, symbols, terminals, connectors, labels, splices, junctions, grounds, annotations, and engineering metadata.
+
+### Gap 9 — Electrical Semantics
+
+Electrical-net resolution currently establishes connectivity and role evidence. It does not yet determine voltage, current, circuit behavior, loading, switching behavior, component function, or circuit correctness.
+
+### Gap 10 — Engineering Validation / AAR
+
+Current validation catches structural problems. A later AAR should compare source diagram, extracted engineering model, and structured SVG and report missing objects, extra objects, broken connectivity, unresolved terminals, identity conflicts, unsupported symbols, suspicious geometry, uncertain semantics, and wire/net discrepancies.
+
+## 14. Revised Remaining AP Sequence
+
+The next work should follow the evidence from the latest visual extraction rather than advancing the AP number blindly.
+
+AP-WIRE-022 — Electrical Net Resolution — complete.
+
+AP-WIRE-022A — Internal Symbol Geometry Extraction — next correction.
+
+AP-WIRE-023 — Wire Semantic Completion.
+
+AP-WIRE-024 — Engineering Diagram Reconstruction.
+
+AP-WIRE-025 — Structured SVG Export.
+
+AP-WIRE-026 — Extraction Validation & Engineering AAR.
+
+The 022A correction is important because AP-WIRE-021 currently establishes the symbol model boundary but does not yet perform deep visual recognition.
+
+## 15. Recommended Engineering Order
+
+1. Use the automated visual review harness to diagnose each extraction layer.
+2. Extract internal symbol geometry from component regions.
+3. Recognize symbol classes from those internal primitives.
+4. Associate conductor endpoints with recognized symbol terminals.
+5. Complete wire semantics using terminal, color, label, component, and net evidence.
+6. Build the unified engineering diagram object graph.
+7. Render the engineering model into structured editable SVG.
+8. Perform source-versus-model validation and produce an engineering AAR.
+
+## 16. Completion Criteria
+
+The extractor should not be considered complete merely because every line was traced, every component has a bounding box, an SVG exists, or structural validation reports zero errors.
+
+For any conductor, the completed system should be able to answer: what wire is this, where does it begin, where does it terminate, what component/terminal does it connect to, what electrical net is it part of, what color/function evidence supports the conclusion, and how confident is the system?
+
+For any component, it should answer: what engineering component is represented, what symbol geometry supports the conclusion, where are its terminals, what wires attach to those terminals, and what evidence identifies it?
+
+For any electrical net, it should answer: which endpoints and splices belong to it, what role evidence establishes it, and which portions remain unresolved?
+
+For the final SVG, engineering objects should be editable independently without returning to the raster source.
+
+## 17. Source-of-Truth Principle
+
+The project should maintain this hierarchy:
+
+Specification → Domain model → Pipeline stage → Validation → Artifact export → GUI visualization
+
+The GUI must not become the authoritative extraction engine. The SVG must not become the authoritative engineering model. The raster image must not become the authoritative topology.
+
+The engineering model remains the source of truth; visual artifacts are inspection and communication surfaces.
+
+## 18. Current Overall State
+
+The project has progressed beyond a basic computer-vision wire tracer. It now has explicit boundaries for geometry, topology, endpoints, semantic evidence, component identity, connectors/terminals, electrical nets, deterministic artifacts, and visual review.
+
+The principal remaining transition is from geometric detection to engineering recognition.
+
+The automatic review system now provides the instrumentation required to make that transition systematically: every extraction can produce repeatable layer images plus machine-readable counts, and those artifacts can be published for inspection without manually taking screenshots.

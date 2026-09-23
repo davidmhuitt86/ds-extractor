@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <string>
 
 namespace fs = std::filesystem;
@@ -30,6 +31,26 @@ static std::string json_escape(const std::string& value) {
     }
 
     return result;
+}
+
+static const char* distribution_role_name(DistributionRole value) {
+    switch (value) {
+    case DistributionRole::Ground: return "ground";
+    case DistributionRole::PowerFeed: return "power_feed";
+    case DistributionRole::SharedFunctionFeed: return "shared_function_feed";
+    case DistributionRole::Unknown: return "unresolved";
+    }
+    return "unresolved";
+}
+
+static const char* confidence_name(ConfidenceClass value) {
+    switch (value) {
+    case ConfidenceClass::High: return "high";
+    case ConfidenceClass::Medium: return "medium";
+    case ConfidenceClass::Low: return "low";
+    case ConfidenceClass::Unresolved: return "unresolved";
+    }
+    return "unresolved";
 }
 
 static void usage() {
@@ -62,6 +83,16 @@ static int extract(const std::string& image_path, const std::string& output, con
     fs::create_directories(fs::path(output) / "artifacts" / "recognition");
     fs::create_directories(fs::path(output) / "output");
 
+    // AP-WIRE-013: when recognition observations are supplied, execute
+    // both the deterministic baseline and the recognition-assisted pipeline.
+    // This makes semantic improvement measurable without allowing recognition
+    // to alter the underlying geometry/topology extraction.
+    std::optional<WireModel> baseline_model;
+    if (!recognition_path.empty()) {
+        ExtractionPipeline baseline_pipeline;
+        baseline_model = baseline_pipeline.run(image_path, image_path);
+    }
+
     ExtractionConfig config;
     if (!recognition_path.empty()) {
         config.text_recognition_provider =
@@ -70,6 +101,74 @@ static int extract(const std::string& image_path, const std::string& output, con
 
     ExtractionPipeline pipeline(config);
     WireModel model = pipeline.run(image_path, image_path);
+
+    if (!recognition_path.empty()) {
+        std::ofstream report(
+            fs::path(output) / "artifacts" / "recognition" /
+            "semantic_resolution_report.json");
+
+        if (!report) {
+            throw std::runtime_error(
+                "Unable to create semantic resolution report");
+        }
+
+        report << "{\n"
+               << "  \"format\": \"eke-dx-wire-semantic-resolution-report\",\n"
+               << "  \"version\": \"1.0\",\n"
+               << "  \"source\": \"" << json_escape(image_path) << "\",\n"
+               << "  \"recognition_observations\": "
+               << model.text_recognition_evidence.size() << ",\n"
+               << "  \"semantic_observations\": "
+               << model.text_semantic_evidence.size() << ",\n"
+               << "  \"semantic_associations\": "
+               << model.semantic_associations.size() << ",\n"
+               << "  \"baseline_unresolved_nets\": "
+               << baseline_model->audit.unresolved_nets << ",\n"
+               << "  \"recognized_unresolved_nets\": "
+               << model.audit.unresolved_nets << ",\n"
+               << "  \"nets\": [\n";
+
+        bool first_net = true;
+        for (const auto& recognized_net : model.electrical_nets) {
+            const auto baseline_it = std::find_if(
+                baseline_model->electrical_nets.begin(),
+                baseline_model->electrical_nets.end(),
+                [&](const ElectricalNet& net) {
+                    return net.id == recognized_net.id;
+                });
+
+            if (!first_net) {
+                report << ",\n";
+            }
+            first_net = false;
+
+            const DistributionRole baseline_role =
+                baseline_it == baseline_model.electrical_nets.end()
+                    ? DistributionRole::Unknown
+                    : baseline_it->role;
+            const ConfidenceClass baseline_confidence =
+                baseline_it == baseline_model.electrical_nets.end()
+                    ? ConfidenceClass::Unresolved
+                    : baseline_it->confidence;
+
+            report << "    {\"id\": \"" << json_escape(recognized_net.id)
+                   << "\", \"baseline_role\": \""
+                   << distribution_role_name(baseline_role)
+                   << "\", \"baseline_confidence\": \""
+                   << confidence_name(baseline_confidence)
+                   << "\", \"recognized_role\": \""
+                   << distribution_role_name(recognized_net.role)
+                   << "\", \"recognized_confidence\": \""
+                   << confidence_name(recognized_net.confidence)
+                   << "\", \"changed\": "
+                   << ((baseline_role != recognized_net.role ||
+                        baseline_confidence != recognized_net.confidence)
+                           ? "true" : "false")
+                   << "}";
+        }
+
+        report << "\n  ]\n}\n";
+    }
 
     RecognitionInputExporter::export_package(
         model,

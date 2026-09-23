@@ -309,6 +309,8 @@ struct SemanticAssociation {
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
 };
 
+struct EngineeringObjectSemanticResolution;
+
 struct WireModel {
     std::string source_id;
     int page = 0;
@@ -320,6 +322,7 @@ struct WireModel {
     std::vector<TextRecognitionEvidence> text_recognition_evidence;
     std::vector<SemanticAssociation> semantic_associations;
     std::vector<TextSemanticEvidence> text_semantic_evidence;
+    std::vector<EngineeringObjectSemanticResolution> engineering_object_semantics;
     std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<RejectedGeometryEvidence> rejected_geometry;

@@ -360,6 +360,24 @@ struct ComponentIdentityEvidence {
     std::string source;
 };
 
+enum class ComponentIdentityCanonicalizationStatus {
+    Resolved,
+    NotFound,
+    Conflicted
+};
+
+struct ComponentIdentityCanonicalization {
+    std::string id;
+    std::string component_id;
+    std::string source_resolution_id;
+    std::string source_identity;
+    std::string canonical_id;
+    std::string canonical_name;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    ComponentIdentityCanonicalizationStatus status =
+        ComponentIdentityCanonicalizationStatus::NotFound;
+};
+
 struct WireModel {
     std::string source_id;
     int page = 0;
@@ -374,6 +392,7 @@ struct WireModel {
     std::vector<EngineeringObjectSemanticResolution> engineering_object_semantics;
     std::vector<ComponentIdentityEvidence> component_identity_evidence;
     std::vector<ComponentIdentityResolution> component_identity_resolutions;
+    std::vector<ComponentIdentityCanonicalization> component_identity_canonicalizations;
     std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<RejectedGeometryEvidence> rejected_geometry;

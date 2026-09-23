@@ -145,6 +145,33 @@ struct TerminalCandidate {
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
 };
 
+struct ConnectorCandidate {
+    std::string id;
+    std::string component_candidate_id;
+    BoundingBox bounds {};
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    std::vector<std::string> semantic_labels;
+};
+
+enum class ConnectorTerminalStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
+struct ConnectorTerminal {
+    std::string id;
+    std::string connector_id;
+    std::string endpoint_id;
+    Point2D position {};
+    std::string terminal_name;
+    std::string function_label;
+    std::string wire_color;
+    TerminalRole role = TerminalRole::ConnectorTerminal;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    ConnectorTerminalStatus status = ConnectorTerminalStatus::Unresolved;
+};
+
 enum class ComponentCandidateKind {
     Enclosure,
     CircularSymbol,
@@ -403,6 +430,8 @@ struct WireModel {
     int image_height = 0;
 
     std::vector<ComponentCandidate> component_candidates;
+    std::vector<ConnectorCandidate> connector_candidates;
+    std::vector<ConnectorTerminal> connector_terminals;
     std::vector<TextRegion> text_regions;
     std::vector<TextRecognitionEvidence> text_recognition_evidence;
     std::vector<SemanticAssociation> semantic_associations;

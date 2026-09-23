@@ -53,7 +53,7 @@ try {
     if ($status.Count -ne 0) {
         Write-Host "The working tree contains local changes:" -ForegroundColor Yellow
         $status | ForEach-Object { Write-Host "  $_" }
-        Fail "Commit or discard local changes before running Release."
+        Fail "Release blocked: local source changes detected. Commit or discard source changes separately before running Release."
     }
 
     Step "Pulling latest main"

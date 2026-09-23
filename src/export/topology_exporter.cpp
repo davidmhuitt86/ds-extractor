@@ -163,7 +163,55 @@ void TopologyExporter::export_json(
         out << "\n";
     }
     out << "  ],\n";
-    out << "  \"nodes\": [\n";
+    out << "  \"connector_candidates\": [\n";
+    for (std::size_t i = 0; i < model.connector_candidates.size(); ++i) {
+        const auto& connector = model.connector_candidates[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(connector.id) << "\",\n"
+            << "      \"component_candidate_id\": \"" << json_escape(connector.component_candidate_id) << "\",\n"
+            << "      \"x\": " << connector.bounds.x << ",\n"
+            << "      \"y\": " << connector.bounds.y << ",\n"
+            << "      \"width\": " << connector.bounds.width << ",\n"
+            << "      \"height\": " << connector.bounds.height << ",\n"
+            << "      \"confidence\": \"" << confidence_name(connector.confidence) << "\",\n"
+            << "      \"semantic_labels\": [";
+        for (std::size_t j = 0; j < connector.semantic_labels.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(connector.semantic_labels[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.connector_candidates.size()) out << ",";
+        out << "\n";
+    }
+    out << "  ],\n  \"connector_terminals\": [\n";
+    auto connector_terminal_status_name =
+        [](ConnectorTerminalStatus status) {
+            switch (status) {
+            case ConnectorTerminalStatus::Resolved: return "resolved";
+            case ConnectorTerminalStatus::Unresolved: return "unresolved";
+            case ConnectorTerminalStatus::Conflicted: return "conflicted";
+            }
+            return "unresolved";
+        };
+    for (std::size_t i = 0; i < model.connector_terminals.size(); ++i) {
+        const auto& terminal = model.connector_terminals[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(terminal.id) << "\",\n"
+            << "      \"connector_id\": \"" << json_escape(terminal.connector_id) << "\",\n"
+            << "      \"endpoint_id\": \"" << json_escape(terminal.endpoint_id) << "\",\n"
+            << "      \"x\": " << terminal.position.x << ",\n"
+            << "      \"y\": " << terminal.position.y << ",\n"
+            << "      \"terminal_name\": \"" << json_escape(terminal.terminal_name) << "\",\n"
+            << "      \"function_label\": \"" << json_escape(terminal.function_label) << "\",\n"
+            << "      \"wire_color\": \"" << json_escape(terminal.wire_color) << "\",\n"
+            << "      \"role\": \"" << terminal_role_name(terminal.role) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(terminal.confidence) << "\",\n"
+            << "      \"status\": \"" << connector_terminal_status_name(terminal.status) << "\"\n"
+            << "    }";
+        if (i + 1 != model.connector_terminals.size()) out << ",";
+        out << "\n";
+    }
+    out << "  ],\n  \"nodes\": [\n";
     for (std::size_t i = 0; i < model.nodes.size(); ++i) {
         const auto& node = model.nodes[i];
         out << "    {\n"

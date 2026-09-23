@@ -1,5 +1,7 @@
 #include "eke_dx_wire/export/review_artifact_writer.hpp"
 
+#include "eke_dx_wire/core/coverage_diagnostics.hpp"
+
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
@@ -434,7 +436,26 @@ void write_manifest(const WireModel& model, const fs::path& path) {
             << (i + 1 == model.audit.validation_warning_summaries.size() ? "\n" : ",\n");
     }
 
-    out << "  }" << '\n'
+    out << "  }," << '\n';
+
+    const CoverageReport coverage = build_coverage_report(model);
+    out << "  \"coverage_summary\": {" << '\n'
+        << "    \"conductor_segments_shared\": " << coverage.conductors.shared << "," << '\n'
+        << "    \"conductor_segments_unreferenced\": " << coverage.conductors.unreferenced << "," << '\n'
+        << "    \"endpoints_zero_wire\": " << coverage.endpoints.zero_wire << "," << '\n'
+        << "    \"wires_invalid\": " << coverage.wires.invalid << "," << '\n'
+        << "    \"components_real_without_terminal_evidence\": "
+        << coverage.components.real_without_terminal_evidence << "," << '\n'
+        << "    \"components_diagram_furniture\": " << coverage.components.diagram_furniture << "," << '\n'
+        << "    \"connectors_furniture_derived\": " << coverage.connectors.furniture_derived << "," << '\n'
+        << "    \"connectors_unresolved\": " << coverage.connectors.unresolved << "," << '\n'
+        << "    \"electrical_net_endpoints_not_in_any_net\": "
+        << coverage.electrical_nets.endpoints_not_in_any_net << "," << '\n'
+        << "    \"electrical_net_endpoints_in_multiple_nets\": "
+        << coverage.electrical_nets.endpoints_in_multiple_nets << "," << '\n'
+        << "    \"findings_total\": " << coverage.findings.size() << "," << '\n'
+        << "    \"see\": \"artifacts/audit/extraction_audit.json#coverage\"" << '\n'
+        << "  }" << '\n'
         << "}" << '\n';
 }
 

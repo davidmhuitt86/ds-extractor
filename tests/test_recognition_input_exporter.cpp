@@ -65,6 +65,7 @@ int main() {
     std::cerr << "checkpoint: after export\n";
 
     std::cerr << "checkpoint: verify outputs\n";
+    std::cerr << "checkpoint: validating manifest\n";
     if (!fs::exists(output / "manifest.json")) return 1;
     if (!fs::exists(output / "recognition_input.json")) return 1;
     if (!fs::exists(output / "instructions.md")) return 1;
@@ -75,13 +76,17 @@ int main() {
     if (!fs::exists(output / "regions" / "crops" / "text-region-test.png")) return 1;
 
     std::cerr << "checkpoint: outputs verified\n";
+    std::cerr << "checkpoint: files validated\n";
     std::ifstream manifest(output / "manifest.json");
+    std::cerr << "checkpoint: manifest opened\n";
+    std::cerr << "checkpoint: reading manifest\n";
     const std::string contents(
         (std::istreambuf_iterator<char>(manifest)),
         std::istreambuf_iterator<char>());
 
     if (contents.find("eke-dx-wire-recognition-input") == std::string::npos) return 1;
     if (contents.find("text_region_count") == std::string::npos) return 1;
+    std::cerr << "checkpoint: manifest read\n";
     std::cerr << "checkpoint: manifest verified\n";
 
     manifest.close();

@@ -316,6 +316,26 @@ void TopologyExporter::export_json(
         if (i + 1 != model.engineering_object_semantics.size()) out << ",";
         out << "\n";
     }
+    out << "  ],\n  \"component_identity_evidence\": [\n";
+    for (std::size_t i = 0; i < model.component_identity_evidence.size(); ++i) {
+        const auto& evidence = model.component_identity_evidence[i];
+        const char* kind =
+            evidence.kind == ComponentIdentityEvidenceKind::ConnectorLabel
+                ? "connector_label"
+                : "component_label";
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(evidence.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(evidence.component_id) << "\",\n"
+            << "      \"kind\": \"" << kind << "\",\n"
+            << "      \"raw_text\": \"" << json_escape(evidence.raw_text) << "\",\n"
+            << "      \"normalized_text\": \"" << json_escape(evidence.normalized_text) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(evidence.confidence) << "\",\n"
+            << "      \"distance\": " << evidence.distance << ",\n"
+            << "      \"source\": \"" << json_escape(evidence.source) << "\"\n"
+            << "    }";
+        if (i + 1 != model.component_identity_evidence.size()) out << ",";
+        out << "\n";
+    }
     out << "  ],\n  \"electrical_nets\": [\n";
     for (std::size_t i = 0; i < model.electrical_nets.size(); ++i) {
         const auto& net = model.electrical_nets[i];

@@ -409,7 +409,16 @@ void write_manifest(const WireModel& model, const fs::path& path) {
         << "  }," << '\n'
         << "  \"electrical_nets\": " << model.electrical_nets.size() << "," << '\n'
         << "  \"validation_errors\": " << model.audit.validation_errors << "," << '\n'
-        << "  \"validation_warnings\": " << model.audit.validation_warnings << '\n'
+        << "  \"validation_warnings\": " << model.audit.validation_warnings << "," << '\n'
+        << "  \"validation_warning_codes\": {" << '\n';
+
+    for (std::size_t i = 0; i < model.audit.validation_warning_summaries.size(); ++i) {
+        const auto& summary = model.audit.validation_warning_summaries[i];
+        out << "    \"" << summary.code << "\": " << summary.count
+            << (i + 1 == model.audit.validation_warning_summaries.size() ? "\n" : ",\n");
+    }
+
+    out << "  }" << '\n'
         << "}" << '\n';
 }
 

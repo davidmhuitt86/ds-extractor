@@ -159,6 +159,10 @@ struct ComponentCandidate {
     std::vector<std::string> shape_ids;
     BoundingBox bounds {};
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
+
+    // Resolved human-readable labels are semantic enrichment. They do not
+    // establish geometry, topology, or component identity by themselves.
+    std::vector<std::string> semantic_labels;
 };
 
 struct Wire {

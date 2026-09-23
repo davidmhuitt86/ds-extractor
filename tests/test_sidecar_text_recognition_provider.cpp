@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <fstream>
+#include <cstdio>
 
 using namespace eke::dx::wire;
 
@@ -9,11 +10,11 @@ int main() {
     const std::string path = "test-recognition.sidecar";
     {
         std::ofstream out(path);
-        out << "# text-region-id\\tconfidence\\ttext\\n";
-        out << "text-region-1\\thigh\\tGND\\n";
-        out << "text-region-2\\tmedium\\tB+\\n";
-        out << "text-region-3\\tunresolved\\tIGN\\n";
-        out << "malformed\\n";
+        out << "# text-region-id\tconfidence\ttext\n";
+        out << "text-region-1\thigh\tGND\n";
+        out << "text-region-2\tmedium\tB+\n";
+        out << "text-region-3\tunresolved\tIGN\n";
+        out << "malformed\n";
     }
 
     SidecarTextRecognitionProvider provider(path);

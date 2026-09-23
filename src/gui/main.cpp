@@ -16,6 +16,7 @@
 #include <windows.h>
 #include <shobjidl.h>
 #include <shellapi.h>
+#include <windows.h>
 #endif
 
 #include <algorithm>

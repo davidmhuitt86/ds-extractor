@@ -137,7 +137,7 @@ std::filesystem::path find_release_script() {
     return {};
 }
 
-bool launch_release_pipeline() {
+bool launch_release_pipeline(bool build_only = false) {
     const std::filesystem::path script = find_release_script();
 
     if (script.empty()) {
@@ -153,7 +153,8 @@ bool launch_release_pipeline() {
     const std::wstring script_path = script.wstring();
     std::wstring command =
         L"powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"" +
-        script_path + L"\"";
+        script_path + L"\"" +
+        (build_only ? L" -BuildOnly" : L"");
 
     std::vector<wchar_t> command_line(command.begin(), command.end());
     command_line.push_back(L'\0');
@@ -223,6 +224,7 @@ struct GuiState {
     int canvas_width = 1400;
     bool request_open = false;
     bool request_release = false;
+    bool request_build_test = false;
     bool render_trace_pending = false;
 };
 
@@ -506,7 +508,8 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     toolbar_button(215, 90, "RESET");
     toolbar_button(315, 105, "CONDUCTORS");
     toolbar_button(430, 95, "TOPOLOGY");
-    toolbar_button(535, 145, "RELEASE / PR");
+    toolbar_button(535, 145, "BUILD / TEST");
+    toolbar_button(690, 145, "RELEASE / PR");
 
     const int image_width = canvas.cols - kPanelWidth;
     const int image_height =
@@ -699,6 +702,8 @@ void handle_mouse(
             else if (x >= 430 && x < 525)
                 state.view = ViewMode::Topology;
             else if (x >= 535 && x < 680)
+                state.request_build_test = true;
+            else if (x >= 690 && x < 835)
                 state.request_release = true;
             return;
         }
@@ -806,6 +811,18 @@ int main(int argc, char** argv) {
                 } catch (const std::exception& e) {
                     std::cerr << "open error: " << e.what() << '\\n';
                 }
+            }
+
+            if (state.request_build_test) {
+                state.request_build_test = false;
+#ifdef _WIN32
+                gui_log("BUILD / TEST: closing GUI and launching build/test pipeline");
+                cv::destroyAllWindows();
+                if (launch_release_pipeline(true))
+                    return 0;
+#else
+                std::cerr << "Build/test automation is currently supported on Windows only.\n";
+#endif
             }
 
             if (state.request_release) {

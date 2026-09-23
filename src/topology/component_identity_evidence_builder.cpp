@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <map>
 #include <string>
+#include <tuple>
 
 namespace eke::dx::wire {
 namespace {

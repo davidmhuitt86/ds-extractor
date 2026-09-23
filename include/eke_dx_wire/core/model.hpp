@@ -180,6 +180,30 @@ enum class ComponentCandidateKind {
     Unknown
 };
 
+enum class ComponentSymbolKind {
+    Enclosure,
+    CircularSymbol,
+    ChassisGround,
+    PrimitiveSymbol,
+    Unknown
+};
+
+enum class ComponentSymbolRecognitionStatus {
+    Recognized,
+    Unresolved,
+    Conflicted
+};
+
+struct ComponentSymbolRecognition {
+    std::string id;
+    std::string component_id;
+    ComponentSymbolKind symbol_kind = ComponentSymbolKind::Unknown;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    ComponentSymbolRecognitionStatus status =
+        ComponentSymbolRecognitionStatus::Unresolved;
+    std::vector<std::string> shape_ids;
+};
+
 struct ComponentCandidate {
     std::string id;
     ComponentCandidateKind kind = ComponentCandidateKind::Unknown;
@@ -430,6 +454,7 @@ struct WireModel {
     int image_height = 0;
 
     std::vector<ComponentCandidate> component_candidates;
+    std::vector<ComponentSymbolRecognition> component_symbol_recognitions;
     std::vector<ConnectorCandidate> connector_candidates;
     std::vector<ConnectorTerminal> connector_terminals;
     std::vector<TextRegion> text_regions;

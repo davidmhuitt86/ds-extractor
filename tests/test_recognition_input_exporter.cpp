@@ -2,14 +2,25 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include <cassert>
 #include <filesystem>
 #include <fstream>
-#include <string>
 #include <iostream>
+#include <string>
 
 namespace fs = std::filesystem;
 using namespace eke::dx::wire;
+
+namespace {
+
+bool require_path(const fs::path& path) {
+    if (!fs::exists(path)) {
+        std::cerr << "missing expected path: " << path << "\n";
+        return false;
+    }
+    return true;
+}
+
+} // namespace
 
 int main() {
     const fs::path root =
@@ -22,13 +33,17 @@ int main() {
     const fs::path output = root / "package";
 
     std::cerr << "checkpoint: source path\n";
-    assert(fs::exists(original));
-    assert(fs::is_regular_file(original));
+    if (!fs::exists(original) || !fs::is_regular_file(original)) {
+        std::cerr << "missing source image: " << original << "\n";
+        return 1;
+    }
 
     std::cerr << "checkpoint: before imread\n";
     const cv::Mat image = cv::imread(original.string(), cv::IMREAD_GRAYSCALE);
-    std::cerr << "checkpoint: after imread " << image.cols << "x" << image.rows << "\n";
+    std::cerr << "checkpoint: after imread "
+              << image.cols << "x" << image.rows << "\n";
     if (image.empty()) {
+        std::cerr << "unable to load source image\n";
         return 1;
     }
 
@@ -62,23 +77,48 @@ int main() {
         model, image, original.string(), output.string());
     std::cerr << "checkpoint: after export\n";
 
-    assert(fs::exists(output / "manifest.json"));
-    assert(fs::exists(output / "recognition_input.json"));
-    assert(fs::exists(output / "instructions.md"));
-    assert(fs::exists(output / "schema.json"));
-    assert(fs::exists(output / "source_normalized.png"));
-    assert(fs::exists(output / "source_original" / "trx300ODG.png"));
-    assert(fs::exists(output / "regions" / "text-region-test.json"));
-    assert(fs::exists(output / "regions" / "crops" / "text-region-test.png"));
+    const fs::path expected_paths[] = {
+        output / "manifest.json",
+        output / "recognition_input.json",
+        output / "instructions.md",
+        output / "schema.json",
+        output / "source_normalized.png",
+        output / "source_original" / "trx300ODG.png",
+        output / "regions" / "text-region-test.json",
+        output / "regions" / "crops" / "text-region-test.png"
+    };
 
-    std::ifstream manifest(output / "manifest.json");
-    const std::string contents(
-        (std::istreambuf_iterator<char>(manifest)),
-        std::istreambuf_iterator<char>());
+    for (const auto& path : expected_paths) {
+        if (!require_path(path)) {
+            fs::remove_all(root);
+            return 1;
+        }
+    }
 
-    assert(contents.find("eke-dx-wire-recognition-input") != std::string::npos);
-    assert(contents.find("text_region_count") != std::string::npos);
+    std::string contents;
+    {
+        std::ifstream manifest(output / "manifest.json");
+        if (!manifest) {
+            std::cerr << "unable to open manifest: "
+                      << output / "manifest.json" << "\n";
+            fs::remove_all(root);
+            return 1;
+        }
 
+        contents.assign(
+            (std::istreambuf_iterator<char>(manifest)),
+            std::istreambuf_iterator<char>());
+    }
+
+    if (contents.find("eke-dx-wire-recognition-input") == std::string::npos ||
+        contents.find("text_region_count") == std::string::npos) {
+        std::cerr << "manifest content validation failed\n";
+        fs::remove_all(root);
+        return 1;
+    }
+
+    // Ensure all file handles are closed before cleanup. Windows refuses to
+    // remove open files, making cleanup behavior platform-dependent.
     fs::remove_all(root);
     return 0;
 }

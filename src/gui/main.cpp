@@ -269,6 +269,12 @@ struct GuiState {
     cv::Rect output_link_rect {};
 };
 
+#ifdef _WIN32
+void publish_review_artifacts(const GuiState& state);
+#else
+void publish_review_artifacts(const GuiState& state);
+#endif
+
 struct Slider {
     const char* label;
     int min;

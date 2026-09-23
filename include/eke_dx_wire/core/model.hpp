@@ -327,6 +327,23 @@ struct EngineeringObjectSemanticResolution {
     std::string source;
 };
 
+
+enum class ComponentIdentityEvidenceKind {
+    ComponentLabel,
+    ConnectorLabel
+};
+
+struct ComponentIdentityEvidence {
+    std::string id;
+    std::string component_id;
+    ComponentIdentityEvidenceKind kind = ComponentIdentityEvidenceKind::ComponentLabel;
+    std::string raw_text;
+    std::string normalized_text;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    double distance = 0.0;
+    std::string source;
+};
+
 struct WireModel {
     std::string source_id;
     int page = 0;
@@ -339,6 +356,7 @@ struct WireModel {
     std::vector<SemanticAssociation> semantic_associations;
     std::vector<TextSemanticEvidence> text_semantic_evidence;
     std::vector<EngineeringObjectSemanticResolution> engineering_object_semantics;
+    std::vector<ComponentIdentityEvidence> component_identity_evidence;
     std::vector<TerminalCandidate> terminal_candidates;
     std::vector<ConductorSegment> conductor_segments;
     std::vector<RejectedGeometryEvidence> rejected_geometry;

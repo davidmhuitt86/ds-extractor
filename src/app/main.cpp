@@ -109,21 +109,21 @@ static int extract(const std::string& image_path, const std::string& output, con
                 "Unable to create semantic resolution report");
         }
 
-        report << "{\n"
-               << "  \\"format\\": \\"eke-dx-wire-semantic-resolution-report\\",\n"
-               << "  \\"version\\": \\"1.0\\",\n"
-               << "  \\"source\\": \\"" << json_escape(image_path) << "\\",\n"
-               << "  \\"recognition_observations\\": "
-               << model.text_recognition_evidence.size() << ",\n"
-               << "  \\"semantic_observations\\": "
-               << model.text_semantic_evidence.size() << ",\n"
-               << "  \\"semantic_associations\\": "
-               << model.semantic_associations.size() << ",\n"
-               << "  \\"baseline_unresolved_nets\\": "
-               << baseline_model.audit.unresolved_nets << ",\n"
-               << "  \\"recognized_unresolved_nets\\": "
-               << model.audit.unresolved_nets << ",\n"
-               << "  \\"nets\\": [\n";
+        report << "{\\n"
+               << "  \"format\": \"eke-dx-wire-semantic-resolution-report\",\\n"
+               << "  \"version\": \"1.0\",\\n"
+               << "  \"source\": \"" << json_escape(image_path) << "\",\\n"
+               << "  \"recognition_observations\": "
+               << model.text_recognition_evidence.size() << ",\\n"
+               << "  \"semantic_observations\": "
+               << model.text_semantic_evidence.size() << ",\\n"
+               << "  \"semantic_associations\": "
+               << model.semantic_associations.size() << ",\\n"
+               << "  \"baseline_unresolved_nets\": "
+               << baseline_model.audit.unresolved_nets << ",\\n"
+               << "  \"recognized_unresolved_nets\": "
+               << model.audit.unresolved_nets << ",\\n"
+               << "  \"nets\": [\\n";
 
         bool first_net = true;
         for (const auto& recognized_net : model.electrical_nets) {
@@ -135,7 +135,7 @@ static int extract(const std::string& image_path, const std::string& output, con
                 });
 
             if (!first_net) {
-                report << ",\n";
+                report << ",\\n";
             }
             first_net = false;
 
@@ -148,23 +148,23 @@ static int extract(const std::string& image_path, const std::string& output, con
                     ? ConfidenceClass::Unresolved
                     : baseline_it->confidence;
 
-            report << "    {\\"id\\": \\"" << json_escape(recognized_net.id)
-                   << "\\", \\"baseline_role\\": \\""
+            report << "    {\"id\": \"" << json_escape(recognized_net.id)
+                   << "\", \"baseline_role\": \""
                    << distribution_role_name(baseline_role)
-                   << "\\", \\"baseline_confidence\\": \\""
+                   << "\", \"baseline_confidence\": \""
                    << confidence_name(baseline_confidence)
-                   << "\\", \\"recognized_role\\": \\""
+                   << "\", \"recognized_role\": \""
                    << distribution_role_name(recognized_net.role)
-                   << "\\", \\"recognized_confidence\\": \\""
+                   << "\", \"recognized_confidence\": \""
                    << confidence_name(recognized_net.confidence)
-                   << "\\", \\"changed\\": "
+                   << "\", \"changed\": "
                    << ((baseline_role != recognized_net.role ||
                         baseline_confidence != recognized_net.confidence)
                            ? "true" : "false")
                    << "}";
         }
 
-        report << "\n  ]\n}\n";
+        report << "\\n  ]\\n}\\n";
     }
 
     RecognitionInputExporter::export_package(

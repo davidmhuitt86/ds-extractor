@@ -980,6 +980,15 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             overlay_shapes(color_view, state, scale);
         }
 
+        if (!state.layers.base_diagram &&
+            (state.view == ViewMode::Source ||
+             state.view == ViewMode::Conductors ||
+             state.view == ViewMode::Topology ||
+             state.view == ViewMode::Endpoints)) {
+            color_view = cv::Mat(display_size, CV_8UC3,
+                                 cv::Scalar(238, 238, 238));
+        }
+
         if (state.view == ViewMode::Source ||
             state.view == ViewMode::Conductors ||
             state.view == ViewMode::Topology ||
@@ -1097,27 +1106,28 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
         draw_button(panel, {x, y, w, 25}, label, active);
     };
 
-    layer_button(18, 658, 88, "WIRES", state.layers.wires);
-    layer_button(114, 658, 88, "COLORS", state.layers.wire_colors);
-    layer_button(210, 658, 88, "SYMBOLS", state.layers.symbols);
+    layer_button(18, 658, 88, "BASE", state.layers.base_diagram);
+    layer_button(114, 658, 88, "WIRES", state.layers.wires);
+    layer_button(210, 658, 88, "COLORS", state.layers.wire_colors);
 
-    layer_button(18, 686, 88, "TERMINALS", state.layers.terminals);
-    layer_button(114, 686, 88, "CONNECT", state.layers.connectors);
-    layer_button(210, 686, 88, "SPLICES", state.layers.splices);
+    layer_button(18, 686, 88, "SYMBOLS", state.layers.symbols);
+    layer_button(114, 686, 88, "TERMINALS", state.layers.terminals);
+    layer_button(210, 686, 88, "CONNECT", state.layers.connectors);
 
-    layer_button(18, 714, 88, "GROUNDS", state.layers.grounds);
-    layer_button(114, 714, 88, "LABELS", state.layers.labels);
-    layer_button(210, 714, 88, "DIRECTION", state.layers.wire_direction);
+    layer_button(18, 714, 88, "SPLICES", state.layers.splices);
+    layer_button(114, 714, 88, "GROUNDS", state.layers.grounds);
+    layer_button(210, 714, 88, "LABELS", state.layers.labels);
 
-    cv::putText(panel, "DIAGNOSTICS", {18, 744},
+    layer_button(18, 742, 88, "DIRECTION", state.layers.wire_direction);
+    layer_button(114, 742, 88, "TOPOLOGY", state.layers.topology);
+    layer_button(210, 742, 88, "BOUNDS", state.layers.component_bounds);
+
+    cv::putText(panel, "DIAGNOSTICS", {18, 776},
                 cv::FONT_HERSHEY_SIMPLEX, 0.50,
                 cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
 
-    layer_button(18, 752, 88, "TOPOLOGY", state.layers.topology);
-    layer_button(114, 752, 88, "BOUNDS", state.layers.component_bounds);
-    layer_button(210, 752, 88, "ENDPOINTS", state.layers.endpoint_debug);
-
-    layer_button(18, 781, 88, "RECOG.", state.layers.recognition_evidence);
+    layer_button(18, 782, 88, "ENDPOINTS", state.layers.endpoint_debug);
+    layer_button(114, 778, 88, "RECOG.", state.layers.recognition_evidence);
 
     cv::rectangle(
         canvas,
@@ -1304,31 +1314,32 @@ void handle_mouse(
 
         if (x >= panel_left &&
             y >= kToolbarHeight + 658 &&
-            y < kToolbarHeight + 806) {
+            y < kToolbarHeight + 816) {
             const int bx = panel_x;
             const int local_y = y - (kToolbarHeight + 658);
-            const int row = local_y / 29;
+            const int row = local_y / 28;
             const int col =
                 bx < 106 ? 0 :
                 bx < 202 ? 1 :
                 bx < 298 ? 2 : -1;
 
-            if (col >= 0 && row >= 0 && row <= 5) {
+            if (col >= 0 && row >= 0 && row <= 4) {
                 bool* target = nullptr;
-                if (row == 0) target = col == 0 ? &state.layers.wires :
-                                      col == 1 ? &state.layers.wire_colors :
-                                                 &state.layers.symbols;
-                else if (row == 1) target = col == 0 ? &state.layers.terminals :
-                                           col == 1 ? &state.layers.connectors :
-                                                      &state.layers.splices;
-                else if (row == 2) target = col == 0 ? &state.layers.grounds :
-                                           col == 1 ? &state.layers.labels :
-                                                      &state.layers.wire_direction;
-                else if (row == 3) target = col == 0 ? &state.layers.topology :
-                                           col == 1 ? &state.layers.component_bounds :
-                                                      &state.layers.endpoint_debug;
-                else if (row == 4 && col == 0)
-                    target = &state.layers.recognition_evidence;
+                if (row == 0) target = col == 0 ? &state.layers.base_diagram :
+                                      col == 1 ? &state.layers.wires :
+                                                 &state.layers.wire_colors;
+                else if (row == 1) target = col == 0 ? &state.layers.symbols :
+                                           col == 1 ? &state.layers.terminals :
+                                                      &state.layers.connectors;
+                else if (row == 2) target = col == 0 ? &state.layers.splices :
+                                           col == 1 ? &state.layers.grounds :
+                                                      &state.layers.labels;
+                else if (row == 3) target = col == 0 ? &state.layers.wire_direction :
+                                           col == 1 ? &state.layers.topology :
+                                                      &state.layers.component_bounds;
+                else if (row == 4) target = col == 0 ? &state.layers.endpoint_debug :
+                                           col == 1 ? &state.layers.recognition_evidence :
+                                                      nullptr;
 
                 if (target)
                     *target = !*target;

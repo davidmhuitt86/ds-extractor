@@ -1077,7 +1077,7 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     draw_button(panel, {18, 507, 135, 34}, "RUN EXTRACT");
     draw_button(panel, {165, 507, 135, 34}, "RESET");
 
-    const int button_y = 562;
+    const int button_y = 535;
     draw_button(panel, {18, button_y, 88, 30},
                 "SOURCE", state.view == ViewMode::Source);
     draw_button(panel, {114, button_y, 88, 30},
@@ -1097,37 +1097,33 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     draw_button(panel, {114, button_y + 76, 88, 30},
                 "SHAPES", state.view == ViewMode::Shapes);
 
-    cv::putText(panel, "ENGINEERING LAYERS", {18, 648},
+    cv::putText(panel, "ENGINEERING LAYERS", {18, 644},
                 cv::FONT_HERSHEY_SIMPLEX, 0.58,
                 cv::Scalar(245, 245, 245), 1, cv::LINE_AA);
 
     auto layer_button = [&](int x, int y, int w,
                             const std::string& label, bool active) {
-        draw_button(panel, {x, y, w, 25}, label, active);
+        draw_button(panel, {x, y, w, 24}, label, active);
     };
 
-    layer_button(18, 658, 88, "BASE", state.layers.base_diagram);
-    layer_button(114, 658, 88, "WIRES", state.layers.wires);
-    layer_button(210, 658, 88, "COLORS", state.layers.wire_colors);
+    layer_button(18, 650, 88, "BASE", state.layers.base_diagram);
+    layer_button(114, 650, 88, "WIRES", state.layers.wires);
+    layer_button(210, 650, 88, "COLORS", state.layers.wire_colors);
 
-    layer_button(18, 686, 88, "SYMBOLS", state.layers.symbols);
-    layer_button(114, 686, 88, "TERMINALS", state.layers.terminals);
-    layer_button(210, 686, 88, "CONNECT", state.layers.connectors);
+    layer_button(18, 676, 88, "SYMBOLS", state.layers.symbols);
+    layer_button(114, 676, 88, "TERMINALS", state.layers.terminals);
+    layer_button(210, 676, 88, "CONNECT", state.layers.connectors);
 
-    layer_button(18, 714, 88, "SPLICES", state.layers.splices);
-    layer_button(114, 714, 88, "GROUNDS", state.layers.grounds);
-    layer_button(210, 714, 88, "LABELS", state.layers.labels);
+    layer_button(18, 702, 88, "SPLICES", state.layers.splices);
+    layer_button(114, 702, 88, "GROUNDS", state.layers.grounds);
+    layer_button(210, 702, 88, "LABELS", state.layers.labels);
 
-    layer_button(18, 742, 88, "DIRECTION", state.layers.wire_direction);
-    layer_button(114, 742, 88, "TOPOLOGY", state.layers.topology);
-    layer_button(210, 742, 88, "BOUNDS", state.layers.component_bounds);
+    layer_button(18, 728, 88, "DIRECTION", state.layers.wire_direction);
+    layer_button(114, 728, 88, "TOPOLOGY", state.layers.topology);
+    layer_button(210, 728, 88, "BOUNDS", state.layers.component_bounds);
 
-    cv::putText(panel, "DIAGNOSTICS", {18, 776},
-                cv::FONT_HERSHEY_SIMPLEX, 0.50,
-                cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
-
-    layer_button(18, 782, 88, "ENDPOINTS", state.layers.endpoint_debug);
-    layer_button(114, 778, 88, "RECOG.", state.layers.recognition_evidence);
+    layer_button(18, 754, 88, "ENDPOINTS", state.layers.endpoint_debug);
+    layer_button(114, 754, 88, "RECOG.", state.layers.recognition_evidence);
 
     cv::rectangle(
         canvas,
@@ -1290,16 +1286,16 @@ void handle_mouse(
         }
 
         if (x >= panel_left &&
-            y >= kToolbarHeight + 562 &&
-            y < kToolbarHeight + 668) {
+            y >= kToolbarHeight + 535 &&
+            y < kToolbarHeight + 641) {
             const int bx = panel_x;
 
-            if (y < kToolbarHeight + 592) {
+            if (y < kToolbarHeight + 565) {
                 if (bx >= 18 && bx < 106) state.view = ViewMode::Source;
                 else if (bx >= 114 && bx < 202) state.view = ViewMode::Binary;
                 else if (bx >= 210 && bx < 298)
                     state.view = ViewMode::HorizontalMask;
-            } else if (y < kToolbarHeight + 630) {
+            } else if (y < kToolbarHeight + 603) {
                 if (bx >= 18 && bx < 106) state.view = ViewMode::VerticalMask;
                 else if (bx >= 114 && bx < 202)
                     state.view = ViewMode::Conductors;
@@ -1313,11 +1309,11 @@ void handle_mouse(
         }
 
         if (x >= panel_left &&
-            y >= kToolbarHeight + 658 &&
-            y < kToolbarHeight + 816) {
+            y >= kToolbarHeight + 650 &&
+            y < kToolbarHeight + 780) {
             const int bx = panel_x;
-            const int local_y = y - (kToolbarHeight + 658);
-            const int row = local_y / 28;
+            const int local_y = y - (kToolbarHeight + 650);
+            const int row = local_y / 26;
             const int col =
                 bx < 106 ? 0 :
                 bx < 202 ? 1 :

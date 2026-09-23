@@ -20,6 +20,7 @@
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
 #include "eke_dx_wire/topology/endpoint_semantic_reconstructor.hpp"
+#include "eke_dx_wire/topology/connector_terminal_model.hpp"
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
@@ -271,6 +272,18 @@ WireModel ExtractionPipeline::run(
         model.component_candidates,
         model.endpoint_candidates,
         model.engineering_object_semantics);
+
+    // AP-WIRE-020: materialize explicit connector and connector-terminal
+    // objects only from already established connector-boundary evidence.
+    // This stage does not infer connector identity, pin numbers, or topology.
+    ConnectorTerminalModelBuilder connector_terminal_builder;
+    const ConnectorModelArtifacts connector_artifacts =
+        connector_terminal_builder.build(
+            model.component_candidates,
+            model.terminal_candidates,
+            model.endpoint_candidates);
+    model.connector_candidates = connector_artifacts.connectors;
+    model.connector_terminals = connector_artifacts.terminals;
 
     // AP-WIRE-016: preserve component/connector labels as explicit
     // identity-bearing evidence. This is evidence only; canonical component

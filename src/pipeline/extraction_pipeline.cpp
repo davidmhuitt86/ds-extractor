@@ -21,6 +21,7 @@
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
 #include "eke_dx_wire/topology/endpoint_semantic_reconstructor.hpp"
 #include "eke_dx_wire/topology/connector_terminal_model.hpp"
+#include "eke_dx_wire/topology/component_symbol_recognizer.hpp"
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
@@ -155,6 +156,14 @@ WireModel ExtractionPipeline::run(
     model.image_width = normalized.cols;
     model.image_height = normalized.rows;
     model.component_candidates = component_candidates;
+
+    // AP-WIRE-021: establish explicit symbol-recognition objects from the
+    // already classified component candidates. This stage does not infer
+    // component identity, mutate topology, or invent terminals.
+    ComponentSymbolRecognizer symbol_recognizer;
+    model.component_symbol_recognitions =
+        symbol_recognizer.recognize(model.component_candidates);
+
     model.text_regions = text_regions.regions;
 
     // AP-WIRE-008: recognition is an explicit provider boundary. The

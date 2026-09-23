@@ -61,6 +61,8 @@ std::string open_image_dialog() {
     }
 
     COMDLG_FILTERSPEC filters[] = {
+        {L"Diagram Files", L"*.pdf;*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff"},
+        {L"PDF Files", L"*.pdf"},
         {L"Image Files", L"*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff"},
         {L"All Files", L"*.*"}
     };

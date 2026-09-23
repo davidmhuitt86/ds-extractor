@@ -1,3 +1,5 @@
+#include "eke_dx_wire/export/artifact_writer.hpp"
+#include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/image/morphology_detector.hpp"
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
@@ -207,6 +209,7 @@ enum class ViewMode {
 
 struct GuiState {
     std::string image_path;
+    std::filesystem::path artifact_root;
     cv::Mat source;
     cv::Mat normalized;
     DetectionArtifacts detection;
@@ -234,6 +237,27 @@ struct Slider {
     int max;
     int* value;
 };
+
+std::filesystem::path find_project_root(const char* argv0) {
+    std::filesystem::path directory;
+    try {
+        directory = std::filesystem::absolute(std::filesystem::path(argv0)).parent_path();
+    } catch (...) {
+        directory = std::filesystem::current_path();
+    }
+
+    for (;;) {
+        if (std::filesystem::exists(directory / "CMakeLists.txt"))
+            return directory;
+
+        const auto parent = directory.parent_path();
+        if (parent == directory)
+            break;
+        directory = parent;
+    }
+
+    return std::filesystem::current_path();
+}
 
 void load_image(GuiState& state, const std::string& path) {
     gui_log("LOAD: enter");
@@ -298,6 +322,24 @@ void extract(GuiState& state) {
     state.endpoints = endpoint_reconstructor.reconstruct(
         state.topology.nodes, state.topology.edges,
         state.normalized, state.image_path, 0);
+
+    // The GUI keeps its diagnostic calibration view, but artifact generation
+    // always uses the complete ExtractionPipeline. This prevents GUI output
+    // from becoming a second, partial extraction format.
+    ExtractionConfig artifact_config;
+    artifact_config.morphology = state.config;
+    ExtractionPipeline artifact_pipeline(artifact_config);
+    const WireModel artifact_model =
+        artifact_pipeline.run(state.image_path, state.image_path);
+
+    ExtractionArtifactWriter::write(
+        artifact_model,
+        state.normalized,
+        state.image_path,
+        state.artifact_root);
+
+    gui_log("EXTRACT: canonical artifacts written to " +
+            (state.artifact_root / "output" / "wires.svg").string());
 
     state.extracted = true;
 }
@@ -783,6 +825,8 @@ void on_mouse(int event, int x, int y, int flags, void* userdata) {
 int main(int argc, char** argv) {
     try {
         GuiState state;
+        state.artifact_root = find_project_root(argc > 0 ? argv[0] : ".");
+        gui_log("ARTIFACT ROOT: " + state.artifact_root.string());
 
         if (argc > 1)
             load_image(state, argv[1]);

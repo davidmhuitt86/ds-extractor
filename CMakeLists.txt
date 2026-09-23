@@ -58,6 +58,7 @@ add_library(eke_dx_wire
     src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp
     src/export/artifact_writer.cpp
+    src/export/review_artifact_writer.cpp
     src/export/topology_exporter.cpp
     src/export/recognition_input_exporter.cpp
     src/pipeline/extraction_pipeline.cpp

@@ -62,6 +62,10 @@ add_library(eke_dx_wire
 
 target_include_directories(eke_dx_wire PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(eke_dx_wire PUBLIC opencv_core opencv_imgproc opencv_imgcodecs)
+
+if(WIN32)
+    target_link_libraries(eke_dx_wire PUBLIC runtimeobject)
+endif()
 target_compile_features(eke_dx_wire PUBLIC cxx_std_23)
 
 if(MSVC)

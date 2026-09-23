@@ -18,6 +18,7 @@ The GUI is intentionally a thin client over libeke_dx_wire.
 - Overlay detected conductor segments.
 - Toggle source, conductor, and topology visibility.
 - Display segment/node/edge counts.
+- Write the same canonical artifact set used by the CLI.
 - Accept an image path as the first command-line argument.
 - Exit with Esc or Q.
 
@@ -36,7 +37,10 @@ The GUI is intentionally a thin client over libeke_dx_wire.
           v
     WireModel
 
-The GUI contains no extraction algorithms.
+The GUI contains no extraction algorithms. Its diagnostic calibration view may
+run early detector stages for visualization, but artifact generation is always
+performed by the complete ExtractionPipeline and the canonical
+ExtractionArtifactWriter.
 
 ## Implementation
 
@@ -78,3 +82,21 @@ node is a true engineering endpoint.
 - validation overlays.
 - PDF source rendering.
 - cross-platform Qt-based shell when the core model stabilizes.
+
+## Canonical artifact boundary
+
+CLI and GUI extraction results use the same project artifact layout:
+
+```text
+<project-root>/
+├── project.json
+├── artifacts/
+│   ├── audit/extraction_audit.json
+│   ├── topology/topology.json
+│   └── recognition/
+└── output/wires.svg
+```
+
+The GUI resolves the repository/project root from its executable location when
+running from the development tree. It does not create a separate `extraction/`
+artifact tree.

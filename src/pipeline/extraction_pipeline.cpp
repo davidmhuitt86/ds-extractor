@@ -25,6 +25,7 @@
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
 #include "eke_dx_wire/topology/semantic_observation_resolver.hpp"
 #include "eke_dx_wire/topology/engineering_object_semantic_resolver.hpp"
+#include "eke_dx_wire/topology/engineering_object_semantic_applier.hpp"
 #include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
@@ -249,6 +250,15 @@ WireModel ExtractionPipeline::run(
     model.engineering_object_semantics = object_semantic_resolver.resolve(
         model.text_semantic_evidence,
         model.semantic_associations);
+
+    // AP-WIRE-015: materialize resolved labels into engineering-object
+    // semantic fields. This enriches the model only; geometry, topology,
+    // wire identity, and electrical connectivity remain unchanged.
+    EngineeringObjectSemanticApplier object_semantic_applier;
+    object_semantic_applier.apply(
+        model.component_candidates,
+        model.endpoint_candidates,
+        model.engineering_object_semantics);
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

@@ -17,6 +17,7 @@
 #endif
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -108,6 +109,89 @@ std::string open_image_dialog() {
 }
 #endif
 
+#ifdef _WIN32
+std::filesystem::path find_release_script() {
+    wchar_t buffer[32768] {};
+    const DWORD length = GetModuleFileNameW(
+        nullptr, buffer, static_cast<DWORD>(std::size(buffer)));
+
+    if (length == 0 || length >= std::size(buffer))
+        return {};
+
+    std::filesystem::path directory(buffer, buffer + length);
+    directory = directory.parent_path();
+
+    for (;;) {
+        const auto candidate = directory / "tools" / "dx-release.ps1";
+        if (std::filesystem::exists(candidate))
+            return candidate;
+
+        const auto parent = directory.parent_path();
+        if (parent == directory)
+            break;
+
+        directory = parent;
+    }
+
+    return {};
+}
+
+bool launch_release_pipeline() {
+    const std::filesystem::path script = find_release_script();
+
+    if (script.empty()) {
+        MessageBoxW(
+            nullptr,
+            L"Could not locate tools\\dx-release.ps1.\\n"
+            L"Launch the GUI from a ds-extractor working tree.",
+            L"DX-Extractor Release",
+            MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    const std::wstring script_path = script.wstring();
+    std::wstring command =
+        L"powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"" +
+        script_path + L"\"";
+
+    std::vector<wchar_t> command_line(command.begin(), command.end());
+    command_line.push_back(L'\\0');
+
+    STARTUPINFOW startup {};
+    startup.cb = sizeof(startup);
+
+    PROCESS_INFORMATION process {};
+
+    const std::wstring working_directory =
+        script.parent_path().parent_path().wstring();
+
+    const BOOL created = CreateProcessW(
+        nullptr,
+        command_line.data(),
+        nullptr,
+        nullptr,
+        FALSE,
+        CREATE_NEW_CONSOLE | CREATE_UNICODE_ENVIRONMENT,
+        nullptr,
+        working_directory.c_str(),
+        &startup,
+        &process);
+
+    if (!created) {
+        MessageBoxW(
+            nullptr,
+            L"Failed to start the release pipeline.",
+            L"DX-Extractor Release",
+            MB_OK | MB_ICONERROR);
+        return false;
+    }
+
+    CloseHandle(process.hThread);
+    CloseHandle(process.hProcess);
+    return true;
+}
+#endif
+
 enum class ViewMode {
     Source,
     Binary,
@@ -137,6 +221,7 @@ struct GuiState {
     bool dragging = false;
     int canvas_width = 1400;
     bool request_open = false;
+    bool request_release = false;
     bool render_trace_pending = false;
 };
 
@@ -420,6 +505,7 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     toolbar_button(215, 90, "RESET");
     toolbar_button(315, 105, "CONDUCTORS");
     toolbar_button(430, 95, "TOPOLOGY");
+    toolbar_button(535, 145, "RELEASE / PR");
 
     const int image_width = canvas.cols - kPanelWidth;
     const int image_height =
@@ -611,6 +697,8 @@ void handle_mouse(
                 state.view = ViewMode::Conductors;
             else if (x >= 430 && x < 525)
                 state.view = ViewMode::Topology;
+            else if (x >= 535 && x < 680)
+                state.request_release = true;
             return;
         }
 
@@ -717,6 +805,18 @@ int main(int argc, char** argv) {
                 } catch (const std::exception& e) {
                     std::cerr << "open error: " << e.what() << '\\n';
                 }
+            }
+
+            if (state.request_release) {
+                state.request_release = false;
+#ifdef _WIN32
+                gui_log("RELEASE: closing GUI and launching release pipeline");
+                cv::destroyAllWindows();
+                if (launch_release_pipeline())
+                    return 0;
+#else
+                std::cerr << "Release automation is currently supported on Windows only.\\n";
+#endif
             }
 
             if (key == 27 || key == 'q' || key == 'Q')

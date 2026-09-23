@@ -26,6 +26,7 @@
 #include "eke_dx_wire/topology/semantic_observation_resolver.hpp"
 #include "eke_dx_wire/topology/engineering_object_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/engineering_object_semantic_applier.hpp"
+#include "eke_dx_wire/topology/component_identity_evidence_builder.hpp"
 #include "eke_dx_wire/topology/text_evidence_interpreter.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
@@ -259,6 +260,14 @@ WireModel ExtractionPipeline::run(
         model.component_candidates,
         model.endpoint_candidates,
         model.engineering_object_semantics);
+
+    // AP-WIRE-016: preserve component/connector labels as explicit
+    // identity-bearing evidence. This is evidence only; canonical component
+    // identity remains unresolved until a registry-backed resolver exists.
+    ComponentIdentityEvidenceBuilder component_identity_builder;
+    model.component_identity_evidence =
+        component_identity_builder.build(
+            model.engineering_object_semantics);
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

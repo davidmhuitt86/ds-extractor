@@ -383,54 +383,31 @@ void write_manifest(const WireModel& model, const fs::path& path) {
     if (!out)
         throw std::runtime_error("Unable to create review manifest: " + path.string());
 
-    out << "{
-"
-        << "  \"source_id\": \"" << model.source_id << "\",
-"
-        << "  \"page\": " << model.page << ",
-"
-        << "  \"image_width\": " << model.image_width << ",
-"
-        << "  \"image_height\": " << model.image_height << ",
-"
-        << "  \"layers\": {
-"
-        << "    \"wires\": " << model.wires.size() << ",
-"
-        << "    \"wire_colors\": " << model.conductor_segments.size() << ",
-"
-        << "    \"symbols\": " << model.component_candidates.size() << ",
-"
-        << "    \"terminals\": " << model.terminal_candidates.size() << ",
-"
-        << "    \"connectors\": " << model.connector_candidates.size() << ",
-"
-        << "    \"connector_terminals\": " << model.connector_terminals.size() << ",
-"
-        << "    \"splices_and_junctions\": " << model.nodes.size() << ",
-"
-        << "    \"grounds\": " << model.audit.ground_endpoints << ",
-"
-        << "    \"labels\": " << model.semantic_associations.size() << ",
-"
-        << "    \"topology_edges\": " << model.edges.size() << ",
-"
-        << "    \"component_bounds\": " << model.component_candidates.size() << ",
-"
-        << "    \"endpoint_debug\": " << model.endpoint_candidates.size() << ",
-"
-        << "    \"recognition\": " << model.component_symbol_recognitions.size() << "
-"
-        << "  },
-"
-        << "  \"electrical_nets\": " << model.electrical_nets.size() << ",
-"
-        << "  \"validation_errors\": " << model.audit.validation_errors << ",
-"
-        << "  \"validation_warnings\": " << model.audit.validation_warnings << "
-"
-        << "}
-";
+    out << "{" << '\n'
+        << "  \"generated_at\": \"" << generation_timestamp() << "\"," << '\n'
+        << "  \"source_id\": \"" << model.source_id << "\"," << '\n'
+        << "  \"page\": " << model.page << "," << '\n'
+        << "  \"image_width\": " << model.image_width << "," << '\n'
+        << "  \"image_height\": " << model.image_height << "," << '\n'
+        << "  \"layers\": {" << '\n'
+        << "    \"wires\": " << model.wires.size() << "," << '\n'
+        << "    \"wire_colors\": " << model.conductor_segments.size() << "," << '\n'
+        << "    \"symbols\": " << model.component_candidates.size() << "," << '\n'
+        << "    \"terminals\": " << model.terminal_candidates.size() << "," << '\n'
+        << "    \"connectors\": " << model.connector_candidates.size() << "," << '\n'
+        << "    \"connector_terminals\": " << model.connector_terminals.size() << "," << '\n'
+        << "    \"splices_and_junctions\": " << model.nodes.size() << "," << '\n'
+        << "    \"grounds\": " << model.audit.ground_endpoints << "," << '\n'
+        << "    \"labels\": " << model.semantic_associations.size() << "," << '\n'
+        << "    \"topology_edges\": " << model.edges.size() << "," << '\n'
+        << "    \"component_bounds\": " << model.component_candidates.size() << "," << '\n'
+        << "    \"endpoint_debug\": " << model.endpoint_candidates.size() << "," << '\n'
+        << "    \"recognition\": " << model.component_symbol_recognitions.size() << '\n'
+        << "  }," << '\n'
+        << "  \"electrical_nets\": " << model.electrical_nets.size() << "," << '\n'
+        << "  \"validation_errors\": " << model.audit.validation_errors << "," << '\n'
+        << "  \"validation_warnings\": " << model.audit.validation_warnings << '\n'
+        << "}" << '\n';
 }
 
 } // namespace

@@ -7,24 +7,6 @@
 
 namespace eke::dx::wire {
 
-enum class EndpointSemanticReconstructionStatus {
-    Resolved,
-    Conflicted,
-    Unresolved
-};
-
-struct EndpointSemanticReconstruction {
-    std::string id;
-    std::string endpoint_id;
-    std::string component_id;
-    EndpointKind endpoint_kind = EndpointKind::Unresolved;
-    TerminalRole terminal_role = TerminalRole::Unknown;
-    ConfidenceClass confidence = ConfidenceClass::Unresolved;
-    EndpointSemanticReconstructionStatus status =
-        EndpointSemanticReconstructionStatus::Unresolved;
-    std::vector<std::string> evidence_component_ids;
-};
-
 struct EndpointSemanticReconstructionArtifacts {
     std::vector<EndpointCandidate> endpoints;
     std::vector<EndpointSemanticReconstruction> reconstructions;

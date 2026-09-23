@@ -20,6 +20,7 @@ add_library(eke_dx_wire
     src/core/geometry.cpp
     src/core/ids.cpp
     src/core/extraction_audit.cpp
+    src/core/coverage_diagnostics.cpp
     src/core/base64.cpp
     src/core/http_transport.cpp
     src/image/image_loader.cpp
@@ -250,6 +251,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-recognition-input-exporter COMMAND dx-wire-test-recognition-input-exporter)
     target_link_libraries(dx-wire-test-extraction-audit PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-extraction-audit COMMAND dx-wire-test-extraction-audit)
+
+    add_executable(dx-wire-test-coverage-diagnostics tests/test_coverage_diagnostics.cpp)
+    target_link_libraries(dx-wire-test-coverage-diagnostics PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-coverage-diagnostics COMMAND dx-wire-test-coverage-diagnostics)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

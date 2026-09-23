@@ -6,6 +6,10 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 namespace fs = std::filesystem;
 
@@ -358,6 +362,20 @@ void write_combined(
 
     if (!cv::imwrite(path.string(), image))
         throw std::runtime_error("Unable to write review image: " + path.string());
+}
+
+std::string generation_timestamp() {
+    const auto now = std::chrono::system_clock::now();
+    const std::time_t time = std::chrono::system_clock::to_time_t(now);
+    std::tm utc {};
+#ifdef _WIN32
+    gmtime_s(&utc, &time);
+#else
+    gmtime_r(&time, &utc);
+#endif
+    std::ostringstream out;
+    out << std::put_time(&utc, "%Y-%m-%dT%H:%M:%SZ");
+    return out.str();
 }
 
 void write_manifest(const WireModel& model, const fs::path& path) {

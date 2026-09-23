@@ -241,6 +241,9 @@ struct GuiState {
     bool panning = false;
     cv::Point pan_start {};
     cv::Point2d pan_origin {0.0, 0.0};
+
+    // Bottom status-bar output directory hyperlink hit area.
+    cv::Rect output_link_rect {};
 };
 
 struct Slider {
@@ -713,60 +716,70 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
         {canvas.cols, canvas.rows},
         cv::Scalar(35, 35, 35), cv::FILLED);
 
-    std::string status;
-    std::string detail;
+    // Persistent extraction telemetry. Keep this visually consistent with the
+    // original calibration workbench: primary extraction counts on line one,
+    // H/V counts and navigation/output information on line two.
+    const std::size_t horizontal_count = std::count_if(
+        state.normalized_conductors.begin(),
+        state.normalized_conductors.end(),
+        [](const ConductorSegment& s) {
+            return s.geometry.a.y == s.geometry.b.y;
+        });
 
-    if (!state.extracted) {
-        status = state.image_path.empty()
-            ? "No source loaded"
-            : "Ready - adjust parameters, then RUN EXTRACT";
-        detail = state.image_path.empty()
-            ? "Open a diagram to begin"
-            : "Output will be written to: " +
-                (state.artifact_root / "output" / "wires.svg").string();
-    } else {
-        status =
-            "Output: " +
-            (state.artifact_root / "output" / "wires.svg").string() +
-            "    |    Conductors: " + std::to_string(state.normalized_conductors.size()) +
-            "    Nodes: " + std::to_string(state.topology.nodes.size()) +
-            "    Edges: " + std::to_string(state.topology.edges.size()) +
-            "    Endpoints: " + std::to_string(state.endpoints.candidates.size()) +
-            "    Shapes: " + std::to_string(state.detection.shapes.regions.size());
+    const std::size_t vertical_count = std::count_if(
+        state.normalized_conductors.begin(),
+        state.normalized_conductors.end(),
+        [](const ConductorSegment& s) {
+            return s.geometry.a.x == s.geometry.b.x;
+        });
 
-        detail =
-            "H: " +
-            std::to_string(std::count_if(
-                state.normalized_conductors.begin(),
-                state.normalized_conductors.end(),
-                [](const ConductorSegment& s) {
-                    return s.geometry.a.y == s.geometry.b.y;
-                })) +
-            "   V: " +
-            std::to_string(std::count_if(
-                state.normalized_conductors.begin(),
-                state.normalized_conductors.end(),
-                [](const ConductorSegment& s) {
-                    return s.geometry.a.x == s.geometry.b.x;
-                })) +
-            "   Gaps bridged: " +
-            std::to_string(state.gap_interpretation.inferred_edges.size()) +
-            "   Zoom: " +
-            std::to_string(static_cast<int>(state.zoom * 100.0 + 0.5)) +
-            "%   |   Wheel: Zoom   MMB-drag: Pan";
-    }
+    const std::string output_directory =
+        (state.artifact_root / "output").string();
+
+    const std::string status =
+        "Conductors: " + std::to_string(state.normalized_conductors.size()) +
+        "    Nodes: " + std::to_string(state.topology.nodes.size()) +
+        "    Edges: " + std::to_string(state.topology.edges.size()) +
+        "    Gaps bridged: " + std::to_string(state.gap_interpretation.inferred_edges.size()) +
+        "    Endpoints: " + std::to_string(state.endpoints.candidates.size()) +
+        "    Shapes: " + std::to_string(state.detection.shapes.regions.size());
+
+    const std::string detail =
+        "H: " + std::to_string(horizontal_count) +
+        "    V: " + std::to_string(vertical_count) +
+        "    Zoom: " + std::to_string(static_cast<int>(state.zoom * 100.0 + 0.5)) +
+        "%    |    Wheel: Zoom    MMB-drag: Pan    |    Output: ";
 
     cv::putText(
         canvas, status,
-        {12, canvas.rows - 42},
-        cv::FONT_HERSHEY_SIMPLEX, 0.48,
+        {8, canvas.rows - 42},
+        cv::FONT_HERSHEY_SIMPLEX, 0.43,
         cv::Scalar(235, 235, 235), 1, cv::LINE_AA);
 
     cv::putText(
         canvas, detail,
-        {12, canvas.rows - 14},
-        cv::FONT_HERSHEY_SIMPLEX, 0.40,
+        {8, canvas.rows - 12},
+        cv::FONT_HERSHEY_SIMPLEX, 0.34,
         cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
+
+    const int detail_baseline = canvas.rows - 12;
+    const int output_prefix_width = cv::getTextSize(
+        detail, cv::FONT_HERSHEY_SIMPLEX, 0.34, 1, nullptr).width;
+
+    cv::putText(
+        canvas, output_directory,
+        {8 + output_prefix_width, detail_baseline},
+        cv::FONT_HERSHEY_SIMPLEX, 0.34,
+        cv::Scalar(145, 190, 245), 1, cv::LINE_AA);
+
+    const int output_width = cv::getTextSize(
+        output_directory, cv::FONT_HERSHEY_SIMPLEX, 0.34, 1, nullptr).width;
+
+    state.output_link_rect = cv::Rect(
+        8 + output_prefix_width,
+        canvas.rows - kStatusHeight + 42,
+        output_width,
+        22);
 
     return canvas;
 }
@@ -790,6 +803,25 @@ void handle_mouse(
     }
 
     if (event == cv::EVENT_LBUTTONDOWN) {
+        if (state.output_link_rect.contains(cv::Point(x, y))) {
+#ifdef _WIN32
+            const std::filesystem::path output_directory =
+                state.artifact_root / "output";
+            ShellExecuteW(
+                nullptr,
+                L"open",
+                output_directory.wstring().c_str(),
+                nullptr,
+                nullptr,
+                SW_SHOWNORMAL);
+#else
+            std::cerr << "Output directory: "
+                      << (state.artifact_root / "output").string()
+                      << '\\n';
+#endif
+            return;
+        }
+
         if (y < kToolbarHeight) {
             if (x >= 10 && x < 100)
                 state.request_open = true;

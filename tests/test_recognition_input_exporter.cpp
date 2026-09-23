@@ -7,7 +7,6 @@
 #include <cassert>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <string>
 
 namespace fs = std::filesystem;
@@ -25,8 +24,6 @@ int main() {
     cv::Mat image = cv::Mat::zeros(80, 100, CV_8UC1);
     cv::rectangle(image, cv::Rect(20, 20, 20, 10), cv::Scalar(255), 1);
     assert(cv::imwrite(original.string(), image));
-    assert(fs::exists(original));
-    assert(fs::is_regular_file(original));
 
     WireModel model;
     model.source_id = "fixture";
@@ -53,18 +50,8 @@ int main() {
     endpoint.confidence = ConfidenceClass::Medium;
     model.endpoint_candidates.push_back(endpoint);
 
-    try {
-        RecognitionInputExporter::export_package(
-            model, image, original.string(), output.string());
-    }
-    catch (const std::exception& e) {
-        std::cerr << "EXCEPTION: " << e.what() << std::endl;
-        return 1;
-    }
-    catch (...) {
-        std::cerr << "UNKNOWN EXCEPTION" << std::endl;
-        return 2;
-    }
+    RecognitionInputExporter::export_package(
+        model, image, original.string(), output.string());
 
     assert(fs::exists(output / "manifest.json"));
     assert(fs::exists(output / "recognition_input.json"));

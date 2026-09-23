@@ -207,8 +207,12 @@ void RecognitionInputExporter::export_package(
     fs::copy_file(
         original_image_path, original_target,
         fs::copy_options::overwrite_existing, copy_error);
-    if (copy_error)
-        throw std::runtime_error("Unable to copy original image: " + copy_error.message());
+    if (copy_error) {
+        throw std::runtime_error(
+            "Unable to copy original image from \\"" + original_image_path
+            + "\\" to \\"" + original_target.string()
+            + "\\": " + copy_error.message());
+    }
 
     if (!cv::imwrite((root / "source_normalized.png").string(), normalized_image))
         throw std::runtime_error("Unable to write normalized recognition image");

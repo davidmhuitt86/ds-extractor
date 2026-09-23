@@ -142,6 +142,27 @@ void TopologyExporter::export_json(
     out << "{\n";
     out << "  \"source_id\": \"" << json_escape(model.source_id) << "\",\n";
     out << "  \"page\": " << model.page << ",\n";
+    out << "  \"component_candidates\": [\n";
+    for (std::size_t i = 0; i < model.component_candidates.size(); ++i) {
+        const auto& component = model.component_candidates[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(component.id) << "\",\n"
+            << "      \"semantic_labels\": [";
+        for (std::size_t j = 0; j < component.semantic_labels.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(component.semantic_labels[j]) << "\"";
+        }
+        out << "],\n"
+            << "      \"x\": " << component.bounds.x << ",\n"
+            << "      \"y\": " << component.bounds.y << ",\n"
+            << "      \"width\": " << component.bounds.width << ",\n"
+            << "      \"height\": " << component.bounds.height << ",\n"
+            << "      \"confidence\": \"" << confidence_name(component.confidence) << "\"\n"
+            << "    }";
+        if (i + 1 != model.component_candidates.size()) out << ",";
+        out << "\n";
+    }
+    out << "  ],\n";
     out << "  \"nodes\": [\n";
     for (std::size_t i = 0; i < model.nodes.size(); ++i) {
         const auto& node = model.nodes[i];

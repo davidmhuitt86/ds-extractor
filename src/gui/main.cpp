@@ -19,10 +19,13 @@
 #endif
 
 #include <algorithm>
+#include <cctype>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 using namespace eke::dx::wire;
@@ -1085,7 +1088,7 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     draw_button(panel, {114, button_y + 76, 88, 30},
                 "SHAPES", state.view == ViewMode::Shapes);
 
-    cv::putText(panel, "ENGINEERING LAYERS", {18, 666},
+    cv::putText(panel, "ENGINEERING LAYERS", {18, 648},
                 cv::FONT_HERSHEY_SIMPLEX, 0.58,
                 cv::Scalar(245, 245, 245), 1, cv::LINE_AA);
 
@@ -1094,27 +1097,27 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
         draw_button(panel, {x, y, w, 25}, label, active);
     };
 
-    layer_button(18, 678, 88, "WIRES", state.layers.wires);
-    layer_button(114, 678, 88, "COLORS", state.layers.wire_colors);
-    layer_button(210, 678, 88, "SYMBOLS", state.layers.symbols);
+    layer_button(18, 658, 88, "WIRES", state.layers.wires);
+    layer_button(114, 658, 88, "COLORS", state.layers.wire_colors);
+    layer_button(210, 658, 88, "SYMBOLS", state.layers.symbols);
 
-    layer_button(18, 707, 88, "TERMINALS", state.layers.terminals);
-    layer_button(114, 707, 88, "CONNECT", state.layers.connectors);
-    layer_button(210, 707, 88, "SPLICES", state.layers.splices);
+    layer_button(18, 686, 88, "TERMINALS", state.layers.terminals);
+    layer_button(114, 686, 88, "CONNECT", state.layers.connectors);
+    layer_button(210, 686, 88, "SPLICES", state.layers.splices);
 
-    layer_button(18, 736, 88, "GROUNDS", state.layers.grounds);
-    layer_button(114, 736, 88, "LABELS", state.layers.labels);
-    layer_button(210, 736, 88, "DIRECTION", state.layers.wire_direction);
+    layer_button(18, 714, 88, "GROUNDS", state.layers.grounds);
+    layer_button(114, 714, 88, "LABELS", state.layers.labels);
+    layer_button(210, 714, 88, "DIRECTION", state.layers.wire_direction);
 
-    cv::putText(panel, "DIAGNOSTICS", {18, 770},
+    cv::putText(panel, "DIAGNOSTICS", {18, 744},
                 cv::FONT_HERSHEY_SIMPLEX, 0.50,
                 cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
 
-    layer_button(18, 778, 88, "TOPOLOGY", state.layers.topology);
-    layer_button(114, 778, 88, "BOUNDS", state.layers.component_bounds);
-    layer_button(210, 778, 88, "ENDPOINTS", state.layers.endpoint_debug);
+    layer_button(18, 752, 88, "TOPOLOGY", state.layers.topology);
+    layer_button(114, 752, 88, "BOUNDS", state.layers.component_bounds);
+    layer_button(210, 752, 88, "ENDPOINTS", state.layers.endpoint_debug);
 
-    layer_button(18, 807, 88, "RECOG.", state.layers.recognition_evidence);
+    layer_button(18, 781, 88, "RECOG.", state.layers.recognition_evidence);
 
     cv::rectangle(
         canvas,
@@ -1300,10 +1303,10 @@ void handle_mouse(
         }
 
         if (x >= panel_left &&
-            y >= kToolbarHeight + 678 &&
-            y < kToolbarHeight + 836) {
+            y >= kToolbarHeight + 658 &&
+            y < kToolbarHeight + 806) {
             const int bx = panel_x;
-            const int local_y = y - (kToolbarHeight + 678);
+            const int local_y = y - (kToolbarHeight + 658);
             const int row = local_y / 29;
             const int col =
                 bx < 106 ? 0 :

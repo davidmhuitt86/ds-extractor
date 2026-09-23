@@ -163,7 +163,50 @@ void TopologyExporter::export_json(
         out << "\n";
     }
     out << "  ],\n";
-    out << "  \"connector_candidates\": [\n";
+    out << "  \"component_symbol_recognitions\": [\n";
+    auto component_symbol_kind_name =
+        [](ComponentSymbolKind kind) {
+            switch (kind) {
+            case ComponentSymbolKind::Enclosure: return "enclosure";
+            case ComponentSymbolKind::CircularSymbol: return "circular_symbol";
+            case ComponentSymbolKind::ChassisGround: return "chassis_ground";
+            case ComponentSymbolKind::PrimitiveSymbol: return "primitive_symbol";
+            case ComponentSymbolKind::Unknown: return "unknown";
+            }
+            return "unknown";
+        };
+    auto component_symbol_status_name =
+        [](ComponentSymbolRecognitionStatus status) {
+            switch (status) {
+            case ComponentSymbolRecognitionStatus::Recognized:
+                return "recognized";
+            case ComponentSymbolRecognitionStatus::Unresolved:
+                return "unresolved";
+            case ComponentSymbolRecognitionStatus::Conflicted:
+                return "conflicted";
+            }
+            return "unresolved";
+        };
+    for (std::size_t i = 0;
+         i < model.component_symbol_recognitions.size(); ++i) {
+        const auto& recognition = model.component_symbol_recognitions[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(recognition.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(recognition.component_id) << "\",\n"
+            << "      \"symbol_kind\": \"" << component_symbol_kind_name(recognition.symbol_kind) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(recognition.confidence) << "\",\n"
+            << "      \"status\": \"" << component_symbol_status_name(recognition.status) << "\",\n"
+            << "      \"shape_ids\": [";
+        for (std::size_t j = 0; j < recognition.shape_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(recognition.shape_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.component_symbol_recognitions.size())
+            out << ",";
+        out << "\n";
+    }
+    out << "  ],\n  \"connector_candidates\": [\n";
     for (std::size_t i = 0; i < model.connector_candidates.size(); ++i) {
         const auto& connector = model.connector_candidates[i];
         out << "    {\n"

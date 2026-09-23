@@ -47,6 +47,7 @@ add_library(eke_dx_wire
     src/image/component_candidate_classifier.cpp
     src/export/svg_exporter.cpp
     src/export/topology_exporter.cpp
+    src/export/recognition_input_exporter.cpp
     src/pipeline/extraction_pipeline.cpp
 )
 
@@ -168,6 +169,9 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-wire-model-validator COMMAND dx-wire-test-wire-model-validator)
 
     add_executable(dx-wire-test-extraction-audit tests/test_extraction_audit.cpp)
+    add_executable(dx-wire-test-recognition-input-exporter tests/test_recognition_input_exporter.cpp)
+    target_link_libraries(dx-wire-test-recognition-input-exporter PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-recognition-input-exporter COMMAND dx-wire-test-recognition-input-exporter)
     target_link_libraries(dx-wire-test-extraction-audit PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-extraction-audit COMMAND dx-wire-test-extraction-audit)
 endif()

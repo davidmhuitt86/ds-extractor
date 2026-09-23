@@ -19,7 +19,7 @@
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
-#include "eke_dx_wire/topology/terminal_semantic_resolver.hpp"
+#include "eke_dx_wire/topology/endpoint_semantic_reconstructor.hpp"
 #include "eke_dx_wire/topology/circuit_role_resolver.hpp"
 #include "eke_dx_wire/topology/circuit_role_evidence_builder.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
@@ -231,11 +231,16 @@ WireModel ExtractionPipeline::run(
     const std::vector<TerminalSemanticEvidence> semantic_evidence =
         semantic_evidence_builder.build(model.terminal_candidates);
 
-    TerminalSemanticResolver semantic_resolver;
-    model.endpoint_candidates =
-        semantic_resolver.resolve(
+    // AP-WIRE-019: reconstruct endpoint semantic identity from all
+    // terminal evidence without selecting a winner when evidence conflicts.
+    EndpointSemanticReconstructor endpoint_semantic_reconstructor;
+    const EndpointSemanticReconstructionArtifacts endpoint_semantic_artifacts =
+        endpoint_semantic_reconstructor.reconstruct(
             endpoint_artifacts.candidates,
             semantic_evidence);
+    model.endpoint_candidates = endpoint_semantic_artifacts.endpoints;
+    model.endpoint_semantic_reconstructions =
+        endpoint_semantic_artifacts.reconstructions;
 
     // AP-WIRE-006/AP-WIRE-008: associations are created only after endpoint
     // reconstruction and semantic endpoint resolution, so recognized text

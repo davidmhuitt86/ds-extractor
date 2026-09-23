@@ -1,6 +1,7 @@
 #include "eke_dx_wire/export/svg_exporter.hpp"
 #include "eke_dx_wire/export/topology_exporter.hpp"
 #include "eke_dx_wire/export/recognition_input_exporter.hpp"
+#include "eke_dx_wire/topology/json_text_recognition_provider.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
@@ -36,7 +37,7 @@ static void usage() {
         << "dx-extract 0.1.2\n\n"
         << "Usage:\n"
         << "  dx-extract inspect <image>\n"
-        << "  dx-extract extract <image> --output <directory>\n";
+        << "  dx-extract extract <image> --output <directory> [--recognition <observations.json>]\n";
 }
 
 static int inspect(const std::string& path) {
@@ -51,7 +52,7 @@ static int inspect(const std::string& path) {
     return 0;
 }
 
-static int extract(const std::string& image_path, const std::string& output) {
+static int extract(const std::string& image_path, const std::string& output, const std::string& recognition_path = {}) {
     fs::create_directories(fs::path(output) / "artifacts" / "normalized");
     fs::create_directories(fs::path(output) / "artifacts" / "masks");
     fs::create_directories(fs::path(output) / "artifacts" / "segments");
@@ -61,7 +62,13 @@ static int extract(const std::string& image_path, const std::string& output) {
     fs::create_directories(fs::path(output) / "artifacts" / "recognition");
     fs::create_directories(fs::path(output) / "output");
 
-    ExtractionPipeline pipeline;
+    ExtractionConfig config;
+    if (!recognition_path.empty()) {
+        config.text_recognition_provider =
+            std::make_shared<JsonTextRecognitionProvider>(recognition_path);
+    }
+
+    ExtractionPipeline pipeline(config);
     WireModel model = pipeline.run(image_path, image_path);
 
     RecognitionInputExporter::export_package(
@@ -185,7 +192,14 @@ int main(int argc, char** argv) {
                 usage();
                 return 2;
             }
-            return extract(argv[2], argv[4]);
+            std::string recognition_path;
+            if (argc == 7 && std::string(argv[5]) == "--recognition") {
+                recognition_path = argv[6];
+            } else if (argc != 5) {
+                usage();
+                return 2;
+            }
+            return extract(argv[2], argv[4], recognition_path);
         }
 
         usage();

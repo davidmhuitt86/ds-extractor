@@ -57,11 +57,14 @@ int main() {
     ComponentCandidate primitive;
     primitive.kind = ComponentCandidateKind::PrimitiveSymbol;
 
+    ComponentCandidate furniture;
+    furniture.kind = ComponentCandidateKind::DiagramFurniture;
+
     ComponentCandidate unknown;
     unknown.kind = ComponentCandidateKind::Unknown;
 
     model.component_candidates = {
-        enclosure, circle, chassis, primitive, unknown
+        enclosure, circle, chassis, primitive, furniture, unknown
     };
 
     Wire wire;
@@ -117,11 +120,12 @@ int main() {
     assert(audit.splice_endpoints == 1);
     assert(audit.unresolved_endpoints == 1);
 
-    assert(audit.shapes == 5);
+    assert(audit.shapes == 6);
     assert(audit.enclosure_shapes == 1);
     assert(audit.circular_shapes == 1);
     assert(audit.chassis_ground_shapes == 1);
     assert(audit.primitive_shapes == 1);
+    assert(audit.diagram_furniture_shapes == 1);
     assert(audit.unknown_shapes == 1);
 
     assert(audit.wires == 2);

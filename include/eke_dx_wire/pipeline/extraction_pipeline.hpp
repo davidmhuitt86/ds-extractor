@@ -10,6 +10,7 @@
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
+#include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
@@ -24,6 +25,7 @@ struct ExtractionConfig {
     MorphologyConfig morphology {};
     ShapeDetectorConfig shapes {};
     TextDetectorConfig text {};
+    DiagramFurnitureConfig diagram_furniture {};
     TerminalLocationConfig terminals {};
     GeometryNormalizationConfig geometry {};
     ConductorEvidenceConfig conductor_evidence {};

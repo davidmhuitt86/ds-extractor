@@ -16,6 +16,8 @@ ComponentSymbolKind symbol_kind(ComponentCandidateKind kind) {
         return ComponentSymbolKind::ChassisGround;
     case ComponentCandidateKind::PrimitiveSymbol:
         return ComponentSymbolKind::PrimitiveSymbol;
+    case ComponentCandidateKind::DiagramFurniture:
+        return ComponentSymbolKind::DiagramFurniture;
     case ComponentCandidateKind::Unknown:
         return ComponentSymbolKind::Unknown;
     }

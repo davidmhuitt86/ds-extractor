@@ -177,6 +177,13 @@ enum class ComponentCandidateKind {
     CircularSymbol,
     ChassisGround,
     PrimitiveSymbol,
+    // Non-circuit diagram content (legend/color-key tables,
+    // switch-continuity charts, title blocks) drawn with the same small
+    // circle/rectangle primitives as real symbols. Re-tagged from an
+    // initial CircularSymbol/PrimitiveSymbol classification by
+    // DiagramFurnitureClassifier based on grid arrangement, not asserted
+    // at shape-detection time.
+    DiagramFurniture,
     Unknown
 };
 
@@ -185,6 +192,7 @@ enum class ComponentSymbolKind {
     CircularSymbol,
     ChassisGround,
     PrimitiveSymbol,
+    DiagramFurniture,
     Unknown
 };
 
@@ -303,6 +311,7 @@ struct ExtractionAudit {
     std::size_t circular_shapes = 0;
     std::size_t chassis_ground_shapes = 0;
     std::size_t primitive_shapes = 0;
+    std::size_t diagram_furniture_shapes = 0;
     std::size_t unknown_shapes = 0;
 
     // Wires

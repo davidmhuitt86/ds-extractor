@@ -29,6 +29,8 @@ cv::Scalar kind_color(ComponentSymbolKind kind) {
         return cv::Scalar(40, 160, 220);
     case ComponentSymbolKind::PrimitiveSymbol:
         return cv::Scalar(200, 80, 180);
+    case ComponentSymbolKind::DiagramFurniture:
+        return cv::Scalar(140, 140, 140);
     case ComponentSymbolKind::Unknown:
         return cv::Scalar(80, 80, 220);
     }
@@ -41,6 +43,7 @@ const char* symbol_name(ComponentSymbolKind kind) {
     case ComponentSymbolKind::CircularSymbol: return "circular";
     case ComponentSymbolKind::ChassisGround: return "ground";
     case ComponentSymbolKind::PrimitiveSymbol: return "primitive";
+    case ComponentSymbolKind::DiagramFurniture: return "furniture";
     case ComponentSymbolKind::Unknown: return "unknown";
     }
     return "unknown";

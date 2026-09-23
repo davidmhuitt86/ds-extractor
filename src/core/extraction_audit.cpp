@@ -84,6 +84,9 @@ ExtractionAudit build_extraction_audit(
         case ComponentCandidateKind::PrimitiveSymbol:
             ++audit.primitive_shapes;
             break;
+        case ComponentCandidateKind::DiagramFurniture:
+            ++audit.diagram_furniture_shapes;
+            break;
         case ComponentCandidateKind::Unknown:
             ++audit.unknown_shapes;
             break;

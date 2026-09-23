@@ -13,6 +13,7 @@
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
+#include "eke_dx_wire/topology/component_identity_registry.hpp"
 
 #include <memory>
 #include <string>
@@ -35,6 +36,11 @@ struct ExtractionConfig {
     // AP-WIRE-008: recognition is an injectable boundary. The default is
     // deliberately no-op so the extractor never invents OCR results.
     std::shared_ptr<const TextRecognitionProvider> text_recognition_provider;
+
+    // AP-WIRE-018: canonical component identity is an injectable registry
+    // boundary. The default remains a no-op so extraction never invents
+    // registry identities when no registry is supplied.
+    std::shared_ptr<const ComponentIdentityRegistry> component_identity_registry;
 };
 
 class ExtractionPipeline {

@@ -336,6 +336,30 @@ void TopologyExporter::export_json(
         if (i + 1 != model.component_identity_evidence.size()) out << ",";
         out << "\n";
     }
+    out << "  ],\n  \"component_identity_resolutions\": [\n";
+    for (std::size_t i = 0; i < model.component_identity_resolutions.size(); ++i) {
+        const auto& resolution = model.component_identity_resolutions[i];
+        const char* status =
+            resolution.status == ComponentIdentityResolutionStatus::Resolved
+                ? "resolved"
+                : resolution.status == ComponentIdentityResolutionStatus::Conflicted
+                    ? "conflicted"
+                    : "unresolved";
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(resolution.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(resolution.component_id) << "\",\n"
+            << "      \"identity\": \"" << json_escape(resolution.identity) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(resolution.confidence) << "\",\n"
+            << "      \"status\": \"" << status << "\",\n"
+            << "      \"evidence_ids\": [";
+        for (std::size_t j = 0; j < resolution.evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(resolution.evidence_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.component_identity_resolutions.size()) out << ",";
+        out << "\n";
+    }
     out << "  ],\n  \"electrical_nets\": [\n";
     for (std::size_t i = 0; i < model.electrical_nets.size(); ++i) {
         const auto& net = model.electrical_nets[i];

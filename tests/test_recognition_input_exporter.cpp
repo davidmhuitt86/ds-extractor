@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <iostream>
 
 namespace fs = std::filesystem;
 using namespace eke::dx::wire;
@@ -20,10 +21,13 @@ int main() {
         fs::path(DX_WIRE_SOURCE_DIR) / "samples" / "trx300ODG.png";
     const fs::path output = root / "package";
 
+    std::cerr << "checkpoint: source path\n";
     assert(fs::exists(original));
     assert(fs::is_regular_file(original));
 
+    std::cerr << "checkpoint: before imread\n";
     const cv::Mat image = cv::imread(original.string(), cv::IMREAD_GRAYSCALE);
+    std::cerr << "checkpoint: after imread " << image.cols << "x" << image.rows << "\n";
     if (image.empty()) {
         return 1;
     }
@@ -53,8 +57,10 @@ int main() {
     endpoint.confidence = ConfidenceClass::Medium;
     model.endpoint_candidates.push_back(endpoint);
 
+    std::cerr << "checkpoint: before export\n";
     RecognitionInputExporter::export_package(
         model, image, original.string(), output.string());
+    std::cerr << "checkpoint: after export\n";
 
     assert(fs::exists(output / "manifest.json"));
     assert(fs::exists(output / "recognition_input.json"));

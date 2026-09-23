@@ -229,6 +229,13 @@ struct GuiState {
     bool request_release = false;
     bool request_build_test = false;
     bool render_trace_pending = false;
+
+    // Diagram viewport controls.
+    double zoom = 1.0;
+    cv::Point2d pan {0.0, 0.0};
+    bool panning = false;
+    cv::Point pan_start {};
+    cv::Point2d pan_origin {0.0, 0.0};
 };
 
 struct Slider {
@@ -344,10 +351,16 @@ void extract(GuiState& state) {
     state.extracted = true;
 }
 
+void reset_view(GuiState& state) {
+    state.zoom = 1.0;
+    state.pan = {0.0, 0.0};
+}
+
 void reset_parameters(GuiState& state) {
     state.config = MorphologyConfig {};
     state.extracted = false;
     state.endpoints = {};
+    reset_view(state);
 }
 
 std::vector<Slider> sliders(GuiState& state) {
@@ -552,6 +565,13 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     toolbar_button(430, 95, "TOPOLOGY");
     toolbar_button(535, 145, "BUILD / TEST");
     toolbar_button(690, 145, "RELEASE / PR");
+    toolbar_button(845, 42, "ZOOM +");
+    toolbar_button(893, 42, "ZOOM -");
+    toolbar_button(941, 72, "FIT VIEW");
+    cv::putText(
+        canvas, "Zoom: " + std::to_string(static_cast<int>(state.zoom * 100.0 + 0.5)) + "%",
+        {1025, 30}, cv::FONT_HERSHEY_SIMPLEX, 0.52,
+        cv::Scalar(220, 220, 220), 1, cv::LINE_AA);
 
     const int image_width = canvas.cols - kPanelWidth;
     const int image_height =
@@ -573,9 +593,10 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
                                      std::to_string(view.channels()));
         }
 
-        const double scale = (std::min)(
+        const double fit_scale = (std::min)(
             static_cast<double>(image_width - 24) / color_view.cols,
             static_cast<double>(image_height - 24) / color_view.rows);
+        const double scale = fit_scale * state.zoom;
 
         const cv::Size display_size(
             (std::max)(1, static_cast<int>(color_view.cols * scale)),
@@ -605,13 +626,24 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
             overlay_shapes(color_view, state, scale);
         }
 
-        const int ox = (image_width - color_view.cols) / 2;
-        const int oy =
+        const int centered_x = (image_width - color_view.cols) / 2;
+        const int centered_y =
             kToolbarHeight +
             (image_height - color_view.rows) / 2;
+        const int ox = static_cast<int>(centered_x + state.pan.x);
+        const int oy = static_cast<int>(centered_y + state.pan.y);
 
-        color_view.copyTo(canvas(
-            cv::Rect(ox, oy, color_view.cols, color_view.rows)));
+        const cv::Rect viewport(0, kToolbarHeight, image_width, image_height);
+        const cv::Rect image_rect(ox, oy, color_view.cols, color_view.rows);
+        const cv::Rect visible = image_rect & viewport;
+        if (visible.width > 0 && visible.height > 0) {
+            const cv::Rect source_rect(
+                visible.x - image_rect.x,
+                visible.y - image_rect.y,
+                visible.width,
+                visible.height);
+            color_view(source_rect).copyTo(canvas(visible));
+        }
     } else {
         cv::putText(
             canvas, "Open a wiring diagram to begin.",
@@ -731,6 +763,18 @@ void handle_mouse(
     int x,
     int y) {
 
+    if (event == cv::EVENT_MBUTTONDOWN) {
+        state.panning = true;
+        state.pan_start = {x, y};
+        state.pan_origin = state.pan;
+        return;
+    }
+
+    if (event == cv::EVENT_MBUTTONUP) {
+        state.panning = false;
+        return;
+    }
+
     if (event == cv::EVENT_LBUTTONDOWN) {
         if (y < kToolbarHeight) {
             if (x >= 10 && x < 100)
@@ -747,6 +791,12 @@ void handle_mouse(
                 state.request_build_test = true;
             else if (x >= 690 && x < 835)
                 state.request_release = true;
+            else if (x >= 845 && x < 887)
+                state.zoom = (std::min)(8.0, state.zoom * 1.25);
+            else if (x >= 893 && x < 935)
+                state.zoom = (std::max)(0.25, state.zoom / 1.25);
+            else if (x >= 941 && x < 1013)
+                reset_view(state);
             return;
         }
 
@@ -798,10 +848,57 @@ void handle_mouse(
         }
     }
 
+    if (event == cv::EVENT_MOUSEMOVE && state.panning) {
+        state.pan = state.pan_origin + cv::Point2d(
+            x - state.pan_start.x,
+            y - state.pan_start.y);
+        return;
+    }
+
     if (event == cv::EVENT_MOUSEMOVE && state.dragging) {
         const int panel_left = state.canvas_width - kPanelWidth;
         const int panel_x = x - panel_left;
         set_slider_from_mouse(state, state.active_slider, panel_x);
+    }
+
+    if (event == cv::EVENT_MOUSEWHEEL) {
+        const int delta = cv::getMouseWheelDelta(0);
+        if (delta != 0 && !state.source.empty()) {
+            const double old_zoom = state.zoom;
+            const double factor = delta > 0 ? 1.25 : 1.0 / 1.25;
+            const double new_zoom = (std::max)(0.25, (std::min)(8.0, old_zoom * factor));
+
+            if (new_zoom != old_zoom) {
+                const int image_width = state.canvas_width - kPanelWidth;
+                const int image_height = 760 - kToolbarHeight - kStatusHeight;
+                const double fit_scale = (std::min)(
+                    static_cast<double>(image_width - 24) / state.source.cols,
+                    static_cast<double>(image_height - 24) / state.source.rows);
+
+                const double old_scale = fit_scale * old_zoom;
+                const double new_scale = fit_scale * new_zoom;
+                const double old_w = state.source.cols * old_scale;
+                const double old_h = state.source.rows * old_scale;
+                const double new_w = state.source.cols * new_scale;
+                const double new_h = state.source.rows * new_scale;
+
+                const double old_center_x = (image_width - old_w) / 2.0 + state.pan.x;
+                const double old_center_y = kToolbarHeight +
+                    (image_height - old_h) / 2.0 + state.pan.y;
+
+                const double source_x = (x - old_center_x) / old_scale;
+                const double source_y = (y - old_center_y) / old_scale;
+
+                const double new_center_x = (image_width - new_w) / 2.0;
+                const double new_center_y = kToolbarHeight +
+                    (image_height - new_h) / 2.0;
+
+                state.zoom = new_zoom;
+                state.pan.x = x - (new_center_x + source_x * new_scale);
+                state.pan.y = y - (new_center_y + source_y * new_scale);
+            }
+        }
+        return;
     }
 
     if (event == cv::EVENT_LBUTTONUP) {
@@ -889,6 +986,13 @@ int main(int argc, char** argv) {
 
             if (key == 'o' || key == 'O')
                 state.request_open = true;
+
+            if (key == '+' || key == '=')
+                state.zoom = (std::min)(8.0, state.zoom * 1.25);
+            if (key == '-' || key == '_')
+                state.zoom = (std::max)(0.25, state.zoom / 1.25);
+            if (key == '0')
+                reset_view(state);
 
             if (key == '1') state.view = ViewMode::Source;
             if (key == '2') state.view = ViewMode::Binary;

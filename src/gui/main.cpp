@@ -382,7 +382,43 @@ void extract(GuiState& state) {
             (state.artifact_root / "output" / "wires.svg").string());
 
     state.extracted = true;
+    publish_review_artifacts(state);
 }
+
+#ifdef _WIN32
+void publish_review_artifacts(const GuiState& state) {
+    const std::filesystem::path script =
+        state.artifact_root / "tools" / "dx-publish-review.ps1";
+
+    if (!std::filesystem::exists(script)) {
+        gui_log("REVIEW: publisher script not found: " + script.string());
+        return;
+    }
+
+    const std::wstring arguments =
+        L"-NoProfile -ExecutionPolicy Bypass -File \"" +
+        script.wstring() + L"\"";
+
+    const HINSTANCE result = ShellExecuteW(
+        nullptr,
+        L"open",
+        L"powershell.exe",
+        arguments.c_str(),
+        state.artifact_root.wstring().c_str(),
+        SW_SHOWNORMAL);
+
+    if (reinterpret_cast<INT_PTR>(result) <= 32) {
+        gui_log("REVIEW: unable to launch publisher.");
+        return;
+    }
+
+    gui_log("REVIEW: publisher launched.");
+}
+#else
+void publish_review_artifacts(const GuiState&) {
+    gui_log("REVIEW: automatic Git publishing is currently supported on Windows.");
+}
+#endif
 
 void reset_view(GuiState& state) {
     state.zoom = 1.0;

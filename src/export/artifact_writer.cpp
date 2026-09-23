@@ -70,6 +70,7 @@ void write_audit(const WireModel& model, const fs::path& path) {
         << "    \"circular\": " << audit.circular_shapes << ",\n"
         << "    \"chassis_ground\": " << audit.chassis_ground_shapes << ",\n"
         << "    \"primitive\": " << audit.primitive_shapes << ",\n"
+        << "    \"diagram_furniture\": " << audit.diagram_furniture_shapes << ",\n"
         << "    \"unknown\": " << audit.unknown_shapes << "\n"
         << "  },\n"
         << "  \"wires\": " << audit.wires << ",\n"

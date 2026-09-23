@@ -14,11 +14,14 @@ option(DX_WIRE_BUILD_TESTS "Build unit tests" ON)
 option(DX_WIRE_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 
 find_package(OpenCV 5 REQUIRED COMPONENTS core imgproc imgcodecs highgui)
+find_package(CURL REQUIRED)
 
 add_library(eke_dx_wire
     src/core/geometry.cpp
     src/core/ids.cpp
     src/core/extraction_audit.cpp
+    src/core/base64.cpp
+    src/core/http_transport.cpp
     src/image/image_loader.cpp
     src/image/normalizer.cpp
     src/image/morphology_detector.cpp
@@ -54,8 +57,11 @@ add_library(eke_dx_wire
     src/topology/text_recognition_provider.cpp
     src/topology/json_text_recognition_provider.cpp
     src/topology/sidecar_text_recognition_provider.cpp
+    src/topology/recognition_observation_parser.cpp
+    src/topology/anthropic_vision_text_recognition_provider.cpp
     src/topology/wire_model_validator.cpp
     src/image/component_candidate_classifier.cpp
+    src/image/diagram_furniture_classifier.cpp
     src/export/svg_exporter.cpp
     src/export/artifact_writer.cpp
     src/export/review_artifact_writer.cpp
@@ -66,6 +72,7 @@ add_library(eke_dx_wire
 
 target_include_directories(eke_dx_wire PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(eke_dx_wire PUBLIC opencv_core opencv_imgproc opencv_imgcodecs)
+target_link_libraries(eke_dx_wire PRIVATE CURL::libcurl)
 
 if(WIN32)
     target_link_libraries(eke_dx_wire PUBLIC runtimeobject)
@@ -191,6 +198,18 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-sidecar-text-recognition-provider tests/test_sidecar_text_recognition_provider.cpp)
     target_link_libraries(dx-wire-test-sidecar-text-recognition-provider PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-sidecar-text-recognition-provider COMMAND dx-wire-test-sidecar-text-recognition-provider)
+
+    add_executable(dx-wire-test-recognition-observation-parser tests/test_recognition_observation_parser.cpp)
+    target_link_libraries(dx-wire-test-recognition-observation-parser PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-recognition-observation-parser COMMAND dx-wire-test-recognition-observation-parser)
+
+    add_executable(dx-wire-test-anthropic-vision-text-recognition-provider tests/test_anthropic_vision_text_recognition_provider.cpp)
+    target_link_libraries(dx-wire-test-anthropic-vision-text-recognition-provider PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-anthropic-vision-text-recognition-provider COMMAND dx-wire-test-anthropic-vision-text-recognition-provider)
+
+    add_executable(dx-wire-test-base64 tests/test_base64.cpp)
+    target_link_libraries(dx-wire-test-base64 PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-base64 COMMAND dx-wire-test-base64)
     target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
     target_link_libraries(dx-wire-test-connector-terminal-model PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
@@ -203,6 +222,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-component-candidate-classifier tests/test_component_candidate_classifier.cpp)
     target_link_libraries(dx-wire-test-component-candidate-classifier PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-component-candidate-classifier COMMAND dx-wire-test-component-candidate-classifier)
+
+    add_executable(dx-wire-test-diagram-furniture-classifier tests/test_diagram_furniture_classifier.cpp)
+    target_link_libraries(dx-wire-test-diagram-furniture-classifier PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-diagram-furniture-classifier COMMAND dx-wire-test-diagram-furniture-classifier)
 
     add_executable(dx-wire-test-gap-interpreter tests/test_gap_interpreter.cpp)
     target_link_libraries(dx-wire-test-gap-interpreter PRIVATE eke_dx_wire)

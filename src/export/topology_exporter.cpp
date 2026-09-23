@@ -171,6 +171,7 @@ void TopologyExporter::export_json(
             case ComponentSymbolKind::CircularSymbol: return "circular_symbol";
             case ComponentSymbolKind::ChassisGround: return "chassis_ground";
             case ComponentSymbolKind::PrimitiveSymbol: return "primitive_symbol";
+            case ComponentSymbolKind::DiagramFurniture: return "diagram_furniture";
             case ComponentSymbolKind::Unknown: return "unknown";
             }
             return "unknown";
@@ -180,6 +181,8 @@ void TopologyExporter::export_json(
             switch (status) {
             case ComponentSymbolRecognitionStatus::Recognized:
                 return "recognized";
+            case ComponentSymbolRecognitionStatus::GeometricallyClassified:
+                return "geometrically_classified";
             case ComponentSymbolRecognitionStatus::Unresolved:
                 return "unresolved";
             case ComponentSymbolRecognitionStatus::Conflicted:

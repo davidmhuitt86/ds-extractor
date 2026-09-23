@@ -9,6 +9,7 @@
 #include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
+#include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
 
 #include <opencv2/core.hpp>
@@ -86,8 +87,14 @@ WireModel ExtractionPipeline::run(
     detected.shapes = shapes;
 
     ComponentCandidateClassifier component_classifier;
+    // AP-GEOMETRY: legend/color-key tables, switch-continuity charts, and
+    // other tabular diagram content are drawn with the same small
+    // circle/rectangle primitives as real circuit symbols, so this
+    // re-tags grid-arranged candidates as DiagramFurniture before any
+    // downstream stage treats them as circuit components.
+    DiagramFurnitureClassifier furniture_classifier(config_.diagram_furniture);
     const std::vector<ComponentCandidate> component_candidates =
-        component_classifier.classify(shapes);
+        furniture_classifier.classify(component_classifier.classify(shapes));
 
     // AP-GEOMETRY-006: determine whether line-like geometry is actually
     // owned by a graphical object before it can enter conductor topology.

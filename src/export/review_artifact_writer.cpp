@@ -29,6 +29,8 @@ cv::Scalar kind_color(ComponentSymbolKind kind) {
         return cv::Scalar(40, 160, 220);
     case ComponentSymbolKind::PrimitiveSymbol:
         return cv::Scalar(200, 80, 180);
+    case ComponentSymbolKind::DiagramFurniture:
+        return cv::Scalar(140, 140, 140);
     case ComponentSymbolKind::Unknown:
         return cv::Scalar(80, 80, 220);
     }
@@ -41,6 +43,7 @@ const char* symbol_name(ComponentSymbolKind kind) {
     case ComponentSymbolKind::CircularSymbol: return "circular";
     case ComponentSymbolKind::ChassisGround: return "ground";
     case ComponentSymbolKind::PrimitiveSymbol: return "primitive";
+    case ComponentSymbolKind::DiagramFurniture: return "furniture";
     case ComponentSymbolKind::Unknown: return "unknown";
     }
     return "unknown";
@@ -312,10 +315,23 @@ void render_recognition(cv::Mat& image, const WireModel& model) {
         const cv::Rect r = bounds(component_item->bounds);
         cv::rectangle(image, r, kind_color(item.symbol_kind), 3, cv::LINE_AA);
 
+        const char* status_label = "unresolved";
+        switch (item.status) {
+        case ComponentSymbolRecognitionStatus::Recognized:
+            status_label = "recognized";
+            break;
+        case ComponentSymbolRecognitionStatus::GeometricallyClassified:
+            status_label = "geometry-bucketed";
+            break;
+        case ComponentSymbolRecognitionStatus::Unresolved:
+            status_label = "unresolved";
+            break;
+        case ComponentSymbolRecognitionStatus::Conflicted:
+            status_label = "conflicted";
+            break;
+        }
         const std::string label =
-            std::string(symbol_name(item.symbol_kind)) + " [" +
-            (item.status == ComponentSymbolRecognitionStatus::Recognized
-                 ? "recognized" : "unresolved") + "]";
+            std::string(symbol_name(item.symbol_kind)) + " [" + status_label + "]";
         cv::putText(image, label, {r.x, r.y + r.height + 15},
                     cv::FONT_HERSHEY_SIMPLEX, 0.40,
                     kind_color(item.symbol_kind), 1, cv::LINE_AA);

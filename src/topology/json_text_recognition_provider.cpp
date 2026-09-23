@@ -1,23 +1,14 @@
 #include "eke_dx_wire/topology/json_text_recognition_provider.hpp"
+#include "eke_dx_wire/topology/recognition_observation_parser.hpp"
 
-#include <opencv2/core.hpp>
-
+#include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
 
 namespace eke::dx::wire {
-namespace {
-
-ConfidenceClass parse_confidence(const std::string& value) {
-    if (value == "high") return ConfidenceClass::High;
-    if (value == "medium") return ConfidenceClass::Medium;
-    if (value == "low") return ConfidenceClass::Low;
-    return ConfidenceClass::Unresolved;
-}
-
-} // namespace
 
 JsonTextRecognitionProvider::JsonTextRecognitionProvider(
     std::string observation_path)
@@ -30,52 +21,17 @@ JsonTextRecognitionProvider::recognize(
     const std::string&,
     int) const {
 
-    cv::FileStorage storage(
-        observation_path_, cv::FileStorage::READ | cv::FileStorage::FORMAT_JSON);
-
-    if (!storage.isOpened()) {
+    std::ifstream in(observation_path_);
+    if (!in) {
         throw std::runtime_error(
             "Unable to open recognition observation JSON: " +
             observation_path_);
     }
 
-    const cv::FileNode observations = storage["observations"];
-    if (observations.empty() || !observations.isSeq()) {
-        throw std::runtime_error(
-            "Recognition observation JSON must contain an 'observations' array");
-    }
+    std::ostringstream buffer;
+    buffer << in.rdbuf();
 
-    std::vector<TextRecognitionEvidence> result;
-
-    for (const auto& observation : observations) {
-        if (!observation.isMap()) {
-            continue;
-        }
-
-        std::string region_id;
-        std::string raw_text;
-        std::string confidence;
-
-        observation["text_region_id"] >> region_id;
-        observation["raw_text"] >> raw_text;
-        observation["confidence"] >> confidence;
-
-        if (region_id.empty() || raw_text.empty()) {
-            continue;
-        }
-
-        TextRecognitionEvidence evidence;
-        evidence.text_region_id = region_id;
-        evidence.raw_text = raw_text;
-        evidence.confidence = parse_confidence(confidence);
-        evidence.provider = provider_id();
-
-        if (evidence.confidence != ConfidenceClass::Unresolved) {
-            result.push_back(std::move(evidence));
-        }
-    }
-
-    return result;
+    return parse_recognition_observations(buffer.str(), provider_id());
 }
 
 std::string JsonTextRecognitionProvider::provider_id() const {

@@ -123,7 +123,7 @@ static int extract(const std::string& image_path, const std::string& output, con
                << "  \"semantic_associations\": "
                << model.semantic_associations.size() << ",\n"
                << "  \"baseline_unresolved_nets\": "
-               << baseline_model->audit.unresolved_nets << ",\n"
+               << baseline_model.value().audit.unresolved_nets << ",\n"
                << "  \"recognized_unresolved_nets\": "
                << model.audit.unresolved_nets << ",\n"
                << "  \"nets\": [\n";

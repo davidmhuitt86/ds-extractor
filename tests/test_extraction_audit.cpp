@@ -137,6 +137,9 @@ int main() {
     assert(audit.valid_wires == 1);
     assert(audit.validation_errors == 1);
     assert(audit.validation_warnings == 1);
+    assert(audit.validation_warning_summaries.size() == 1);
+    assert(audit.validation_warning_summaries.front().code == "W");
+    assert(audit.validation_warning_summaries.front().count == 1);
     assert(audit.gaps_bridged == 5);
 
     std::cout << "extraction audit tests passed\n";

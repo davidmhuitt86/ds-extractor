@@ -131,8 +131,8 @@ static int extract(const std::string& image_path, const std::string& output, con
         bool first_net = true;
         for (const auto& recognized_net : model.electrical_nets) {
             const auto baseline_it = std::find_if(
-                baseline_model->electrical_nets.begin(),
-                baseline_model->electrical_nets.end(),
+                baseline_model.value().electrical_nets.begin(),
+                baseline_model.value().electrical_nets.end(),
                 [&](const ElectricalNet& net) {
                     return net.id == recognized_net.id;
                 });

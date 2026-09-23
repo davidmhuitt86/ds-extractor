@@ -1,5 +1,7 @@
 #include "eke_dx_wire/export/svg_exporter.hpp"
 #include "eke_dx_wire/export/topology_exporter.hpp"
+#include "eke_dx_wire/export/recognition_input_exporter.hpp"
+#include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
 
@@ -56,10 +58,17 @@ static int extract(const std::string& image_path, const std::string& output) {
     fs::create_directories(fs::path(output) / "artifacts" / "topology");
     fs::create_directories(fs::path(output) / "artifacts" / "validation");
     fs::create_directories(fs::path(output) / "artifacts" / "audit");
+    fs::create_directories(fs::path(output) / "artifacts" / "recognition");
     fs::create_directories(fs::path(output) / "output");
 
     ExtractionPipeline pipeline;
     WireModel model = pipeline.run(image_path, image_path);
+
+    RecognitionInputExporter::export_package(
+        model,
+        ImageNormalizer::normalize(ImageLoader::load(image_path)),
+        image_path,
+        (fs::path(output) / "artifacts" / "recognition").string());
 
     SvgExporter::export_segments(
         model,
@@ -149,6 +158,8 @@ static int extract(const std::string& image_path, const std::string& output) {
               << "validation warnings: " << model.audit.validation_warnings << "\n"
               << "audit: "
               << (fs::path(output) / "artifacts" / "audit" / "extraction_audit.json").string() << "\n"
+              << "recognition package: "
+              << (fs::path(output) / "artifacts" / "recognition").string() << "\\n"
               << "output: "
               << (fs::path(output) / "output" / "wires.svg").string()
               << "\n";

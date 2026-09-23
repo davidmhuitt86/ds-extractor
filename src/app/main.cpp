@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <string>
 
 namespace fs = std::filesystem;
@@ -86,9 +87,11 @@ static int extract(const std::string& image_path, const std::string& output, con
     // both the deterministic baseline and the recognition-assisted pipeline.
     // This makes semantic improvement measurable without allowing recognition
     // to alter the underlying geometry/topology extraction.
-    ExtractionPipeline baseline_pipeline;
-    const WireModel baseline_model =
-        baseline_pipeline.run(image_path, image_path);
+    std::optional<WireModel> baseline_model;
+    if (!recognition_path.empty()) {
+        ExtractionPipeline baseline_pipeline;
+        baseline_model = baseline_pipeline.run(image_path, image_path);
+    }
 
     ExtractionConfig config;
     if (!recognition_path.empty()) {
@@ -120,7 +123,7 @@ static int extract(const std::string& image_path, const std::string& output, con
                << "  \"semantic_associations\": "
                << model.semantic_associations.size() << ",\n"
                << "  \"baseline_unresolved_nets\": "
-               << baseline_model.audit.unresolved_nets << ",\n"
+               << baseline_model->audit.unresolved_nets << ",\n"
                << "  \"recognized_unresolved_nets\": "
                << model.audit.unresolved_nets << ",\n"
                << "  \"nets\": [\n";
@@ -128,8 +131,8 @@ static int extract(const std::string& image_path, const std::string& output, con
         bool first_net = true;
         for (const auto& recognized_net : model.electrical_nets) {
             const auto baseline_it = std::find_if(
-                baseline_model.electrical_nets.begin(),
-                baseline_model.electrical_nets.end(),
+                baseline_model->electrical_nets.begin(),
+                baseline_model->electrical_nets.end(),
                 [&](const ElectricalNet& net) {
                     return net.id == recognized_net.id;
                 });

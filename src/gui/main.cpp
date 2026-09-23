@@ -37,7 +37,7 @@ void gui_log(const std::string& message) {
 constexpr char kWindow[] = "DS Extractor - Calibration Workbench";
 constexpr int kToolbarHeight = 48;
 constexpr int kPanelWidth = 330;
-constexpr int kStatusHeight = 54;
+constexpr int kStatusHeight = 72;
 
 #ifdef _WIN32
 std::string open_image_dialog() {
@@ -714,29 +714,27 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
         cv::Scalar(35, 35, 35), cv::FILLED);
 
     std::string status;
+    std::string detail;
 
     if (!state.extracted) {
         status = state.image_path.empty()
             ? "No source loaded"
             : "Ready - adjust parameters, then RUN EXTRACT";
+        detail = state.image_path.empty()
+            ? "Open a diagram to begin"
+            : "Output will be written to: " +
+                (state.artifact_root / "output" / "wires.svg").string();
     } else {
         status =
-            "Conductors: " + std::to_string(state.normalized_conductors.size()) +
+            "Output: " +
+            (state.artifact_root / "output" / "wires.svg").string() +
+            "    |    Conductors: " + std::to_string(state.normalized_conductors.size()) +
             "    Nodes: " + std::to_string(state.topology.nodes.size()) +
             "    Edges: " + std::to_string(state.topology.edges.size()) +
-            "    Gaps bridged: " + std::to_string(state.gap_interpretation.inferred_edges.size()) +
             "    Endpoints: " + std::to_string(state.endpoints.candidates.size()) +
             "    Shapes: " + std::to_string(state.detection.shapes.regions.size());
-    }
 
-    cv::putText(
-        canvas, status,
-        {12, canvas.rows - 30},
-        cv::FONT_HERSHEY_SIMPLEX, 0.56,
-        cv::Scalar(235, 235, 235), 1, cv::LINE_AA);
-
-    if (state.extracted) {
-        std::string detail =
+        detail =
             "H: " +
             std::to_string(std::count_if(
                 state.normalized_conductors.begin(),
@@ -750,14 +748,25 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
                 state.normalized_conductors.end(),
                 [](const ConductorSegment& s) {
                     return s.geometry.a.x == s.geometry.b.x;
-                }));
-
-        cv::putText(
-            canvas, detail,
-            {12, canvas.rows - 9},
-            cv::FONT_HERSHEY_SIMPLEX, 0.43,
-            cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
+                })) +
+            "   Gaps bridged: " +
+            std::to_string(state.gap_interpretation.inferred_edges.size()) +
+            "   Zoom: " +
+            std::to_string(static_cast<int>(state.zoom * 100.0 + 0.5)) +
+            "%   |   Wheel: Zoom   MMB-drag: Pan";
     }
+
+    cv::putText(
+        canvas, status,
+        {12, canvas.rows - 42},
+        cv::FONT_HERSHEY_SIMPLEX, 0.48,
+        cv::Scalar(235, 235, 235), 1, cv::LINE_AA);
+
+    cv::putText(
+        canvas, detail,
+        {12, canvas.rows - 14},
+        cv::FONT_HERSHEY_SIMPLEX, 0.40,
+        cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
 
     return canvas;
 }

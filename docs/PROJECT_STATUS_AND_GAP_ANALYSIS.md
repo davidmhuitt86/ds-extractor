@@ -136,6 +136,13 @@ Established a single orchestration boundary combining topology/distribution deco
 
 Rules include: no invented source, unresolved structures remain unresolved, cyclic structures remain unresolved, anchors must belong to their nets, referenced endpoints must exist, deterministic membership, no fuzzy matching, no OCR, and no topology mutation.
 
+### AP-WIRE-022A — Extraction Baseline Validation & Diagnostic Warning Expansion
+Established deterministic warning-code classification for the existing structural validation report. The audit and automated review manifest now expose warning-code occurrence counts in addition to aggregate error/warning totals.
+
+This stage is observational. It does not repair geometry, topology, endpoints, wires, components, or electrical nets.
+
+Coverage diagnostics are the next increment of AP-WIRE-022A and will measure unclaimed/shared conductor segments, endpoint wire coverage, component terminal coverage, topology anomalies, and electrical-net coverage before any algorithmic correction is introduced.
+
 ## 6. Latest Extraction Baseline
 
 Latest authoritative extraction used during development:
@@ -280,7 +287,7 @@ The next work should follow the evidence from the latest visual extraction rathe
 
 AP-WIRE-022 — Electrical Net Resolution — complete.
 
-AP-WIRE-022A — Internal Symbol Geometry Extraction — next correction.
+AP-WIRE-022A — Extraction Baseline Validation & Diagnostic Warning Expansion — active.
 
 AP-WIRE-023 — Wire Semantic Completion.
 

@@ -314,6 +314,98 @@ struct WireValidationReport {
     std::vector<WireValidationIssue> issues;
 };
 
+// AP-WIRE-025: semantic completion layer over an already-reconstructed
+// Wire. This is a read-only projection of existing evidence - it never
+// mutates Wire/topology/endpoint/electrical-net identity. Resolved only
+// when explicit evidence supports it; Conflicted when independent
+// evidence disagrees; Unresolved when evidence is absent. A field is
+// never populated by guessing from geometry, proximity, or page layout.
+enum class WireSemanticStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
+struct WireSemanticResolution {
+    std::string id;
+    std::string wire_id;
+
+    // Explicit WireColorLabel evidence from the wire's own two endpoints
+    // (EndpointCandidate::wire_color). Resolved+High when both endpoints
+    // agree, Resolved+Medium when only one endpoint carries evidence,
+    // Conflicted when they disagree, Unresolved when neither has evidence.
+    std::string wire_color;
+    WireSemanticStatus wire_color_status = WireSemanticStatus::Unresolved;
+    ConfidenceClass wire_color_confidence = ConfidenceClass::Unresolved;
+
+    // Explicit FunctionLabel evidence, same reinforcement/conflict rule as
+    // wire_color. Never derived from ElectricalNet::role - net role and
+    // wire function are kept as distinct evidence domains.
+    std::string function_label;
+    WireSemanticStatus function_status = WireSemanticStatus::Unresolved;
+    ConfidenceClass function_confidence = ConfidenceClass::Unresolved;
+
+    // Component/terminal association at each fixed wire endpoint, read
+    // directly from EndpointSemanticReconstruction (AP-WIRE-019). An
+    // endpoint whose reconstruction is Conflicted (including the
+    // AP-WIRE-024 boundary/alignment fallback case) is reported
+    // Conflicted here too, never silently treated as Resolved.
+    std::string start_component_id;
+    std::string start_terminal_name;
+    WireSemanticStatus start_component_status = WireSemanticStatus::Unresolved;
+
+    std::string end_component_id;
+    std::string end_terminal_name;
+    WireSemanticStatus end_component_status = WireSemanticStatus::Unresolved;
+
+    // Connector-terminal association at each endpoint, read from
+    // ConnectorTerminal (AP-WIRE-020). Only a Resolved ConnectorTerminal
+    // status is used; Unresolved/Conflicted connector terminals are not
+    // treated as authoritative.
+    std::string start_connector_id;
+    std::string start_connector_terminal_name;
+    WireSemanticStatus start_connector_status = WireSemanticStatus::Unresolved;
+
+    std::string end_connector_id;
+    std::string end_connector_terminal_name;
+    WireSemanticStatus end_connector_status = WireSemanticStatus::Unresolved;
+
+    // Electrical-net association: which ElectricalNet (if any) the wire's
+    // endpoints belong to. Resolved+High when both endpoints agree on one
+    // net, Resolved+Medium when only one endpoint is net-resolved,
+    // Conflicted when the two endpoints resolve to different nets
+    // (a genuine cross-stage inconsistency worth surfacing, not hiding),
+    // Unresolved when neither endpoint belongs to any net.
+    std::string electrical_net_id;
+    WireSemanticStatus electrical_net_status = WireSemanticStatus::Unresolved;
+    ConfidenceClass electrical_net_confidence = ConfidenceClass::Unresolved;
+};
+
+struct WireSemanticCoverage {
+    std::size_t total = 0;
+
+    std::size_t wire_color_resolved = 0;
+    std::size_t wire_color_conflicted = 0;
+    std::size_t wire_color_unresolved = 0;
+
+    std::size_t function_resolved = 0;
+    std::size_t function_conflicted = 0;
+    std::size_t function_unresolved = 0;
+
+    std::size_t component_association_resolved = 0;
+    std::size_t component_association_conflicted = 0;
+    std::size_t component_association_unresolved = 0;
+
+    std::size_t connector_association_resolved = 0;
+
+    std::size_t electrical_net_resolved = 0;
+    std::size_t electrical_net_conflicted = 0;
+    std::size_t electrical_net_unresolved = 0;
+
+    // A wire with zero Resolved fields across every category above.
+    std::size_t fully_unresolved = 0;
+};
+
 struct ExtractionAudit {
     // Geometry
     std::size_t conductor_segments = 0;
@@ -379,6 +471,9 @@ struct ExtractionAudit {
     std::size_t symbol_primitive_rectangles = 0;
     std::size_t symbol_primitive_terminal_leads = 0;
     std::size_t symbol_primitive_unknown = 0;
+
+    // AP-WIRE-025: wire semantic resolution
+    WireSemanticCoverage wire_semantics {};
 };
 
 enum class TextSemanticKind {
@@ -547,6 +642,7 @@ struct WireModel {
     std::vector<EndpointCandidate> endpoint_candidates;
     std::vector<ElectricalNet> electrical_nets;
     std::vector<Wire> wires;
+    std::vector<WireSemanticResolution> wire_semantics;
     WireValidationReport wire_validation;
     ExtractionAudit audit;
 };

@@ -173,6 +173,58 @@ ExtractionAudit build_extraction_audit(
         }
     }
 
+    WireSemanticCoverage& semantics = audit.wire_semantics;
+    semantics.total = model.wire_semantics.size();
+    for (const auto& resolution : model.wire_semantics) {
+        switch (resolution.wire_color_status) {
+        case WireSemanticStatus::Resolved: ++semantics.wire_color_resolved; break;
+        case WireSemanticStatus::Conflicted: ++semantics.wire_color_conflicted; break;
+        case WireSemanticStatus::Unresolved: ++semantics.wire_color_unresolved; break;
+        }
+
+        switch (resolution.function_status) {
+        case WireSemanticStatus::Resolved: ++semantics.function_resolved; break;
+        case WireSemanticStatus::Conflicted: ++semantics.function_conflicted; break;
+        case WireSemanticStatus::Unresolved: ++semantics.function_unresolved; break;
+        }
+
+        const bool component_resolved =
+            resolution.start_component_status == WireSemanticStatus::Resolved ||
+            resolution.end_component_status == WireSemanticStatus::Resolved;
+        const bool component_conflicted =
+            resolution.start_component_status == WireSemanticStatus::Conflicted ||
+            resolution.end_component_status == WireSemanticStatus::Conflicted;
+        if (component_resolved) {
+            ++semantics.component_association_resolved;
+        } else if (component_conflicted) {
+            ++semantics.component_association_conflicted;
+        } else {
+            ++semantics.component_association_unresolved;
+        }
+
+        if (resolution.start_connector_status == WireSemanticStatus::Resolved ||
+            resolution.end_connector_status == WireSemanticStatus::Resolved) {
+            ++semantics.connector_association_resolved;
+        }
+
+        switch (resolution.electrical_net_status) {
+        case WireSemanticStatus::Resolved: ++semantics.electrical_net_resolved; break;
+        case WireSemanticStatus::Conflicted: ++semantics.electrical_net_conflicted; break;
+        case WireSemanticStatus::Unresolved: ++semantics.electrical_net_unresolved; break;
+        }
+
+        const bool any_resolved =
+            resolution.wire_color_status == WireSemanticStatus::Resolved ||
+            resolution.function_status == WireSemanticStatus::Resolved ||
+            component_resolved ||
+            resolution.start_connector_status == WireSemanticStatus::Resolved ||
+            resolution.end_connector_status == WireSemanticStatus::Resolved ||
+            resolution.electrical_net_status == WireSemanticStatus::Resolved;
+        if (!any_resolved) {
+            ++semantics.fully_unresolved;
+        }
+    }
+
     return audit;
 }
 

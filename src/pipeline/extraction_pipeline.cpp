@@ -35,6 +35,7 @@
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
+#include "eke_dx_wire/topology/wire_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/electrical_net_resolver.hpp"
 
 #include <algorithm>
@@ -422,6 +423,20 @@ WireModel ExtractionPipeline::run(
         [](const Wire& a, const Wire& b) {
             return a.id < b.id;
         });
+
+    // AP-WIRE-025: attach defensible wire semantics from already-existing
+    // evidence. This stage is a pure read-only projection - it must run
+    // after wires/electrical nets are final and must never feed back into
+    // any of the structures above.
+    WireSemanticResolver wire_semantic_resolver;
+    const WireSemanticResolutionArtifacts wire_semantic_artifacts =
+        wire_semantic_resolver.resolve(
+            model.wires,
+            model.endpoint_candidates,
+            model.endpoint_semantic_reconstructions,
+            model.connector_terminals,
+            model.electrical_nets);
+    model.wire_semantics = wire_semantic_artifacts.resolutions;
 
     WireModelValidator validator;
     model.wire_validation = validator.validate(model);

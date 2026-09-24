@@ -63,6 +63,7 @@ add_library(eke_dx_wire
     src/topology/recognition_observation_parser.cpp
     src/topology/anthropic_vision_text_recognition_provider.cpp
     src/topology/wire_model_validator.cpp
+    src/topology/wire_semantic_resolver.cpp
     src/image/component_candidate_classifier.cpp
     src/image/diagram_furniture_classifier.cpp
     src/export/svg_exporter.cpp
@@ -264,6 +265,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-symbol-geometry-extractor tests/test_symbol_geometry_extractor.cpp)
     target_link_libraries(dx-wire-test-symbol-geometry-extractor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-symbol-geometry-extractor COMMAND dx-wire-test-symbol-geometry-extractor)
+
+    add_executable(dx-wire-test-wire-semantic-resolver tests/test_wire_semantic_resolver.cpp)
+    target_link_libraries(dx-wire-test-wire-semantic-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-wire-semantic-resolver COMMAND dx-wire-test-wire-semantic-resolver)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

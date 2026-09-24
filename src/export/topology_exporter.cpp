@@ -431,6 +431,47 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    auto wire_semantic_status_name = [](WireSemanticStatus status) {
+        switch (status) {
+        case WireSemanticStatus::Resolved: return "resolved";
+        case WireSemanticStatus::Unresolved: return "unresolved";
+        case WireSemanticStatus::Conflicted: return "conflicted";
+        }
+        return "unresolved";
+    };
+
+    out << "  ],\n  \"wire_semantics\": [\n";
+    for (std::size_t i = 0; i < model.wire_semantics.size(); ++i) {
+        const auto& s = model.wire_semantics[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(s.id) << "\",\n"
+            << "      \"wire_id\": \"" << json_escape(s.wire_id) << "\",\n"
+            << "      \"wire_color\": \"" << json_escape(s.wire_color) << "\",\n"
+            << "      \"wire_color_status\": \"" << wire_semantic_status_name(s.wire_color_status) << "\",\n"
+            << "      \"wire_color_confidence\": \"" << confidence_name(s.wire_color_confidence) << "\",\n"
+            << "      \"function_label\": \"" << json_escape(s.function_label) << "\",\n"
+            << "      \"function_status\": \"" << wire_semantic_status_name(s.function_status) << "\",\n"
+            << "      \"function_confidence\": \"" << confidence_name(s.function_confidence) << "\",\n"
+            << "      \"start_component_id\": \"" << json_escape(s.start_component_id) << "\",\n"
+            << "      \"start_terminal_name\": \"" << json_escape(s.start_terminal_name) << "\",\n"
+            << "      \"start_component_status\": \"" << wire_semantic_status_name(s.start_component_status) << "\",\n"
+            << "      \"end_component_id\": \"" << json_escape(s.end_component_id) << "\",\n"
+            << "      \"end_terminal_name\": \"" << json_escape(s.end_terminal_name) << "\",\n"
+            << "      \"end_component_status\": \"" << wire_semantic_status_name(s.end_component_status) << "\",\n"
+            << "      \"start_connector_id\": \"" << json_escape(s.start_connector_id) << "\",\n"
+            << "      \"start_connector_terminal_name\": \"" << json_escape(s.start_connector_terminal_name) << "\",\n"
+            << "      \"start_connector_status\": \"" << wire_semantic_status_name(s.start_connector_status) << "\",\n"
+            << "      \"end_connector_id\": \"" << json_escape(s.end_connector_id) << "\",\n"
+            << "      \"end_connector_terminal_name\": \"" << json_escape(s.end_connector_terminal_name) << "\",\n"
+            << "      \"end_connector_status\": \"" << wire_semantic_status_name(s.end_connector_status) << "\",\n"
+            << "      \"electrical_net_id\": \"" << json_escape(s.electrical_net_id) << "\",\n"
+            << "      \"electrical_net_status\": \"" << wire_semantic_status_name(s.electrical_net_status) << "\",\n"
+            << "      \"electrical_net_confidence\": \"" << confidence_name(s.electrical_net_confidence) << "\"\n"
+            << "    }";
+        if (i + 1 != model.wire_semantics.size()) out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"text_recognition_evidence\": [\n";
     for (std::size_t i = 0; i < model.text_recognition_evidence.size(); ++i) {
         const auto& evidence = model.text_recognition_evidence[i];

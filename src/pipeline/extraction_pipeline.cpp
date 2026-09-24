@@ -19,6 +19,7 @@
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
+#include "eke_dx_wire/topology/terminal_recognizer.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
 #include "eke_dx_wire/topology/endpoint_semantic_reconstructor.hpp"
 #include "eke_dx_wire/topology/connector_terminal_model.hpp"
@@ -250,6 +251,32 @@ WireModel ExtractionPipeline::run(
             endpoint_artifacts.candidates,
             rejected_geometry);
     model.terminal_candidates = terminal_artifacts.candidates;
+
+    // AP-WIRE-024: recognize additional component-terminal associations
+    // from AP-WIRE-023 internal geometry and conservative conductor-to-
+    // component boundary alignment. Existing endpoint objects are the only
+    // objects that may be associated; this stage never creates endpoints or
+    // mutates topology, wires, or electrical nets.
+    TerminalRecognizer terminal_recognizer(config_.terminal_recognition);
+    const TerminalRecognitionArtifacts recognition_artifacts =
+        terminal_recognizer.recognize(
+            model.component_candidates,
+            model.component_symbol_geometries,
+            model.symbol_primitives,
+            model.endpoint_candidates,
+            model.nodes,
+            model.edges,
+            model.terminal_candidates);
+    model.terminal_candidates.insert(
+        model.terminal_candidates.end(),
+        recognition_artifacts.candidates.begin(),
+        recognition_artifacts.candidates.end());
+    std::sort(
+        model.terminal_candidates.begin(),
+        model.terminal_candidates.end(),
+        [](const TerminalCandidate& a, const TerminalCandidate& b) {
+            return a.id < b.id;
+        });
 
     // AP-SEMANTIC-001: convert independently located terminal candidates
     // into semantic evidence, then resolve endpoint identity before any

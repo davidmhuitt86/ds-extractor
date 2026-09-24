@@ -1,51 +1,46 @@
 {
-<<<<<<< HEAD
-  "generated_at": "2026-09-24T05:10:06Z",
+  "generated_at": "2026-09-24T05:37:04Z",
   "source_id": "C:\dev\ds-extractor\samples\trx300ODG.png",
-=======
-  "generated_at": "2026-09-24T01:23:28Z",
-  "source_id": "samples/trx300ODG.png",
->>>>>>> 797b22231d142be62d6135dbc8a24a2e19048b2f
   "page": 0,
   "image_width": 1056,
   "image_height": 816,
   "layers": {
-    "wires": 40,
+    "wires": 41,
     "wire_colors": 294,
     "symbols": 109,
-    "terminals": 48,
+    "terminals": 56,
     "connectors": 0,
     "connector_terminals": 0,
-    "splices_and_junctions": 692,
-    "grounds": 10,
-    "labels": 1885,
-    "topology_edges": 877,
+    "splices_and_junctions": 693,
+    "grounds": 7,
+    "labels": 1890,
+    "topology_edges": 876,
     "component_bounds": 109,
-    "endpoint_debug": 210,
+    "endpoint_debug": 215,
     "recognition": 109,
     "symbol_geometry": 40
   },
-  "electrical_nets": 10,
+  "electrical_nets": 11,
   "validation_errors": 0,
-  "validation_warnings": 30,
+  "validation_warnings": 31,
   "validation_warning_codes": {
-    "NET-ROLE-UNRESOLVED": 6,
+    "NET-ROLE-UNRESOLVED": 7,
     "WIRE-GEOMETRIC-ENDPOINTS": 24
   },
   "coverage_summary": {
-    "conductor_segments_shared": 1,
+    "conductor_segments_shared": 2,
     "conductor_segments_unreferenced": 0,
-    "endpoints_zero_wire": 132,
+    "endpoints_zero_wire": 137,
     "wires_invalid": 0,
-    "components_real_without_terminal_evidence": 41,
+    "components_real_without_terminal_evidence": 39,
     "components_diagram_furniture": 50,
     "connectors_furniture_derived": 0,
     "connectors_unresolved": 0,
-    "electrical_net_endpoints_not_in_any_net": 177,
+    "electrical_net_endpoints_not_in_any_net": 179,
     "electrical_net_endpoints_in_multiple_nets": 0,
     "components_with_symbol_geometry": 17,
     "components_without_symbol_geometry": 42,
-    "findings_total": 1424,
+    "findings_total": 1431,
     "see": "artifacts/audit/extraction_audit.json#coverage"
   }
 }

@@ -229,6 +229,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-terminal-recognizer COMMAND dx-wire-test-terminal-recognizer)
     add_test(NAME dx-wire-test-connector-terminal-model COMMAND dx-wire-test-connector-terminal-model)
 
+    add_executable(dx-wire-test-conductor-boundary-resolver tests/test_conductor_boundary_resolver.cpp)
+    target_link_libraries(dx-wire-test-conductor-boundary-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-conductor-boundary-resolver COMMAND dx-wire-test-conductor-boundary-resolver)
+
     add_executable(dx-wire-test-component-symbol-recognizer tests/test_component_symbol_recognizer.cpp)
     target_link_libraries(dx-wire-test-component-symbol-recognizer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-component-symbol-recognizer COMMAND dx-wire-test-component-symbol-recognizer)

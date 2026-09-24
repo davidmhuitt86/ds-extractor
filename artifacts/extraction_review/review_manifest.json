@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T05:45:44Z",
+  "generated_at": "2026-09-24T06:01:38Z",
   "source_id": "samples/trx300ODG.png",
   "page": 0,
   "image_width": 1056,
@@ -40,6 +40,10 @@
     "electrical_net_endpoints_in_multiple_nets": 0,
     "components_with_symbol_geometry": 17,
     "components_without_symbol_geometry": 42,
+    "wires_with_color_resolved": 0,
+    "wires_with_color_conflicted": 0,
+    "wires_with_component_association_resolved": 16,
+    "wires_fully_unresolved": 24,
     "findings_total": 1422,
     "see": "artifacts/audit/extraction_audit.json#coverage"
   }

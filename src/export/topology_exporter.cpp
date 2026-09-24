@@ -209,6 +209,52 @@ void TopologyExporter::export_json(
             out << ",";
         out << "\n";
     }
+    auto symbol_primitive_kind_name = [](SymbolPrimitiveKind kind) {
+        switch (kind) {
+        case SymbolPrimitiveKind::Line: return "line";
+        case SymbolPrimitiveKind::Circle: return "circle";
+        case SymbolPrimitiveKind::Rectangle: return "rectangle";
+        case SymbolPrimitiveKind::TerminalLead: return "terminal_lead";
+        case SymbolPrimitiveKind::Unknown: return "unknown";
+        }
+        return "unknown";
+    };
+
+    out << "  ],\n  \"symbol_primitives\": [\n";
+    for (std::size_t i = 0; i < model.symbol_primitives.size(); ++i) {
+        const auto& primitive = model.symbol_primitives[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(primitive.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(primitive.component_id) << "\",\n"
+            << "      \"kind\": \"" << symbol_primitive_kind_name(primitive.kind) << "\",\n"
+            << "      \"x\": " << primitive.bounds.x << ",\n"
+            << "      \"y\": " << primitive.bounds.y << ",\n"
+            << "      \"width\": " << primitive.bounds.width << ",\n"
+            << "      \"height\": " << primitive.bounds.height << ",\n"
+            << "      \"area\": " << primitive.area << ",\n"
+            << "      \"confidence\": \"" << confidence_name(primitive.confidence) << "\"\n"
+            << "    }";
+        if (i + 1 != model.symbol_primitives.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"component_symbol_geometries\": [\n";
+    for (std::size_t i = 0; i < model.component_symbol_geometries.size(); ++i) {
+        const auto& geometry = model.component_symbol_geometries[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(geometry.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(geometry.component_id) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(geometry.confidence) << "\",\n"
+            << "      \"primitive_ids\": [";
+        for (std::size_t j = 0; j < geometry.primitive_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(geometry.primitive_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.component_symbol_geometries.size()) out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"connector_candidates\": [\n";
     for (std::size_t i = 0; i < model.connector_candidates.size(); ++i) {
         const auto& connector = model.connector_candidates[i];

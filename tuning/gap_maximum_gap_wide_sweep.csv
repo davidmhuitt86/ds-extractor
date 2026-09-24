@@ -1,0 +1,12 @@
+value,conductor_segments,topology_nodes,topology_edges,endpoints,boundaries_resolved,boundaries_conflicted,wires,electrical_nets,shared_segments,validation_warnings,gaps_bridged,conflicted_endpoint_ids
+4,294,692,871,222,36,4,42,11,1,32,0,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+8,294,692,877,210,36,4,41,10,1,30,6,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+12,294,692,877,210,36,4,41,10,1,30,6,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+16,294,692,877,210,36,4,41,10,1,30,6,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+18,294,692,877,210,36,4,41,10,1,30,6,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+20,294,692,877,210,36,4,41,10,1,30,6,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+24,294,692,878,208,34,4,41,10,1,30,7,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+30,294,692,879,206,34,4,40,10,1,29,8,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+40,294,692,883,198,33,3,38,9,0,29,12,endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd
+60,294,692,891,182,32,2,34,8,0,25,20,endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-cde07f8718a2b9cd
+100,294,692,893,178,32,1,33,8,0,24,22,endpoint-candidate-b0e3d6bb622a227c

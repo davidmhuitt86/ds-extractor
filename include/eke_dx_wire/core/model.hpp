@@ -234,6 +234,54 @@ struct ComponentCandidate {
     std::vector<std::string> semantic_labels;
 };
 
+// AP-WIRE-023: geometry observed INSIDE an already-detected real
+// ComponentCandidate's bounding region, excluding the candidate's own
+// outer boundary stroke (which ShapeDetector/ComponentCandidateClassifier
+// already model as the candidate's shape). This is geometric evidence
+// only - it must never be treated as engineering terminal identity or
+// symbol-family identity. That interpretation belongs to a later stage.
+enum class SymbolPrimitiveKind {
+    Line,
+    Circle,
+    Rectangle,
+    // A line-like blob that touches the component's own boundary margin,
+    // i.e. it appears to reach toward/through the symbol's outline rather
+    // than remain fully internal. This is geometric shape only - it is
+    // not an EndpointCandidate and must not be treated as one.
+    TerminalLead,
+    Unknown
+};
+
+struct SymbolPrimitive {
+    std::string id;
+    std::string component_id;
+    SymbolPrimitiveKind kind = SymbolPrimitiveKind::Unknown;
+    BoundingBox bounds {};
+    double area = 0.0;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    Provenance provenance {};
+};
+
+struct ComponentSymbolGeometry {
+    std::string id;
+    std::string component_id;
+    std::vector<std::string> primitive_ids;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
+// AP-WIRE-031: physical Wire identity status, independent of the
+// pre-existing geometric `confidence` field above. Resolved only when
+// explicit evidence establishes the endpoint-to-endpoint physical
+// conductor identity; Conflicted when independent evidence establishes
+// incompatible physical identity interpretations; Unresolved when
+// evidence is simply insufficient. Never a synonym for "not enough
+// information" collapsed into Conflicted - see AP-WIRE-031 Sec 18.
+enum class WireIdentityStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
 struct Wire {
     std::string id;
     std::string start_endpoint;
@@ -242,6 +290,17 @@ struct Wire {
     std::vector<std::string> conductor_segments;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     bool heavy_cable = false;
+
+    // AP-WIRE-031: physical Wire identity resolution. Defaults to
+    // Unresolved for any Wire constructed without going through
+    // PhysicalWireIdentityReconstructor's explicit assignment.
+    WireIdentityStatus identity_status = WireIdentityStatus::Unresolved;
+    // Ids of existing evidence objects actually used to establish this
+    // Wire's physical identity (ConductorBoundaryResolution ids for its
+    // two endpoints, and/or ConductorSegment ids whose sharing across a
+    // distribution node justified crossing it). Never populated with an
+    // invented or arbitrary id - see AP-WIRE-031 Sec 17.
+    std::vector<std::string> identity_evidence_ids;
 };
 
 struct ElectricalNet {
@@ -277,6 +336,324 @@ struct WireValidationReport {
     std::size_t valid_wires = 0;
     std::size_t electrical_nets_checked = 0;
     std::vector<WireValidationIssue> issues;
+};
+
+// AP-WIRE-025: semantic completion layer over an already-reconstructed
+// Wire. This is a read-only projection of existing evidence - it never
+// mutates Wire/topology/endpoint/electrical-net identity. Resolved only
+// when explicit evidence supports it; Conflicted when independent
+// evidence disagrees; Unresolved when evidence is absent. A field is
+// never populated by guessing from geometry, proximity, or page layout.
+enum class WireSemanticStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
+struct WireSemanticResolution {
+    std::string id;
+    std::string wire_id;
+
+    // Explicit WireColorLabel evidence from the wire's own two endpoints
+    // (EndpointCandidate::wire_color). Resolved+High when both endpoints
+    // agree, Resolved+Medium when only one endpoint carries evidence,
+    // Conflicted when they disagree, Unresolved when neither has evidence.
+    std::string wire_color;
+    WireSemanticStatus wire_color_status = WireSemanticStatus::Unresolved;
+    ConfidenceClass wire_color_confidence = ConfidenceClass::Unresolved;
+
+    // Explicit FunctionLabel evidence, same reinforcement/conflict rule as
+    // wire_color. Never derived from ElectricalNet::role - net role and
+    // wire function are kept as distinct evidence domains.
+    std::string function_label;
+    WireSemanticStatus function_status = WireSemanticStatus::Unresolved;
+    ConfidenceClass function_confidence = ConfidenceClass::Unresolved;
+
+    // Component/terminal association at each fixed wire endpoint, read
+    // directly from EndpointSemanticReconstruction (AP-WIRE-019). An
+    // endpoint whose reconstruction is Conflicted (including the
+    // AP-WIRE-024 boundary/alignment fallback case) is reported
+    // Conflicted here too, never silently treated as Resolved.
+    std::string start_component_id;
+    std::string start_terminal_name;
+    WireSemanticStatus start_component_status = WireSemanticStatus::Unresolved;
+
+    std::string end_component_id;
+    std::string end_terminal_name;
+    WireSemanticStatus end_component_status = WireSemanticStatus::Unresolved;
+
+    // Connector-terminal association at each endpoint, read from
+    // ConnectorTerminal (AP-WIRE-020). Only a Resolved ConnectorTerminal
+    // status is used; Unresolved/Conflicted connector terminals are not
+    // treated as authoritative.
+    std::string start_connector_id;
+    std::string start_connector_terminal_name;
+    WireSemanticStatus start_connector_status = WireSemanticStatus::Unresolved;
+
+    std::string end_connector_id;
+    std::string end_connector_terminal_name;
+    WireSemanticStatus end_connector_status = WireSemanticStatus::Unresolved;
+
+    // Electrical-net association: which ElectricalNet (if any) the wire's
+    // endpoints belong to. Resolved+High when both endpoints agree on one
+    // net, Resolved+Medium when only one endpoint is net-resolved,
+    // Conflicted when the two endpoints resolve to different nets
+    // (a genuine cross-stage inconsistency worth surfacing, not hiding),
+    // Unresolved when neither endpoint belongs to any net.
+    std::string electrical_net_id;
+    WireSemanticStatus electrical_net_status = WireSemanticStatus::Unresolved;
+    ConfidenceClass electrical_net_confidence = ConfidenceClass::Unresolved;
+};
+
+struct WireSemanticCoverage {
+    std::size_t total = 0;
+
+    std::size_t wire_color_resolved = 0;
+    std::size_t wire_color_conflicted = 0;
+    std::size_t wire_color_unresolved = 0;
+
+    std::size_t function_resolved = 0;
+    std::size_t function_conflicted = 0;
+    std::size_t function_unresolved = 0;
+
+    std::size_t component_association_resolved = 0;
+    std::size_t component_association_conflicted = 0;
+    std::size_t component_association_unresolved = 0;
+
+    std::size_t connector_association_resolved = 0;
+
+    std::size_t electrical_net_resolved = 0;
+    std::size_t electrical_net_conflicted = 0;
+    std::size_t electrical_net_unresolved = 0;
+
+    // A wire with zero Resolved fields across every category above.
+    std::size_t fully_unresolved = 0;
+};
+
+// AP-WIRE-026A: engineering symbol-family recognition. This is an
+// explicit semantic interpretation of already-established AP-WIRE-023
+// symbol geometry (plus, where independently available, component
+// identity/label evidence and future recognition-provider observations).
+// It is NOT component identity, NOT canonical identity, NOT symbol
+// geometry, and NOT terminal recognition - those remain owned by their
+// existing APs and are only referenced here.
+//
+// The taxonomy below is deliberately small. Only families with a
+// currently-defensible recognition rule are included. See
+// docs/AP-WIRE-026A_Symbol_Family_Recognition.md for the exact evidence
+// rule behind each one. Unknown is always preferred over a speculative
+// family with no supporting rule.
+enum class SymbolFamily {
+    Ground,
+    Lamp,
+    Switch,
+    Relay,
+    Motor,
+    Diode,
+    Alternator,
+    Battery,
+    Solenoid,
+    Coil,
+    Unknown
+};
+
+enum class SymbolFamilyEvidenceKind {
+    // The component's own ComponentCandidateKind came from a purpose-
+    // built geometric detector for a specific engineering symbol (today:
+    // only ShapeDetector's chassis-ground bar pattern), not a generic
+    // shape bucket. This is categorically stronger than resemblance to a
+    // generic circle/rectangle primitive.
+    PurposeBuiltGeometricClassification,
+    // A keyword match against already-resolved component identity text
+    // (ComponentCandidate.semantic_labels /
+    // ComponentIdentityCanonicalization.canonical_name) combined with a
+    // geometrically compatible ComponentCandidateKind. Label alone is
+    // never sufficient - see the recognizer's evidence rules.
+    LabelKeywordWithCompatibleGeometry,
+    // An external SymbolRecognitionProvider observation (e.g. a future
+    // vision-based recognizer). Never used as the sole basis for
+    // Resolved status without at least one other independent evidence
+    // source agreeing, so an unsupported single provider guess cannot
+    // resolve a family by itself.
+    ProviderObservation
+};
+
+struct SymbolFamilyEvidence {
+    std::string id;
+    std::string component_id;
+    SymbolFamily family = SymbolFamily::Unknown;
+    SymbolFamilyEvidenceKind kind =
+        SymbolFamilyEvidenceKind::LabelKeywordWithCompatibleGeometry;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    std::string source;
+    std::string detail;
+};
+
+enum class SymbolFamilyResolutionStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
+struct SymbolFamilyResolution {
+    std::string id;
+    std::string component_id;
+    SymbolFamily family = SymbolFamily::Unknown;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    SymbolFamilyResolutionStatus status =
+        SymbolFamilyResolutionStatus::Unresolved;
+    std::vector<std::string> evidence_ids;
+    // Reference only - AP-WIRE-023's geometry is never duplicated here.
+    std::string source_symbol_geometry_id;
+};
+
+struct SymbolFamilyCoverage {
+    std::size_t total = 0;
+    std::size_t resolved = 0;
+    std::size_t unresolved = 0;
+    std::size_t conflicted = 0;
+    // Per-family resolved counts, in taxonomy declaration order.
+    std::size_t ground_resolved = 0;
+    std::size_t lamp_resolved = 0;
+    std::size_t switch_resolved = 0;
+    std::size_t relay_resolved = 0;
+    std::size_t motor_resolved = 0;
+    std::size_t diode_resolved = 0;
+    std::size_t alternator_resolved = 0;
+    std::size_t battery_resolved = 0;
+    std::size_t solenoid_resolved = 0;
+    std::size_t coil_resolved = 0;
+};
+
+// AP-WIRE-030: conductor-boundary / terminal-resolution evidence and
+// resolution. This is a read-only semantic layer over already-produced
+// evidence (TerminalCandidate from AP-WIRE-024, EndpointSemanticReconstruction
+// from AP-WIRE-019, ConnectorTerminal from AP-WIRE-020, and EndpointCandidate
+// itself). It never mutates topology, creates/deletes edges, creates
+// components, fabricates a terminal identifier, or reconstructs a Wire.
+// Component association and terminal identity are independently tracked
+// statuses for the same endpoint - see docs/AP-WIRE-030_Conductor_Boundary_
+// and_Terminal_Resolution.md Sec 15. No new boundary-kind enum is
+// introduced: boundary_kind below reuses the existing EndpointKind values.
+enum class ConductorBoundaryEvidenceKind {
+    // A TerminalCandidate (AP-WIRE-024) associating this endpoint with a
+    // component/connector/ground boundary via geometry.
+    TerminalCandidateEvidence,
+    // The already-resolved EndpointSemanticReconstruction (AP-WIRE-019)
+    // for this endpoint - consulted, never re-derived from scratch.
+    EndpointSemanticReconstructionEvidence,
+    // A ConnectorTerminal (AP-WIRE-020) referencing this endpoint - its
+    // own ConnectorTerminalStatus is adopted directly, never re-decided.
+    ConnectorTerminalEvidence,
+    // EndpointCandidate.kind already carrying Ground/ExternalConnection
+    // (itself ultimately derived from one of the evidence kinds above,
+    // surfaced here only for traceability of the final endpoint state).
+    GroundEndpointEvidence,
+    ExternalConnectionEvidence
+};
+
+struct ConductorBoundaryEvidence {
+    std::string id;
+    std::string endpoint_id;
+    ConductorBoundaryEvidenceKind kind =
+        ConductorBoundaryEvidenceKind::TerminalCandidateEvidence;
+    // TerminalCandidate.id / EndpointSemanticReconstruction.id /
+    // ConnectorTerminal.id / EndpointCandidate.id, depending on kind.
+    std::string source_object_id;
+    EndpointKind suggested_boundary = EndpointKind::Unresolved;
+    std::string component_id;
+    std::string connector_id;
+    // Only ever populated when the evidence itself independently carries a
+    // specific terminal/pin identifier (e.g. a resolved ConnectorTerminal's
+    // terminal_name). TerminalCandidate carries no such identifier and
+    // never populates this field - never invented.
+    std::string terminal_identifier;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
+enum class ConductorBoundaryStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
+struct ConductorBoundaryResolution {
+    std::string id;
+    std::string endpoint_id;
+
+    // Overall boundary classification (AP-WIRE-030 Sec 9's six-category
+    // taxonomy, expressed via the existing EndpointKind values only -
+    // Splice/Junction/Crossing/Continuation are never valid values here,
+    // per AP-WIRE-029's critical invariant).
+    EndpointKind boundary_kind = EndpointKind::GeometricConductorEnd;
+    ConductorBoundaryStatus boundary_status =
+        ConductorBoundaryStatus::Unresolved;
+    ConfidenceClass boundary_confidence = ConfidenceClass::Unresolved;
+
+    // Component association - independent of terminal identity (Sec 15).
+    std::string component_id;
+    ConductorBoundaryStatus component_status =
+        ConductorBoundaryStatus::Unresolved;
+
+    // Terminal identity - independent of component association (Sec 10,
+    // 15). Never populated by proximity, shape, symbol family, wire
+    // color, or generic text - only by evidence that independently
+    // establishes a specific terminal (Sec 9, 17).
+    std::string terminal_identifier;
+    ConductorBoundaryStatus terminal_status =
+        ConductorBoundaryStatus::Unresolved;
+
+    // Connector association - independent of connector-terminal/pin
+    // identity (Sec 11). Always Unresolved on a baseline with 0
+    // connectors; never fabricated to look otherwise.
+    std::string connector_id;
+    ConductorBoundaryStatus connector_status =
+        ConductorBoundaryStatus::Unresolved;
+    std::string connector_terminal_identifier;
+    ConductorBoundaryStatus connector_terminal_status =
+        ConductorBoundaryStatus::Unresolved;
+
+    // Ground / external boundary status (Sec 12, 13). Independent of
+    // component/connector/terminal status above.
+    ConductorBoundaryStatus ground_status =
+        ConductorBoundaryStatus::Unresolved;
+    ConductorBoundaryStatus external_status =
+        ConductorBoundaryStatus::Unresolved;
+
+    // Provenance (Sec 21): the ConductorBoundaryEvidence ids that support
+    // this resolution.
+    std::vector<std::string> evidence_ids;
+    // Competing values preserved for a Conflicted status - never
+    // collapsed to a winner (Sec 16, 22).
+    std::vector<std::string> conflicting_component_ids;
+    std::vector<std::string> conflicting_terminal_identifiers;
+};
+
+struct ConductorBoundaryCoverage {
+    std::size_t total = 0;
+
+    std::size_t boundary_resolved = 0;
+    std::size_t boundary_unresolved = 0;
+    std::size_t boundary_conflicted = 0;
+
+    std::size_t component_resolved = 0;
+    std::size_t component_unresolved = 0;
+    std::size_t component_conflicted = 0;
+
+    std::size_t terminal_resolved = 0;
+    std::size_t terminal_unresolved = 0;
+    std::size_t terminal_conflicted = 0;
+
+    std::size_t connector_resolved = 0;
+    std::size_t connector_unresolved = 0;
+    std::size_t connector_conflicted = 0;
+
+    std::size_t connector_terminal_resolved = 0;
+    std::size_t connector_terminal_unresolved = 0;
+    std::size_t connector_terminal_conflicted = 0;
+
+    std::size_t ground_resolved = 0;
+    std::size_t external_resolved = 0;
 };
 
 struct ExtractionAudit {
@@ -334,6 +711,25 @@ struct ExtractionAudit {
 
     // Pipeline evidence
     std::size_t gaps_bridged = 0;
+
+    // AP-WIRE-023: internal symbol geometry
+    std::size_t components_with_symbol_geometry = 0;
+    std::size_t components_without_symbol_geometry = 0;
+    std::size_t symbol_primitives = 0;
+    std::size_t symbol_primitive_lines = 0;
+    std::size_t symbol_primitive_circles = 0;
+    std::size_t symbol_primitive_rectangles = 0;
+    std::size_t symbol_primitive_terminal_leads = 0;
+    std::size_t symbol_primitive_unknown = 0;
+
+    // AP-WIRE-025: wire semantic resolution
+    WireSemanticCoverage wire_semantics {};
+
+    // AP-WIRE-026A: symbol-family recognition
+    SymbolFamilyCoverage symbol_families {};
+
+    // AP-WIRE-030: conductor-boundary / terminal resolution
+    ConductorBoundaryCoverage conductor_boundaries {};
 };
 
 enum class TextSemanticKind {
@@ -481,6 +877,8 @@ struct WireModel {
 
     std::vector<ComponentCandidate> component_candidates;
     std::vector<ComponentSymbolRecognition> component_symbol_recognitions;
+    std::vector<ComponentSymbolGeometry> component_symbol_geometries;
+    std::vector<SymbolPrimitive> symbol_primitives;
     std::vector<ConnectorCandidate> connector_candidates;
     std::vector<ConnectorTerminal> connector_terminals;
     std::vector<TextRegion> text_regions;
@@ -500,6 +898,11 @@ struct WireModel {
     std::vector<EndpointCandidate> endpoint_candidates;
     std::vector<ElectricalNet> electrical_nets;
     std::vector<Wire> wires;
+    std::vector<WireSemanticResolution> wire_semantics;
+    std::vector<SymbolFamilyEvidence> symbol_family_evidence;
+    std::vector<SymbolFamilyResolution> symbol_family_resolutions;
+    std::vector<ConductorBoundaryEvidence> conductor_boundary_evidence;
+    std::vector<ConductorBoundaryResolution> conductor_boundary_resolutions;
     WireValidationReport wire_validation;
     ExtractionAudit audit;
 };

@@ -1,5 +1,4 @@
 #include "eke_dx_wire/export/artifact_writer.hpp"
-#include "eke_dx_wire/export/svg_exporter.hpp"
 #include "eke_dx_wire/export/topology_exporter.hpp"
 #include "eke_dx_wire/export/recognition_input_exporter.hpp"
 #include "eke_dx_wire/topology/json_text_recognition_provider.hpp"

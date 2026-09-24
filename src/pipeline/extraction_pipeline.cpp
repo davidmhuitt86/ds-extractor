@@ -10,6 +10,7 @@
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
+#include "eke_dx_wire/image/symbol_geometry_extractor.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
 
 #include <opencv2/core.hpp>
@@ -17,10 +18,13 @@
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
+#include "eke_dx_wire/topology/physical_wire_identity_reconstructor.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
+#include "eke_dx_wire/topology/terminal_recognizer.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
 #include "eke_dx_wire/topology/endpoint_semantic_reconstructor.hpp"
 #include "eke_dx_wire/topology/connector_terminal_model.hpp"
+#include "eke_dx_wire/topology/conductor_boundary_resolver.hpp"
 #include "eke_dx_wire/topology/component_symbol_recognizer.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
 #include "eke_dx_wire/topology/semantic_observation_resolver.hpp"
@@ -33,9 +37,12 @@
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
+#include "eke_dx_wire/topology/wire_semantic_resolver.hpp"
+#include "eke_dx_wire/topology/symbol_family_recognizer.hpp"
 #include "eke_dx_wire/topology/electrical_net_resolver.hpp"
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <unordered_set>
 #include <utility>
@@ -51,7 +58,11 @@ ExtractionPipeline::ExtractionPipeline(ExtractionConfig config)
       component_identity_registry_(
           config_.component_identity_registry
               ? config_.component_identity_registry
-              : std::make_shared<NullComponentIdentityRegistry>()) {}
+              : std::make_shared<NullComponentIdentityRegistry>()),
+      symbol_recognition_provider_(
+          config_.symbol_recognition_provider
+              ? config_.symbol_recognition_provider
+              : std::make_shared<NullSymbolRecognitionProvider>()) {}
 
 WireModel ExtractionPipeline::run(
     const std::string& image_path,
@@ -169,6 +180,17 @@ WireModel ExtractionPipeline::run(
     model.component_symbol_recognitions =
         symbol_recognizer.recognize(model.component_candidates);
 
+    // AP-WIRE-023: extract internal symbol geometry from each real
+    // (non-DiagramFurniture) component's already-detected region. This
+    // stage observes geometry only; it does not assign symbol identity,
+    // create endpoints, or touch topology/wires/electrical nets.
+    SymbolGeometryExtractor symbol_geometry_extractor(config_.symbol_geometry);
+    const SymbolGeometryExtractionArtifacts symbol_geometry_artifacts =
+        symbol_geometry_extractor.extract(
+            normalized, model.component_candidates, source_id, 0);
+    model.component_symbol_geometries = symbol_geometry_artifacts.geometries;
+    model.symbol_primitives = symbol_geometry_artifacts.primitives;
+
     model.text_regions = text_regions.regions;
 
     // AP-WIRE-008: recognition is an explicit provider boundary. The
@@ -239,6 +261,32 @@ WireModel ExtractionPipeline::run(
             rejected_geometry);
     model.terminal_candidates = terminal_artifacts.candidates;
 
+    // AP-WIRE-024: recognize additional component-terminal associations
+    // from AP-WIRE-023 internal geometry and conservative conductor-to-
+    // component boundary alignment. Existing endpoint objects are the only
+    // objects that may be associated; this stage never creates endpoints or
+    // mutates topology, wires, or electrical nets.
+    TerminalRecognizer terminal_recognizer(config_.terminal_recognition);
+    const TerminalRecognitionArtifacts recognition_artifacts =
+        terminal_recognizer.recognize(
+            model.component_candidates,
+            model.component_symbol_geometries,
+            model.symbol_primitives,
+            model.endpoint_candidates,
+            model.nodes,
+            model.edges,
+            model.terminal_candidates);
+    model.terminal_candidates.insert(
+        model.terminal_candidates.end(),
+        recognition_artifacts.candidates.begin(),
+        recognition_artifacts.candidates.end());
+    std::sort(
+        model.terminal_candidates.begin(),
+        model.terminal_candidates.end(),
+        [](const TerminalCandidate& a, const TerminalCandidate& b) {
+            return a.id < b.id;
+        });
+
     // AP-SEMANTIC-001: convert independently located terminal candidates
     // into semantic evidence, then resolve endpoint identity before any
     // downstream stage consumes endpoint kinds.
@@ -299,6 +347,23 @@ WireModel ExtractionPipeline::run(
     model.connector_candidates = connector_artifacts.connectors;
     model.connector_terminals = connector_artifacts.terminals;
 
+    // AP-WIRE-030: resolve each endpoint's Conductor Boundary and
+    // engineering-terminal association from already-produced evidence
+    // (TerminalCandidate, EndpointSemanticReconstruction, ConnectorTerminal)
+    // only. This stage creates no topology, no components, no terminals,
+    // and no Wires; component association and terminal identity remain
+    // independently tracked per AP-WIRE-030 Sec 15.
+    ConductorBoundaryResolver conductor_boundary_resolver;
+    const ConductorBoundaryResolutionArtifacts conductor_boundary_artifacts =
+        conductor_boundary_resolver.resolve(
+            model.endpoint_candidates,
+            model.terminal_candidates,
+            model.endpoint_semantic_reconstructions,
+            model.connector_terminals);
+    model.conductor_boundary_evidence = conductor_boundary_artifacts.evidence;
+    model.conductor_boundary_resolutions =
+        conductor_boundary_artifacts.resolutions;
+
     // AP-WIRE-016: preserve component/connector labels as explicit
     // identity-bearing evidence. This is evidence only; canonical component
     // identity remains unresolved until a registry-backed resolver exists.
@@ -323,13 +388,43 @@ WireModel ExtractionPipeline::run(
             model.component_identity_resolutions,
             *component_identity_registry_);
 
-    WireReconstructor wire_reconstructor;
-    const WireReconstructionArtifacts wire_artifacts =
-        wire_reconstructor.reconstruct(
+    // AP-WIRE-026A: symbol-family recognition consumes AP-WIRE-023 symbol
+    // geometry plus already-resolved component identity text (never a
+    // label alone) and optional provider observations. It creates no
+    // endpoints/terminals/connectors and never touches topology, wires,
+    // or electrical nets.
+    const std::vector<SymbolRecognitionObservation> symbol_observations =
+        symbol_recognition_provider_->recognize(
+            model.component_candidates,
+            model.component_symbol_geometries,
+            model.symbol_primitives,
+            source_id,
+            0);
+    SymbolFamilyRecognizer symbol_family_recognizer;
+    const SymbolFamilyRecognitionArtifacts symbol_family_artifacts =
+        symbol_family_recognizer.recognize(
+            model.component_candidates,
+            model.component_symbol_geometries,
+            model.component_identity_canonicalizations,
+            symbol_observations);
+    model.symbol_family_evidence = symbol_family_artifacts.evidence;
+    model.symbol_family_resolutions = symbol_family_artifacts.resolutions;
+
+    // AP-WIRE-031: the authoritative physical-Wire-identity reconstruction
+    // stage. Internally runs the conservative AP-WIRE-013 WireReconstructor
+    // pass, then extends physical identity through Splice/Junction/Crossing
+    // nodes only where explicit conductor-segment-sharing evidence
+    // justifies it, consuming AP-WIRE-030's Conductor Boundary resolutions
+    // to gate which endpoints are eligible. No topology mutation, no
+    // ElectricalNet consultation.
+    PhysicalWireIdentityReconstructor physical_wire_identity_reconstructor;
+    const PhysicalWireIdentityArtifacts wire_artifacts =
+        physical_wire_identity_reconstructor.reconstruct(
             graph.nodes,
             graph.edges,
             model.endpoint_candidates,
             normalized_segments,
+            model.conductor_boundary_resolutions,
             source_id,
             0);
     model.wires = wire_artifacts.wires;
@@ -371,9 +466,38 @@ WireModel ExtractionPipeline::run(
         emitted_wire_ids.insert(wire.id);
     }
 
-    for (const auto& wire : net_artifacts.wires) {
+    // AP-WIRE-031: DistributionDecomposer (invoked from within
+    // ElectricalNetResolver, unmodified by this AP) is a second,
+    // pre-existing physical-Wire producer - anchor-based rather than
+    // conductor-segment-sharing-based. Its wires are annotated with the
+    // same identity_status/identity_evidence_ids contract here at the
+    // pipeline merge boundary, without touching ElectricalNetResolver's
+    // or DistributionDecomposer's own code: a wire it produces already
+    // required a uniquely-identified Ground/ExternalConnection anchor and
+    // a tree-shaped electrically-connective path (see
+    // DistributionDecomposer::decompose), which is itself explicit
+    // evidence, not a guess - so it is annotated Resolved, with
+    // provenance to both endpoints' AP-WIRE-030 boundary resolutions.
+    std::map<std::string, const ConductorBoundaryResolution*>
+        boundary_resolution_by_endpoint;
+    for (const auto& resolution : model.conductor_boundary_resolutions) {
+        boundary_resolution_by_endpoint.emplace(
+            resolution.endpoint_id, &resolution);
+    }
+    for (auto wire : net_artifacts.wires) {
         if (emitted_wire_ids.insert(wire.id).second) {
-            model.wires.push_back(wire);
+            wire.identity_status = WireIdentityStatus::Resolved;
+            const auto start_it =
+                boundary_resolution_by_endpoint.find(wire.start_endpoint);
+            if (start_it != boundary_resolution_by_endpoint.end()) {
+                wire.identity_evidence_ids.push_back(start_it->second->id);
+            }
+            const auto end_it =
+                boundary_resolution_by_endpoint.find(wire.end_endpoint);
+            if (end_it != boundary_resolution_by_endpoint.end()) {
+                wire.identity_evidence_ids.push_back(end_it->second->id);
+            }
+            model.wires.push_back(std::move(wire));
         }
     }
 
@@ -383,6 +507,20 @@ WireModel ExtractionPipeline::run(
         [](const Wire& a, const Wire& b) {
             return a.id < b.id;
         });
+
+    // AP-WIRE-025: attach defensible wire semantics from already-existing
+    // evidence. This stage is a pure read-only projection - it must run
+    // after wires/electrical nets are final and must never feed back into
+    // any of the structures above.
+    WireSemanticResolver wire_semantic_resolver;
+    const WireSemanticResolutionArtifacts wire_semantic_artifacts =
+        wire_semantic_resolver.resolve(
+            model.wires,
+            model.endpoint_candidates,
+            model.endpoint_semantic_reconstructions,
+            model.connector_terminals,
+            model.electrical_nets);
+    model.wire_semantics = wire_semantic_artifacts.resolutions;
 
     WireModelValidator validator;
     model.wire_validation = validator.validate(model);

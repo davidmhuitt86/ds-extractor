@@ -13,6 +13,26 @@ using namespace eke::dx::wire;
 
 namespace {
 
+// setenv/unsetenv are POSIX-only; MSVC does not provide them. The
+// production code under test already treats an empty environment string
+// the same as an absent one (see anthropic_vision_config_from_environment),
+// so _putenv_s(name, "") is an equivalent stand-in for unsetenv on Windows.
+void test_setenv(const char* name, const char* value) {
+#ifdef _WIN32
+    _putenv_s(name, value);
+#else
+    setenv(name, value, 1);
+#endif
+}
+
+void test_unsetenv(const char* name) {
+#ifdef _WIN32
+    _putenv_s(name, "");
+#else
+    unsetenv(name);
+#endif
+}
+
 class FakeHttpTransport final : public HttpTransport {
 public:
     mutable std::deque<HttpResponse> queued_responses;
@@ -135,15 +155,15 @@ int main() {
 
     // No configured key -> factory returns nullopt.
     {
-        unsetenv("EKE_DX_WIRE_ANTHROPIC_API_KEY");
-        unsetenv("ANTHROPIC_API_KEY");
+        test_unsetenv("EKE_DX_WIRE_ANTHROPIC_API_KEY");
+        test_unsetenv("ANTHROPIC_API_KEY");
         assert(!anthropic_vision_config_from_environment().has_value());
 
-        setenv("EKE_DX_WIRE_ANTHROPIC_API_KEY", "from-env", 1);
+        test_setenv("EKE_DX_WIRE_ANTHROPIC_API_KEY", "from-env");
         const auto config = anthropic_vision_config_from_environment();
         assert(config.has_value());
         assert(config->api_key == "from-env");
-        unsetenv("EKE_DX_WIRE_ANTHROPIC_API_KEY");
+        test_unsetenv("EKE_DX_WIRE_ANTHROPIC_API_KEY");
     }
 
     return 0;

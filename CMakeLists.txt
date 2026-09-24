@@ -20,6 +20,7 @@ add_library(eke_dx_wire
     src/core/geometry.cpp
     src/core/ids.cpp
     src/core/extraction_audit.cpp
+    src/core/coverage_diagnostics.cpp
     src/core/base64.cpp
     src/core/http_transport.cpp
     src/image/image_loader.cpp
@@ -31,17 +32,21 @@ add_library(eke_dx_wire
     src/image/geometry_ownership_classifier.cpp
     src/image/shape_detector.cpp
     src/image/text_region_detector.cpp
+    src/image/symbol_geometry_extractor.cpp
     src/topology/topology_reconstructor.cpp
     src/topology/topology_semantic_resolver.cpp
     src/topology/gap_interpreter.cpp
     src/topology/endpoint_reconstructor.cpp
     src/topology/wire_reconstructor.cpp
+    src/topology/physical_wire_identity_reconstructor.cpp
     src/topology/distribution_decomposer.cpp
     src/topology/terminal_semantic_resolver.cpp
     src/topology/endpoint_semantic_reconstructor.cpp
     src/topology/terminal_semantic_evidence_builder.cpp
     src/topology/terminal_location_detector.cpp
+    src/topology/terminal_recognizer.cpp
     src/topology/connector_terminal_model.cpp
+    src/topology/conductor_boundary_resolver.cpp
     src/topology/component_symbol_recognizer.cpp
     src/topology/circuit_role_resolver.cpp
     src/topology/electrical_net_resolver.cpp
@@ -60,9 +65,16 @@ add_library(eke_dx_wire
     src/topology/recognition_observation_parser.cpp
     src/topology/anthropic_vision_text_recognition_provider.cpp
     src/topology/wire_model_validator.cpp
+    src/topology/wire_semantic_resolver.cpp
+    src/topology/symbol_recognition_provider.cpp
+    src/topology/symbol_family_recognizer.cpp
+    src/diagram/engineering_diagram_builder.cpp
+    src/export/engineering_diagram_exporter.cpp
     src/image/component_candidate_classifier.cpp
     src/image/diagram_furniture_classifier.cpp
-    src/export/svg_exporter.cpp
+    src/export/symbol_renderer.cpp
+    src/export/structured_svg_exporter.cpp
+    src/export/svg_structure_validator.cpp
     src/export/artifact_writer.cpp
     src/export/review_artifact_writer.cpp
     src/export/topology_exporter.cpp
@@ -137,6 +149,10 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-wire-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-wire-reconstructor COMMAND dx-wire-test-wire-reconstructor)
 
+    add_executable(dx-wire-test-physical-wire-identity-reconstructor tests/test_physical_wire_identity_reconstructor.cpp)
+    target_link_libraries(dx-wire-test-physical-wire-identity-reconstructor PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-physical-wire-identity-reconstructor COMMAND dx-wire-test-physical-wire-identity-reconstructor)
+
     add_executable(dx-wire-test-distribution-decomposer tests/test_distribution_decomposer.cpp)
     target_link_libraries(dx-wire-test-distribution-decomposer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-distribution-decomposer COMMAND dx-wire-test-distribution-decomposer)
@@ -153,6 +169,7 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-terminal-semantic-evidence-builder COMMAND dx-wire-test-terminal-semantic-evidence-builder)
 
     add_executable(dx-wire-test-terminal-location-detector tests/test_terminal_location_detector.cpp)
+    add_executable(dx-wire-test-terminal-recognizer tests/test_terminal_recognizer.cpp)
     add_executable(dx-wire-test-connector-terminal-model tests/test_connector_terminal_model.cpp)
     add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)
     add_executable(dx-wire-test-electrical-net-resolver tests/test_electrical_net_resolver.cpp)
@@ -211,9 +228,15 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-base64 PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-base64 COMMAND dx-wire-test-base64)
     target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
+    target_link_libraries(dx-wire-test-terminal-recognizer PRIVATE eke_dx_wire)
     target_link_libraries(dx-wire-test-connector-terminal-model PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
+    add_test(NAME dx-wire-test-terminal-recognizer COMMAND dx-wire-test-terminal-recognizer)
     add_test(NAME dx-wire-test-connector-terminal-model COMMAND dx-wire-test-connector-terminal-model)
+
+    add_executable(dx-wire-test-conductor-boundary-resolver tests/test_conductor_boundary_resolver.cpp)
+    target_link_libraries(dx-wire-test-conductor-boundary-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-conductor-boundary-resolver COMMAND dx-wire-test-conductor-boundary-resolver)
 
     add_executable(dx-wire-test-component-symbol-recognizer tests/test_component_symbol_recognizer.cpp)
     target_link_libraries(dx-wire-test-component-symbol-recognizer PRIVATE eke_dx_wire)
@@ -250,6 +273,34 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-recognition-input-exporter COMMAND dx-wire-test-recognition-input-exporter)
     target_link_libraries(dx-wire-test-extraction-audit PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-extraction-audit COMMAND dx-wire-test-extraction-audit)
+
+    add_executable(dx-wire-test-coverage-diagnostics tests/test_coverage_diagnostics.cpp)
+    target_link_libraries(dx-wire-test-coverage-diagnostics PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-coverage-diagnostics COMMAND dx-wire-test-coverage-diagnostics)
+
+    add_executable(dx-wire-test-symbol-geometry-extractor tests/test_symbol_geometry_extractor.cpp)
+    target_link_libraries(dx-wire-test-symbol-geometry-extractor PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-symbol-geometry-extractor COMMAND dx-wire-test-symbol-geometry-extractor)
+
+    add_executable(dx-wire-test-wire-semantic-resolver tests/test_wire_semantic_resolver.cpp)
+    target_link_libraries(dx-wire-test-wire-semantic-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-wire-semantic-resolver COMMAND dx-wire-test-wire-semantic-resolver)
+
+    add_executable(dx-wire-test-engineering-diagram-builder tests/test_engineering_diagram_builder.cpp)
+    target_link_libraries(dx-wire-test-engineering-diagram-builder PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-engineering-diagram-builder COMMAND dx-wire-test-engineering-diagram-builder)
+
+    add_executable(dx-wire-test-symbol-family-recognizer tests/test_symbol_family_recognizer.cpp)
+    target_link_libraries(dx-wire-test-symbol-family-recognizer PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-symbol-family-recognizer COMMAND dx-wire-test-symbol-family-recognizer)
+
+    add_executable(dx-wire-test-structured-svg-exporter tests/test_structured_svg_exporter.cpp)
+    target_link_libraries(dx-wire-test-structured-svg-exporter PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-structured-svg-exporter COMMAND dx-wire-test-structured-svg-exporter)
+
+    add_executable(dx-wire-test-svg-structure-validator tests/test_svg_structure_validator.cpp)
+    target_link_libraries(dx-wire-test-svg-structure-validator PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-svg-structure-validator COMMAND dx-wire-test-svg-structure-validator)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

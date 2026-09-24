@@ -1,4 +1,5 @@
 #include "eke_dx_wire/core/extraction_audit.hpp"
+#include "eke_dx_wire/topology/conductor_boundary_resolver.hpp"
 
 #include <map>
 
@@ -143,6 +144,121 @@ ExtractionAudit build_extraction_audit(
     }
 
     audit.gaps_bridged = gaps_bridged;
+
+    for (const auto& geometry : model.component_symbol_geometries) {
+        if (geometry.primitive_ids.empty()) {
+            ++audit.components_without_symbol_geometry;
+        } else {
+            ++audit.components_with_symbol_geometry;
+        }
+    }
+
+    audit.symbol_primitives = model.symbol_primitives.size();
+    for (const auto& primitive : model.symbol_primitives) {
+        switch (primitive.kind) {
+        case SymbolPrimitiveKind::Line:
+            ++audit.symbol_primitive_lines;
+            break;
+        case SymbolPrimitiveKind::Circle:
+            ++audit.symbol_primitive_circles;
+            break;
+        case SymbolPrimitiveKind::Rectangle:
+            ++audit.symbol_primitive_rectangles;
+            break;
+        case SymbolPrimitiveKind::TerminalLead:
+            ++audit.symbol_primitive_terminal_leads;
+            break;
+        case SymbolPrimitiveKind::Unknown:
+            ++audit.symbol_primitive_unknown;
+            break;
+        }
+    }
+
+    WireSemanticCoverage& semantics = audit.wire_semantics;
+    semantics.total = model.wire_semantics.size();
+    for (const auto& resolution : model.wire_semantics) {
+        switch (resolution.wire_color_status) {
+        case WireSemanticStatus::Resolved: ++semantics.wire_color_resolved; break;
+        case WireSemanticStatus::Conflicted: ++semantics.wire_color_conflicted; break;
+        case WireSemanticStatus::Unresolved: ++semantics.wire_color_unresolved; break;
+        }
+
+        switch (resolution.function_status) {
+        case WireSemanticStatus::Resolved: ++semantics.function_resolved; break;
+        case WireSemanticStatus::Conflicted: ++semantics.function_conflicted; break;
+        case WireSemanticStatus::Unresolved: ++semantics.function_unresolved; break;
+        }
+
+        const bool component_resolved =
+            resolution.start_component_status == WireSemanticStatus::Resolved ||
+            resolution.end_component_status == WireSemanticStatus::Resolved;
+        const bool component_conflicted =
+            resolution.start_component_status == WireSemanticStatus::Conflicted ||
+            resolution.end_component_status == WireSemanticStatus::Conflicted;
+        if (component_resolved) {
+            ++semantics.component_association_resolved;
+        } else if (component_conflicted) {
+            ++semantics.component_association_conflicted;
+        } else {
+            ++semantics.component_association_unresolved;
+        }
+
+        if (resolution.start_connector_status == WireSemanticStatus::Resolved ||
+            resolution.end_connector_status == WireSemanticStatus::Resolved) {
+            ++semantics.connector_association_resolved;
+        }
+
+        switch (resolution.electrical_net_status) {
+        case WireSemanticStatus::Resolved: ++semantics.electrical_net_resolved; break;
+        case WireSemanticStatus::Conflicted: ++semantics.electrical_net_conflicted; break;
+        case WireSemanticStatus::Unresolved: ++semantics.electrical_net_unresolved; break;
+        }
+
+        const bool any_resolved =
+            resolution.wire_color_status == WireSemanticStatus::Resolved ||
+            resolution.function_status == WireSemanticStatus::Resolved ||
+            component_resolved ||
+            resolution.start_connector_status == WireSemanticStatus::Resolved ||
+            resolution.end_connector_status == WireSemanticStatus::Resolved ||
+            resolution.electrical_net_status == WireSemanticStatus::Resolved;
+        if (!any_resolved) {
+            ++semantics.fully_unresolved;
+        }
+    }
+
+    SymbolFamilyCoverage& families = audit.symbol_families;
+    families.total = model.symbol_family_resolutions.size();
+    for (const auto& resolution : model.symbol_family_resolutions) {
+        switch (resolution.status) {
+        case SymbolFamilyResolutionStatus::Resolved: {
+            ++families.resolved;
+            switch (resolution.family) {
+            case SymbolFamily::Ground: ++families.ground_resolved; break;
+            case SymbolFamily::Lamp: ++families.lamp_resolved; break;
+            case SymbolFamily::Switch: ++families.switch_resolved; break;
+            case SymbolFamily::Relay: ++families.relay_resolved; break;
+            case SymbolFamily::Motor: ++families.motor_resolved; break;
+            case SymbolFamily::Diode: ++families.diode_resolved; break;
+            case SymbolFamily::Alternator: ++families.alternator_resolved; break;
+            case SymbolFamily::Battery: ++families.battery_resolved; break;
+            case SymbolFamily::Solenoid: ++families.solenoid_resolved; break;
+            case SymbolFamily::Coil: ++families.coil_resolved; break;
+            case SymbolFamily::Unknown: break;
+            }
+            break;
+        }
+        case SymbolFamilyResolutionStatus::Unresolved:
+            ++families.unresolved;
+            break;
+        case SymbolFamilyResolutionStatus::Conflicted:
+            ++families.conflicted;
+            break;
+        }
+    }
+
+    audit.conductor_boundaries =
+        build_conductor_boundary_coverage(model.conductor_boundary_resolutions);
+
     return audit;
 }
 

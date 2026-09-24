@@ -209,6 +209,52 @@ void TopologyExporter::export_json(
             out << ",";
         out << "\n";
     }
+    auto symbol_primitive_kind_name = [](SymbolPrimitiveKind kind) {
+        switch (kind) {
+        case SymbolPrimitiveKind::Line: return "line";
+        case SymbolPrimitiveKind::Circle: return "circle";
+        case SymbolPrimitiveKind::Rectangle: return "rectangle";
+        case SymbolPrimitiveKind::TerminalLead: return "terminal_lead";
+        case SymbolPrimitiveKind::Unknown: return "unknown";
+        }
+        return "unknown";
+    };
+
+    out << "  ],\n  \"symbol_primitives\": [\n";
+    for (std::size_t i = 0; i < model.symbol_primitives.size(); ++i) {
+        const auto& primitive = model.symbol_primitives[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(primitive.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(primitive.component_id) << "\",\n"
+            << "      \"kind\": \"" << symbol_primitive_kind_name(primitive.kind) << "\",\n"
+            << "      \"x\": " << primitive.bounds.x << ",\n"
+            << "      \"y\": " << primitive.bounds.y << ",\n"
+            << "      \"width\": " << primitive.bounds.width << ",\n"
+            << "      \"height\": " << primitive.bounds.height << ",\n"
+            << "      \"area\": " << primitive.area << ",\n"
+            << "      \"confidence\": \"" << confidence_name(primitive.confidence) << "\"\n"
+            << "    }";
+        if (i + 1 != model.symbol_primitives.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"component_symbol_geometries\": [\n";
+    for (std::size_t i = 0; i < model.component_symbol_geometries.size(); ++i) {
+        const auto& geometry = model.component_symbol_geometries[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(geometry.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(geometry.component_id) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(geometry.confidence) << "\",\n"
+            << "      \"primitive_ids\": [";
+        for (std::size_t j = 0; j < geometry.primitive_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(geometry.primitive_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.component_symbol_geometries.size()) out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"connector_candidates\": [\n";
     for (std::size_t i = 0; i < model.connector_candidates.size(); ++i) {
         const auto& connector = model.connector_candidates[i];
@@ -361,6 +407,15 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    auto wire_identity_status_name = [](WireIdentityStatus status) {
+        switch (status) {
+        case WireIdentityStatus::Resolved: return "resolved";
+        case WireIdentityStatus::Unresolved: return "unresolved";
+        case WireIdentityStatus::Conflicted: return "conflicted";
+        }
+        return "unresolved";
+    };
+
     out << "  ],\n  \"wires\": [\n";
     for (std::size_t i = 0; i < model.wires.size(); ++i) {
         const auto& wire = model.wires[i];
@@ -370,7 +425,13 @@ void TopologyExporter::export_json(
             << "      \"end_endpoint\": \"" << json_escape(wire.end_endpoint) << "\",\n"
             << "      \"confidence\": \"" << confidence_name(wire.confidence) << "\",\n"
             << "      \"heavy_cable\": " << (wire.heavy_cable ? "true" : "false") << ",\n"
-            << "      \"topology_edges\": [";
+            << "      \"identity_status\": \"" << wire_identity_status_name(wire.identity_status) << "\",\n"
+            << "      \"identity_evidence_ids\": [";
+        for (std::size_t j = 0; j < wire.identity_evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(wire.identity_evidence_ids[j]) << "\"";
+        }
+        out << "],\n      \"topology_edges\": [";
         for (std::size_t j = 0; j < wire.topology_edges.size(); ++j) {
             if (j) out << ", ";
             out << "\"" << json_escape(wire.topology_edges[j]) << "\"";
@@ -382,6 +443,203 @@ void TopologyExporter::export_json(
         }
         out << "]\n    }";
         if (i + 1 != model.wires.size()) out << ",";
+        out << "\n";
+    }
+
+    auto wire_semantic_status_name = [](WireSemanticStatus status) {
+        switch (status) {
+        case WireSemanticStatus::Resolved: return "resolved";
+        case WireSemanticStatus::Unresolved: return "unresolved";
+        case WireSemanticStatus::Conflicted: return "conflicted";
+        }
+        return "unresolved";
+    };
+
+    out << "  ],\n  \"wire_semantics\": [\n";
+    for (std::size_t i = 0; i < model.wire_semantics.size(); ++i) {
+        const auto& s = model.wire_semantics[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(s.id) << "\",\n"
+            << "      \"wire_id\": \"" << json_escape(s.wire_id) << "\",\n"
+            << "      \"wire_color\": \"" << json_escape(s.wire_color) << "\",\n"
+            << "      \"wire_color_status\": \"" << wire_semantic_status_name(s.wire_color_status) << "\",\n"
+            << "      \"wire_color_confidence\": \"" << confidence_name(s.wire_color_confidence) << "\",\n"
+            << "      \"function_label\": \"" << json_escape(s.function_label) << "\",\n"
+            << "      \"function_status\": \"" << wire_semantic_status_name(s.function_status) << "\",\n"
+            << "      \"function_confidence\": \"" << confidence_name(s.function_confidence) << "\",\n"
+            << "      \"start_component_id\": \"" << json_escape(s.start_component_id) << "\",\n"
+            << "      \"start_terminal_name\": \"" << json_escape(s.start_terminal_name) << "\",\n"
+            << "      \"start_component_status\": \"" << wire_semantic_status_name(s.start_component_status) << "\",\n"
+            << "      \"end_component_id\": \"" << json_escape(s.end_component_id) << "\",\n"
+            << "      \"end_terminal_name\": \"" << json_escape(s.end_terminal_name) << "\",\n"
+            << "      \"end_component_status\": \"" << wire_semantic_status_name(s.end_component_status) << "\",\n"
+            << "      \"start_connector_id\": \"" << json_escape(s.start_connector_id) << "\",\n"
+            << "      \"start_connector_terminal_name\": \"" << json_escape(s.start_connector_terminal_name) << "\",\n"
+            << "      \"start_connector_status\": \"" << wire_semantic_status_name(s.start_connector_status) << "\",\n"
+            << "      \"end_connector_id\": \"" << json_escape(s.end_connector_id) << "\",\n"
+            << "      \"end_connector_terminal_name\": \"" << json_escape(s.end_connector_terminal_name) << "\",\n"
+            << "      \"end_connector_status\": \"" << wire_semantic_status_name(s.end_connector_status) << "\",\n"
+            << "      \"electrical_net_id\": \"" << json_escape(s.electrical_net_id) << "\",\n"
+            << "      \"electrical_net_status\": \"" << wire_semantic_status_name(s.electrical_net_status) << "\",\n"
+            << "      \"electrical_net_confidence\": \"" << confidence_name(s.electrical_net_confidence) << "\"\n"
+            << "    }";
+        if (i + 1 != model.wire_semantics.size()) out << ",";
+        out << "\n";
+    }
+
+    auto symbol_family_name = [](SymbolFamily family) {
+        switch (family) {
+        case SymbolFamily::Ground: return "ground";
+        case SymbolFamily::Lamp: return "lamp";
+        case SymbolFamily::Switch: return "switch";
+        case SymbolFamily::Relay: return "relay";
+        case SymbolFamily::Motor: return "motor";
+        case SymbolFamily::Diode: return "diode";
+        case SymbolFamily::Alternator: return "alternator";
+        case SymbolFamily::Battery: return "battery";
+        case SymbolFamily::Solenoid: return "solenoid";
+        case SymbolFamily::Coil: return "coil";
+        case SymbolFamily::Unknown: return "unknown";
+        }
+        return "unknown";
+    };
+    auto symbol_family_evidence_kind_name = [](SymbolFamilyEvidenceKind kind) {
+        switch (kind) {
+        case SymbolFamilyEvidenceKind::PurposeBuiltGeometricClassification:
+            return "purpose_built_geometric_classification";
+        case SymbolFamilyEvidenceKind::LabelKeywordWithCompatibleGeometry:
+            return "label_keyword_with_compatible_geometry";
+        case SymbolFamilyEvidenceKind::ProviderObservation:
+            return "provider_observation";
+        }
+        return "provider_observation";
+    };
+    auto symbol_family_status_name = [](SymbolFamilyResolutionStatus status) {
+        switch (status) {
+        case SymbolFamilyResolutionStatus::Resolved: return "resolved";
+        case SymbolFamilyResolutionStatus::Unresolved: return "unresolved";
+        case SymbolFamilyResolutionStatus::Conflicted: return "conflicted";
+        }
+        return "unresolved";
+    };
+
+    out << "  ],\n  \"symbol_family_evidence\": [\n";
+    for (std::size_t i = 0; i < model.symbol_family_evidence.size(); ++i) {
+        const auto& e = model.symbol_family_evidence[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(e.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(e.component_id) << "\",\n"
+            << "      \"family\": \"" << symbol_family_name(e.family) << "\",\n"
+            << "      \"kind\": \"" << symbol_family_evidence_kind_name(e.kind) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(e.confidence) << "\",\n"
+            << "      \"source\": \"" << json_escape(e.source) << "\",\n"
+            << "      \"detail\": \"" << json_escape(e.detail) << "\"\n"
+            << "    }";
+        if (i + 1 != model.symbol_family_evidence.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"symbol_family_resolutions\": [\n";
+    for (std::size_t i = 0; i < model.symbol_family_resolutions.size(); ++i) {
+        const auto& r = model.symbol_family_resolutions[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(r.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(r.component_id) << "\",\n"
+            << "      \"family\": \"" << symbol_family_name(r.family) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(r.confidence) << "\",\n"
+            << "      \"status\": \"" << symbol_family_status_name(r.status) << "\",\n"
+            << "      \"source_symbol_geometry_id\": \"" << json_escape(r.source_symbol_geometry_id) << "\",\n"
+            << "      \"evidence_ids\": [";
+        for (std::size_t j = 0; j < r.evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(r.evidence_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.symbol_family_resolutions.size()) out << ",";
+        out << "\n";
+    }
+
+    auto conductor_boundary_status_name = [](ConductorBoundaryStatus status) {
+        switch (status) {
+        case ConductorBoundaryStatus::Resolved: return "resolved";
+        case ConductorBoundaryStatus::Unresolved: return "unresolved";
+        case ConductorBoundaryStatus::Conflicted: return "conflicted";
+        }
+        return "unresolved";
+    };
+    auto conductor_boundary_evidence_kind_name =
+        [](ConductorBoundaryEvidenceKind kind) {
+        switch (kind) {
+        case ConductorBoundaryEvidenceKind::TerminalCandidateEvidence:
+            return "terminal_candidate";
+        case ConductorBoundaryEvidenceKind::EndpointSemanticReconstructionEvidence:
+            return "endpoint_semantic_reconstruction";
+        case ConductorBoundaryEvidenceKind::ConnectorTerminalEvidence:
+            return "connector_terminal";
+        case ConductorBoundaryEvidenceKind::GroundEndpointEvidence:
+            return "ground_endpoint";
+        case ConductorBoundaryEvidenceKind::ExternalConnectionEvidence:
+            return "external_connection";
+        }
+        return "terminal_candidate";
+    };
+
+    out << "  ],\n  \"conductor_boundary_evidence\": [\n";
+    for (std::size_t i = 0; i < model.conductor_boundary_evidence.size(); ++i) {
+        const auto& e = model.conductor_boundary_evidence[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(e.id) << "\",\n"
+            << "      \"endpoint_id\": \"" << json_escape(e.endpoint_id) << "\",\n"
+            << "      \"kind\": \"" << conductor_boundary_evidence_kind_name(e.kind) << "\",\n"
+            << "      \"source_object_id\": \"" << json_escape(e.source_object_id) << "\",\n"
+            << "      \"suggested_boundary\": \"" << endpoint_kind_name(e.suggested_boundary) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(e.component_id) << "\",\n"
+            << "      \"connector_id\": \"" << json_escape(e.connector_id) << "\",\n"
+            << "      \"terminal_identifier\": \"" << json_escape(e.terminal_identifier) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(e.confidence) << "\"\n"
+            << "    }";
+        if (i + 1 != model.conductor_boundary_evidence.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"conductor_boundary_resolutions\": [\n";
+    for (std::size_t i = 0; i < model.conductor_boundary_resolutions.size(); ++i) {
+        const auto& r = model.conductor_boundary_resolutions[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(r.id) << "\",\n"
+            << "      \"endpoint_id\": \"" << json_escape(r.endpoint_id) << "\",\n"
+            << "      \"boundary_kind\": \"" << endpoint_kind_name(r.boundary_kind) << "\",\n"
+            << "      \"boundary_status\": \"" << conductor_boundary_status_name(r.boundary_status) << "\",\n"
+            << "      \"boundary_confidence\": \"" << confidence_name(r.boundary_confidence) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(r.component_id) << "\",\n"
+            << "      \"component_status\": \"" << conductor_boundary_status_name(r.component_status) << "\",\n"
+            << "      \"terminal_identifier\": \"" << json_escape(r.terminal_identifier) << "\",\n"
+            << "      \"terminal_status\": \"" << conductor_boundary_status_name(r.terminal_status) << "\",\n"
+            << "      \"connector_id\": \"" << json_escape(r.connector_id) << "\",\n"
+            << "      \"connector_status\": \"" << conductor_boundary_status_name(r.connector_status) << "\",\n"
+            << "      \"connector_terminal_identifier\": \"" << json_escape(r.connector_terminal_identifier) << "\",\n"
+            << "      \"connector_terminal_status\": \"" << conductor_boundary_status_name(r.connector_terminal_status) << "\",\n"
+            << "      \"ground_status\": \"" << conductor_boundary_status_name(r.ground_status) << "\",\n"
+            << "      \"external_status\": \"" << conductor_boundary_status_name(r.external_status) << "\",\n"
+            << "      \"evidence_ids\": [";
+        for (std::size_t j = 0; j < r.evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(r.evidence_ids[j]) << "\"";
+        }
+        out << "],\n"
+            << "      \"conflicting_component_ids\": [";
+        for (std::size_t j = 0; j < r.conflicting_component_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(r.conflicting_component_ids[j]) << "\"";
+        }
+        out << "],\n"
+            << "      \"conflicting_terminal_identifiers\": [";
+        for (std::size_t j = 0; j < r.conflicting_terminal_identifiers.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(r.conflicting_terminal_identifiers[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.conductor_boundary_resolutions.size()) out << ",";
         out << "\n";
     }
 

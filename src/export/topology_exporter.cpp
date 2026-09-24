@@ -544,6 +544,90 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    auto conductor_boundary_status_name = [](ConductorBoundaryStatus status) {
+        switch (status) {
+        case ConductorBoundaryStatus::Resolved: return "resolved";
+        case ConductorBoundaryStatus::Unresolved: return "unresolved";
+        case ConductorBoundaryStatus::Conflicted: return "conflicted";
+        }
+        return "unresolved";
+    };
+    auto conductor_boundary_evidence_kind_name =
+        [](ConductorBoundaryEvidenceKind kind) {
+        switch (kind) {
+        case ConductorBoundaryEvidenceKind::TerminalCandidateEvidence:
+            return "terminal_candidate";
+        case ConductorBoundaryEvidenceKind::EndpointSemanticReconstructionEvidence:
+            return "endpoint_semantic_reconstruction";
+        case ConductorBoundaryEvidenceKind::ConnectorTerminalEvidence:
+            return "connector_terminal";
+        case ConductorBoundaryEvidenceKind::GroundEndpointEvidence:
+            return "ground_endpoint";
+        case ConductorBoundaryEvidenceKind::ExternalConnectionEvidence:
+            return "external_connection";
+        }
+        return "terminal_candidate";
+    };
+
+    out << "  ],\n  \"conductor_boundary_evidence\": [\n";
+    for (std::size_t i = 0; i < model.conductor_boundary_evidence.size(); ++i) {
+        const auto& e = model.conductor_boundary_evidence[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(e.id) << "\",\n"
+            << "      \"endpoint_id\": \"" << json_escape(e.endpoint_id) << "\",\n"
+            << "      \"kind\": \"" << conductor_boundary_evidence_kind_name(e.kind) << "\",\n"
+            << "      \"source_object_id\": \"" << json_escape(e.source_object_id) << "\",\n"
+            << "      \"suggested_boundary\": \"" << endpoint_kind_name(e.suggested_boundary) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(e.component_id) << "\",\n"
+            << "      \"connector_id\": \"" << json_escape(e.connector_id) << "\",\n"
+            << "      \"terminal_identifier\": \"" << json_escape(e.terminal_identifier) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(e.confidence) << "\"\n"
+            << "    }";
+        if (i + 1 != model.conductor_boundary_evidence.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"conductor_boundary_resolutions\": [\n";
+    for (std::size_t i = 0; i < model.conductor_boundary_resolutions.size(); ++i) {
+        const auto& r = model.conductor_boundary_resolutions[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(r.id) << "\",\n"
+            << "      \"endpoint_id\": \"" << json_escape(r.endpoint_id) << "\",\n"
+            << "      \"boundary_kind\": \"" << endpoint_kind_name(r.boundary_kind) << "\",\n"
+            << "      \"boundary_status\": \"" << conductor_boundary_status_name(r.boundary_status) << "\",\n"
+            << "      \"boundary_confidence\": \"" << confidence_name(r.boundary_confidence) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(r.component_id) << "\",\n"
+            << "      \"component_status\": \"" << conductor_boundary_status_name(r.component_status) << "\",\n"
+            << "      \"terminal_identifier\": \"" << json_escape(r.terminal_identifier) << "\",\n"
+            << "      \"terminal_status\": \"" << conductor_boundary_status_name(r.terminal_status) << "\",\n"
+            << "      \"connector_id\": \"" << json_escape(r.connector_id) << "\",\n"
+            << "      \"connector_status\": \"" << conductor_boundary_status_name(r.connector_status) << "\",\n"
+            << "      \"connector_terminal_identifier\": \"" << json_escape(r.connector_terminal_identifier) << "\",\n"
+            << "      \"connector_terminal_status\": \"" << conductor_boundary_status_name(r.connector_terminal_status) << "\",\n"
+            << "      \"ground_status\": \"" << conductor_boundary_status_name(r.ground_status) << "\",\n"
+            << "      \"external_status\": \"" << conductor_boundary_status_name(r.external_status) << "\",\n"
+            << "      \"evidence_ids\": [";
+        for (std::size_t j = 0; j < r.evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(r.evidence_ids[j]) << "\"";
+        }
+        out << "],\n"
+            << "      \"conflicting_component_ids\": [";
+        for (std::size_t j = 0; j < r.conflicting_component_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(r.conflicting_component_ids[j]) << "\"";
+        }
+        out << "],\n"
+            << "      \"conflicting_terminal_identifiers\": [";
+        for (std::size_t j = 0; j < r.conflicting_terminal_identifiers.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(r.conflicting_terminal_identifiers[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.conductor_boundary_resolutions.size()) out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"text_recognition_evidence\": [\n";
     for (std::size_t i = 0; i < model.text_recognition_evidence.size(); ++i) {
         const auto& evidence = model.text_recognition_evidence[i];

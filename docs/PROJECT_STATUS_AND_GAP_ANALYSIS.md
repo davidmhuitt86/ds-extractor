@@ -186,11 +186,22 @@ candidates now carry at least one `SymbolPrimitive` (40 primitives total:
 
 ## 7. Current SVG State
 
-The current SVG is still primarily a conductor reconstruction artifact rather than the final structured engineering diagram.
-
-The latest SVG contained 294 line elements, with no path, text, circle, or rectangle elements.
-
-The final SVG must instead represent editable engineering objects and preserve their relationships to the engineering model.
+As of AP-WIRE-027, `output/wires.svg` is a real structured engineering
+SVG, not a raw conductor-line dump. It is produced by
+`StructuredSvgExporter` from `EngineeringDiagram`/`WireModel` alone (no
+source image, no OpenCV) and contains `<g>`/`<line>`/`<circle>`/`<rect>`/
+`<text>` elements organized into components/connectors/wires/splices/
+crossings/terminals/grounds/labels/annotations/electrical-nets/metadata
+groups, each traceable back to its engineering object via `data-*-id`
+provenance attributes, with Resolved/Unresolved/Conflicted status
+preserved rather than collapsed. On the TRX300 baseline it renders 642
+uniquely-identified elements with 0 dangling references (see
+`docs/AP-WIRE-027_AAR.md`). Remaining gaps: no connectors render (0
+resolve upstream on this baseline), 49/59 components still render the
+generic unresolved placeholder rather than a specific symbol glyph
+(pending future symbol-family recognition coverage, not a rendering
+defect), and no auto-layout exists (source-page-pixel coordinates are
+used as-is).
 
 ## 8. PDF Support
 
@@ -296,7 +307,15 @@ The registry boundary exists, but the production OEP/EKE component registry has 
 
 ### Gap 8 — Complete Structured SVG
 
-The current SVG is primarily line geometry. The final output must contain editable wires, symbols, terminals, connectors, labels, splices, junctions, grounds, annotations, and engineering metadata.
+Closed by AP-WIRE-027 (see `docs/AP-WIRE-027_AAR.md`): the output now
+contains structured wires, symbol glyphs (where resolved) or explicit
+placeholders (where not), terminals, connectors, labels, splices,
+crossings, grounds, annotations, and engineering-metadata groups, each
+carrying provenance back to its source engineering object. What remains
+open is coverage, not structure: connectors don't render because none
+resolve upstream yet, and most components render the generic placeholder
+because symbol-family recognition coverage (Gap 1) is still narrow - both
+are upstream recognition gaps, not SVG-structure gaps.
 
 ### Gap 9 — Electrical Semantics
 
@@ -330,7 +349,7 @@ AP-WIRE-026 — Unified Engineering Diagram Reconstruction — validated (see `d
 
 AP-WIRE-026A — Component Symbol-Family Recognition — validated (see `docs/AP-WIRE-026A_AAR.md`): 48/48 Release CTest, fresh TRX300 extraction confirms every structural invariant byte-for-byte unchanged. Closes the symbol-family gap AP-WIRE-026 identified, with a deliberately narrow, evidence-honest scope: `SymbolFamilyRecognizer` (`src/topology/`) has exactly 2 rules — `ChassisGround` kind (a purpose-built ground-detector output, not generic shape resemblance) resolves `Ground` alone; a label keyword combined with a geometrically compatible `ComponentCandidateKind` resolves the other 9 taxonomy families (Lamp/Switch/Relay/Motor/Diode/Alternator/Battery/Solenoid/Coil) — label alone or geometry alone is never sufficient. On TRX300's deterministic baseline: 10/59 real components resolve (all `Ground`, matching the 10 chassis-ground shapes exactly), 0 conflicted, 49 correctly `Unresolved` (the other families need label-recognition evidence this baseline doesn't have — reported as zero, not invented). Confirmed byte-identical determinism across two runs, and re-verified the AP-WIRE-024 known conflict is still never fabricated, now through five APs (024→026A). `EngineeringDiagram.DiagramComponent` gained one reference field (`symbol_family_resolution_id`) rather than a duplicate representation. See `docs/AP-WIRE-026A_Symbol_Family_Recognition.md` for the design/evidence rules and `docs/AP-WIRE-026A_AAR.md` for the full validation and the exact AP-WIRE-027 contract.
 
-AP-WIRE-027 — Structured SVG Export.
+AP-WIRE-027 — Structured Engineering SVG Export — validated (see `docs/AP-WIRE-027_AAR.md`): 50/50 Release CTest, fresh TRX300 extraction confirms every structural invariant byte-for-byte unchanged (294/692/877/210/40/10/0/30). Establishes `StructuredSvgExporter` (`src/export/`), a renderer consuming `EngineeringDiagram` + `WireModel` exclusively (zero OpenCV/source-image dependency, verified by grep) that produces real structured SVG - `<line>`/`<circle>`/`<rect>`/`<text>`/`<g>`, never a raster `<image>` wrapper - organized into components/connectors/wires/splices/crossings/terminals/grounds/labels/annotations/electrical-nets/metadata groups, each element carrying `data-object-type`/`data-*-id`/status/confidence provenance attributes. A new `SymbolRenderer` boundary (`src/export/symbol_renderer.cpp`) supplies one presentation-only glyph per `SymbolFamily` plus explicit unresolved/conflicted placeholders, gated strictly on `SymbolFamilyResolutionStatus` - no recognition heuristic exists in the renderer, and the AP-WIRE-026A symbol-family split stays exactly 10/49/0 as instructed, not artificially inflated. Wire color similarly renders only when `WireSemanticResolution.wire_color_status == Resolved` (raw text always preserved even when unmapped to a display color); splices (filled) and crossings (unfilled) are kept visually and structurally distinct. A new `SvgStructureValidator` (regex-based, no XML/DOM library) confirmed on the real TRX300 output: 642/642 unique element ids, 0 dangling `data-*-id` references, 0 raster fallback, 0 guessed-symbol-family violations. Confirmed byte-identical SVG determinism across two runs, and re-verified the AP-WIRE-024 known conflict (4 conflicted endpoint reconstructions) is still never fabricated into a rendered component/color association, now through six APs (024→027). Retired the old raw-line-dump `SvgExporter` and its call site, writing to the same canonical `output/wires.svg` path rather than a second artifact tree. See `docs/AP-WIRE-027_Structured_SVG_Export.md` for the design and `docs/AP-WIRE-027_AAR.md` for the full validation, object-coverage table, and reference-image comparison.
 
 AP-WIRE-028 — Source-vs-Model Engineering Validation / AAR.
 

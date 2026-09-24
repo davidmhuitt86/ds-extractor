@@ -65,6 +65,7 @@ add_library(eke_dx_wire
     src/topology/wire_model_validator.cpp
     src/topology/wire_semantic_resolver.cpp
     src/diagram/engineering_diagram_builder.cpp
+    src/export/engineering_diagram_exporter.cpp
     src/image/component_candidate_classifier.cpp
     src/image/diagram_furniture_classifier.cpp
     src/export/svg_exporter.cpp

@@ -1,6 +1,8 @@
 #include "eke_dx_wire/export/artifact_writer.hpp"
 
 #include "eke_dx_wire/core/coverage_diagnostics.hpp"
+#include "eke_dx_wire/diagram/engineering_diagram_builder.hpp"
+#include "eke_dx_wire/export/engineering_diagram_exporter.hpp"
 #include "eke_dx_wire/export/recognition_input_exporter.hpp"
 #include "eke_dx_wire/export/svg_exporter.hpp"
 #include "eke_dx_wire/export/topology_exporter.hpp"
@@ -284,6 +286,7 @@ void ExtractionArtifactWriter::write(
     fs::create_directories(output_root / "artifacts" / "audit");
     fs::create_directories(output_root / "artifacts" / "recognition");
     fs::create_directories(output_root / "artifacts" / "extraction_review");
+    fs::create_directories(output_root / "artifacts" / "engineering_diagram");
     fs::create_directories(output_root / "output");
 
     RecognitionInputExporter::export_package(
@@ -313,6 +316,15 @@ void ExtractionArtifactWriter::write(
         model,
         normalized,
         output_root);
+
+    // AP-WIRE-026: the unified engineering-model boundary. Built and
+    // exported as a pure, read-only projection over the already-complete
+    // model above - it must not influence anything written before it.
+    EngineeringDiagramBuilder diagram_builder;
+    const EngineeringDiagram diagram = diagram_builder.build(model);
+    EngineeringDiagramExporter::export_json(
+        diagram,
+        (output_root / "artifacts" / "engineering_diagram" / "engineering_diagram.json").string());
 }
 
 } // namespace eke::dx::wire

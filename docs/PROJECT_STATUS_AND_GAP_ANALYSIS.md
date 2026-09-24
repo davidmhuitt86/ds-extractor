@@ -178,6 +178,12 @@ reconstructed Wire, and only 33 of 210 endpoints belong to an electrical
 net. See `docs/AP-WIRE-022A_AAR.md` for the full breakdown and likely
 responsible pipeline stages.
 
+AP-WIRE-023 added internal symbol geometry on top of this same baseline
+without changing any of the numbers above: 17 of the 59 real component
+candidates now carry at least one `SymbolPrimitive` (40 primitives total:
+22 Unknown, 9 TerminalLead, 6 Rectangle, 2 Circle, 1 Line). See
+`docs/AP-WIRE-023_AAR.md`.
+
 ## 7. Current SVG State
 
 The current SVG is still primarily a conductor reconstruction artifact rather than the final structured engineering diagram.
@@ -258,7 +264,15 @@ Required symbol families include switches, relays, motors, generators, lamps, ba
 
 ### Gap 2 — Internal Symbol Geometry Model
 
-Before reliable classification, the extractor must preserve internal component geometry: bodies, lines, contacts, coils, plates, terminals, arcs, circles, primitives, and their spatial relationships.
+AP-WIRE-023 (complete; see `docs/AP-WIRE-023_AAR.md`) established this
+layer: `ComponentSymbolGeometry`/`SymbolPrimitive` (Line, Circle,
+Rectangle, TerminalLead, Unknown) attached to real (non-furniture)
+component candidates, with deterministic IDs, provenance, and confidence.
+17 of 59 real TRX300 components produced at least one primitive; the
+other 42 (all `circular_symbol`) are, on inspection, plain rings/dots
+with no internal geometry beyond their own outline. This closes Gap 2 to
+the extent the fixture supports; Gap 1 (true symbol-family recognition)
+and Gap 3 (terminal recognition) remain open and are AP-WIRE-024's scope.
 
 ### Gap 3 — True Terminal Recognition
 
@@ -306,9 +320,9 @@ AP-WIRE-022 — Electrical Net Resolution — complete.
 
 AP-WIRE-022A — Extraction Baseline Validation & Diagnostic Expansion — complete (see `docs/AP-WIRE-022A_AAR.md`).
 
-AP-WIRE-023 — Internal Symbol Geometry Extraction & Recognition. Not started; do not begin until the AP-WIRE-022A AAR's failure clusters have been reviewed against this stage's scope.
+AP-WIRE-023 — Internal Symbol Geometry Extraction — complete (see `docs/AP-WIRE-023_AAR.md` and `docs/AP-WIRE-023_Internal_Symbol_Geometry.md`). Established `ComponentSymbolGeometry`/`SymbolPrimitive` for real components; explicitly did not attempt symbol-family recognition or terminal association.
 
-AP-WIRE-024 — Terminal Recognition & Component-Terminal Association.
+AP-WIRE-024 — Terminal Recognition & Component-Terminal Association. Not started. Should consume `docs/AP-WIRE-023_component_symbol_geometry_correlation.csv` and the `TerminalLead` primitives it identifies (9 across 6 components) rather than re-deriving geometry.
 
 AP-WIRE-025 — Wire Semantic Completion.
 

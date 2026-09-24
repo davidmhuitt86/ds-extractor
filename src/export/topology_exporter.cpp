@@ -407,6 +407,15 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    auto wire_identity_status_name = [](WireIdentityStatus status) {
+        switch (status) {
+        case WireIdentityStatus::Resolved: return "resolved";
+        case WireIdentityStatus::Unresolved: return "unresolved";
+        case WireIdentityStatus::Conflicted: return "conflicted";
+        }
+        return "unresolved";
+    };
+
     out << "  ],\n  \"wires\": [\n";
     for (std::size_t i = 0; i < model.wires.size(); ++i) {
         const auto& wire = model.wires[i];
@@ -416,7 +425,13 @@ void TopologyExporter::export_json(
             << "      \"end_endpoint\": \"" << json_escape(wire.end_endpoint) << "\",\n"
             << "      \"confidence\": \"" << confidence_name(wire.confidence) << "\",\n"
             << "      \"heavy_cable\": " << (wire.heavy_cable ? "true" : "false") << ",\n"
-            << "      \"topology_edges\": [";
+            << "      \"identity_status\": \"" << wire_identity_status_name(wire.identity_status) << "\",\n"
+            << "      \"identity_evidence_ids\": [";
+        for (std::size_t j = 0; j < wire.identity_evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(wire.identity_evidence_ids[j]) << "\"";
+        }
+        out << "],\n      \"topology_edges\": [";
         for (std::size_t j = 0; j < wire.topology_edges.size(); ++j) {
             if (j) out << ", ";
             out << "\"" << json_escape(wire.topology_edges[j]) << "\"";

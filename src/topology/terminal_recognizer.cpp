@@ -166,9 +166,7 @@ TerminalRecognitionArtifacts TerminalRecognizer::recognize(
 
     TerminalRecognitionArtifacts result;
 
-    std::map<std::string, const ComponentSymbolGeometry*> geometry_by_component;
-    for (const auto& geometry : geometries)
-        geometry_by_component[geometry.component_id] = &geometry;
+    (void)geometries;
 
     std::map<std::string, std::vector<const SymbolPrimitive*>> primitives_by_component;
     for (const auto& primitive : primitives)

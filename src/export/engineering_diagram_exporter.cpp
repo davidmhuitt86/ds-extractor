@@ -147,6 +147,8 @@ void EngineeringDiagramExporter::export_json(
         write_string_array(out, c.identity_evidence_ids, [](const std::string& s) { return s; });
         out << ",\n"
             << "      \"symbol_geometry_id\": \"" << json_escape(c.symbol_geometry_id) << "\",\n"
+            << "      \"symbol_family_resolution_id\": \""
+            << json_escape(c.symbol_family_resolution_id) << "\",\n"
             << "      \"terminal_candidate_ids\": ";
         write_string_array(out, c.terminal_candidate_ids, [](const std::string& s) { return s; });
         out << ",\n      \"endpoint_ids\": ";

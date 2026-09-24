@@ -80,6 +80,10 @@ EngineeringDiagram EngineeringDiagramBuilder::build(const WireModel& model) cons
     for (const auto& geometry : model.component_symbol_geometries) {
         symbol_geometry_by_component[geometry.component_id] = geometry.id;
     }
+    std::map<std::string, std::string> symbol_family_resolution_by_component;
+    for (const auto& resolution : model.symbol_family_resolutions) {
+        symbol_family_resolution_by_component[resolution.component_id] = resolution.id;
+    }
     std::map<std::string, const ComponentIdentityCanonicalization*> canonicalization_by_component;
     for (const auto& canonicalization : model.component_identity_canonicalizations) {
         canonicalization_by_component[canonicalization.component_id] = &canonicalization;
@@ -120,6 +124,10 @@ EngineeringDiagram EngineeringDiagramBuilder::build(const WireModel& model) cons
         if (const auto it = symbol_geometry_by_component.find(component.id);
             it != symbol_geometry_by_component.end()) {
             dc.symbol_geometry_id = it->second;
+        }
+        if (const auto it = symbol_family_resolution_by_component.find(component.id);
+            it != symbol_family_resolution_by_component.end()) {
+            dc.symbol_family_resolution_id = it->second;
         }
 
         if (const auto it = canonicalization_by_component.find(component.id);
@@ -407,6 +415,23 @@ EngineeringDiagram EngineeringDiagramBuilder::build(const WireModel& model) cons
         }
     }
 
+    for (const auto& resolution : model.symbol_family_resolutions) {
+        if (component_ids_set.count(resolution.component_id)) ++v.valid_references;
+        else {
+            ++v.invalid_references;
+            issue(v, "symbol_family_resolution", "SYMBOL-FAMILY-RESOLUTION-COMPONENT-MISSING",
+                  resolution.id, "component_id does not reference an existing ComponentCandidate");
+        }
+    }
+    for (const auto& evidence : model.symbol_family_evidence) {
+        if (component_ids_set.count(evidence.component_id)) ++v.valid_references;
+        else {
+            ++v.invalid_references;
+            issue(v, "symbol_family_evidence", "SYMBOL-FAMILY-EVIDENCE-COMPONENT-MISSING",
+                  evidence.id, "component_id does not reference an existing ComponentCandidate");
+        }
+    }
+
     // ---- validation: duplicate relationships --------------------------
     {
         std::set<std::string> seen_terminal_pairs;
@@ -436,6 +461,15 @@ EngineeringDiagram EngineeringDiagramBuilder::build(const WireModel& model) cons
                 ++v.duplicate_relationships;
                 issue(v, "wire_semantic_resolution", "DUPLICATE-WIRE-SEMANTIC-RESOLUTION",
                       resolution.id, "more than one WireSemanticResolution for the same wire_id");
+            }
+        }
+
+        std::set<std::string> seen_symbol_family_components;
+        for (const auto& resolution : model.symbol_family_resolutions) {
+            if (!seen_symbol_family_components.insert(resolution.component_id).second) {
+                ++v.duplicate_relationships;
+                issue(v, "symbol_family_resolution", "DUPLICATE-SYMBOL-FAMILY-RESOLUTION",
+                      resolution.id, "more than one SymbolFamilyResolution for the same component_id");
             }
         }
     }

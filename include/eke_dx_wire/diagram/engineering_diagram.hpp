@@ -52,6 +52,11 @@ struct DiagramComponent {
     // real component with no internal geometry) has none.
     std::string symbol_geometry_id;
 
+    // AP-WIRE-026A: reference only - see SymbolFamilyResolution for the
+    // resolved family, status, confidence, and evidence. Never inlined
+    // here, mirroring how wire semantics are referenced from DiagramWire.
+    std::string symbol_family_resolution_id;
+
     // AP-WIRE-024: TerminalCandidate ids already associated with this
     // component (regardless of resolution status downstream).
     std::vector<std::string> terminal_candidate_ids;

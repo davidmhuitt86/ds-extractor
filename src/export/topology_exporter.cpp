@@ -472,6 +472,78 @@ void TopologyExporter::export_json(
         out << "\n";
     }
 
+    auto symbol_family_name = [](SymbolFamily family) {
+        switch (family) {
+        case SymbolFamily::Ground: return "ground";
+        case SymbolFamily::Lamp: return "lamp";
+        case SymbolFamily::Switch: return "switch";
+        case SymbolFamily::Relay: return "relay";
+        case SymbolFamily::Motor: return "motor";
+        case SymbolFamily::Diode: return "diode";
+        case SymbolFamily::Alternator: return "alternator";
+        case SymbolFamily::Battery: return "battery";
+        case SymbolFamily::Solenoid: return "solenoid";
+        case SymbolFamily::Coil: return "coil";
+        case SymbolFamily::Unknown: return "unknown";
+        }
+        return "unknown";
+    };
+    auto symbol_family_evidence_kind_name = [](SymbolFamilyEvidenceKind kind) {
+        switch (kind) {
+        case SymbolFamilyEvidenceKind::PurposeBuiltGeometricClassification:
+            return "purpose_built_geometric_classification";
+        case SymbolFamilyEvidenceKind::LabelKeywordWithCompatibleGeometry:
+            return "label_keyword_with_compatible_geometry";
+        case SymbolFamilyEvidenceKind::ProviderObservation:
+            return "provider_observation";
+        }
+        return "provider_observation";
+    };
+    auto symbol_family_status_name = [](SymbolFamilyResolutionStatus status) {
+        switch (status) {
+        case SymbolFamilyResolutionStatus::Resolved: return "resolved";
+        case SymbolFamilyResolutionStatus::Unresolved: return "unresolved";
+        case SymbolFamilyResolutionStatus::Conflicted: return "conflicted";
+        }
+        return "unresolved";
+    };
+
+    out << "  ],\n  \"symbol_family_evidence\": [\n";
+    for (std::size_t i = 0; i < model.symbol_family_evidence.size(); ++i) {
+        const auto& e = model.symbol_family_evidence[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(e.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(e.component_id) << "\",\n"
+            << "      \"family\": \"" << symbol_family_name(e.family) << "\",\n"
+            << "      \"kind\": \"" << symbol_family_evidence_kind_name(e.kind) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(e.confidence) << "\",\n"
+            << "      \"source\": \"" << json_escape(e.source) << "\",\n"
+            << "      \"detail\": \"" << json_escape(e.detail) << "\"\n"
+            << "    }";
+        if (i + 1 != model.symbol_family_evidence.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"symbol_family_resolutions\": [\n";
+    for (std::size_t i = 0; i < model.symbol_family_resolutions.size(); ++i) {
+        const auto& r = model.symbol_family_resolutions[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(r.id) << "\",\n"
+            << "      \"component_id\": \"" << json_escape(r.component_id) << "\",\n"
+            << "      \"family\": \"" << symbol_family_name(r.family) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(r.confidence) << "\",\n"
+            << "      \"status\": \"" << symbol_family_status_name(r.status) << "\",\n"
+            << "      \"source_symbol_geometry_id\": \"" << json_escape(r.source_symbol_geometry_id) << "\",\n"
+            << "      \"evidence_ids\": [";
+        for (std::size_t j = 0; j < r.evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(r.evidence_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.symbol_family_resolutions.size()) out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"text_recognition_evidence\": [\n";
     for (std::size_t i = 0; i < model.text_recognition_evidence.size(); ++i) {
         const auto& evidence = model.text_recognition_evidence[i];

@@ -394,6 +394,95 @@ double circle_edge_support(
         : 0.0;
 }
 
+// Fraction of columns in [x0, x1) at row `y` where ink (within `binary`)
+// is present somewhere in a band of half-thickness `half_thickness`
+// centered on that row. Used to test whether a bounding-box side is
+// itself a short piece of a much longer straight line.
+double row_line_continuity(
+    const cv::Mat& binary, int y, int x0, int x1, int half_thickness) {
+
+    int total = 0;
+    int supported = 0;
+    for (int x = x0; x < x1; ++x) {
+        if (x < 0 || x >= binary.cols)
+            continue;
+        ++total;
+        bool found = false;
+        for (int t = -half_thickness; t <= half_thickness && !found; ++t) {
+            const int yy = y + t;
+            if (yy >= 0 && yy < binary.rows &&
+                binary.at<std::uint8_t>(yy, x) != 0)
+                found = true;
+        }
+        if (found)
+            ++supported;
+    }
+    return total > 0 ? static_cast<double>(supported) / total : 0.0;
+}
+
+// Column analogue of row_line_continuity.
+double col_line_continuity(
+    const cv::Mat& binary, int x, int y0, int y1, int half_thickness) {
+
+    int total = 0;
+    int supported = 0;
+    for (int y = y0; y < y1; ++y) {
+        if (y < 0 || y >= binary.rows)
+            continue;
+        ++total;
+        bool found = false;
+        for (int t = -half_thickness; t <= half_thickness && !found; ++t) {
+            const int xx = x + t;
+            if (xx >= 0 && xx < binary.cols &&
+                binary.at<std::uint8_t>(y, xx) != 0)
+                found = true;
+        }
+        if (found)
+            ++supported;
+    }
+    return total > 0 ? static_cast<double>(supported) / total : 0.0;
+}
+
+// AP-WIRE-FIX-002: distinguishes a small enclosed gap between two pairs
+// of crossing straight conductors (a bus crossing drop wires, or a
+// table/legend grid) from a genuinely drawn circular symbol. A crossing
+// gap's bounding box is literally defined by the crossing lines
+// themselves, so every one of its four sides continues as a thin
+// straight line for a long distance beyond the box in both directions.
+// A real drawn circle's boundary is self-contained ink that does not do
+// this on all four sides at once - even when the circle sits inside a
+// bordered table cell, at least one side is the circle's own curved
+// stroke, not a continuing straight border. Only ink already excluded
+// as the shape's own boundary-adjacent evidence is being consulted here
+// (the same normalized image the rest of this function already uses) -
+// nothing from a later pipeline stage is required.
+bool bounded_by_crossing_lines(
+    const cv::Mat& binary,
+    const cv::Rect& bounds,
+    const ShapeDetectorConfig& config) {
+
+    const int far = config.circle_crossing_probe_distance;
+    const int thickness = config.circle_crossing_probe_thickness;
+
+    const double top = (std::min)(
+        row_line_continuity(binary, bounds.y, bounds.x - far, bounds.x, thickness),
+        row_line_continuity(binary, bounds.y, bounds.x + bounds.width, bounds.x + bounds.width + far, thickness));
+    const double bottom = (std::min)(
+        row_line_continuity(binary, bounds.y + bounds.height, bounds.x - far, bounds.x, thickness),
+        row_line_continuity(binary, bounds.y + bounds.height, bounds.x + bounds.width, bounds.x + bounds.width + far, thickness));
+    const double left = (std::min)(
+        col_line_continuity(binary, bounds.x, bounds.y - far, bounds.y, thickness),
+        col_line_continuity(binary, bounds.x, bounds.y + bounds.height, bounds.y + bounds.height + far, thickness));
+    const double right = (std::min)(
+        col_line_continuity(binary, bounds.x + bounds.width, bounds.y - far, bounds.y, thickness),
+        col_line_continuity(binary, bounds.x + bounds.width, bounds.y + bounds.height, bounds.y + bounds.height + far, thickness));
+
+    const double weakest_side =
+        (std::min)((std::min)(top, bottom), (std::min)(left, right));
+
+    return weakest_side >= config.circle_crossing_min_line_continuity;
+}
+
 void detect_circles(
     const cv::Mat& normalized,
     const cv::Mat& binary,
@@ -454,6 +543,9 @@ void detect_circles(
             circle_edge_support(binary, cx, cy, r);
 
         if (edge_support < config.circle_min_edge_support)
+            continue;
+
+        if (bounded_by_crossing_lines(binary, bounds, config))
             continue;
 
         const int inset = (std::max)(2, r / 3);

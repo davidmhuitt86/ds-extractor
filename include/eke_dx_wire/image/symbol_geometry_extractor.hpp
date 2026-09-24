@@ -49,6 +49,14 @@ struct SymbolGeometryExtractorConfig {
     // this aspect ratio; otherwise it is left Unknown rather than forced
     // into a lead interpretation it does not support.
     double lead_min_aspect = 2.0;
+
+    // AP-WIRE-FIX-001: additional slack (beyond an existing conductor
+    // segment's own drawn half-thickness) allowed when deciding a blob's
+    // bounding box lies on that segment's stroke rather than being a
+    // component's own internal geometry. Kept small and fixed so this
+    // stays a narrow "is this the same ink" test, not a general
+    // proximity guess.
+    double conductor_exclusion_slack_px = 1.5;
 };
 
 struct SymbolGeometryExtractionArtifacts {
@@ -65,9 +73,15 @@ class SymbolGeometryExtractor {
 public:
     explicit SymbolGeometryExtractor(SymbolGeometryExtractorConfig config = {});
 
+    // `conductor_segments` is the already-normalized conductor geometry
+    // (AP-WIRE-FIX-001): a blob that lies on an existing segment's own
+    // drawn stroke is external conductor ink, never a component's
+    // internal primitive, regardless of which component's (possibly
+    // overlapping) bounding box it happens to fall inside.
     [[nodiscard]] SymbolGeometryExtractionArtifacts extract(
         const cv::Mat& normalized,
         const std::vector<ComponentCandidate>& components,
+        const std::vector<ConductorSegment>& conductor_segments,
         const std::string& source_id,
         int page) const;
 

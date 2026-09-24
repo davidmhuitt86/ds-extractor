@@ -187,7 +187,8 @@ WireModel ExtractionPipeline::run(
     SymbolGeometryExtractor symbol_geometry_extractor(config_.symbol_geometry);
     const SymbolGeometryExtractionArtifacts symbol_geometry_artifacts =
         symbol_geometry_extractor.extract(
-            normalized, model.component_candidates, source_id, 0);
+            normalized, model.component_candidates, normalized_segments,
+            source_id, 0);
     model.component_symbol_geometries = symbol_geometry_artifacts.geometries;
     model.symbol_primitives = symbol_geometry_artifacts.primitives;
 

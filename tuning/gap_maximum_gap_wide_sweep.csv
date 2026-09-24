@@ -1,0 +1,12 @@
+param,value,conductor_segments,topology_nodes,topology_edges,endpoints,boundaries_resolved,boundaries_conflicted,wires,wires_resolved,wires_unresolved,wires_conflicted,electrical_nets,shared_segments,validation_errors,validation_warnings,valid_wires,conflicted_endpoint_ids,gaps_bridged
+gap_interpretation.maximum_gap,4,294,692,871,222,36,4,42,42,0,0,11,1,0,32,42,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,0
+gap_interpretation.maximum_gap,8,294,692,877,210,36,4,41,41,0,0,10,1,0,30,41,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,6
+gap_interpretation.maximum_gap,12,294,692,877,210,36,4,41,41,0,0,10,1,0,30,41,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,6
+gap_interpretation.maximum_gap,16,294,692,877,210,36,4,41,41,0,0,10,1,0,30,41,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,6
+gap_interpretation.maximum_gap,18,294,692,877,210,36,4,41,41,0,0,10,1,0,30,41,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,6
+gap_interpretation.maximum_gap,20,294,692,877,210,36,4,41,41,0,0,10,1,0,30,41,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,6
+gap_interpretation.maximum_gap,24,294,692,878,208,34,4,41,41,0,0,10,1,0,30,41,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,7
+gap_interpretation.maximum_gap,30,294,692,879,206,34,4,40,40,0,0,10,1,0,29,40,endpoint-candidate-1fd584e37a5c72b5;endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,8
+gap_interpretation.maximum_gap,40,294,692,883,198,33,3,38,38,0,0,9,0,0,29,38,endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-c033140e251b7b86;endpoint-candidate-cde07f8718a2b9cd,12
+gap_interpretation.maximum_gap,60,294,692,891,182,32,2,34,34,0,0,8,0,0,25,34,endpoint-candidate-b0e3d6bb622a227c;endpoint-candidate-cde07f8718a2b9cd,20
+gap_interpretation.maximum_gap,100,294,692,893,178,32,1,33,33,0,0,8,0,0,24,33,endpoint-candidate-b0e3d6bb622a227c,22

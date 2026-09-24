@@ -192,7 +192,10 @@ TerminalRecognitionArtifacts TerminalRecognizer::recognize(
         // First consume AP-WIRE-023 TerminalLead evidence. A lead is only
         // evidence for associating an already-existing endpoint; it never
         // creates one.
+        bool has_terminal_lead = false;
         for (const auto* primitive : owned_primitives) {
+            if (primitive->kind == SymbolPrimitiveKind::TerminalLead)
+                has_terminal_lead = true;
             if (primitive->kind != SymbolPrimitiveKind::TerminalLead)
                 continue;
 
@@ -249,6 +252,9 @@ TerminalRecognitionArtifacts TerminalRecognizer::recognize(
         // bounded extension distance and its incident conductor must point
         // toward the component. This addresses small source gaps without
         // inventing an endpoint or treating arbitrary nearby wires as pins.
+        if (has_terminal_lead)
+            continue;
+
         for (const auto& endpoint : endpoints) {
             const std::string pair = endpoint.id + ":" + component.id;
             if (existing_pairs.find(pair) != existing_pairs.end())

@@ -11,6 +11,7 @@
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
 #include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
+#include "eke_dx_wire/image/symbol_geometry_extractor.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
@@ -26,6 +27,7 @@ struct ExtractionConfig {
     ShapeDetectorConfig shapes {};
     TextDetectorConfig text {};
     DiagramFurnitureConfig diagram_furniture {};
+    SymbolGeometryExtractorConfig symbol_geometry {};
     TerminalLocationConfig terminals {};
     GeometryNormalizationConfig geometry {};
     ConductorEvidenceConfig conductor_evidence {};

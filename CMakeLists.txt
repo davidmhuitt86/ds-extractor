@@ -32,6 +32,7 @@ add_library(eke_dx_wire
     src/image/geometry_ownership_classifier.cpp
     src/image/shape_detector.cpp
     src/image/text_region_detector.cpp
+    src/image/symbol_geometry_extractor.cpp
     src/topology/topology_reconstructor.cpp
     src/topology/topology_semantic_resolver.cpp
     src/topology/gap_interpreter.cpp
@@ -255,6 +256,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-coverage-diagnostics tests/test_coverage_diagnostics.cpp)
     target_link_libraries(dx-wire-test-coverage-diagnostics PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-coverage-diagnostics COMMAND dx-wire-test-coverage-diagnostics)
+
+    add_executable(dx-wire-test-symbol-geometry-extractor tests/test_symbol_geometry_extractor.cpp)
+    target_link_libraries(dx-wire-test-symbol-geometry-extractor PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-symbol-geometry-extractor COMMAND dx-wire-test-symbol-geometry-extractor)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

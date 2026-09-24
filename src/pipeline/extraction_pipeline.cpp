@@ -10,6 +10,7 @@
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
+#include "eke_dx_wire/image/symbol_geometry_extractor.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
 
 #include <opencv2/core.hpp>
@@ -168,6 +169,17 @@ WireModel ExtractionPipeline::run(
     ComponentSymbolRecognizer symbol_recognizer;
     model.component_symbol_recognitions =
         symbol_recognizer.recognize(model.component_candidates);
+
+    // AP-WIRE-023: extract internal symbol geometry from each real
+    // (non-DiagramFurniture) component's already-detected region. This
+    // stage observes geometry only; it does not assign symbol identity,
+    // create endpoints, or touch topology/wires/electrical nets.
+    SymbolGeometryExtractor symbol_geometry_extractor(config_.symbol_geometry);
+    const SymbolGeometryExtractionArtifacts symbol_geometry_artifacts =
+        symbol_geometry_extractor.extract(
+            normalized, model.component_candidates, source_id, 0);
+    model.component_symbol_geometries = symbol_geometry_artifacts.geometries;
+    model.symbol_primitives = symbol_geometry_artifacts.primitives;
 
     model.text_regions = text_regions.regions;
 

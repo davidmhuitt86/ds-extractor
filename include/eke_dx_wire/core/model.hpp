@@ -234,6 +234,41 @@ struct ComponentCandidate {
     std::vector<std::string> semantic_labels;
 };
 
+// AP-WIRE-023: geometry observed INSIDE an already-detected real
+// ComponentCandidate's bounding region, excluding the candidate's own
+// outer boundary stroke (which ShapeDetector/ComponentCandidateClassifier
+// already model as the candidate's shape). This is geometric evidence
+// only - it must never be treated as engineering terminal identity or
+// symbol-family identity. That interpretation belongs to a later stage.
+enum class SymbolPrimitiveKind {
+    Line,
+    Circle,
+    Rectangle,
+    // A line-like blob that touches the component's own boundary margin,
+    // i.e. it appears to reach toward/through the symbol's outline rather
+    // than remain fully internal. This is geometric shape only - it is
+    // not an EndpointCandidate and must not be treated as one.
+    TerminalLead,
+    Unknown
+};
+
+struct SymbolPrimitive {
+    std::string id;
+    std::string component_id;
+    SymbolPrimitiveKind kind = SymbolPrimitiveKind::Unknown;
+    BoundingBox bounds {};
+    double area = 0.0;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    Provenance provenance {};
+};
+
+struct ComponentSymbolGeometry {
+    std::string id;
+    std::string component_id;
+    std::vector<std::string> primitive_ids;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
 struct Wire {
     std::string id;
     std::string start_endpoint;
@@ -334,6 +369,16 @@ struct ExtractionAudit {
 
     // Pipeline evidence
     std::size_t gaps_bridged = 0;
+
+    // AP-WIRE-023: internal symbol geometry
+    std::size_t components_with_symbol_geometry = 0;
+    std::size_t components_without_symbol_geometry = 0;
+    std::size_t symbol_primitives = 0;
+    std::size_t symbol_primitive_lines = 0;
+    std::size_t symbol_primitive_circles = 0;
+    std::size_t symbol_primitive_rectangles = 0;
+    std::size_t symbol_primitive_terminal_leads = 0;
+    std::size_t symbol_primitive_unknown = 0;
 };
 
 enum class TextSemanticKind {
@@ -481,6 +526,8 @@ struct WireModel {
 
     std::vector<ComponentCandidate> component_candidates;
     std::vector<ComponentSymbolRecognition> component_symbol_recognitions;
+    std::vector<ComponentSymbolGeometry> component_symbol_geometries;
+    std::vector<SymbolPrimitive> symbol_primitives;
     std::vector<ConnectorCandidate> connector_candidates;
     std::vector<ConnectorTerminal> connector_terminals;
     std::vector<TextRegion> text_regions;

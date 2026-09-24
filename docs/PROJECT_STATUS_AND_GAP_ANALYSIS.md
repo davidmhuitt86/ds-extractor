@@ -322,7 +322,7 @@ AP-WIRE-022A — Extraction Baseline Validation & Diagnostic Expansion — compl
 
 AP-WIRE-023 — Internal Symbol Geometry Extraction — complete (see `docs/AP-WIRE-023_AAR.md` and `docs/AP-WIRE-023_Internal_Symbol_Geometry.md`). Established `ComponentSymbolGeometry`/`SymbolPrimitive` for real components; explicitly did not attempt symbol-family recognition or terminal association.
 
-AP-WIRE-024 — Terminal Recognition & Component-Terminal Association. Not started. Should consume `docs/AP-WIRE-023_component_symbol_geometry_correlation.csv` and the `TerminalLead` primitives it identifies (9 across 6 components) rather than re-deriving geometry.
+AP-WIRE-024 — Terminal Recognition & Component-Terminal Association — implementation complete; validation pending Release build, full CTest, and fresh TRX300 extraction. Consumes `ComponentSymbolGeometry`/`SymbolPrimitive` from AP-WIRE-023, especially the 9 `TerminalLead` primitives across 6 components, plus existing endpoint/topology evidence. It creates terminal associations only and does not create endpoints or mutate wire/topology/net identity. See `docs/AP-WIRE-024_Terminal_Recognition.md`.
 
 AP-WIRE-025 — Wire Semantic Completion.
 

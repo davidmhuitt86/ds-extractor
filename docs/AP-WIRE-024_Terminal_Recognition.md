@@ -1,6 +1,6 @@
 # AP-WIRE-024 — Terminal Recognition & Component-Terminal Association
 
-Status: implementation complete; validation pending Release build and fresh TRX300 extraction.
+Status: validated. See `docs/AP-WIRE-024_AAR.md` for the full validation report, AP-WIRE-023-vs-024 comparison, coverage-diagnostic comparison, terminal-recognition breakdown, and a recommended (non-blocking) tightening of the boundary/alignment fallback before AP-WIRE-025.
 
 ## Purpose
 

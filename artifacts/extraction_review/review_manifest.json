@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-09-24T07:32:20Z",
+  "generated_at": "2026-09-24T13:11:59Z",
   "source_id": "samples/trx300ODG.png",
   "page": 0,
   "image_width": 1056,
   "image_height": 816,
   "layers": {
-    "wires": 40,
+    "wires": 41,
     "wire_colors": 294,
     "symbols": 109,
     "terminals": 56,
@@ -30,7 +30,7 @@
   "coverage_summary": {
     "conductor_segments_shared": 1,
     "conductor_segments_unreferenced": 0,
-    "endpoints_zero_wire": 132,
+    "endpoints_zero_wire": 130,
     "wires_invalid": 0,
     "components_real_without_terminal_evidence": 39,
     "components_diagram_furniture": 50,
@@ -42,9 +42,9 @@
     "components_without_symbol_geometry": 42,
     "wires_with_color_resolved": 0,
     "wires_with_color_conflicted": 0,
-    "wires_with_component_association_resolved": 16,
+    "wires_with_component_association_resolved": 17,
     "wires_fully_unresolved": 24,
-    "findings_total": 1422,
+    "findings_total": 1403,
     "see": "artifacts/audit/extraction_audit.json#coverage"
   }
 }

@@ -177,6 +177,13 @@ enum class ComponentCandidateKind {
     CircularSymbol,
     ChassisGround,
     PrimitiveSymbol,
+    // Non-circuit diagram content (legend/color-key tables,
+    // switch-continuity charts, title blocks) drawn with the same small
+    // circle/rectangle primitives as real symbols. Re-tagged from an
+    // initial CircularSymbol/PrimitiveSymbol classification by
+    // DiagramFurnitureClassifier based on grid arrangement, not asserted
+    // at shape-detection time.
+    DiagramFurniture,
     Unknown
 };
 
@@ -185,11 +192,22 @@ enum class ComponentSymbolKind {
     CircularSymbol,
     ChassisGround,
     PrimitiveSymbol,
+    DiagramFurniture,
     Unknown
 };
 
+// `Recognized` is reserved for a symbol whose internal visual geometry was
+// actually classified against a known electrical-symbol family (switch,
+// relay, diode, motor, etc.). No current stage produces it.
+//
+// `GeometricallyClassified` is what ComponentSymbolRecognizer currently
+// produces: the component's ComponentCandidateKind (a coarse geometric
+// bucket - enclosure/circular/chassis-ground/primitive) was carried across
+// the model boundary unchanged. It is not evidence that the specific
+// symbol was identified, only that it was not Unknown-shaped.
 enum class ComponentSymbolRecognitionStatus {
     Recognized,
+    GeometricallyClassified,
     Unresolved,
     Conflicted
 };
@@ -214,6 +232,41 @@ struct ComponentCandidate {
     // Resolved human-readable labels are semantic enrichment. They do not
     // establish geometry, topology, or component identity by themselves.
     std::vector<std::string> semantic_labels;
+};
+
+// AP-WIRE-023: geometry observed INSIDE an already-detected real
+// ComponentCandidate's bounding region, excluding the candidate's own
+// outer boundary stroke (which ShapeDetector/ComponentCandidateClassifier
+// already model as the candidate's shape). This is geometric evidence
+// only - it must never be treated as engineering terminal identity or
+// symbol-family identity. That interpretation belongs to a later stage.
+enum class SymbolPrimitiveKind {
+    Line,
+    Circle,
+    Rectangle,
+    // A line-like blob that touches the component's own boundary margin,
+    // i.e. it appears to reach toward/through the symbol's outline rather
+    // than remain fully internal. This is geometric shape only - it is
+    // not an EndpointCandidate and must not be treated as one.
+    TerminalLead,
+    Unknown
+};
+
+struct SymbolPrimitive {
+    std::string id;
+    std::string component_id;
+    SymbolPrimitiveKind kind = SymbolPrimitiveKind::Unknown;
+    BoundingBox bounds {};
+    double area = 0.0;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    Provenance provenance {};
+};
+
+struct ComponentSymbolGeometry {
+    std::string id;
+    std::string component_id;
+    std::vector<std::string> primitive_ids;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
 };
 
 struct Wire {
@@ -293,6 +346,7 @@ struct ExtractionAudit {
     std::size_t circular_shapes = 0;
     std::size_t chassis_ground_shapes = 0;
     std::size_t primitive_shapes = 0;
+    std::size_t diagram_furniture_shapes = 0;
     std::size_t unknown_shapes = 0;
 
     // Wires
@@ -315,6 +369,16 @@ struct ExtractionAudit {
 
     // Pipeline evidence
     std::size_t gaps_bridged = 0;
+
+    // AP-WIRE-023: internal symbol geometry
+    std::size_t components_with_symbol_geometry = 0;
+    std::size_t components_without_symbol_geometry = 0;
+    std::size_t symbol_primitives = 0;
+    std::size_t symbol_primitive_lines = 0;
+    std::size_t symbol_primitive_circles = 0;
+    std::size_t symbol_primitive_rectangles = 0;
+    std::size_t symbol_primitive_terminal_leads = 0;
+    std::size_t symbol_primitive_unknown = 0;
 };
 
 enum class TextSemanticKind {
@@ -462,6 +526,8 @@ struct WireModel {
 
     std::vector<ComponentCandidate> component_candidates;
     std::vector<ComponentSymbolRecognition> component_symbol_recognitions;
+    std::vector<ComponentSymbolGeometry> component_symbol_geometries;
+    std::vector<SymbolPrimitive> symbol_primitives;
     std::vector<ConnectorCandidate> connector_candidates;
     std::vector<ConnectorTerminal> connector_terminals;
     std::vector<TextRegion> text_regions;

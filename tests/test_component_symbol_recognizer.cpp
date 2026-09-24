@@ -52,14 +52,16 @@ int main() {
     const auto* enclosure_result = find(enclosure.id);
     assert(enclosure_result != nullptr);
     assert(enclosure_result->symbol_kind == ComponentSymbolKind::Enclosure);
-    assert(enclosure_result->status == ComponentSymbolRecognitionStatus::Recognized);
+    assert(enclosure_result->status ==
+           ComponentSymbolRecognitionStatus::GeometricallyClassified);
     assert(enclosure_result->confidence == ConfidenceClass::High);
     assert(enclosure_result->shape_ids.size() == 1);
 
     const auto* circular_result = find(circular.id);
     assert(circular_result != nullptr);
     assert(circular_result->symbol_kind == ComponentSymbolKind::CircularSymbol);
-    assert(circular_result->status == ComponentSymbolRecognitionStatus::Recognized);
+    assert(circular_result->status ==
+           ComponentSymbolRecognitionStatus::GeometricallyClassified);
 
     const auto* ground_result = find(ground.id);
     assert(ground_result != nullptr);

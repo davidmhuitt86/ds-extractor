@@ -136,36 +136,53 @@ Established a single orchestration boundary combining topology/distribution deco
 
 Rules include: no invented source, unresolved structures remain unresolved, cyclic structures remain unresolved, anchors must belong to their nets, referenced endpoints must exist, deterministic membership, no fuzzy matching, no OCR, and no topology mutation.
 
-### AP-WIRE-022A — Extraction Baseline Validation & Diagnostic Warning Expansion
-Established deterministic warning-code classification for the existing structural validation report. The audit and automated review manifest now expose warning-code occurrence counts in addition to aggregate error/warning totals.
+### AP-WIRE-022A — Extraction Baseline Validation & Diagnostic Expansion
+Established deterministic warning-code classification for the existing structural validation report, plus a full coverage-diagnostic layer (`build_coverage_report`) that observes conductor-segment ownership, endpoint wire coverage, wire integrity, topology edge/node ownership, component terminal coverage (DiagramFurniture kept as a distinct, non-error classification), connector coverage, and electrical-net endpoint membership. Findings are deterministically ordered and exported in full under `extraction_audit.json`'s `coverage` block, with a compact summary in `review_manifest.json`.
 
-This stage is observational. It does not repair geometry, topology, endpoints, wires, components, or electrical nets.
-
-Coverage diagnostics are the next increment of AP-WIRE-022A and will measure unclaimed/shared conductor segments, endpoint wire coverage, component terminal coverage, topology anomalies, and electrical-net coverage before any algorithmic correction is introduced.
+This stage is observational. It does not repair geometry, topology, endpoints, wires, components, or electrical nets. See `docs/AP-WIRE-022A_AAR.md` for the after-action report and identified failure clusters.
 
 ## 6. Latest Extraction Baseline
 
-Latest authoritative extraction used during development:
+Fresh TRX300 extraction against current main (HEAD at the time of writing:
+`f229218`, after the DiagramFurnitureClassifier and coverage-diagnostics
+changes). Numbers superseded by any later baseline in
+`docs/AP-WIRE-022A_AAR.md`; do not treat this table as authoritative once
+that AAR exists.
 
 | Object | Result |
 |---|---:|
 | Conductor segments | 294 |
-| Topology nodes | 693 |
-| Topology edges | 876 |
-| Endpoint candidates | 215 |
+| Topology nodes | 692 |
+| Topology edges | 877 |
+| Endpoint candidates | 210 |
 | Component candidates | 109 |
-| Wires | 41 |
-| Electrical nets | 11 |
-| Gap bridges | 4 |
+| Connector candidates | 0 |
+| Connector terminals | 0 |
+| Wires | 40 |
+| Electrical nets | 10 |
+| Gap bridges | 6 |
 | Validation errors | 0 |
-| Validation warnings | 31 |
+| Validation warnings | 30 |
 | Unresolved wires | 0 |
 
-Endpoint semantic distribution included 27 component terminals, 11 connector terminals, 10 ground endpoints, 167 unresolved endpoints, and 0 conflicted endpoints.
+The connector count dropped from a previously reported 10 candidates /
+11 terminals to 0/0: the DiagramFurnitureClassifier change (commit
+`d642afd`) established that the prior connector population was actually
+the switch-continuity table, not real connector geometry. Component
+candidates now split 47 CircularSymbol + 10 ChassisGround + 2 Enclosure
+(59 real candidates) + 50 DiagramFurniture, with 0 PrimitiveSymbol.
 
-The connector model currently represents 10 connector candidates and 11 connector terminals.
+Coverage diagnostics (AP-WIRE-022A) show that only 50 of 294 conductor
+segments and 50 of 877 topology edges are currently claimed by a
+reconstructed Wire, and only 33 of 210 endpoints belong to an electrical
+net. See `docs/AP-WIRE-022A_AAR.md` for the full breakdown and likely
+responsible pipeline stages.
 
-These results show that topology and wire reconstruction are materially ahead of component-symbol recognition.
+AP-WIRE-023 added internal symbol geometry on top of this same baseline
+without changing any of the numbers above: 17 of the 59 real component
+candidates now carry at least one `SymbolPrimitive` (40 primitives total:
+22 Unknown, 9 TerminalLead, 6 Rectangle, 2 Circle, 1 Line). See
+`docs/AP-WIRE-023_AAR.md`.
 
 ## 7. Current SVG State
 
@@ -247,7 +264,15 @@ Required symbol families include switches, relays, motors, generators, lamps, ba
 
 ### Gap 2 — Internal Symbol Geometry Model
 
-Before reliable classification, the extractor must preserve internal component geometry: bodies, lines, contacts, coils, plates, terminals, arcs, circles, primitives, and their spatial relationships.
+AP-WIRE-023 (complete; see `docs/AP-WIRE-023_AAR.md`) established this
+layer: `ComponentSymbolGeometry`/`SymbolPrimitive` (Line, Circle,
+Rectangle, TerminalLead, Unknown) attached to real (non-furniture)
+component candidates, with deterministic IDs, provenance, and confidence.
+17 of 59 real TRX300 components produced at least one primitive; the
+other 42 (all `circular_symbol`) are, on inspection, plain rings/dots
+with no internal geometry beyond their own outline. This closes Gap 2 to
+the extent the fixture supports; Gap 1 (true symbol-family recognition)
+and Gap 3 (terminal recognition) remain open and are AP-WIRE-024's scope.
 
 ### Gap 3 — True Terminal Recognition
 
@@ -255,7 +280,7 @@ Many endpoints remain unresolved. The system must distinguish actual component t
 
 ### Gap 4 — Wire Semantic Completion
 
-The 41 current wires need richer semantics such as wire color, stripe/color combination, gauge where observable, source component, destination component, source/destination terminals, electrical net, function, confidence, evidence, and provenance.
+The 40 current wires need richer semantics such as wire color, stripe/color combination, gauge where observable, source component, destination component, source/destination terminals, electrical net, function, confidence, evidence, and provenance.
 
 ### Gap 5 — Wire Color Recognition
 
@@ -285,17 +310,27 @@ Current validation catches structural problems. A later AAR should compare sourc
 
 The next work should follow the evidence from the latest visual extraction rather than advancing the AP number blindly.
 
+This sequence corrects a previous inconsistency in this document, which
+described AP-WIRE-022A as a diagnostics stage but then listed AP-WIRE-023
+as "Wire Semantic Completion" — skipping internal symbol geometry
+extraction and terminal recognition, which must come first per Gap 1/2/3
+above. The corrected sequence:
+
 AP-WIRE-022 — Electrical Net Resolution — complete.
 
-AP-WIRE-022A — Extraction Baseline Validation & Diagnostic Warning Expansion — active.
+AP-WIRE-022A — Extraction Baseline Validation & Diagnostic Expansion — complete (see `docs/AP-WIRE-022A_AAR.md`).
 
-AP-WIRE-023 — Wire Semantic Completion.
+AP-WIRE-023 — Internal Symbol Geometry Extraction — complete (see `docs/AP-WIRE-023_AAR.md` and `docs/AP-WIRE-023_Internal_Symbol_Geometry.md`). Established `ComponentSymbolGeometry`/`SymbolPrimitive` for real components; explicitly did not attempt symbol-family recognition or terminal association.
 
-AP-WIRE-024 — Engineering Diagram Reconstruction.
+AP-WIRE-024 — Terminal Recognition & Component-Terminal Association — implementation complete; validation pending Release build, full CTest, and fresh TRX300 extraction. Consumes `ComponentSymbolGeometry`/`SymbolPrimitive` from AP-WIRE-023, especially the 9 `TerminalLead` primitives across 6 components, plus existing endpoint/topology evidence. It creates terminal associations only and does not create endpoints or mutate wire/topology/net identity. See `docs/AP-WIRE-024_Terminal_Recognition.md`.
 
-AP-WIRE-025 — Structured SVG Export.
+AP-WIRE-025 — Wire Semantic Completion.
 
-AP-WIRE-026 — Extraction Validation & Engineering AAR.
+AP-WIRE-026 — Unified Engineering Diagram Reconstruction.
+
+AP-WIRE-027 — Structured SVG Export.
+
+AP-WIRE-028 — Source-vs-Model Engineering Validation / AAR.
 
 The 022A correction is important because AP-WIRE-021 currently establishes the symbol model boundary but does not yet perform deep visual recognition.
 

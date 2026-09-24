@@ -1,5 +1,7 @@
 #include "eke_dx_wire/export/review_artifact_writer.hpp"
 
+#include "eke_dx_wire/core/coverage_diagnostics.hpp"
+
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 
@@ -29,6 +31,8 @@ cv::Scalar kind_color(ComponentSymbolKind kind) {
         return cv::Scalar(40, 160, 220);
     case ComponentSymbolKind::PrimitiveSymbol:
         return cv::Scalar(200, 80, 180);
+    case ComponentSymbolKind::DiagramFurniture:
+        return cv::Scalar(140, 140, 140);
     case ComponentSymbolKind::Unknown:
         return cv::Scalar(80, 80, 220);
     }
@@ -41,6 +45,7 @@ const char* symbol_name(ComponentSymbolKind kind) {
     case ComponentSymbolKind::CircularSymbol: return "circular";
     case ComponentSymbolKind::ChassisGround: return "ground";
     case ComponentSymbolKind::PrimitiveSymbol: return "primitive";
+    case ComponentSymbolKind::DiagramFurniture: return "furniture";
     case ComponentSymbolKind::Unknown: return "unknown";
     }
     return "unknown";
@@ -297,6 +302,35 @@ void render_bounds(cv::Mat& image, const WireModel& model) {
                       cv::Scalar(180, 100, 220), 2);
 }
 
+cv::Scalar symbol_primitive_color(SymbolPrimitiveKind kind) {
+    switch (kind) {
+    case SymbolPrimitiveKind::Line: return cv::Scalar(0, 200, 255);
+    case SymbolPrimitiveKind::Circle: return cv::Scalar(255, 80, 0);
+    case SymbolPrimitiveKind::Rectangle: return cv::Scalar(0, 220, 0);
+    case SymbolPrimitiveKind::TerminalLead: return cv::Scalar(0, 0, 255);
+    case SymbolPrimitiveKind::Unknown: return cv::Scalar(150, 150, 150);
+    }
+    return cv::Scalar(150, 150, 150);
+}
+
+// AP-WIRE-023: renders internal symbol geometry as a projection of the
+// engineering model - it consumes model.component_symbol_geometries /
+// model.symbol_primitives rather than independently rediscovering
+// geometry in the renderer.
+void render_symbol_geometry(cv::Mat& image, const WireModel& model) {
+    for (const auto& item : model.component_candidates) {
+        if (item.kind == ComponentCandidateKind::DiagramFurniture)
+            continue;
+        cv::rectangle(image, bounds(item.bounds), cv::Scalar(180, 100, 220), 1);
+    }
+
+    for (const auto& primitive : model.symbol_primitives) {
+        cv::rectangle(
+            image, bounds(primitive.bounds),
+            symbol_primitive_color(primitive.kind), 1, cv::LINE_AA);
+    }
+}
+
 void render_endpoints(cv::Mat& image, const WireModel& model) {
     for (const auto& item : model.endpoint_candidates) {
         const cv::Point p = point(item.position);
@@ -312,10 +346,23 @@ void render_recognition(cv::Mat& image, const WireModel& model) {
         const cv::Rect r = bounds(component_item->bounds);
         cv::rectangle(image, r, kind_color(item.symbol_kind), 3, cv::LINE_AA);
 
+        const char* status_label = "unresolved";
+        switch (item.status) {
+        case ComponentSymbolRecognitionStatus::Recognized:
+            status_label = "recognized";
+            break;
+        case ComponentSymbolRecognitionStatus::GeometricallyClassified:
+            status_label = "geometry-bucketed";
+            break;
+        case ComponentSymbolRecognitionStatus::Unresolved:
+            status_label = "unresolved";
+            break;
+        case ComponentSymbolRecognitionStatus::Conflicted:
+            status_label = "conflicted";
+            break;
+        }
         const std::string label =
-            std::string(symbol_name(item.symbol_kind)) + " [" +
-            (item.status == ComponentSymbolRecognitionStatus::Recognized
-                 ? "recognized" : "unresolved") + "]";
+            std::string(symbol_name(item.symbol_kind)) + " [" + status_label + "]";
         cv::putText(image, label, {r.x, r.y + r.height + 15},
                     cv::FONT_HERSHEY_SIMPLEX, 0.40,
                     kind_color(item.symbol_kind), 1, cv::LINE_AA);
@@ -405,7 +452,8 @@ void write_manifest(const WireModel& model, const fs::path& path) {
         << "    \"topology_edges\": " << model.edges.size() << "," << '\n'
         << "    \"component_bounds\": " << model.component_candidates.size() << "," << '\n'
         << "    \"endpoint_debug\": " << model.endpoint_candidates.size() << "," << '\n'
-        << "    \"recognition\": " << model.component_symbol_recognitions.size() << '\n'
+        << "    \"recognition\": " << model.component_symbol_recognitions.size() << "," << '\n'
+        << "    \"symbol_geometry\": " << model.symbol_primitives.size() << '\n'
         << "  }," << '\n'
         << "  \"electrical_nets\": " << model.electrical_nets.size() << "," << '\n'
         << "  \"validation_errors\": " << model.audit.validation_errors << "," << '\n'
@@ -418,7 +466,28 @@ void write_manifest(const WireModel& model, const fs::path& path) {
             << (i + 1 == model.audit.validation_warning_summaries.size() ? "\n" : ",\n");
     }
 
-    out << "  }" << '\n'
+    out << "  }," << '\n';
+
+    const CoverageReport coverage = build_coverage_report(model);
+    out << "  \"coverage_summary\": {" << '\n'
+        << "    \"conductor_segments_shared\": " << coverage.conductors.shared << "," << '\n'
+        << "    \"conductor_segments_unreferenced\": " << coverage.conductors.unreferenced << "," << '\n'
+        << "    \"endpoints_zero_wire\": " << coverage.endpoints.zero_wire << "," << '\n'
+        << "    \"wires_invalid\": " << coverage.wires.invalid << "," << '\n'
+        << "    \"components_real_without_terminal_evidence\": "
+        << coverage.components.real_without_terminal_evidence << "," << '\n'
+        << "    \"components_diagram_furniture\": " << coverage.components.diagram_furniture << "," << '\n'
+        << "    \"connectors_furniture_derived\": " << coverage.connectors.furniture_derived << "," << '\n'
+        << "    \"connectors_unresolved\": " << coverage.connectors.unresolved << "," << '\n'
+        << "    \"electrical_net_endpoints_not_in_any_net\": "
+        << coverage.electrical_nets.endpoints_not_in_any_net << "," << '\n'
+        << "    \"electrical_net_endpoints_in_multiple_nets\": "
+        << coverage.electrical_nets.endpoints_in_multiple_nets << "," << '\n'
+        << "    \"components_with_symbol_geometry\": " << model.audit.components_with_symbol_geometry << "," << '\n'
+        << "    \"components_without_symbol_geometry\": " << model.audit.components_without_symbol_geometry << "," << '\n'
+        << "    \"findings_total\": " << coverage.findings.size() << "," << '\n'
+        << "    \"see\": \"artifacts/audit/extraction_audit.json#coverage\"" << '\n'
+        << "  }" << '\n'
         << "}" << '\n';
 }
 
@@ -466,6 +535,7 @@ void ReviewArtifactWriter::write(
     write_image(normalized, model, review / "11_endpoint_debug.png", render_endpoints);
     write_image(normalized, model, review / "12_recognition.png", render_recognition);
     write_combined(normalized, model, review / "13_combined.png");
+    write_image(normalized, model, review / "14_symbol_geometry.png", render_symbol_geometry);
     write_manifest(model, review / "review_manifest.json");
 }
 

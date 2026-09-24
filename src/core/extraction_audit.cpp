@@ -84,6 +84,9 @@ ExtractionAudit build_extraction_audit(
         case ComponentCandidateKind::PrimitiveSymbol:
             ++audit.primitive_shapes;
             break;
+        case ComponentCandidateKind::DiagramFurniture:
+            ++audit.diagram_furniture_shapes;
+            break;
         case ComponentCandidateKind::Unknown:
             ++audit.unknown_shapes;
             break;
@@ -140,6 +143,36 @@ ExtractionAudit build_extraction_audit(
     }
 
     audit.gaps_bridged = gaps_bridged;
+
+    for (const auto& geometry : model.component_symbol_geometries) {
+        if (geometry.primitive_ids.empty()) {
+            ++audit.components_without_symbol_geometry;
+        } else {
+            ++audit.components_with_symbol_geometry;
+        }
+    }
+
+    audit.symbol_primitives = model.symbol_primitives.size();
+    for (const auto& primitive : model.symbol_primitives) {
+        switch (primitive.kind) {
+        case SymbolPrimitiveKind::Line:
+            ++audit.symbol_primitive_lines;
+            break;
+        case SymbolPrimitiveKind::Circle:
+            ++audit.symbol_primitive_circles;
+            break;
+        case SymbolPrimitiveKind::Rectangle:
+            ++audit.symbol_primitive_rectangles;
+            break;
+        case SymbolPrimitiveKind::TerminalLead:
+            ++audit.symbol_primitive_terminal_leads;
+            break;
+        case SymbolPrimitiveKind::Unknown:
+            ++audit.symbol_primitive_unknown;
+            break;
+        }
+    }
+
     return audit;
 }
 

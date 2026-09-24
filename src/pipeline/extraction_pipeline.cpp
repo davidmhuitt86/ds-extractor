@@ -9,6 +9,8 @@
 #include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
+#include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
+#include "eke_dx_wire/image/symbol_geometry_extractor.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
 
 #include <opencv2/core.hpp>
@@ -17,6 +19,7 @@
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
+#include "eke_dx_wire/topology/terminal_recognizer.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
 #include "eke_dx_wire/topology/endpoint_semantic_reconstructor.hpp"
 #include "eke_dx_wire/topology/connector_terminal_model.hpp"
@@ -86,8 +89,14 @@ WireModel ExtractionPipeline::run(
     detected.shapes = shapes;
 
     ComponentCandidateClassifier component_classifier;
+    // AP-GEOMETRY: legend/color-key tables, switch-continuity charts, and
+    // other tabular diagram content are drawn with the same small
+    // circle/rectangle primitives as real circuit symbols, so this
+    // re-tags grid-arranged candidates as DiagramFurniture before any
+    // downstream stage treats them as circuit components.
+    DiagramFurnitureClassifier furniture_classifier(config_.diagram_furniture);
     const std::vector<ComponentCandidate> component_candidates =
-        component_classifier.classify(shapes);
+        furniture_classifier.classify(component_classifier.classify(shapes));
 
     // AP-GEOMETRY-006: determine whether line-like geometry is actually
     // owned by a graphical object before it can enter conductor topology.
@@ -162,6 +171,17 @@ WireModel ExtractionPipeline::run(
     model.component_symbol_recognitions =
         symbol_recognizer.recognize(model.component_candidates);
 
+    // AP-WIRE-023: extract internal symbol geometry from each real
+    // (non-DiagramFurniture) component's already-detected region. This
+    // stage observes geometry only; it does not assign symbol identity,
+    // create endpoints, or touch topology/wires/electrical nets.
+    SymbolGeometryExtractor symbol_geometry_extractor(config_.symbol_geometry);
+    const SymbolGeometryExtractionArtifacts symbol_geometry_artifacts =
+        symbol_geometry_extractor.extract(
+            normalized, model.component_candidates, source_id, 0);
+    model.component_symbol_geometries = symbol_geometry_artifacts.geometries;
+    model.symbol_primitives = symbol_geometry_artifacts.primitives;
+
     model.text_regions = text_regions.regions;
 
     // AP-WIRE-008: recognition is an explicit provider boundary. The
@@ -231,6 +251,32 @@ WireModel ExtractionPipeline::run(
             endpoint_artifacts.candidates,
             rejected_geometry);
     model.terminal_candidates = terminal_artifacts.candidates;
+
+    // AP-WIRE-024: recognize additional component-terminal associations
+    // from AP-WIRE-023 internal geometry and conservative conductor-to-
+    // component boundary alignment. Existing endpoint objects are the only
+    // objects that may be associated; this stage never creates endpoints or
+    // mutates topology, wires, or electrical nets.
+    TerminalRecognizer terminal_recognizer(config_.terminal_recognition);
+    const TerminalRecognitionArtifacts recognition_artifacts =
+        terminal_recognizer.recognize(
+            model.component_candidates,
+            model.component_symbol_geometries,
+            model.symbol_primitives,
+            model.endpoint_candidates,
+            model.nodes,
+            model.edges,
+            model.terminal_candidates);
+    model.terminal_candidates.insert(
+        model.terminal_candidates.end(),
+        recognition_artifacts.candidates.begin(),
+        recognition_artifacts.candidates.end());
+    std::sort(
+        model.terminal_candidates.begin(),
+        model.terminal_candidates.end(),
+        [](const TerminalCandidate& a, const TerminalCandidate& b) {
+            return a.id < b.id;
+        });
 
     // AP-SEMANTIC-001: convert independently located terminal candidates
     // into semantic evidence, then resolve endpoint identity before any

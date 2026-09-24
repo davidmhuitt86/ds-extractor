@@ -3,6 +3,8 @@
 #include "eke_dx_wire/export/topology_exporter.hpp"
 #include "eke_dx_wire/export/recognition_input_exporter.hpp"
 #include "eke_dx_wire/topology/json_text_recognition_provider.hpp"
+#include "eke_dx_wire/topology/anthropic_vision_text_recognition_provider.hpp"
+#include "eke_dx_wire/core/http_transport.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
@@ -79,7 +81,11 @@ static void usage() {
         << "dx-extract 0.1.2\n\n"
         << "Usage:\n"
         << "  dx-extract inspect <image>\n"
-        << "  dx-extract extract <image> --output <directory> [--recognition <observations.json>]\n";
+        << "  dx-extract extract <image> --output <directory> [--recognition <observations.json>]\n"
+        << "  dx-extract extract <image> --output <directory> --vision-recognition\n\n"
+        << "--vision-recognition automates the recognition hand-off via the Anthropic\n"
+        << "API instead of importing observations produced by hand. It requires\n"
+        << "EKE_DX_WIRE_ANTHROPIC_API_KEY (or ANTHROPIC_API_KEY) to be set.\n";
 }
 
 static int inspect(const std::string& path) {
@@ -94,13 +100,19 @@ static int inspect(const std::string& path) {
     return 0;
 }
 
-static int extract(const std::string& image_path, const std::string& output, const std::string& recognition_path = {}) {
+static int extract(
+    const std::string& image_path,
+    const std::string& output,
+    const std::string& recognition_path = {},
+    bool use_vision_recognition = false) {
+    const bool has_recognition = !recognition_path.empty() || use_vision_recognition;
+
     // AP-WIRE-013: when recognition observations are supplied, execute
     // both the deterministic baseline and the recognition-assisted pipeline.
     // This makes semantic improvement measurable without allowing recognition
     // to alter the underlying geometry/topology extraction.
     std::optional<WireModel> baseline_model;
-    if (!recognition_path.empty()) {
+    if (has_recognition) {
         ExtractionPipeline baseline_pipeline;
         baseline_model = baseline_pipeline.run(image_path, image_path);
     }
@@ -109,12 +121,23 @@ static int extract(const std::string& image_path, const std::string& output, con
     if (!recognition_path.empty()) {
         config.text_recognition_provider =
             std::make_shared<JsonTextRecognitionProvider>(recognition_path);
+    } else if (use_vision_recognition) {
+        const auto vision_config = anthropic_vision_config_from_environment();
+        if (!vision_config) {
+            throw std::runtime_error(
+                "--vision-recognition requires EKE_DX_WIRE_ANTHROPIC_API_KEY "
+                "(or ANTHROPIC_API_KEY) to be set");
+        }
+        auto transport = std::make_shared<CurlHttpTransport>();
+        config.text_recognition_provider =
+            std::make_shared<AnthropicVisionTextRecognitionProvider>(
+                transport, *vision_config);
     }
 
     ExtractionPipeline pipeline(config);
     WireModel model = pipeline.run(image_path, image_path);
 
-    if (!recognition_path.empty()) {
+    if (has_recognition) {
         fs::create_directories(fs::path(output) / "artifacts" / "recognition");
         std::ofstream report(
             fs::path(output) / "artifacts" / "recognition" /
@@ -230,13 +253,16 @@ int main(int argc, char** argv) {
                 return 2;
             }
             std::string recognition_path;
+            bool use_vision_recognition = false;
             if (argc == 7 && std::string(argv[5]) == "--recognition") {
                 recognition_path = argv[6];
+            } else if (argc == 6 && std::string(argv[5]) == "--vision-recognition") {
+                use_vision_recognition = true;
             } else if (argc != 5) {
                 usage();
                 return 2;
             }
-            return extract(argv[2], argv[4], recognition_path);
+            return extract(argv[2], argv[4], recognition_path, use_vision_recognition);
         }
 
         usage();

@@ -225,6 +225,36 @@ ExtractionAudit build_extraction_audit(
         }
     }
 
+    SymbolFamilyCoverage& families = audit.symbol_families;
+    families.total = model.symbol_family_resolutions.size();
+    for (const auto& resolution : model.symbol_family_resolutions) {
+        switch (resolution.status) {
+        case SymbolFamilyResolutionStatus::Resolved: {
+            ++families.resolved;
+            switch (resolution.family) {
+            case SymbolFamily::Ground: ++families.ground_resolved; break;
+            case SymbolFamily::Lamp: ++families.lamp_resolved; break;
+            case SymbolFamily::Switch: ++families.switch_resolved; break;
+            case SymbolFamily::Relay: ++families.relay_resolved; break;
+            case SymbolFamily::Motor: ++families.motor_resolved; break;
+            case SymbolFamily::Diode: ++families.diode_resolved; break;
+            case SymbolFamily::Alternator: ++families.alternator_resolved; break;
+            case SymbolFamily::Battery: ++families.battery_resolved; break;
+            case SymbolFamily::Solenoid: ++families.solenoid_resolved; break;
+            case SymbolFamily::Coil: ++families.coil_resolved; break;
+            case SymbolFamily::Unknown: break;
+            }
+            break;
+        }
+        case SymbolFamilyResolutionStatus::Unresolved:
+            ++families.unresolved;
+            break;
+        case SymbolFamilyResolutionStatus::Conflicted:
+            ++families.conflicted;
+            break;
+        }
+    }
+
     return audit;
 }
 

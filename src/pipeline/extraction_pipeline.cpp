@@ -36,6 +36,7 @@
 #include "eke_dx_wire/topology/topology_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
 #include "eke_dx_wire/topology/wire_semantic_resolver.hpp"
+#include "eke_dx_wire/topology/symbol_family_recognizer.hpp"
 #include "eke_dx_wire/topology/electrical_net_resolver.hpp"
 
 #include <algorithm>
@@ -54,7 +55,11 @@ ExtractionPipeline::ExtractionPipeline(ExtractionConfig config)
       component_identity_registry_(
           config_.component_identity_registry
               ? config_.component_identity_registry
-              : std::make_shared<NullComponentIdentityRegistry>()) {}
+              : std::make_shared<NullComponentIdentityRegistry>()),
+      symbol_recognition_provider_(
+          config_.symbol_recognition_provider
+              ? config_.symbol_recognition_provider
+              : std::make_shared<NullSymbolRecognitionProvider>()) {}
 
 WireModel ExtractionPipeline::run(
     const std::string& image_path,
@@ -362,6 +367,28 @@ WireModel ExtractionPipeline::run(
         component_identity_canonicalizer.canonicalize(
             model.component_identity_resolutions,
             *component_identity_registry_);
+
+    // AP-WIRE-026A: symbol-family recognition consumes AP-WIRE-023 symbol
+    // geometry plus already-resolved component identity text (never a
+    // label alone) and optional provider observations. It creates no
+    // endpoints/terminals/connectors and never touches topology, wires,
+    // or electrical nets.
+    const std::vector<SymbolRecognitionObservation> symbol_observations =
+        symbol_recognition_provider_->recognize(
+            model.component_candidates,
+            model.component_symbol_geometries,
+            model.symbol_primitives,
+            source_id,
+            0);
+    SymbolFamilyRecognizer symbol_family_recognizer;
+    const SymbolFamilyRecognitionArtifacts symbol_family_artifacts =
+        symbol_family_recognizer.recognize(
+            model.component_candidates,
+            model.component_symbol_geometries,
+            model.component_identity_canonicalizations,
+            symbol_observations);
+    model.symbol_family_evidence = symbol_family_artifacts.evidence;
+    model.symbol_family_resolutions = symbol_family_artifacts.resolutions;
 
     WireReconstructor wire_reconstructor;
     const WireReconstructionArtifacts wire_artifacts =

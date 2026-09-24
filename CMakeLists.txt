@@ -64,6 +64,8 @@ add_library(eke_dx_wire
     src/topology/anthropic_vision_text_recognition_provider.cpp
     src/topology/wire_model_validator.cpp
     src/topology/wire_semantic_resolver.cpp
+    src/topology/symbol_recognition_provider.cpp
+    src/topology/symbol_family_recognizer.cpp
     src/diagram/engineering_diagram_builder.cpp
     src/export/engineering_diagram_exporter.cpp
     src/image/component_candidate_classifier.cpp
@@ -275,6 +277,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-engineering-diagram-builder tests/test_engineering_diagram_builder.cpp)
     target_link_libraries(dx-wire-test-engineering-diagram-builder PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-engineering-diagram-builder COMMAND dx-wire-test-engineering-diagram-builder)
+
+    add_executable(dx-wire-test-symbol-family-recognizer tests/test_symbol_family_recognizer.cpp)
+    target_link_libraries(dx-wire-test-symbol-family-recognizer PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-symbol-family-recognizer COMMAND dx-wire-test-symbol-family-recognizer)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

@@ -17,6 +17,7 @@
 #include "eke_dx_wire/topology/distribution_decomposer.hpp"
 #include "eke_dx_wire/topology/text_recognition_provider.hpp"
 #include "eke_dx_wire/topology/component_identity_registry.hpp"
+#include "eke_dx_wire/topology/symbol_recognition_provider.hpp"
 
 #include <memory>
 #include <string>
@@ -47,6 +48,11 @@ struct ExtractionConfig {
     // boundary. The default remains a no-op so extraction never invents
     // registry identities when no registry is supplied.
     std::shared_ptr<const ComponentIdentityRegistry> component_identity_registry;
+
+    // AP-WIRE-026A: symbol-family recognition provider observations are an
+    // optional, injectable evidence source. The default is a no-op so the
+    // deterministic pipeline never depends on network availability.
+    std::shared_ptr<const SymbolRecognitionProvider> symbol_recognition_provider;
 };
 
 class ExtractionPipeline {
@@ -61,6 +67,7 @@ private:
     ExtractionConfig config_;
     std::shared_ptr<const TextRecognitionProvider> text_recognition_provider_;
     std::shared_ptr<const ComponentIdentityRegistry> component_identity_registry_;
+    std::shared_ptr<const SymbolRecognitionProvider> symbol_recognition_provider_;
 };
 
 } // namespace eke::dx::wire

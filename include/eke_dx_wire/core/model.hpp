@@ -406,6 +406,101 @@ struct WireSemanticCoverage {
     std::size_t fully_unresolved = 0;
 };
 
+// AP-WIRE-026A: engineering symbol-family recognition. This is an
+// explicit semantic interpretation of already-established AP-WIRE-023
+// symbol geometry (plus, where independently available, component
+// identity/label evidence and future recognition-provider observations).
+// It is NOT component identity, NOT canonical identity, NOT symbol
+// geometry, and NOT terminal recognition - those remain owned by their
+// existing APs and are only referenced here.
+//
+// The taxonomy below is deliberately small. Only families with a
+// currently-defensible recognition rule are included. See
+// docs/AP-WIRE-026A_Symbol_Family_Recognition.md for the exact evidence
+// rule behind each one. Unknown is always preferred over a speculative
+// family with no supporting rule.
+enum class SymbolFamily {
+    Ground,
+    Lamp,
+    Switch,
+    Relay,
+    Motor,
+    Diode,
+    Alternator,
+    Battery,
+    Solenoid,
+    Coil,
+    Unknown
+};
+
+enum class SymbolFamilyEvidenceKind {
+    // The component's own ComponentCandidateKind came from a purpose-
+    // built geometric detector for a specific engineering symbol (today:
+    // only ShapeDetector's chassis-ground bar pattern), not a generic
+    // shape bucket. This is categorically stronger than resemblance to a
+    // generic circle/rectangle primitive.
+    PurposeBuiltGeometricClassification,
+    // A keyword match against already-resolved component identity text
+    // (ComponentCandidate.semantic_labels /
+    // ComponentIdentityCanonicalization.canonical_name) combined with a
+    // geometrically compatible ComponentCandidateKind. Label alone is
+    // never sufficient - see the recognizer's evidence rules.
+    LabelKeywordWithCompatibleGeometry,
+    // An external SymbolRecognitionProvider observation (e.g. a future
+    // vision-based recognizer). Never used as the sole basis for
+    // Resolved status without at least one other independent evidence
+    // source agreeing, so an unsupported single provider guess cannot
+    // resolve a family by itself.
+    ProviderObservation
+};
+
+struct SymbolFamilyEvidence {
+    std::string id;
+    std::string component_id;
+    SymbolFamily family = SymbolFamily::Unknown;
+    SymbolFamilyEvidenceKind kind =
+        SymbolFamilyEvidenceKind::LabelKeywordWithCompatibleGeometry;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    std::string source;
+    std::string detail;
+};
+
+enum class SymbolFamilyResolutionStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
+struct SymbolFamilyResolution {
+    std::string id;
+    std::string component_id;
+    SymbolFamily family = SymbolFamily::Unknown;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    SymbolFamilyResolutionStatus status =
+        SymbolFamilyResolutionStatus::Unresolved;
+    std::vector<std::string> evidence_ids;
+    // Reference only - AP-WIRE-023's geometry is never duplicated here.
+    std::string source_symbol_geometry_id;
+};
+
+struct SymbolFamilyCoverage {
+    std::size_t total = 0;
+    std::size_t resolved = 0;
+    std::size_t unresolved = 0;
+    std::size_t conflicted = 0;
+    // Per-family resolved counts, in taxonomy declaration order.
+    std::size_t ground_resolved = 0;
+    std::size_t lamp_resolved = 0;
+    std::size_t switch_resolved = 0;
+    std::size_t relay_resolved = 0;
+    std::size_t motor_resolved = 0;
+    std::size_t diode_resolved = 0;
+    std::size_t alternator_resolved = 0;
+    std::size_t battery_resolved = 0;
+    std::size_t solenoid_resolved = 0;
+    std::size_t coil_resolved = 0;
+};
+
 struct ExtractionAudit {
     // Geometry
     std::size_t conductor_segments = 0;
@@ -474,6 +569,9 @@ struct ExtractionAudit {
 
     // AP-WIRE-025: wire semantic resolution
     WireSemanticCoverage wire_semantics {};
+
+    // AP-WIRE-026A: symbol-family recognition
+    SymbolFamilyCoverage symbol_families {};
 };
 
 enum class TextSemanticKind {
@@ -643,6 +741,8 @@ struct WireModel {
     std::vector<ElectricalNet> electrical_nets;
     std::vector<Wire> wires;
     std::vector<WireSemanticResolution> wire_semantics;
+    std::vector<SymbolFamilyEvidence> symbol_family_evidence;
+    std::vector<SymbolFamilyResolution> symbol_family_resolutions;
     WireValidationReport wire_validation;
     ExtractionAudit audit;
 };

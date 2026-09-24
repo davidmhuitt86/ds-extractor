@@ -4,7 +4,7 @@
 #include "eke_dx_wire/diagram/engineering_diagram_builder.hpp"
 #include "eke_dx_wire/export/engineering_diagram_exporter.hpp"
 #include "eke_dx_wire/export/recognition_input_exporter.hpp"
-#include "eke_dx_wire/export/svg_exporter.hpp"
+#include "eke_dx_wire/export/structured_svg_exporter.hpp"
 #include "eke_dx_wire/export/topology_exporter.hpp"
 #include "eke_dx_wire/export/review_artifact_writer.hpp"
 
@@ -313,10 +313,6 @@ void ExtractionArtifactWriter::write(
         image_path,
         (output_root / "artifacts" / "recognition").string());
 
-    SvgExporter::export_segments(
-        model,
-        (output_root / "output" / "wires.svg").string());
-
     TopologyExporter::export_json(
         model,
         (output_root / "artifacts" / "topology" / "topology.json").string());
@@ -343,6 +339,16 @@ void ExtractionArtifactWriter::write(
     EngineeringDiagramExporter::export_json(
         diagram,
         (output_root / "artifacts" / "engineering_diagram" / "engineering_diagram.json").string());
+
+    // AP-WIRE-027: the structured engineering SVG renderer consumes the
+    // EngineeringDiagram (and the model it references) exclusively - it
+    // supersedes the old raw-conductor-segment SvgExporter and writes to
+    // the same canonical output/wires.svg location rather than a second,
+    // competing SVG artifact tree.
+    StructuredSvgExporter::export_svg(
+        diagram,
+        model,
+        (output_root / "output" / "wires.svg").string());
 }
 
 } // namespace eke::dx::wire

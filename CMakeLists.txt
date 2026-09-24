@@ -70,7 +70,9 @@ add_library(eke_dx_wire
     src/export/engineering_diagram_exporter.cpp
     src/image/component_candidate_classifier.cpp
     src/image/diagram_furniture_classifier.cpp
-    src/export/svg_exporter.cpp
+    src/export/symbol_renderer.cpp
+    src/export/structured_svg_exporter.cpp
+    src/export/svg_structure_validator.cpp
     src/export/artifact_writer.cpp
     src/export/review_artifact_writer.cpp
     src/export/topology_exporter.cpp
@@ -281,6 +283,14 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-symbol-family-recognizer tests/test_symbol_family_recognizer.cpp)
     target_link_libraries(dx-wire-test-symbol-family-recognizer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-symbol-family-recognizer COMMAND dx-wire-test-symbol-family-recognizer)
+
+    add_executable(dx-wire-test-structured-svg-exporter tests/test_structured_svg_exporter.cpp)
+    target_link_libraries(dx-wire-test-structured-svg-exporter PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-structured-svg-exporter COMMAND dx-wire-test-structured-svg-exporter)
+
+    add_executable(dx-wire-test-svg-structure-validator tests/test_svg_structure_validator.cpp)
+    target_link_libraries(dx-wire-test-svg-structure-validator PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-svg-structure-validator COMMAND dx-wire-test-svg-structure-validator)
 endif()
 
 install(TARGETS dx-extract RUNTIME DESTINATION bin)

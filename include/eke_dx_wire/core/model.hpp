@@ -269,6 +269,19 @@ struct ComponentSymbolGeometry {
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
 };
 
+// AP-WIRE-031: physical Wire identity status, independent of the
+// pre-existing geometric `confidence` field above. Resolved only when
+// explicit evidence establishes the endpoint-to-endpoint physical
+// conductor identity; Conflicted when independent evidence establishes
+// incompatible physical identity interpretations; Unresolved when
+// evidence is simply insufficient. Never a synonym for "not enough
+// information" collapsed into Conflicted - see AP-WIRE-031 Sec 18.
+enum class WireIdentityStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
 struct Wire {
     std::string id;
     std::string start_endpoint;
@@ -277,6 +290,17 @@ struct Wire {
     std::vector<std::string> conductor_segments;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     bool heavy_cable = false;
+
+    // AP-WIRE-031: physical Wire identity resolution. Defaults to
+    // Unresolved for any Wire constructed without going through
+    // PhysicalWireIdentityReconstructor's explicit assignment.
+    WireIdentityStatus identity_status = WireIdentityStatus::Unresolved;
+    // Ids of existing evidence objects actually used to establish this
+    // Wire's physical identity (ConductorBoundaryResolution ids for its
+    // two endpoints, and/or ConductorSegment ids whose sharing across a
+    // distribution node justified crossing it). Never populated with an
+    // invented or arbitrary id - see AP-WIRE-031 Sec 17.
+    std::vector<std::string> identity_evidence_ids;
 };
 
 struct ElectricalNet {

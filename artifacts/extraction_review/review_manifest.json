@@ -1,29 +1,29 @@
 {
-  "generated_at": "2026-09-23T23:51:31Z",
+  "generated_at": "2026-09-24T01:03:38Z",
   "source_id": "C:\dev\ds-extractor\samples\trx300ODG.png",
   "page": 0,
   "image_width": 1056,
   "image_height": 816,
   "layers": {
-    "wires": 25,
-    "wire_colors": 185,
+    "wires": 41,
+    "wire_colors": 294,
     "symbols": 109,
-    "terminals": 35,
-    "connectors": 9,
-    "connector_terminals": 10,
-    "splices_and_junctions": 527,
-    "grounds": 11,
-    "labels": 1510,
-    "topology_edges": 710,
+    "terminals": 48,
+    "connectors": 10,
+    "connector_terminals": 11,
+    "splices_and_junctions": 693,
+    "grounds": 10,
+    "labels": 1890,
+    "topology_edges": 876,
     "component_bounds": 109,
-    "endpoint_debug": 159,
+    "endpoint_debug": 215,
     "recognition": 109
   },
-  "electrical_nets": 5,
+  "electrical_nets": 11,
   "validation_errors": 0,
-  "validation_warnings": 17,
+  "validation_warnings": 31,
   "validation_warning_codes": {
-    "NET-ROLE-UNRESOLVED": 1,
-    "WIRE-GEOMETRIC-ENDPOINTS": 16
+    "NET-ROLE-UNRESOLVED": 7,
+    "WIRE-GEOMETRIC-ENDPOINTS": 24
   }
 }

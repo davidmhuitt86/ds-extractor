@@ -40,7 +40,9 @@ In scope:
   respect to Wire identity.
 - The relationship between physical Wire identity and electrical-net
   connectivity.
-- An evidence hierarchy for future Wire-reconstruction decisions.
+- A decision-scoped evidence priority table for future Wire-
+  reconstruction decisions (there is no single universal evidence
+  ranking that applies identically to every decision).
 - Never-guess invariants for Wire reconstruction.
 - Worked examples covering the ambiguous cases (splice, crossing,
   connector, shared conductor).
@@ -343,6 +345,23 @@ picking any single interpretation — including the interpretation "one
 Wire per branch," which is itself a guess if nothing in the source
 justifies it.
 
+**The binding invariant of this section**: a `Splice` topology node is
+**not** itself a Conductor Boundary (§3), under any circumstance —
+
+> **Splice ≠ Conductor Boundary, therefore Splice ≠ Wire endpoint.**
+
+The Splice must not become a fourth or fifth kind of Wire boundary
+alongside component/connector/ground/external-connection (§4). This holds
+even when physical Wire identity through the splice is genuinely
+unresolved (§14) — an unresolved Wire identity is represented by the
+Wire's status, never by relocating the Wire's boundary onto the Splice
+node itself. If a future engineering representation ever needs to
+represent a physical conductor terminating *at* a splice assembly (as
+opposed to passing through it), that termination must be represented by
+an appropriate conductor-boundary concept/evidence tied to the actual
+physical termination — a concept this document does not define and does
+not assume exists today.
+
 ## 10. Junction rules
 
 A Junction follows the same fundamental rule as a Splice, unless and
@@ -457,12 +476,23 @@ conductor relationships among A, B, and C, then:
 
 - the **electrical** topology (A, B, C mutually connected via the
   splice) may still be resolved, per AP-WIRE-022's existing rules, while
-- **physical Wire identity through the splice remains `Unresolved`** —
-  there may be three short Wires each terminating at the splice as a
-  boundary of its own kind (an outcome §9/§15 do not rule out, if that is
-  what the evidence actually supports), or a two-branch decomposition, or
-  something else; the specification deliberately does not pick one here,
-  because the source in this worked example does not either.
+- **physical Wire identity through the splice remains `Unresolved`.**
+  The Splice node itself is never a Conductor Boundary and therefore
+  never a Wire endpoint (§9) — that does not change here. What the
+  source may support instead, once evidence is available, is: a Wire
+  continuing through the splice to a real conductor boundary on the far
+  side (§9/§15); multiple physical conductor paths associated with the
+  splice, each still terminating at its own real conductor boundary
+  elsewhere, not at the splice; or physical Wire identity remaining
+  unresolved indefinitely if the source never provides evidence for it.
+  If a future stage needs to represent a conductor terminating at a
+  splice assembly, that termination must be represented through an
+  appropriate conductor-boundary concept associated with the actual
+  physical termination point — not by treating the Splice topology node
+  itself as that boundary. No such concept is introduced by this
+  document; the specification deliberately does not pick one of these
+  outcomes here, because the source in this worked example does not
+  either.
 
 ## 15. Shared conductor sections
 
@@ -508,50 +538,65 @@ about physical copper count.
 | E | Line crosses another conductor | Not a Wire boundary (§11) |
 | F | Line terminates at an unidentified location | Preserve as unresolved geometric boundary (§3.B/C) unless evidence establishes its engineering meaning |
 
-## 17. Evidence hierarchy (documented for future use — not implemented here)
+## 17. Decision-scoped evidence priority (documented for future use — not implemented here)
 
-For a future Wire-reconstruction/conductor-boundary-resolution stage, the
-following evidence hierarchy is established, highest-priority first.
-**This is documentation of the intended priority order only; no
-reconstruction logic implementing it exists yet.**
+There is **no single universal evidence ranking** that applies
+identically to every engineering decision this specification touches.
+Different engineering questions are answered by different primary
+evidence — treating one global list as authoritative for all of them
+would itself be a kind of guessing (applying evidence that is strong for
+one question as if it were equally strong for an unrelated one). Instead,
+evidence priority is **decision-scoped**: for each engineering question a
+future Wire-reconstruction/conductor-boundary-resolution stage must
+answer, this table names the evidence that is primary for *that*
+question. **This is documentation of intended priority per decision
+only; no reconstruction logic implementing any of it exists yet.**
 
-1. Explicit terminal/connector evidence (a `TerminalCandidate` or
-   `ConnectorTerminal` already resolved against a specific component or
-   connector).
-2. Explicit source symbol/terminal evidence (e.g. `ComponentSymbolGeometry`
-   / `SymbolPrimitive` data that directly identifies a terminal lead).
-3. Recognized text/label evidence (OCR'd pin numbers, terminal names, or
-   wire-color labels tied to a specific location by
-   `SemanticAssociation`/`TextSemanticEvidence`).
-4. Explicit conductor geometry (the detected line/segment itself).
-5. Wire-color continuity (the same recognized color on both sides of a
-   candidate boundary).
-6. Splice/junction topology (node degree and adjacency).
-7. Crossing geometry (purely visual, per §11 — lowest topology-derived
-   signal).
-8. Pure proximity (spatial nearness with no other corroborating
-   evidence).
-9. Generic geometric similarity (e.g. "this shape looks like that other
-   shape") — the weakest evidence category, and, per AP-WIRE-026A's
-   already-established rule, never sufficient on its own for symbol-
-   family identity; the same principle extends to Wire/boundary identity
-   here.
+| Decision | Primary evidence | Notes |
+|---|---|---|
+| Where does the physical conductor exist? | Conductor geometry / topology (detected line segments, `TopologyNode`/`TopologyEdge`) | The geometric substrate; always the starting evidence for any conductor question. |
+| Where does the physical conductor terminate? | Conductor geometry + established Conductor Boundary evidence (§3) | Geometry alone only ever yields a *geometric* boundary (§3.B) — never, by itself, an *engineering* one. |
+| What engineering terminal does this boundary represent? | Terminal / component / connector / ground evidence (§4, §6–§8) | This is the promotion from geometric boundary to engineering boundary (§3); text/label evidence associated with the location strengthens this. |
+| Does this conductor pass through a splice? | Physical conductor geometry + explicit source conventions/evidence (§9, §14) | Splice/junction node adjacency alone is topology evidence, not physical-continuity evidence — it can suggest the question but cannot answer it. |
+| Does a crossing establish connectivity? | Explicit source topology only | Ordinary `Crossing` classification means no connectivity, by definition (§11); nothing promotes a Crossing to a Splice except explicit source evidence of a real junction there. |
+| Which objects are electrically connected? | Electrical topology + explicit circuit-role semantics (AP-WIRE-022) | This is electrical-net resolution's own evidence domain, independent of physical Wire identity (§13, §20). |
+| What is the wire color? | Recognized color evidence associated with the conductor (AP-WIRE-025's `WireSemanticResolution.wire_color`) | Color evidence identifies/labels a conductor; it is never sufficient by itself to establish that two geometrically distinct runs are physically the same conductor, and can never override contradictory conductor geometry. |
+| Are two objects the same physical Wire? | Established conductor boundaries (§3, §4) + a continuous physical conductor path between them + any applicable source evidence (§9, §14, §17) | The narrowest and strictest question in this table — see §18's never-guess invariants; this is never answered by topology, color, or electrical-net membership alone. |
 
-**Lower-level evidence must never override explicit contradictory
-higher-level evidence.** In particular, restating the handoff's explicit
-list as binding invariants:
+**Decision-scoped priority does not mean evidence may be arbitrarily
+selected to reach a desired result.** For every decision in the table
+above, the following invariants remain binding regardless of which row
+is in play:
 
-- Proximity (level 8) cannot override an explicit terminal conflict
-  (level 1).
-- Topology (level 6) cannot invent a terminal (levels 1–3).
-- Graph degree alone cannot define physical Wire identity (this is §9's
-  and §10's core rule, restated as an evidence-hierarchy consequence).
-- Electrical-net membership cannot define physical Wire identity (§13).
-- Renderer behavior cannot resolve extraction ambiguity — a rendering
-  stage (AP-WIRE-027 and any successor) consumes already-resolved status;
-  it must never be the place a Wire-identity ambiguity gets decided,
-  consistent with AP-WIRE-027's own "no recognition in the renderer"
-  rule extended to Wire identity specifically.
+- Proximity, by itself, is never sufficient to establish engineering
+  identity for any decision in this table, and can never override an
+  explicit, contradictory terminal/connector/ground assignment.
+- Topology (splice/junction adjacency, node degree, crossing geometry)
+  cannot invent a terminal — it is never primary evidence for "what
+  engineering terminal does this boundary represent?" (row 3), only for
+  the topology-scoped questions it is actually listed against.
+- Graph degree alone cannot define physical Wire identity (§9, §10) — it
+  is not listed as primary evidence for "are two objects the same
+  physical Wire?" anywhere in this table.
+- Electrical-net membership cannot define physical Wire identity (§13,
+  §20) — "which objects are electrically connected" and "are two objects
+  the same physical Wire" are different rows with different primary
+  evidence, on purpose.
+- Wire-color continuity cannot override contradictory conductor geometry
+  — color is evidence about identity/labeling, never a substitute for an
+  actual continuous physical path.
+- Renderer behavior cannot resolve extraction ambiguity for any decision
+  in this table — a rendering stage (AP-WIRE-027 and any successor)
+  consumes already-resolved status; it must never be the place any of
+  these questions gets decided, consistent with AP-WIRE-027's own "no
+  recognition in the renderer" rule extended to every row here.
+
+Any future inference that touches one of these decisions must still be
+**explicit, documented, engineering-justified, evidence-backed, and
+provenance-preserving** — decision-scoping evidence changes *which*
+evidence is authoritative for a given question, it does not relax how
+rigorously that evidence must be applied (§18 is unchanged by this
+section).
 
 ## 18. Never-guess rule for Wire reconstruction
 
@@ -575,8 +620,9 @@ interpretation:
 - produces more Wire objects, or
 - produces a more convenient electrical-net structure.
 
-None of these properties is Wire-identity evidence under the hierarchy in
-§17 — they are rendering-, aesthetic-, or convenience-driven, and every
+None of these properties is primary evidence for "are two objects the
+same physical Wire?" under §17's decision-scoped table — they are
+rendering-, aesthetic-, or convenience-driven, and every
 one of them is exactly the kind of "guess to get a nicer-looking or
 simpler-looking result" the project's standing golden rule already
 forbids (explicit evidence → Resolved; conflicting evidence → Conflicted;
@@ -619,29 +665,66 @@ rather than against the current algorithm's incidental boundary.
 
 ## 20. Proposed conceptual pipeline (architectural target — not implemented in this AP)
 
+Physical-Wire reconstruction and electrical-net resolution are **separate
+reasoning domains**, not sequential stages of one another. AP-WIRE-022's
+electrical-net resolution already operates from topology and explicit
+circuit-role evidence today, entirely independent of the (not yet built)
+physical-Wire-identity reconstruction stage this document specifies —
+and nothing in this AP changes that. The conceptual pipeline is therefore
+drawn as two independent branches from a shared topology, not as one
+strict chain:
+
 ```
-SOURCE GEOMETRY
-      ↓
-TOPOLOGY
-      ↓
-CONDUCTOR BOUNDARY / TERMINAL RESOLUTION
-      ↓
-PHYSICAL WIRE IDENTITY RECONSTRUCTION
-      ↓
-ELECTRICAL NET RESOLUTION
-      ↓
-STRUCTURED ENGINEERING DIAGRAM
-      ↓
-SVG / DIAGRAM STUDIO
+                    SOURCE GEOMETRY
+                          ↓
+                       TOPOLOGY
+                          │
+              ┌───────────┴───────────┐
+              ↓                       ↓
+      CONDUCTOR BOUNDARY /     ELECTRICAL CONNECTIVITY
+     TERMINAL RESOLUTION           RESOLUTION
+              ↓                   (AP-WIRE-022,
+   PHYSICAL WIRE IDENTITY          existing today)
+      RECONSTRUCTION                    │
+              │                         │
+              └───────────┬─────────────┘
+                          ↓
+              INTEGRATED ENGINEERING MODEL
+              (EngineeringDiagram — AP-WIRE-026)
+                          ↓
+                STRUCTURED ENGINEERING DIAGRAM
+                          ↓
+                  SVG / DIAGRAM STUDIO
 ```
 
-This is the intended future separation of concerns: boundary/terminal
-resolution (§3–§8) happens before physical Wire identity reconstruction
-(§9–§18 govern it), which happens before electrical-net resolution
-consumes already-established Wire identity (§13) rather than the other
-way around. **No part of this pipeline is implemented, reordered, or
-otherwise touched by this AP.** It is recorded here as the target that
-AP-WIRE-030+ should be evaluated against.
+The exact visual arrangement is illustrative; the following statements
+are the binding part and must hold regardless of how a future
+implementation happens to sequence its own internal passes:
+
+1. Electrical-net resolution and physical-Wire reconstruction are
+   separate concerns, governed by separate rules (§13 for the former's
+   relationship to the latter; §9/§10/§18 for how physical-Wire
+   reconstruction itself must behave).
+2. Electrical-net resolution may operate before, after, or independently
+   of complete Wire reconstruction, wherever the available evidence
+   permits — it is not architecturally required to wait for physical
+   Wire identity to be resolved first (unlike the strictly sequential
+   presentation in an earlier draft of this document, which this
+   correction supersedes).
+3. Physical Wire identity must never be inferred merely because two
+   endpoints belong to the same electrical net (§13, §17).
+4. Electrical-net membership may be consumed as contextual evidence by a
+   future physical-Wire-reconstruction stage only where a future
+   specification explicitly permits it — it must never become proof of
+   physical Wire identity by itself.
+5. AP-WIRE-022's existing electrical-net-resolution behavior is not
+   invalidated, superseded, or required to change by this document. It
+   already operates correctly, and independently of physical Wire
+   identity, today.
+
+**No part of this pipeline, and no part of AP-WIRE-022, is implemented,
+reordered, or otherwise touched by this AP.** It is recorded here as the
+target that AP-WIRE-030+ should be evaluated against.
 
 ## 21. Explicit answers to the required questions
 
@@ -678,8 +761,11 @@ AP-WIRE-030+ should be evaluated against.
     identity?** No (§5, §13) — this is the central rule of the whole
     document. Physical Wire identity ≠ electrical continuity.
 12. **Is topology alone sufficient to establish physical Wire identity?**
-    No (§10, §17) — graph degree and adjacency are topology evidence, not
-    physical-conductor evidence, and sit low in the evidence hierarchy.
+    No (§10, §17) — graph degree and adjacency are topology evidence, and
+    §17's decision-scoped table does not list topology as primary
+    evidence for "are two objects the same physical Wire?"; it is primary
+    only for narrower questions such as "does this conductor pass through
+    a splice?" and "which objects are electrically connected?".
 13. **What happens when physical Wire identity is ambiguous?** Status
     must be `Unresolved` (insufficient evidence) or `Conflicted`
     (contradictory evidence) — never resolved by picking a convenient
@@ -738,14 +824,63 @@ AP-WIRE-030+ should be evaluated against.
   unimplemented-but-distinct node type vs. pure visual overlap), and a
   future reader should not have to infer that Junction inherits Splice's
   rule only by analogy.
-- The evidence hierarchy (§17) was documented as a priority order without
-  assigning numeric confidence weights or a scoring formula, because no
-  such formula currently exists anywhere in the codebase (every existing
-  resolver — AP-WIRE-019, 024, 025, 026A — uses discrete
-  Resolved/Unresolved/Conflicted branching on categorical evidence
-  presence/absence, never a weighted score) and inventing one here would
-  be exactly the kind of unimplemented, undemonstrated mechanism this
-  document is supposed to avoid asserting.
+- The evidence priority in §17 was documented as a **decision-scoped
+  table**, not a single universal ranking, without assigning numeric
+  confidence weights or a scoring formula — no such formula currently
+  exists anywhere in the codebase (every existing resolver — AP-WIRE-019,
+  024, 025, 026A — uses discrete Resolved/Unresolved/Conflicted branching
+  on categorical evidence presence/absence, never a weighted score) and
+  inventing one here would be exactly the kind of unimplemented,
+  undemonstrated mechanism this document is supposed to avoid asserting.
+
+## Correction record (this pass, commit `303c888` → this commit)
+
+An architecture review of `303c888` accepted this specification's
+architecture but required three corrections before it could be treated
+as final:
+
+1. **§14 no longer describes the Splice node itself as a Wire
+   boundary.** The prior wording — "there may be three short Wires each
+   terminating at the splice as a boundary of its own kind" — implicitly
+   made Splice a fifth kind of Wire boundary alongside §4's four,
+   contradicting §9's own opening sentence. §14 now describes the
+   possible outcomes (a Wire continuing through the splice to a real
+   boundary elsewhere, multiple conductor paths each terminating at their
+   own real boundary elsewhere, or indefinite `Unresolved` status)
+   without ever placing a Wire's endpoint at the Splice node. §9 gained an
+   explicit standalone invariant, **Splice ≠ Conductor Boundary, therefore
+   Splice ≠ Wire endpoint**, so this rule no longer depends on inference
+   from the worked example alone.
+2. **§20's pipeline is no longer strictly sequential between physical-
+   Wire reconstruction and electrical-net resolution.** The prior diagram
+   placed "ELECTRICAL NET RESOLUTION" after "PHYSICAL WIRE IDENTITY
+   RECONSTRUCTION" in a single chain, which risked being read as
+   "electrical-net resolution must wait for Wire reconstruction to
+   finish" — untrue today (AP-WIRE-022 already resolves nets from
+   topology and circuit-role evidence independently of any Wire-
+   reconstruction stage) and not a requirement this document intends to
+   impose on the future either. §20 now shows the two as independent
+   branches from shared topology, with five explicit statements binding
+   the independence regardless of how a future implementation happens to
+   sequence its own passes internally.
+3. **§17 is now a decision-scoped evidence-priority table, not one
+   universal nine-level ranking.** The prior single list risked being
+   read as "level 1 evidence always outranks level 9 evidence for any
+   question," which is false — e.g. electrical topology is *primary*
+   evidence for "which objects are electrically connected" but is not
+   listed at all for "are two objects the same physical Wire." The table
+   now states, per decision, what evidence is primary for that decision
+   specifically, while preserving every never-guess invariant the prior
+   section stated (proximity/topology/degree/net-membership/renderer
+   behavior can still never establish or override physical Wire
+   identity) — decision-scoping changes which evidence is authoritative
+   for a question, it does not loosen how rigorously that evidence must
+   be applied.
+
+None of §1–§13, §15, §16, §18, §19, or §21 required correction; the
+review found them architecturally sound as originally written. §21's
+answer 12 and §18's cross-reference to §17 were updated only to match
+§17's new decision-scoped structure, not to change their conclusions.
 
 ## Open questions
 

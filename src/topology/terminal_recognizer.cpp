@@ -12,11 +12,6 @@
 namespace eke::dx::wire {
 namespace {
 
-struct PointDistance {
-    double distance = std::numeric_limits<double>::max();
-    Point2D point {};
-};
-
 double point_to_box(
     const Point2D& point,
     const BoundingBox& box) {

@@ -38,6 +38,7 @@ add_library(eke_dx_wire
     src/topology/gap_interpreter.cpp
     src/topology/endpoint_reconstructor.cpp
     src/topology/wire_reconstructor.cpp
+    src/topology/physical_wire_identity_reconstructor.cpp
     src/topology/distribution_decomposer.cpp
     src/topology/terminal_semantic_resolver.cpp
     src/topology/endpoint_semantic_reconstructor.cpp
@@ -147,6 +148,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-wire-reconstructor tests/test_wire_reconstructor.cpp)
     target_link_libraries(dx-wire-test-wire-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-wire-reconstructor COMMAND dx-wire-test-wire-reconstructor)
+
+    add_executable(dx-wire-test-physical-wire-identity-reconstructor tests/test_physical_wire_identity_reconstructor.cpp)
+    target_link_libraries(dx-wire-test-physical-wire-identity-reconstructor PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-physical-wire-identity-reconstructor COMMAND dx-wire-test-physical-wire-identity-reconstructor)
 
     add_executable(dx-wire-test-distribution-decomposer tests/test_distribution_decomposer.cpp)
     target_link_libraries(dx-wire-test-distribution-decomposer PRIVATE eke_dx_wire)

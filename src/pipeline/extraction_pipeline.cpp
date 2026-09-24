@@ -18,6 +18,7 @@
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
+#include "eke_dx_wire/topology/physical_wire_identity_reconstructor.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/terminal_recognizer.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
@@ -41,6 +42,7 @@
 #include "eke_dx_wire/topology/electrical_net_resolver.hpp"
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <unordered_set>
 #include <utility>
@@ -408,13 +410,21 @@ WireModel ExtractionPipeline::run(
     model.symbol_family_evidence = symbol_family_artifacts.evidence;
     model.symbol_family_resolutions = symbol_family_artifacts.resolutions;
 
-    WireReconstructor wire_reconstructor;
-    const WireReconstructionArtifacts wire_artifacts =
-        wire_reconstructor.reconstruct(
+    // AP-WIRE-031: the authoritative physical-Wire-identity reconstruction
+    // stage. Internally runs the conservative AP-WIRE-013 WireReconstructor
+    // pass, then extends physical identity through Splice/Junction/Crossing
+    // nodes only where explicit conductor-segment-sharing evidence
+    // justifies it, consuming AP-WIRE-030's Conductor Boundary resolutions
+    // to gate which endpoints are eligible. No topology mutation, no
+    // ElectricalNet consultation.
+    PhysicalWireIdentityReconstructor physical_wire_identity_reconstructor;
+    const PhysicalWireIdentityArtifacts wire_artifacts =
+        physical_wire_identity_reconstructor.reconstruct(
             graph.nodes,
             graph.edges,
             model.endpoint_candidates,
             normalized_segments,
+            model.conductor_boundary_resolutions,
             source_id,
             0);
     model.wires = wire_artifacts.wires;
@@ -456,9 +466,38 @@ WireModel ExtractionPipeline::run(
         emitted_wire_ids.insert(wire.id);
     }
 
-    for (const auto& wire : net_artifacts.wires) {
+    // AP-WIRE-031: DistributionDecomposer (invoked from within
+    // ElectricalNetResolver, unmodified by this AP) is a second,
+    // pre-existing physical-Wire producer - anchor-based rather than
+    // conductor-segment-sharing-based. Its wires are annotated with the
+    // same identity_status/identity_evidence_ids contract here at the
+    // pipeline merge boundary, without touching ElectricalNetResolver's
+    // or DistributionDecomposer's own code: a wire it produces already
+    // required a uniquely-identified Ground/ExternalConnection anchor and
+    // a tree-shaped electrically-connective path (see
+    // DistributionDecomposer::decompose), which is itself explicit
+    // evidence, not a guess - so it is annotated Resolved, with
+    // provenance to both endpoints' AP-WIRE-030 boundary resolutions.
+    std::map<std::string, const ConductorBoundaryResolution*>
+        boundary_resolution_by_endpoint;
+    for (const auto& resolution : model.conductor_boundary_resolutions) {
+        boundary_resolution_by_endpoint.emplace(
+            resolution.endpoint_id, &resolution);
+    }
+    for (auto wire : net_artifacts.wires) {
         if (emitted_wire_ids.insert(wire.id).second) {
-            model.wires.push_back(wire);
+            wire.identity_status = WireIdentityStatus::Resolved;
+            const auto start_it =
+                boundary_resolution_by_endpoint.find(wire.start_endpoint);
+            if (start_it != boundary_resolution_by_endpoint.end()) {
+                wire.identity_evidence_ids.push_back(start_it->second->id);
+            }
+            const auto end_it =
+                boundary_resolution_by_endpoint.find(wire.end_endpoint);
+            if (end_it != boundary_resolution_by_endpoint.end()) {
+                wire.identity_evidence_ids.push_back(end_it->second->id);
+            }
+            model.wires.push_back(std::move(wire));
         }
     }
 

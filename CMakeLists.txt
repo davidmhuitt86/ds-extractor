@@ -45,6 +45,7 @@ add_library(eke_dx_wire
     src/topology/terminal_location_detector.cpp
     src/topology/terminal_recognizer.cpp
     src/topology/connector_terminal_model.cpp
+    src/topology/conductor_boundary_resolver.cpp
     src/topology/component_symbol_recognizer.cpp
     src/topology/circuit_role_resolver.cpp
     src/topology/electrical_net_resolver.cpp

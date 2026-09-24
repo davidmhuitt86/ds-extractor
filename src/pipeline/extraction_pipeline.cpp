@@ -23,6 +23,7 @@
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
 #include "eke_dx_wire/topology/endpoint_semantic_reconstructor.hpp"
 #include "eke_dx_wire/topology/connector_terminal_model.hpp"
+#include "eke_dx_wire/topology/conductor_boundary_resolver.hpp"
 #include "eke_dx_wire/topology/component_symbol_recognizer.hpp"
 #include "eke_dx_wire/topology/semantic_evidence_associator.hpp"
 #include "eke_dx_wire/topology/semantic_observation_resolver.hpp"
@@ -343,6 +344,23 @@ WireModel ExtractionPipeline::run(
             model.endpoint_candidates);
     model.connector_candidates = connector_artifacts.connectors;
     model.connector_terminals = connector_artifacts.terminals;
+
+    // AP-WIRE-030: resolve each endpoint's Conductor Boundary and
+    // engineering-terminal association from already-produced evidence
+    // (TerminalCandidate, EndpointSemanticReconstruction, ConnectorTerminal)
+    // only. This stage creates no topology, no components, no terminals,
+    // and no Wires; component association and terminal identity remain
+    // independently tracked per AP-WIRE-030 Sec 15.
+    ConductorBoundaryResolver conductor_boundary_resolver;
+    const ConductorBoundaryResolutionArtifacts conductor_boundary_artifacts =
+        conductor_boundary_resolver.resolve(
+            model.endpoint_candidates,
+            model.terminal_candidates,
+            model.endpoint_semantic_reconstructions,
+            model.connector_terminals);
+    model.conductor_boundary_evidence = conductor_boundary_artifacts.evidence;
+    model.conductor_boundary_resolutions =
+        conductor_boundary_artifacts.resolutions;
 
     // AP-WIRE-016: preserve component/connector labels as explicit
     // identity-bearing evidence. This is evidence only; canonical component

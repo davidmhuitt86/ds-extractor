@@ -1,4 +1,5 @@
 #include "eke_dx_wire/core/extraction_audit.hpp"
+#include "eke_dx_wire/topology/conductor_boundary_resolver.hpp"
 
 #include <map>
 
@@ -254,6 +255,9 @@ ExtractionAudit build_extraction_audit(
             break;
         }
     }
+
+    audit.conductor_boundaries =
+        build_conductor_boundary_coverage(model.conductor_boundary_resolutions);
 
     return audit;
 }

@@ -202,13 +202,19 @@ answer to the narrower question this stage currently asks.
 
 Of the 827 wire-unowned edges:
 
-- **1,006 edge-endpoints** (827 edges × ~1.2 avg splice/crossing touches)
-  touch at least one `Splice` or `Crossing` node — i.e. essentially all
-  of the unowned geometry is exactly the distribution-node boundary
-  described above, not unclaimed/stray geometry. This is confirmed
-  structurally, not estimated: every one of the 877 edges is accounted
-  for by exactly one of the two buckets in the table above (wire-owned,
-  or touches a splice/crossing/degree-≥3 node).
+- Of the 827 wire-unowned edges, there are **1,266 edge-endpoint
+  incidences** at `Splice` or `Crossing` nodes (each edge contributes one
+  incidence per `Splice`/`Crossing` endpoint it has — 1 for a
+  conductor_end/continuation↔splice-or-crossing edge, 2 for a
+  splice↔splice, crossing↔crossing, or crossing↔splice edge:
+  69+37+94+58+(53×2)+(334×2)+(117×2) = 69+37+94+58+106+668+234 = 1,266).
+  This is an edge-endpoint incidence count, not a count of unique
+  topology nodes. It confirms that essentially all of the unowned
+  topology geometry is associated with the distribution-node boundary
+  described above, rather than being unexplained or stray geometry. This
+  is confirmed structurally, not estimated: every one of the 877 edges is
+  accounted for by exactly one of the two buckets in the table above
+  (wire-owned, or touches a splice/crossing/degree-≥3 node).
 - Of that, **334 edges** (40% of the total, the single largest bucket)
   are `crossing ↔ crossing` — pure visual line-overlap geometry with no
   electrical significance by definition (`TopologyNodeType::Crossing`

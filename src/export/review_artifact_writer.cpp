@@ -302,6 +302,35 @@ void render_bounds(cv::Mat& image, const WireModel& model) {
                       cv::Scalar(180, 100, 220), 2);
 }
 
+cv::Scalar symbol_primitive_color(SymbolPrimitiveKind kind) {
+    switch (kind) {
+    case SymbolPrimitiveKind::Line: return cv::Scalar(0, 200, 255);
+    case SymbolPrimitiveKind::Circle: return cv::Scalar(255, 80, 0);
+    case SymbolPrimitiveKind::Rectangle: return cv::Scalar(0, 220, 0);
+    case SymbolPrimitiveKind::TerminalLead: return cv::Scalar(0, 0, 255);
+    case SymbolPrimitiveKind::Unknown: return cv::Scalar(150, 150, 150);
+    }
+    return cv::Scalar(150, 150, 150);
+}
+
+// AP-WIRE-023: renders internal symbol geometry as a projection of the
+// engineering model - it consumes model.component_symbol_geometries /
+// model.symbol_primitives rather than independently rediscovering
+// geometry in the renderer.
+void render_symbol_geometry(cv::Mat& image, const WireModel& model) {
+    for (const auto& item : model.component_candidates) {
+        if (item.kind == ComponentCandidateKind::DiagramFurniture)
+            continue;
+        cv::rectangle(image, bounds(item.bounds), cv::Scalar(180, 100, 220), 1);
+    }
+
+    for (const auto& primitive : model.symbol_primitives) {
+        cv::rectangle(
+            image, bounds(primitive.bounds),
+            symbol_primitive_color(primitive.kind), 1, cv::LINE_AA);
+    }
+}
+
 void render_endpoints(cv::Mat& image, const WireModel& model) {
     for (const auto& item : model.endpoint_candidates) {
         const cv::Point p = point(item.position);
@@ -423,7 +452,8 @@ void write_manifest(const WireModel& model, const fs::path& path) {
         << "    \"topology_edges\": " << model.edges.size() << "," << '\n'
         << "    \"component_bounds\": " << model.component_candidates.size() << "," << '\n'
         << "    \"endpoint_debug\": " << model.endpoint_candidates.size() << "," << '\n'
-        << "    \"recognition\": " << model.component_symbol_recognitions.size() << '\n'
+        << "    \"recognition\": " << model.component_symbol_recognitions.size() << "," << '\n'
+        << "    \"symbol_geometry\": " << model.symbol_primitives.size() << '\n'
         << "  }," << '\n'
         << "  \"electrical_nets\": " << model.electrical_nets.size() << "," << '\n'
         << "  \"validation_errors\": " << model.audit.validation_errors << "," << '\n'
@@ -453,6 +483,8 @@ void write_manifest(const WireModel& model, const fs::path& path) {
         << coverage.electrical_nets.endpoints_not_in_any_net << "," << '\n'
         << "    \"electrical_net_endpoints_in_multiple_nets\": "
         << coverage.electrical_nets.endpoints_in_multiple_nets << "," << '\n'
+        << "    \"components_with_symbol_geometry\": " << model.audit.components_with_symbol_geometry << "," << '\n'
+        << "    \"components_without_symbol_geometry\": " << model.audit.components_without_symbol_geometry << "," << '\n'
         << "    \"findings_total\": " << coverage.findings.size() << "," << '\n'
         << "    \"see\": \"artifacts/audit/extraction_audit.json#coverage\"" << '\n'
         << "  }" << '\n'
@@ -503,6 +535,7 @@ void ReviewArtifactWriter::write(
     write_image(normalized, model, review / "11_endpoint_debug.png", render_endpoints);
     write_image(normalized, model, review / "12_recognition.png", render_recognition);
     write_combined(normalized, model, review / "13_combined.png");
+    write_image(normalized, model, review / "14_symbol_geometry.png", render_symbol_geometry);
     write_manifest(model, review / "review_manifest.json");
 }
 

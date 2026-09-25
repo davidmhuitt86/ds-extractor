@@ -8,9 +8,12 @@
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/endpoint_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
+#include "eke_dx_wire/ingest/extraction_scope.hpp"
+#include "eke_dx_wire/ingest/source_scoper.hpp"
 
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -21,6 +24,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -215,6 +219,27 @@ enum class ViewMode {
     Shapes
 };
 
+// AP-GUI-002: source scoping is a first-class step of opening an image, not
+// an afterthought bolted onto extraction. Normal is the ordinary calibration
+// workbench (unchanged). ImportChoice is the mandatory fork shown the moment
+// a file is picked: import the whole diagram as-is, or mask off regions
+// first. RegionEditor is where those regions are actually drawn.
+enum class GuiMode {
+    Normal,
+    ImportChoice,
+    RegionEditor
+};
+
+// A scope region as drawn in the editor, always in SOURCE image pixel
+// coordinates (never screen/display coordinates) so it survives zoom/pan
+// and round-trips exactly into eke::dx::wire::BoundingBox for
+// ExtractionScope - the same rectangle-only model the CLI's --scope already
+// uses (AP-INGEST-001/002). No new region shape is invented here.
+struct EditorRegion {
+    cv::Rect rect;
+    bool exclude = false;
+};
+
 struct DiagramLayerState {
     bool base_diagram = true;
     bool wires = true;
@@ -234,6 +259,13 @@ struct DiagramLayerState {
 
 struct GuiState {
     std::string image_path;
+    // AP-GUI-002: the path ExtractionPipeline actually loads pixels from.
+    // Equal to image_path when no scope was applied; otherwise the on-disk
+    // scoped_source.png, while image_path itself keeps being the original
+    // file and remains the source_id passed to ExtractionPipeline::run -
+    // exactly the effective_image_path / image_path split the CLI's
+    // extract() already uses for --scope (src/app/main.cpp).
+    std::string pipeline_image_path;
     std::filesystem::path artifact_root;
     cv::Mat source;
     cv::Mat normalized;
@@ -248,6 +280,22 @@ struct GuiState {
     MorphologyConfig config {};
     bool extracted = false;
     ViewMode view = ViewMode::Conductors;
+
+    // AP-GUI-002: import-choice / region-editor state.
+    GuiMode mode = GuiMode::Normal;
+    cv::Mat pending_source;
+    std::string pending_path;
+    std::vector<EditorRegion> editor_regions;
+    bool editor_exclude_mode = false;
+    bool editor_dragging = false;
+    cv::Point editor_drag_start_screen {};
+    cv::Point editor_drag_now_screen {};
+    // Where the pending image is currently drawn on screen, and at what
+    // scale - set each time the editor renders, read back by the mouse
+    // handler to convert screen coordinates to source coordinates. Regions
+    // are only ever stored in source coordinates (see EditorRegion).
+    cv::Rect editor_image_screen_rect {};
+    double editor_scale = 1.0;
 
     int active_slider = -1;
     bool dragging = false;
@@ -303,7 +351,18 @@ std::filesystem::path find_project_root(const char* argv0) {
     return std::filesystem::current_path();
 }
 
-void load_image(GuiState& state, const std::string& path) {
+// AP-GUI-002: `preloaded`/`pipeline_path` let the import-choice and
+// region-editor flows hand over an already-decoded (and possibly already
+// scoped) image without re-reading the file a second time. `path` is
+// always the ORIGINAL file the user opened - it stays the source_id and
+// the on-screen label regardless of scoping. `pipeline_path` is what
+// ExtractionPipeline::run() actually loads; it defaults to `path` (no
+// scoping) unless the caller supplies the on-disk scoped_source.png.
+void load_image(
+    GuiState& state,
+    const std::string& path,
+    cv::Mat preloaded = {},
+    const std::string& pipeline_path = {}) {
     gui_log("LOAD: enter");
     if (path.empty()) {
         gui_log("LOAD: empty path");
@@ -311,9 +370,14 @@ void load_image(GuiState& state, const std::string& path) {
     }
     gui_log("LOAD: path=" + path);
 
-    gui_log("LOAD: calling ImageLoader::load");
-    cv::Mat image = ImageLoader::load(path);
-    gui_log("LOAD: ImageLoader returned rows=" + std::to_string(image.rows) +
+    cv::Mat image;
+    if (!preloaded.empty()) {
+        image = std::move(preloaded);
+    } else {
+        gui_log("LOAD: calling ImageLoader::load");
+        image = ImageLoader::load(path);
+    }
+    gui_log("LOAD: image rows=" + std::to_string(image.rows) +
             " cols=" + std::to_string(image.cols) +
             " channels=" + std::to_string(image.channels()));
     state.source = std::move(image);
@@ -326,9 +390,64 @@ void load_image(GuiState& state, const std::string& path) {
     state.endpoints = {};
     state.model = {};
     state.image_path = path;
+    state.pipeline_image_path = pipeline_path.empty() ? path : pipeline_path;
     state.extracted = false;
     state.render_trace_pending = true;
     gui_log("LOAD: state updated; exit");
+}
+
+// AP-GUI-002: builds an ExtractionScope from the editor's drawn regions and
+// runs it through the exact same SourceScoper the CLI's --scope uses
+// (src/app/main.cpp), writing the same artifacts/scoping/scoped_source.png
+// + scope_provenance.json pair so GUI and CLI scoped runs are
+// indistinguishable on disk. Then loads the scoped image as the current
+// diagram: state.source becomes the scoped pixels (so the calibration
+// preview reflects masking too), while image_path/source_id stay the
+// original file.
+void apply_mask_and_load(GuiState& state) {
+    if (state.pending_source.empty() || state.pending_path.empty()) return;
+
+    ExtractionScope scope;
+    scope.schema_version = 1;
+    scope.source_path = state.pending_path;
+    scope.source_page = 0;
+    for (const auto& region : state.editor_regions) {
+        const BoundingBox box {region.rect.x, region.rect.y,
+                                region.rect.width, region.rect.height};
+        if (region.exclude) scope.exclusion_regions.push_back(box);
+        else scope.include_regions.push_back(box);
+    }
+
+    SourceScoper scoper;
+    const ScopedSourceArtifacts scoped =
+        scoper.apply(state.pending_source, scope, state.pending_path);
+
+    const std::filesystem::path scoping_dir =
+        state.artifact_root / "artifacts" / "scoping";
+    std::filesystem::create_directories(scoping_dir);
+
+    const std::filesystem::path scoped_image_path =
+        scoping_dir / "scoped_source.png";
+    if (!cv::imwrite(scoped_image_path.string(), scoped.scoped_image)) {
+        throw std::runtime_error(
+            "Unable to write scoped source image: " +
+            scoped_image_path.string());
+    }
+
+    std::ofstream provenance_out(scoping_dir / "scope_provenance.json");
+    if (!provenance_out) {
+        throw std::runtime_error("Unable to create scope provenance JSON");
+    }
+    provenance_out << SourceScoper::serialize_provenance(scoped.provenance);
+
+    load_image(
+        state, state.pending_path, scoped.scoped_image,
+        scoped_image_path.string());
+
+    state.pending_source.release();
+    state.pending_path.clear();
+    state.editor_regions.clear();
+    state.mode = GuiMode::Normal;
 }
 
 void extract(GuiState& state) {
@@ -374,8 +493,11 @@ void extract(GuiState& state) {
     ExtractionConfig artifact_config;
     artifact_config.morphology = state.config;
     ExtractionPipeline artifact_pipeline(artifact_config);
+    const std::string pipeline_path = state.pipeline_image_path.empty()
+        ? state.image_path
+        : state.pipeline_image_path;
     const WireModel artifact_model =
-        artifact_pipeline.run(state.image_path, state.image_path);
+        artifact_pipeline.run(pipeline_path, state.image_path);
 
     state.model = artifact_model;
 
@@ -950,6 +1072,150 @@ void overlay_shapes(
     }
 }
 
+// Scales `image` to fit inside `area`, returns the scaled Mat (BGR) plus
+// where it lands within `area` (in canvas coordinates) via `out_rect`, and
+// the scale factor via `out_scale`. Shared by both the import-choice and
+// region-editor renderers so their coordinate math matches exactly.
+cv::Mat fit_image_in_area(
+    const cv::Mat& image, cv::Rect area, cv::Rect& out_rect, double& out_scale) {
+    cv::Mat color_view;
+    if (image.channels() == 1) cv::cvtColor(image, color_view, cv::COLOR_GRAY2BGR);
+    else if (image.channels() == 4) cv::cvtColor(image, color_view, cv::COLOR_BGRA2BGR);
+    else color_view = image.clone();
+
+    const double scale = (std::min)(
+        static_cast<double>(area.width - 24) / color_view.cols,
+        static_cast<double>(area.height - 24) / color_view.rows);
+    out_scale = scale;
+
+    const cv::Size display_size(
+        (std::max)(1, static_cast<int>(color_view.cols * scale)),
+        (std::max)(1, static_cast<int>(color_view.rows * scale)));
+    cv::resize(color_view, color_view, display_size, 0, 0, cv::INTER_AREA);
+
+    out_rect = cv::Rect(
+        area.x + (area.width - display_size.width) / 2,
+        area.y + (area.height - display_size.height) / 2,
+        display_size.width, display_size.height);
+    return color_view;
+}
+
+void render_import_choice(cv::Mat& canvas, GuiState& state) {
+    cv::rectangle(canvas, {0, 0}, {canvas.cols, kToolbarHeight},
+                  cv::Scalar(35, 35, 35), cv::FILLED);
+    cv::putText(canvas, "Opened: " + state.pending_path,
+                {14, 30}, cv::FONT_HERSHEY_SIMPLEX, 0.5,
+                cv::Scalar(230, 230, 230), 1, cv::LINE_AA);
+
+    const int strip_height = 96;
+    const cv::Rect image_area(
+        0, kToolbarHeight, canvas.cols,
+        canvas.rows - kToolbarHeight - strip_height);
+
+    cv::Rect placed;
+    double scale = 1.0;
+    const cv::Mat view = fit_image_in_area(
+        state.pending_source, image_area, placed, scale);
+    view.copyTo(canvas(placed));
+
+    const int strip_y = canvas.rows - strip_height;
+    cv::rectangle(canvas, {0, strip_y}, {canvas.cols, canvas.rows},
+                  cv::Scalar(30, 30, 30), cv::FILLED);
+    cv::putText(canvas, "How should this diagram be imported?",
+                {20, strip_y + 26}, cv::FONT_HERSHEY_SIMPLEX, 0.55,
+                cv::Scalar(220, 220, 220), 1, cv::LINE_AA);
+
+    draw_button(canvas, {20, strip_y + 40, 230, 40}, "IMPORT AS-IS");
+    draw_button(canvas, {264, strip_y + 40, 330, 40},
+                "MASK REGIONS BEFORE IMPORT");
+    draw_button(canvas, {608, strip_y + 40, 120, 40}, "CANCEL");
+}
+
+void render_region_editor(cv::Mat& canvas, GuiState& state) {
+    cv::rectangle(canvas, {0, 0}, {canvas.cols, kToolbarHeight},
+                  cv::Scalar(35, 35, 35), cv::FILLED);
+
+    // Kept inside the GUI's minimum clamped canvas width (1100px, see
+    // render()'s canvas_size clamp) so every button stays reachable even
+    // when the window is shrunk below its default 1400px, rather than
+    // assuming the default size the way the button positions below do.
+    draw_button(canvas, {10, 5, 120, 38}, "INCLUDE MODE",
+                !state.editor_exclude_mode);
+    draw_button(canvas, {138, 5, 120, 38}, "EXCLUDE MODE",
+                state.editor_exclude_mode);
+    draw_button(canvas, {266, 5, 80, 38}, "UNDO");
+    draw_button(canvas, {354, 5, 80, 38}, "CLEAR");
+    draw_button(canvas, {700, 5, 160, 38}, "IMPORT WITH MASK");
+    draw_button(canvas, {868, 5, 80, 38}, "BACK");
+    draw_button(canvas, {956, 5, 90, 38}, "CANCEL");
+
+    std::size_t include_count = 0, exclude_count = 0;
+    for (const auto& r : state.editor_regions)
+        (r.exclude ? exclude_count : include_count)++;
+    cv::putText(canvas,
+                "Include: " + std::to_string(include_count) +
+                    "   Exclude: " + std::to_string(exclude_count),
+                {450, 30}, cv::FONT_HERSHEY_SIMPLEX, 0.5,
+                cv::Scalar(210, 210, 210), 1, cv::LINE_AA);
+
+    const cv::Rect image_area(
+        0, kToolbarHeight, canvas.cols, canvas.rows - kToolbarHeight - 30);
+    cv::Rect placed;
+    double scale = 1.0;
+    const cv::Mat view = fit_image_in_area(
+        state.pending_source, image_area, placed, scale);
+    cv::Mat view_copy = view.clone();
+
+    state.editor_image_screen_rect = placed;
+    state.editor_scale = scale;
+
+    auto to_screen = [&](const cv::Rect& source_rect) {
+        return cv::Rect(
+            placed.x + static_cast<int>(source_rect.x * scale),
+            placed.y + static_cast<int>(source_rect.y * scale),
+            static_cast<int>(source_rect.width * scale),
+            static_cast<int>(source_rect.height * scale));
+    };
+
+    for (const auto& region : state.editor_regions) {
+        const cv::Rect r = to_screen(region.rect) &
+            cv::Rect(0, 0, view_copy.cols, view_copy.rows);
+        if (r.width <= 0 || r.height <= 0) continue;
+        const cv::Scalar color =
+            region.exclude ? cv::Scalar(40, 40, 220) : cv::Scalar(40, 200, 60);
+        cv::Mat overlay = view_copy(r).clone();
+        cv::rectangle(overlay, {0, 0, r.width, r.height}, color, cv::FILLED);
+        cv::addWeighted(overlay, 0.28, view_copy(r), 0.72, 0, view_copy(r));
+        cv::rectangle(view_copy, r, color, 2, cv::LINE_AA);
+    }
+
+    if (state.editor_dragging) {
+        const cv::Rect drag_screen(
+            (std::min)(state.editor_drag_start_screen.x, state.editor_drag_now_screen.x),
+            (std::min)(state.editor_drag_start_screen.y, state.editor_drag_now_screen.y),
+            std::abs(state.editor_drag_now_screen.x - state.editor_drag_start_screen.x),
+            std::abs(state.editor_drag_now_screen.y - state.editor_drag_start_screen.y));
+        const cv::Rect local = cv::Rect(
+            drag_screen.x - placed.x, drag_screen.y - placed.y,
+            drag_screen.width, drag_screen.height) &
+            cv::Rect(0, 0, view_copy.cols, view_copy.rows);
+        if (local.width > 0 && local.height > 0) {
+            const cv::Scalar color = state.editor_exclude_mode
+                ? cv::Scalar(40, 40, 220) : cv::Scalar(40, 200, 60);
+            cv::rectangle(view_copy, local, color, 2, cv::LINE_AA);
+        }
+    }
+
+    view_copy.copyTo(canvas(placed));
+
+    cv::putText(canvas,
+                "Drag to draw a region. Regions default to INCLUDE (only "
+                "drawn areas are eligible); switch to EXCLUDE MODE to carve "
+                "areas back out. No regions drawn = whole image eligible.",
+                {14, canvas.rows - 10}, cv::FONT_HERSHEY_SIMPLEX, 0.4,
+                cv::Scalar(170, 170, 170), 1, cv::LINE_AA);
+}
+
 cv::Mat render(GuiState& state, cv::Size canvas_size) {
     const bool trace = state.render_trace_pending;
     if (trace) gui_log("RENDER 1: enter");
@@ -959,6 +1225,19 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
 
     cv::Mat canvas(
         canvas_size, CV_8UC3, cv::Scalar(238, 238, 238));
+
+    // AP-GUI-002: source scoping is a first-class step of opening an image.
+    // These modes take over the whole canvas until the user commits to an
+    // import decision; the ordinary calibration workbench below is
+    // untouched otherwise.
+    if (state.mode == GuiMode::ImportChoice) {
+        render_import_choice(canvas, state);
+        return canvas;
+    }
+    if (state.mode == GuiMode::RegionEditor) {
+        render_region_editor(canvas, state);
+        return canvas;
+    }
 
     cv::rectangle(
         canvas, {0, 0}, {canvas.cols, kToolbarHeight},
@@ -1261,11 +1540,116 @@ cv::Mat render(GuiState& state, cv::Size canvas_size) {
     return canvas;
 }
 
+void handle_mouse_import_choice(GuiState& state, int event, int x, int y) {
+    if (event != cv::EVENT_LBUTTONDOWN) return;
+
+    const int strip_height = 96;
+    const int strip_y = state.canvas_height - strip_height;
+    if (y < strip_y + 40 || y >= strip_y + 80) return;
+
+    if (x >= 20 && x < 250) {
+        // Import as-is: no scope at all, matches the pre-AP-GUI-002 flow
+        // exactly (pipeline_image_path defaults to image_path).
+        load_image(state, state.pending_path, state.pending_source);
+        state.pending_source.release();
+        state.pending_path.clear();
+        state.mode = GuiMode::Normal;
+    } else if (x >= 264 && x < 594) {
+        state.editor_regions.clear();
+        state.editor_exclude_mode = false;
+        state.editor_dragging = false;
+        state.mode = GuiMode::RegionEditor;
+    } else if (x >= 608 && x < 728) {
+        state.pending_source.release();
+        state.pending_path.clear();
+        state.mode = GuiMode::Normal;
+    }
+}
+
+void handle_mouse_region_editor(GuiState& state, int event, int x, int y) {
+    if (event == cv::EVENT_LBUTTONDOWN && y < kToolbarHeight) {
+        if (x >= 10 && x < 130) {
+            state.editor_exclude_mode = false;
+        } else if (x >= 138 && x < 258) {
+            state.editor_exclude_mode = true;
+        } else if (x >= 266 && x < 346) {
+            if (!state.editor_regions.empty()) state.editor_regions.pop_back();
+        } else if (x >= 354 && x < 434) {
+            state.editor_regions.clear();
+        } else if (x >= 700 && x < 860) {
+            try {
+                apply_mask_and_load(state);
+            } catch (const std::exception& e) {
+                std::cerr << "mask error: " << e.what() << '\n';
+            }
+        } else if (x >= 868 && x < 948) {
+            state.editor_dragging = false;
+            state.mode = GuiMode::ImportChoice;
+        } else if (x >= 956 && x < 1046) {
+            state.editor_dragging = false;
+            state.editor_regions.clear();
+            state.pending_source.release();
+            state.pending_path.clear();
+            state.mode = GuiMode::Normal;
+        }
+        return;
+    }
+
+    const cv::Rect& img = state.editor_image_screen_rect;
+    const double scale = state.editor_scale > 0 ? state.editor_scale : 1.0;
+
+    if (event == cv::EVENT_LBUTTONDOWN) {
+        if (!img.contains(cv::Point(x, y))) return;
+        state.editor_dragging = true;
+        state.editor_drag_start_screen = {x, y};
+        state.editor_drag_now_screen = {x, y};
+        return;
+    }
+
+    if (event == cv::EVENT_MOUSEMOVE && state.editor_dragging) {
+        state.editor_drag_now_screen = {
+            (std::max)(img.x, (std::min)(img.x + img.width, x)),
+            (std::max)(img.y, (std::min)(img.y + img.height, y))};
+        return;
+    }
+
+    if (event == cv::EVENT_LBUTTONUP && state.editor_dragging) {
+        state.editor_dragging = false;
+        const cv::Point a = state.editor_drag_start_screen;
+        const cv::Point b = state.editor_drag_now_screen;
+        const int sx = (std::min)(a.x, b.x) - img.x;
+        const int sy = (std::min)(a.y, b.y) - img.y;
+        const int sw = std::abs(b.x - a.x);
+        const int sh = std::abs(b.y - a.y);
+        // A drag under 4 screen pixels is almost certainly an accidental
+        // click, not an intended region - never silently record a
+        // near-zero-area scope region.
+        if (sw < 4 || sh < 4) return;
+
+        const cv::Rect source_rect(
+            static_cast<int>(sx / scale), static_cast<int>(sy / scale),
+            static_cast<int>(sw / scale), static_cast<int>(sh / scale));
+        if (source_rect.width <= 0 || source_rect.height <= 0) return;
+
+        state.editor_regions.push_back(
+            {source_rect, state.editor_exclude_mode});
+    }
+}
+
 void handle_mouse(
     GuiState& state,
     int event,
     int x,
     int y) {
+
+    if (state.mode == GuiMode::ImportChoice) {
+        handle_mouse_import_choice(state, event, x, y);
+        return;
+    }
+    if (state.mode == GuiMode::RegionEditor) {
+        handle_mouse_region_editor(state, event, x, y);
+        return;
+    }
 
     if (event == cv::EVENT_MBUTTONDOWN) {
         state.panning = true;
@@ -1523,8 +1907,17 @@ int main(int argc, char** argv) {
                     gui_log("OPEN: calling file dialog");
                     const std::string path = open_image_dialog();
                     gui_log("OPEN: dialog returned; path length=" + std::to_string(path.size()));
-                    if (!path.empty())
-                        load_image(state, path);
+                    if (!path.empty()) {
+                        // AP-GUI-002: opening an image never loads it
+                        // straight into extraction anymore - the user
+                        // always sees the import-as-is-vs-mask choice
+                        // first, right after picking the file.
+                        state.pending_source = ImageLoader::load(path);
+                        state.pending_path = path;
+                        state.editor_regions.clear();
+                        state.editor_exclude_mode = false;
+                        state.mode = GuiMode::ImportChoice;
+                    }
                 } catch (const std::exception& e) {
                     std::cerr << "open error: " << e.what() << '\\n';
                 }
@@ -1552,6 +1945,21 @@ int main(int argc, char** argv) {
 #else
                 std::cerr << "Release automation is currently supported on Windows only.\\n";
 #endif
+            }
+
+            // AP-GUI-002: while the import-choice/region-editor overlay is
+            // up, none of the ordinary calibration-workbench shortcuts
+            // apply (extracting, view switching, zoom) - Esc/Q back out of
+            // the overlay instead of quitting the whole application.
+            if (state.mode != GuiMode::Normal) {
+                if (key == 27 || key == 'q' || key == 'Q') {
+                    state.editor_dragging = false;
+                    state.editor_regions.clear();
+                    state.pending_source.release();
+                    state.pending_path.clear();
+                    state.mode = GuiMode::Normal;
+                }
+                continue;
             }
 
             if (key == 27 || key == 'q' || key == 'Q')

@@ -1,0 +1,5061 @@
+{
+  "source_id": "samples/trx300ODG.png",
+  "page": 0,
+  "total_endpoint_candidates": 203,
+  "kind_counts": {
+    "geometric": 183,
+    "component_terminal": 16,
+    "ground": 4,
+    "connector_terminal": 0
+  },
+  "endpoints": [
+    {
+      "endpoint_id": "endpoint-candidate-001bafda43283ed0",
+      "node_id": "topology-node-7a31cbcd20a6ab99",
+      "x": 149,
+      "y": 432,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8b2dfe15591693ae"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6238b14a8564d8e6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-b2f4f7d7ca875c0e"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-0569116d2e9e6b71",
+      "node_id": "topology-node-7e5138e5fe687f4f",
+      "x": 404,
+      "y": 334.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-886cebce5ef6ddfb"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-da608b1cc75b37bd"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2adf405547cbb20d"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-05a1c7fc7c058898",
+      "node_id": "topology-node-7c738c307c48ca20",
+      "x": 844,
+      "y": 417,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d4320d9a9dd4ff3e"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-469800ea237d9fc0"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-3ffebe18dcdccaf2"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-06e887da2e75c116",
+      "node_id": "topology-node-e2e53cbc030222eb",
+      "x": 504,
+      "y": 130,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d0c58222c1c3f301"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5336a280deb3a38b"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-3cde8529afa571d7"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-07428d52f43ab391",
+      "node_id": "topology-node-6c1d7b697e90a9b8",
+      "x": 282,
+      "y": 404,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-cf3927af0a1eb481"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-8210a82263963521"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-5560a4ed59d477cb"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-07b0e0866694c8bb",
+      "node_id": "topology-node-4ab401d513324681",
+      "x": 825,
+      "y": 490.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4e43031c802e1838"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-bcb16ffda07faac9"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-892df73015ccada0"
+      ],
+      "wire_ids": [
+        "wire-d5043d53ce9908d0"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-0b2a777b236a899c",
+      "node_id": "topology-node-2e8e7f9cea6306ea",
+      "x": 454,
+      "y": 324,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f45b5c58fdbec2a3"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-1aef031d5e5a24fc"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-aa2ffc4d39918f65"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-0e5fcd248ea96e69",
+      "node_id": "topology-node-598a39e6b7987084",
+      "x": 660,
+      "y": 443.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8f52f5386b2d727a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5716b4104b82cd0f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e4c65984ec72865a"
+      ],
+      "wire_ids": [
+        "wire-da9f9e1b8c9228ba"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-0e8f8373399d704e",
+      "node_id": "topology-node-e3d68df2a09bbf4d",
+      "x": 432.5,
+      "y": 537,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-763aea0b9f4edcf6",
+      "owned_primitive_count": 1,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-07ea0efc2d310501"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5066322d0508d800",
+        "conductor-boundary-evidence-8195c6e8ffcd45a6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e28b3e982e57342f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 1 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-107f09efe8a3d87f",
+      "node_id": "topology-node-0f2a67cd909faf34",
+      "x": 306.5,
+      "y": 198,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-608843986d34a84a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-f5331fcc72cb042f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-dbf021045167f546"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-10b4cbf7362de0dd",
+      "node_id": "topology-node-3a5bd63957231044",
+      "x": 315.5,
+      "y": 198,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-6d8c67c75c625525"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-3537aeff8700a42f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f2e80c6a7e38a6db"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-12e5c31cc18d1a6b",
+      "node_id": "topology-node-fb30eeb7a007f1d6",
+      "x": 266,
+      "y": 196,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-55999b248d4ab72b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-130d3f6e3336b3c5"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-14da86f2147e0039"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-1359b63fb26e7b83",
+      "node_id": "topology-node-60bbd253f70ba5b0",
+      "x": 667,
+      "y": 407,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5211ec99fa6b0664"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ef3a286093dd8016"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-6f3fa93300c61580"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-159125bfa711f45b",
+      "node_id": "topology-node-7c524730b2bd26fb",
+      "x": 707.5,
+      "y": 536,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-6e22020a4cc005a8"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-62127bd4be34edb7"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-132169499aa802e8"
+      ],
+      "wire_ids": [
+        "wire-45da48584643bb03"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-16560e754eb4cb1f",
+      "node_id": "topology-node-20d5ce68ba9645f3",
+      "x": 403,
+      "y": 324.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-2708720ba7069e76"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-3b0503e1c0c042d6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-b93d72cf63c0519e"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-17c269b83ee2c643",
+      "node_id": "topology-node-aedb6f9ec6f21896",
+      "x": 189.5,
+      "y": 157,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1e4aec4c5131c7df"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e3dddb85fa7df497"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-95f869afae0e2c09"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-1b42c0ab6212b6e9",
+      "node_id": "topology-node-d833ac2df77b8252",
+      "x": 319,
+      "y": 403,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4d40e07b435ce646"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a3bc7b8cd8e91817"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-4ac97ee7efff7606"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-1bc3368c46ef8e6f",
+      "node_id": "topology-node-283adb45e357c35c",
+      "x": 366.5,
+      "y": 673,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-3b6cc1ec004b2356",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-92cb7c35430ceb1d"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-380abc771b816781"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ae66ab2959bbbb9b"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-1cebc5daffc301a7",
+      "node_id": "topology-node-169555d94fb8d77e",
+      "x": 357.5,
+      "y": 510,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-2a168972da4f119b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-1169aa50a31dda96"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-4d9e0241e2a9fe5d"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-1e09771db91e6723",
+      "node_id": "topology-node-aca244230d5312e9",
+      "x": 785,
+      "y": 283,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-233c0a99311bd397"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-eb35b92606b78c29"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-9d4c743420fae265"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-1e26b3e1c2c6d4c5",
+      "node_id": "topology-node-99fe60c50b26af6c",
+      "x": 324.5,
+      "y": 198,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-e03b3e3463ba0151"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-11c640271de51e1f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-5a53d0bbe4bed793"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-1e9ebd2c435408e4",
+      "node_id": "topology-node-b5a4edf1297d74ef",
+      "x": 881.5,
+      "y": 371,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5d4d4e918a3a12e2"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-b9211dea5059dc59"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-091fc5c11d7e87be"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-20c2b83be887b43c",
+      "node_id": "topology-node-bc4dd482fb4e7287",
+      "x": 592,
+      "y": 508,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5420e8574cfa871e"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-dad6d279972143c1"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-03fcc4460240d602"
+      ],
+      "wire_ids": [
+        "wire-5234fe05526ca1da"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-20d66d266f82dba2",
+      "node_id": "topology-node-e94fc26d7dff42a1",
+      "x": 680,
+      "y": 162,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-88ea67640e3ece8f"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-27e99059749b0e84"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-752550b122cc4311"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-21c5ae356daba509",
+      "node_id": "topology-node-8f0ff82651aef8b7",
+      "x": 576,
+      "y": 141.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-e60280b61af21c39"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-003a84c4a7426155"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-0088904dde9c575b"
+      ],
+      "wire_ids": [
+        "wire-ffc584f15ee8a1d7"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-222ebd466a1fd19b",
+      "node_id": "topology-node-a0c26c42581ba467",
+      "x": 458,
+      "y": 438.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-7241f608ad75b7d5"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-feb3f2d2337c4f89"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-47c1f374ac1ffe0b"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-22d86eea889fadea",
+      "node_id": "topology-node-cf0e1ca0c791a741",
+      "x": 518,
+      "y": 412,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d7e562995b6c62e9"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-58e53a5ee9ed2423"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f5945e565ceac09f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-234a287f99b61f9c",
+      "node_id": "topology-node-6d2bc98a9e74ea6f",
+      "x": 235.5,
+      "y": 202,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-15c77958c4d9dc2c"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-61a2a617fd9c9c7a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-251884aa7c1f0278"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-24457c18a5ef6dfc",
+      "node_id": "topology-node-031e03319900b992",
+      "x": 680,
+      "y": 146.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a666881ad4a41134"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-7da8ed45c01f9438"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-219454a533241378"
+      ],
+      "wire_ids": [
+        "wire-071e4ff9452e508f"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-2522aa69f73f8374",
+      "node_id": "topology-node-90e40cd6ed18d335",
+      "x": 117,
+      "y": 158,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d77e8b537a0e4744"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-0401c88dabf64d1a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-8ae5ef176a0a8b84"
+      ],
+      "wire_ids": [
+        "wire-685b1603898d9175"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-264c533ce058920b",
+      "node_id": "topology-node-232169df331489ce",
+      "x": 911,
+      "y": 491.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f39c37bb7e206a98"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-81b271c67e24da37"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f2121eab55983f38"
+      ],
+      "wire_ids": [
+        "wire-1172a1d5305efe21"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-26559d0d11a79729",
+      "node_id": "topology-node-d2a3400fccd65086",
+      "x": 740,
+      "y": 108,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1ab0f0cb2716171a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-0d5305fff2b531f5"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-b83a42bb0e46f1c2"
+      ],
+      "wire_ids": [
+        "wire-e5aa23bee5b2384c"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-2690f1e70d3b10dd",
+      "node_id": "topology-node-1fa3330392919c68",
+      "x": 879,
+      "y": 490.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-0ad7c3b9fc905172"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5b06e8e9eaa1f8f3"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-aa53800dff5ad1b6"
+      ],
+      "wire_ids": [
+        "wire-13663e678a9f153e"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-299024b2423f5643",
+      "node_id": "topology-node-a8aab8515a6718f4",
+      "x": 154.5,
+      "y": 672,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a45a6796d7110591"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e7b9d88a4928e6a6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-5b46f8bf4e3e28e3"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-2b640d0d439aa435",
+      "node_id": "topology-node-67e45c721c40ebab",
+      "x": 173.5,
+      "y": 672,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-74c9b4f3de730ff1",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-54247cf5bc0fcc1e"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ce4dac8480fe1433"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-9a1f140a9406c686"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-2bee715dde69bfac",
+      "node_id": "topology-node-f5ade3f2aadc1084",
+      "x": 432.5,
+      "y": 743,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4ff44496b480063b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-81652e2a07e08c3f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1009344ec38f1589"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-2d569c9b78002b84",
+      "node_id": "topology-node-deeb618292b5bf0a",
+      "x": 567,
+      "y": 473,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d07b88d89cff3d23"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-c776a04176f500f1"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-9b8c8c9c1f3ea549"
+      ],
+      "wire_ids": [
+        "wire-fc5a030419936972"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-30081208852fc923",
+      "node_id": "topology-node-367f198c29769724",
+      "x": 487,
+      "y": 186,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-18c6def2443df9fe"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ff00dad8ab4ce740"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e21032d37d509d36"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-319930c9762750fe",
+      "node_id": "topology-node-84cea338a4adb99a",
+      "x": 744,
+      "y": 441,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1e1afab261e5ef61"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6e1a121f8c6b145a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-4996ea1919e072ff"
+      ],
+      "wire_ids": [
+        "wire-874d36860bf79003"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-33d64312e8eeaa46",
+      "node_id": "topology-node-85480c8b879fa78f",
+      "x": 887,
+      "y": 381,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f5de239d294eed9f"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-202bd6265c20d3e6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ad149c0800563169"
+      ],
+      "wire_ids": [
+        "wire-5550b1df12b7384a"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-342aef20a797f1ce",
+      "node_id": "topology-node-b1de7ccf0d2e20cc",
+      "x": 168.5,
+      "y": 390,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-adad09d9a8186438"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-01e74dabf3f7d332"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-65a2c2a3cc9a6e48"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-35db09ec8ddffaf4",
+      "node_id": "topology-node-a5153d29049f8b43",
+      "x": 358,
+      "y": 763.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-bad2f6b236f326ca"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a5d1c1dc9e517211"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-89e9656748e1216e"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-370b908dd2265f86",
+      "node_id": "topology-node-084050612b041f49",
+      "x": 863,
+      "y": 381,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-41b86b6c927e1900"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-42246e7e91bb99bb"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-0ce15ff68a6e7060"
+      ],
+      "wire_ids": [
+        "wire-5550b1df12b7384a"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-37b4d98196ea759b",
+      "node_id": "topology-node-38ae699ad74aa857",
+      "x": 458,
+      "y": 420,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8ab7ca8abe411dcc"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a5dbf03c23067684"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-36eb0a0c0200b224"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-39f4afbeb327a5c1",
+      "node_id": "topology-node-f7a6218d1cfdae55",
+      "x": 347.5,
+      "y": 673,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-33255318893ed4ec",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-69da5a3f0319df9c"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-89f3a2a3bb67d767"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ea035b56e693eb40"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-3c933982bde0fbf7",
+      "node_id": "topology-node-631ed26979601ce4",
+      "x": 282,
+      "y": 394,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-e7a381cc17806746"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-9b7b277a2a085db8"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-cdbe324de5bfe282"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-3d09bf00a0aee832",
+      "node_id": "topology-node-b9566e6dc11244e5",
+      "x": 780,
+      "y": 490.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-b745212e7a402f9d"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-224e81dc3c3f6380"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-27176c54f68c20df"
+      ],
+      "wire_ids": [
+        "wire-d5043d53ce9908d0"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-3ebed50e93b56968",
+      "node_id": "topology-node-7219368f1e86233b",
+      "x": 785,
+      "y": 273.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-b4fd6d2cfb0f5d4d"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-4299b8b905b6825a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-5a5b687a4a293e23"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-451fe0fda226db83",
+      "node_id": "topology-node-ef2c1e40f3e38bcc",
+      "x": 695,
+      "y": 443.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-0ec0b4b7ae120a99"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-52f7a3bdf019ba84"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2408b9bc6152d17b"
+      ],
+      "wire_ids": [
+        "wire-da9f9e1b8c9228ba"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-4562d1ef9ffc9cbc",
+      "node_id": "topology-node-f41029abe3f6d412",
+      "x": 104,
+      "y": 570.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-6a13b968b4cb82a2"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-58f456e2c051be5f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ae0c7717224da44a"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-45acf5e7730a5cbd",
+      "node_id": "topology-node-657b05fb5dfedff8",
+      "x": 415,
+      "y": 420,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c4c0b6cfb55ebf07"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-869644e6ee802225"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-3d9234d262938985"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-46ef3f8f11d2a7c4",
+      "node_id": "topology-node-d3c164f080d3b620",
+      "x": 241,
+      "y": 744,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": "component-candidate-shape-region-98b8487146850f39",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8b7dcb5a32707f03"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5579ec6e9f1fdc2c"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f6656a21ca097ea5"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-48ea62e824fb1455",
+      "node_id": "topology-node-5021a2d874a4f800",
+      "x": 574.5,
+      "y": 528,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "medium",
+      "component_id": "component-candidate-shape-region-9c4d423986244e04",
+      "owned_primitive_count": 1,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-bf12a2e55e359304"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6003b3f2009f11c1",
+        "conductor-boundary-evidence-c5646432fcfa7e84"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-b817d1da91babfd8"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 1 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-49515295f9dbad96",
+      "node_id": "topology-node-bd9526dad5a4fd1f",
+      "x": 133.5,
+      "y": 157,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-6f699e6ac9eb85e3"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-b1dbd50c811181f3"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-447644b43c1deef5"
+      ],
+      "wire_ids": [
+        "wire-2d3729e643e39ecb"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-4975c676cf63d1f4",
+      "node_id": "topology-node-65ab58b34c4da855",
+      "x": 112,
+      "y": 394.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-19891b145c7415d6"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-7b6cba5d554e3f23"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-19bc043fd95f06ba"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-4a8348b6df4902f7",
+      "node_id": "topology-node-90ee08d6ed2120ee",
+      "x": 117,
+      "y": 182,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-2a16d15513f80110"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6021218c6d0a9594"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-8ad531dbb5e62fac"
+      ],
+      "wire_ids": [
+        "wire-685b1603898d9175"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-4bdfca1149fceeec",
+      "node_id": "topology-node-314f818ed1f11d7d",
+      "x": 135.5,
+      "y": 672,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-3459effb9443031a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-93fff6dbe596c9c6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-c97dd111a13854ce"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-4be67b098827522a",
+      "node_id": "topology-node-6153c30dfbbd44ed",
+      "x": 659,
+      "y": 426.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4acf9ea2db2dc164"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-46d5bc6fb5e8c220"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-cc5dc3f1bdf1f454"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-4d7a2c9da1a78d41",
+      "node_id": "topology-node-d56317c39f2bf4e7",
+      "x": 593,
+      "y": 453,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-b496e9dfdffb13b1"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-efbb3816beb114a4"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-50a92e22e95e1867"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-5238331b6274398d",
+      "node_id": "topology-node-940b5970f2c33466",
+      "x": 150,
+      "y": 527,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-3e9893e776a14e18"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5d46d7ce3d9e13cd"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-d403dc7c7c3665a4"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-5347be8c24a40658",
+      "node_id": "topology-node-52245ce3561d15ef",
+      "x": 710,
+      "y": 441,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-e33cf2ecff4bf9f7"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-b97b526a7331b0f4"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-46e8fee25bdad0f9"
+      ],
+      "wire_ids": [
+        "wire-874d36860bf79003"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-537bfe24ae2af00b",
+      "node_id": "topology-node-1fac3eecd49e99c7",
+      "x": 121,
+      "y": 413.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-320f9afca4f27e8f"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-489da5756ff672bc"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e879bd1cf09c63a9"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-547a0578850102e0",
+      "node_id": "topology-node-3b2d4252839350a7",
+      "x": 344,
+      "y": 631,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-bd727653f91761a4"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-daafe8412b901fec"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-3d969593452a5418"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-56ab2dfa9b63a25f",
+      "node_id": "topology-node-b495ceee0d3cf6e8",
+      "x": 250.5,
+      "y": 671,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-97340b31a99df1b7",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f18ef735a5d71275"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e2301cdedb1018db"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1b9e004f4ea84187"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-56d8935ebecb1a5e",
+      "node_id": "topology-node-01d58e41496934f5",
+      "x": 685,
+      "y": 112,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-2b362c713f11a38b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-50d0f5c029c6acbc"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-efc16c079b900a71"
+      ],
+      "wire_ids": [
+        "wire-e5aa23bee5b2384c"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-57106894ed97a754",
+      "node_id": "topology-node-f804f4cce1145374",
+      "x": 391,
+      "y": 171,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-70722c928380da10"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-db2043631a0423dd"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-feea7018885e6570"
+      ],
+      "wire_ids": [
+        "wire-12ee7e2fbc4e73ec"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-5760df7ea33adf19",
+      "node_id": "topology-node-3abfe075b842d4e5",
+      "x": 921,
+      "y": 355,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-aa3436e653f4e02a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-73f5a71074297a83"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f68bcb7d0baf18a2"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-5772fb9d751dd869",
+      "node_id": "topology-node-c2c3a7d2cf4b70bd",
+      "x": 736,
+      "y": 458,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-113a0285d937207a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-07eb61869b520228"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f73f61b7a701853a"
+      ],
+      "wire_ids": [
+        "wire-b87293c6bc606b9a"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-57c38f85d52af6ff",
+      "node_id": "topology-node-1c5ba347eab7d411",
+      "x": 686,
+      "y": 407,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-65ef1fb007b1937b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-83cc8be5c7cf70e8"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-73000df3f1db4ab1"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-5bbfd281747da718",
+      "node_id": "topology-node-021db84c3ac0ea2c",
+      "x": 882,
+      "y": 481.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5540b3a6be8be7d1"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e3ed9646fcdcd5f5"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-97cdecb8f7b2687b"
+      ],
+      "wire_ids": [
+        "wire-96ca064889ee1a93"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-5edfb89184852d2e",
+      "node_id": "topology-node-97e27c17c95263f9",
+      "x": 318,
+      "y": 393,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-37dd4de7cbc9cb9a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-465aa56e0e2cdb3b"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-9ca6fefc623bd8a6"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6028cff798160492",
+      "node_id": "topology-node-273282a98a8afbdf",
+      "x": 834,
+      "y": 541,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8d739409cc413b59"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-0ece1b2afbcc7dd7"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-efbde2e3fdedbb37"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6182cdb9ccdfd838",
+      "node_id": "topology-node-54912e98b9a2a392",
+      "x": 602,
+      "y": 473,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-294ab6498ff22f10"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-f9f292f877d0afb9"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-3fa364e7b06d3e20"
+      ],
+      "wire_ids": [
+        "wire-fc5a030419936972"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6193f59e31ae96ec",
+      "node_id": "topology-node-a6c7f17bbe12adf2",
+      "x": 585.5,
+      "y": 557,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-278bcb7df6af48d1"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-1bb3e43995424f47"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-aef2a2c44f24d3e7"
+      ],
+      "wire_ids": [
+        "wire-49477c4a4828ab6e"
+      ],
+      "electrical_net_ids": [
+        "electrical-net-e1f70187ddfaca24"
+      ],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-61f1bde9f9e0da5d",
+      "node_id": "topology-node-67fef589a6580173",
+      "x": 153,
+      "y": 138,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d30cc29093ac4b00"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-afbefac302c05d38"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-fbe81bca43138e40"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-621cd063cb355d97",
+      "node_id": "topology-node-0f6d1239c87e43ce",
+      "x": 270,
+      "y": 672,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-97340b31a99df1b7",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-277072f404bbca3d"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-9ef27dda9fae63cd"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-7d653f2428990307"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6246d940bd63d4f1",
+      "node_id": "topology-node-013202e4e9ecc610",
+      "x": 862.5,
+      "y": 436,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-54a0d363a728d867"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-aabd69a34492a935"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-829931c1c2c5ff4d"
+      ],
+      "wire_ids": [
+        "wire-cee803c9104ab21b"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6301655fa241a7c2",
+      "node_id": "topology-node-32b403fb4192cb2c",
+      "x": 415,
+      "y": 284,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-67239b6a47f5a055"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ec00c28e444a7c2f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2108c207cc3fd2b3"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-647ee5bc3d66f477",
+      "node_id": "topology-node-40218303bb433a3f",
+      "x": 708,
+      "y": 423.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8d394bd6e3338b2a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-d7b89d7260c9ad7a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-216304cf990a7896"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-67edf60b09145f77",
+      "node_id": "topology-node-60aadf53f6fd4894",
+      "x": 667,
+      "y": 454,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-0fa08f0c573176f1"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e9e4401dc81da579"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ae104510a4aa50df"
+      ],
+      "wire_ids": [
+        "wire-ea9c89f1375d5669"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6818905bde27d56d",
+      "node_id": "topology-node-9a127c805a579c06",
+      "x": 539.5,
+      "y": 556,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-3690674179df36ca"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-0daafa8978a2a5c8"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1ee674e2d80bf582"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-682d9fd165bc9fcf",
+      "node_id": "topology-node-b718479f4c83e0ca",
+      "x": 935,
+      "y": 542,
+      "kind": "ground",
+      "terminal_role": "ground_terminal",
+      "confidence": "medium",
+      "component_id": "component-candidate-shape-region-a434a925670e9b65",
+      "owned_primitive_count": 3,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-633e0f08b29638b2"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-9ab1fe0e7d35fe20",
+        "conductor-boundary-evidence-e23540468c600519"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-48e66fe22e4e080a"
+      ],
+      "wire_ids": [
+        "wire-9206bdddb7b10778"
+      ],
+      "electrical_net_ids": [
+        "electrical-net-d6fbaeb0e3e8c468"
+      ],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "attributed to a ChassisGround-classified component"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-68638ad491ff459d",
+      "node_id": "topology-node-87d79623dcd07982",
+      "x": 694,
+      "y": 426.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-019f799864bafe98"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6e4eaeaae96e0e36"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2b1da4aa82f5ad64"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6af2b76b8ad08277",
+      "node_id": "topology-node-941fdb70f2d4ba56",
+      "x": 150,
+      "y": 585,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5fe627cbc2e0961b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ab892e28712885ff"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-6e5d6bbfd2c092b5"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6c83719fe3200a58",
+      "node_id": "topology-node-5f054dd01e4b4c45",
+      "x": 511,
+      "y": 156,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8209542f9680b0fb"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-c984c905529e474a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f8303695cd3b4a29"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6cbdf6241227bbba",
+      "node_id": "topology-node-cf3a5ddb0d95018a",
+      "x": 169,
+      "y": 192,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-c98f6566b0672535",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c20f43643532c0b0"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5919dca45e0058ad",
+        "conductor-boundary-evidence-a2dc3adb5d479f1a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-302889f4b13a3878"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-6cd5f2d2102b9a57",
+      "node_id": "topology-node-8ec44a0e7fcbfa44",
+      "x": 711,
+      "y": 162,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-591f404a4cff2c13"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e0ac4506a9063227"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-002a33422ef7e645"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-703f362e100bef10",
+      "node_id": "topology-node-806c210b02b62244",
+      "x": 796,
+      "y": 341,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-3ee17ceb7ca3770d"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-34d5cc983decdab9"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-0c4d66dff98f2643"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-70eec6b8e36a24e8",
+      "node_id": "topology-node-ceffe8596d1d9b94",
+      "x": 885.5,
+      "y": 464,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a51ebfa8a72e147a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5b28c22e3fe1c280"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ba87a7fd69f87ff2"
+      ],
+      "wire_ids": [
+        "wire-e49784ea9fbccace"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-710a6f256b56e7b6",
+      "node_id": "topology-node-2343ee3ee7602f2d",
+      "x": 201.5,
+      "y": 173,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-043fdeab043b2c7f"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-8ffd58252e574145"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-540d4e65729a35b9"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-7320a035bd70c7cb",
+      "node_id": "topology-node-3f2296d658bf777c",
+      "x": 509,
+      "y": 743,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": "component-candidate-shape-region-ced2e35442263b03",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-b4e3697da3186ad5"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-674864a019702af3"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-32ba4392ee72b28b"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-77f8cd08561ff68d",
+      "node_id": "topology-node-17eaba476b22611c",
+      "x": 629,
+      "y": 508,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4329130f6972eff9"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a15e6f87273e48d9"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f9029e0b7b2e509f"
+      ],
+      "wire_ids": [
+        "wire-5234fe05526ca1da"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-78c0d9c6b3312ed3",
+      "node_id": "topology-node-91abe99b1ba315d4",
+      "x": 105,
+      "y": 390,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4a577c8384f529eb"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-26733a93351f2758"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1ae59f32b0d8ec71"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-79a638e514a7ed85",
+      "node_id": "topology-node-67f86e89a652b060",
+      "x": 153,
+      "y": 113,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-e80893118a8e7eab"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-d0d762115c38aa8d"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-db9b68498fa18685"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-79d0dfbebb902472",
+      "node_id": "topology-node-8019a80c288bd4e5",
+      "x": 868,
+      "y": 445,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-778956cfafa8cbcf"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-47fd0748077e8b55"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-bba06f65fd1f8909"
+      ],
+      "wire_ids": [
+        "wire-91f9658e74d6a5fe"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-7b1232ec85583772",
+      "node_id": "topology-node-c19bc053fae73262",
+      "x": 880.5,
+      "y": 416,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "low",
+      "component_id": "component-candidate-shape-region-c2335cc575d107b1",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a70fd7d3bbc0f36c"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-3e92d17328389115",
+        "conductor-boundary-evidence-51e31976b4c5107e"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-62426f840886e8d4"
+      ],
+      "wire_ids": [
+        "wire-ded6cca62fbe3cd9"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "INCORRECT",
+      "attribution_rationale": "attributed component is the pointer glyph of the 'SUB FUSE 15A' annotation leader line, not an engineering symbol; component owns zero symbol_primitives"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-7ba4c2c762a3ea5d",
+      "node_id": "topology-node-d830232df77863b0",
+      "x": 319,
+      "y": 412,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4f7d4f98a0af9552"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6b7a060195d9fb60"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-629c9cef330117ea"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-813d66f3175e68a1",
+      "node_id": "topology-node-c2b62bd2cf4013ad",
+      "x": 736,
+      "y": 414,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-7f8ee6e52e9f3fbb"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e36535172346e223"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2d0c1effc06e0b19"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-81651fa71898d52d",
+      "node_id": "topology-node-b1d9b6fe607b698f",
+      "x": 425.5,
+      "y": 526,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-16d7f86703017672"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-b6f71f7322d4bf33"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-74348e0a398b459e"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-818b4e19e45227c1",
+      "node_id": "topology-node-b7997ccd43a678b8",
+      "x": 149,
+      "y": 376,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-72516616f9266fab"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e7e59a49f119cbb7"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-a3de245442c11549"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-81c59e337b6de275",
+      "node_id": "topology-node-40207ce42840bafe",
+      "x": 367.5,
+      "y": 519,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8b5068ed794471f9"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-fc3527723b81a596"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-9bca6c6a32ccd637"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-829a8b4c10a2bf7a",
+      "node_id": "topology-node-0667d5934f57c3e5",
+      "x": 921,
+      "y": 338.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d0190a0b5856c0ab"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-9355fcdff6a62fcc"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-47a3a3b0f9766d21"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-835c533cb9ab9a7c",
+      "node_id": "topology-node-c03c609f51d4482b",
+      "x": 935,
+      "y": 488,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a54b7dd60b5bb00f"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a230140b80adebd9"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-97dbd9bea7aa1235"
+      ],
+      "wire_ids": [
+        "wire-9206bdddb7b10778"
+      ],
+      "electrical_net_ids": [
+        "electrical-net-d6fbaeb0e3e8c468"
+      ],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-836ca928a179d55e",
+      "node_id": "topology-node-87d3558ade937bfc",
+      "x": 106,
+      "y": 542,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8ac0b67ad79bbf43"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-d958c6944c8dfb3f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-065af909c4ed9b31"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-870d9090a5fcb512",
+      "node_id": "topology-node-86f4455c9aa3b698",
+      "x": 726,
+      "y": 506,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-9eb2ba29c7928064"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-da67455fb02fca59"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-9769da7074aa72d0"
+      ],
+      "wire_ids": [
+        "wire-85f0b64223ce4407"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-87250d4701edd231",
+      "node_id": "topology-node-4e0bbc98e53be1ba",
+      "x": 629.5,
+      "y": 556,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "medium",
+      "component_id": "component-candidate-shape-region-d1aefcaca5503ad9",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1283888410f6e1b7"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-3c249bb674c6bfc7",
+        "conductor-boundary-evidence-c6efe61f3d353818"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-8772585cc34ffdc5"
+      ],
+      "wire_ids": [
+        "wire-fd53d84a92e53bb4"
+      ],
+      "electrical_net_ids": [
+        "electrical-net-5de51cd3d5bac578"
+      ],
+      "attribution_verdict": "PLAUSIBLE",
+      "attribution_rationale": "attributed component is a small wire-to-sensor transition/lead marker directly adjacent to a round sensor symbol; plausibly a real (if undetected) lead of that sensor, not confirmed by an owned symbol_primitive"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-882604065c5b1d67",
+      "node_id": "topology-node-bda623dad5b36b39",
+      "x": 133.5,
+      "y": 182,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f0adef89d736d765"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-f3a991249184d3e6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-a2767e6445eeca5f"
+      ],
+      "wire_ids": [
+        "wire-2d3729e643e39ecb"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-8827e7b71853e251",
+      "node_id": "topology-node-bd4738a0bd5ed7f3",
+      "x": 518,
+      "y": 670,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-999b0b0509dfca7a",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f6ae1433b454e582"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-25013e4fb9c9f2e5"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-57e35de80255caba"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-8a621a290c5214cd",
+      "node_id": "topology-node-da907617cc7bb1b4",
+      "x": 848.5,
+      "y": 436,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-bfae05a427189376",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-9bfc5bea0e8b4502"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-2ee2979dc4bb6700",
+        "conductor-boundary-evidence-4dcb62f5e75f2d02"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-6446ca13b2cb1bf6"
+      ],
+      "wire_ids": [
+        "wire-0a3ab2e5ace89210"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-8a7b6fb67ed4eeab",
+      "node_id": "topology-node-801d8698d25e318a",
+      "x": 602,
+      "y": 176,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-662f939e3c62d641"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-bc09f9f9b40a8c45"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1c1780deb262a5bf"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-8b9c74742885946f",
+      "node_id": "topology-node-c1acd653faf5caf7",
+      "x": 880.5,
+      "y": 442,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "medium",
+      "component_id": "component-candidate-shape-region-c2335cc575d107b1",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-266c2ac4f90cf2dc"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-3c4c70dcc33b7cb2",
+        "conductor-boundary-evidence-676c814831cb20a1"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-32c1dd4f18840c58"
+      ],
+      "wire_ids": [
+        "wire-ded6cca62fbe3cd9"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "INCORRECT",
+      "attribution_rationale": "attributed component is the pointer glyph of the 'SUB FUSE 15A' annotation leader line, not an engineering symbol; component owns zero symbol_primitives"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-8c69badd22de79fa",
+      "node_id": "topology-node-81074a722a401853",
+      "x": 173.5,
+      "y": 157,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-b0cd403e04a447f9"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-2d3c79518e384f3e"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-bd06f08f2cffe5f3"
+      ],
+      "wire_ids": [
+        "wire-17ba2741981c1822"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-8e785e126cc60d41",
+      "node_id": "topology-node-906635fa82933639",
+      "x": 522,
+      "y": 569,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-66cc3bf64fb56f8a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-36dc361214553eb4"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-c20c4a38aaf8dc76"
+      ],
+      "wire_ids": [
+        "wire-5cd518c23de0b766"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9057d632a9fcfcb5",
+      "node_id": "topology-node-20e5fb969d103bcf",
+      "x": 850,
+      "y": 481.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a5f1be2eedfdf087"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-50bad97406aea512"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-c11660815fdc5ec5"
+      ],
+      "wire_ids": [
+        "wire-96ca064889ee1a93"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9250ed74edb85c9e",
+      "node_id": "topology-node-30452ea98fcc36d6",
+      "x": 834,
+      "y": 458,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "medium",
+      "component_id": "component-candidate-shape-region-bfae05a427189376",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-7d5484eea9800b6f"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-2103e5e2ac0a4145",
+        "conductor-boundary-evidence-f032c2c558f82262"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-10daf3e08e5d0699"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9465d76dc0adc19f",
+      "node_id": "topology-node-2546b9bd613d6d94",
+      "x": 287,
+      "y": 632,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d835ad6324280d48"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-11b20ca97921a5f6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-07647d1f3b5c3ed0"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-94c3703334d041e1",
+      "node_id": "topology-node-8c2db340c934676c",
+      "x": 656,
+      "y": 546,
+      "kind": "ground",
+      "terminal_role": "ground_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-791276441805b2e0",
+      "owned_primitive_count": 3,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4ac8896b17ba2982"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-c18a8d1baddd96cd",
+        "conductor-boundary-evidence-ee8ec241ead7410e"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2255f38a0b7c9406"
+      ],
+      "wire_ids": [
+        "wire-15c1f88ac1a9475e"
+      ],
+      "electrical_net_ids": [
+        "electrical-net-5aff8c9b1e804b5e"
+      ],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "attributed to a ChassisGround-classified component"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-94f61dbcf134d85b",
+      "node_id": "topology-node-dd913765eee99326",
+      "x": 275,
+      "y": 196,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1bda0d32da40dcac"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-03d79ea6329d1da1"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-80d8fee7aace3928"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9705e36f707368bd",
+      "node_id": "topology-node-97d5417b3cd57237",
+      "x": 129.5,
+      "y": 181,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1a4102133921e1f8"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-4ec73f8a9d5da320"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-70634fef4e92ff4c"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9aac1106bf2317a5",
+      "node_id": "topology-node-edf470d2e7b9600b",
+      "x": 736,
+      "y": 140,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-b8684ecc5f818dcd"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-2e33981313de5721"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ed4d83af6697d35f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9d7e7957c56e3777",
+      "node_id": "topology-node-4e01bf98e533924e",
+      "x": 629.5,
+      "y": 585,
+      "kind": "ground",
+      "terminal_role": "ground_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-1acbaeb7ac6ac87a",
+      "owned_primitive_count": 3,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-635c108be1f88fb2"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6725316fd6bfedcb",
+        "conductor-boundary-evidence-f797bf8cf6d8b777"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1c5b5060bf16928a"
+      ],
+      "wire_ids": [
+        "wire-fd53d84a92e53bb4"
+      ],
+      "electrical_net_ids": [
+        "electrical-net-5de51cd3d5bac578"
+      ],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "attributed to a ChassisGround-classified component"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9da9c73ab52013a3",
+      "node_id": "topology-node-028e65dcf3df4599",
+      "x": 149.5,
+      "y": 181,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-845947b0afd7451a",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-7ae5a1a6b8ee4408"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-9772a10c006290ae",
+        "conductor-boundary-evidence-f7f78a4aa1323147"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2e3cad086b57a744"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "PLAUSIBLE",
+      "attribution_rationale": "attributed component is the base/socket rectangle of a bulb symbol; endpoint sits at a wire T-junction directly below the bulb; not confirmed by an owned symbol_primitive; endpoint is not part of any physical Wire (dangling)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9ddc7b682001aebe",
+      "node_id": "topology-node-df244b14c0522050",
+      "x": 169.5,
+      "y": 571,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-eec21dabd2d6deab"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ceb0e3bc29a6ad43"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-4d3aa0f6ec407645"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-9df5116844405b0f",
+      "node_id": "topology-node-8f6a800b37030c91",
+      "x": 869,
+      "y": 369,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-220188186225fa7b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-4e1aefd6c639a565"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e261356147d5804d"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-a0ba1457a84cb647",
+      "node_id": "topology-node-4b6fb9d208bdc68e",
+      "x": 829.5,
+      "y": 460,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "low",
+      "component_id": "component-candidate-shape-region-bfae05a427189376",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d2025d161f5a2792"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-368cec49099a8c58",
+        "conductor-boundary-evidence-535c1fe59de53a2f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-0ee0157a454ffb9e"
+      ],
+      "wire_ids": [
+        "wire-e5f7ff766561e9b7"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-a2fa3f96d19c31dc",
+      "node_id": "topology-node-25957ad9a25683f7",
+      "x": 717.5,
+      "y": 140,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f2a85cdf4a44ce6c"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-eb2c2e373d1772bb"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-d72f63d0ed039574"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-a33b6b776bb7b02e",
+      "node_id": "topology-node-b4c76b49ec1cee03",
+      "x": 354,
+      "y": 214,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-40abc2ede0a6569d"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-8a84ed04014a958d"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e1c5e90666924a9f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-a3749fef99e19502",
+      "node_id": "topology-node-8e40a1a373974cf0",
+      "x": 301,
+      "y": 180.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4d78bdf1d1f54701"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-3a16d430ad713865"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-da9a8ded4fa655c3"
+      ],
+      "wire_ids": [
+        "wire-a9f1d516e784e2d1"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-a4fbc50263389e55",
+      "node_id": "topology-node-5d605b18b256b61d",
+      "x": 337,
+      "y": 180.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1f8449de18561a61"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-26815e9000c5e0a0"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ad0338333c62fce3"
+      ],
+      "wire_ids": [
+        "wire-a9f1d516e784e2d1"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-a5c85a963f7b59e5",
+      "node_id": "topology-node-c67649e3bc8a5fe2",
+      "x": 400,
+      "y": 356,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1709a3c73122305a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-7867609a877d9418"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-08e5ddbf20950bce"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-a76258d604d2fc33",
+      "node_id": "topology-node-aad9622099be41a9",
+      "x": 530,
+      "y": 119,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-309396d23489713e"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-dbe08ab8b9e21228"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-6a087cf09e7c2ab6"
+      ],
+      "wire_ids": [
+        "wire-7eff48b68378dca4"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-a9954378b15c6433",
+      "node_id": "topology-node-10a6b80ff44eed96",
+      "x": 552,
+      "y": 499,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-9446c91771ba33a9"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-de2a3393eee7456a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-42d4d7027c6f1e23"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ac2c17656d47a567",
+      "node_id": "topology-node-48ce3fe0e6274ae5",
+      "x": 746,
+      "y": 423.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-26a0697b608cc82e"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-0323f10c7c45eb3f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-d47f381d8d112f9e"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ac3c3c065a14f691",
+      "node_id": "topology-node-2259b6972bc2f936",
+      "x": 441,
+      "y": 199,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4288bf914f3ac761"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-e622890e351b935d"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2fc0a2d7e6d70bff"
+      ],
+      "wire_ids": [
+        "wire-12ee7e2fbc4e73ec"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-acadc548c56e0952",
+      "node_id": "topology-node-2f60e70783d2e70d",
+      "x": 489,
+      "y": 166.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-0efe800f3355ffe6"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ce5de0ad0e4c9175"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-9c7ead366b2abb7e"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ad108e7be3bd0df8",
+      "node_id": "topology-node-4b652ad208b47f0c",
+      "x": 829.5,
+      "y": 435,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-bfae05a427189376",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-3acb2879cf9b6770"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-2d156e984b310aba",
+        "conductor-boundary-evidence-495bba90f89d7cd6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-5f58a82d73f4e7c4"
+      ],
+      "wire_ids": [
+        "wire-e5f7ff766561e9b7"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ad7ba480a4dcf732",
+      "node_id": "topology-node-67fa0055ae5a72c6",
+      "x": 376.5,
+      "y": 540,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-85efc7d566dbfbf5"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-364c4b02231d1ff0"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-97143c2c1540faaf"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-afaf6b2b8ba2d6e2",
+      "node_id": "topology-node-4c237cb18fb5e5f6",
+      "x": 529,
+      "y": 130,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-bc4d3fcbcd343a22"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-816f1b746851ee0f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-60c62ca8bbea289e"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-b04f3e60d05f909e",
+      "node_id": "topology-node-54d4690c100c740b",
+      "x": 868,
+      "y": 397,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-2b3f06fe1a535e74"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-71321a74efa39b07"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-933c0b72d17aabb8"
+      ],
+      "wire_ids": [
+        "wire-91f9658e74d6a5fe"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-b06048fbeb206768",
+      "node_id": "topology-node-592dd6d879e0fb61",
+      "x": 574.5,
+      "y": 453,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5226a6c84a66b6be"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-0e9b7eaeb4b1b112"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-88d5064361a75356"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-b231cfaf0a4b15b8",
+      "node_id": "topology-node-331d28cce69de7eb",
+      "x": 414,
+      "y": 161,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-3f0a74420345fe71"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-cc62c18550927e77"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-5ba352c7ad55a38f"
+      ],
+      "wire_ids": [
+        "wire-40875c91072fa260"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-b46785daa4ff308f",
+      "node_id": "topology-node-4aa2c1ec2fab710f",
+      "x": 794,
+      "y": 351,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-9d895654c740824f"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-07dff69504ecc124"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-5f9834008ba61825"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-b5641b0547206a91",
+      "node_id": "topology-node-60c7b967b8b24ce1",
+      "x": 606.5,
+      "y": 589,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-142a098f08bc9c35"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6089ce691df28c40"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-585717998520ddc3"
+      ],
+      "wire_ids": [
+        "wire-9352bd9940130082"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-b6e8f29f4399342e",
+      "node_id": "topology-node-eb9812077e868c5f",
+      "x": 468,
+      "y": 274,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-6a61dfd3002747dd"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-7b4d8ab79a08d808"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-a2fec2d46e46f84b"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-b9f0a59d79f20f7f",
+      "node_id": "topology-node-f10b9356f16606bd",
+      "x": 520,
+      "y": 429.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-9ed4c1a3b8fb468d"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a545746bd63bffb6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1eb75f00cea25b13"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-bae93adb5ee5ca59",
+      "node_id": "topology-node-cbc5ced2d47f0982",
+      "x": 736,
+      "y": 518,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-e02a90ec5f166e15"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-870579225a2cd090"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-fe69d1cd0eca0243"
+      ],
+      "wire_ids": [
+        "wire-b87293c6bc606b9a"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-bb8c52ba80255fa6",
+      "node_id": "topology-node-f23104300e23c949",
+      "x": 584,
+      "y": 460,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-56cc6f5329a49624"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-4e2f9db0272dcd8e"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1221900a5c3f01ec"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-bfae64deea64562f",
+      "node_id": "topology-node-a6b6f37bbe043e25",
+      "x": 585.5,
+      "y": 585,
+      "kind": "ground",
+      "terminal_role": "ground_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-0edf5ce35037fec3",
+      "owned_primitive_count": 3,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a63f0a561d919ef6"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-8e823d6f07c42342",
+        "conductor-boundary-evidence-9d962ef87e339234"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-c352d00a03bea096"
+      ],
+      "wire_ids": [
+        "wire-49477c4a4828ab6e"
+      ],
+      "electrical_net_ids": [
+        "electrical-net-e1f70187ddfaca24"
+      ],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "attributed to a ChassisGround-classified component"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-bfc9692d6f0c7cd3",
+      "node_id": "topology-node-43f45832e7bfd5f1",
+      "x": 366,
+      "y": 429.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8b7955569aa3d057"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-414a3703f227c07f"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-9c3211e458b2f55d"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-c0701cfb50df81af",
+      "node_id": "topology-node-dfe266709ac50cff",
+      "x": 344,
+      "y": 221.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-7aae727bf63fb4f5"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-af2e16f873ab711d"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-6ecbb62ab38e2ed7"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-c186c4219714627d",
+      "node_id": "topology-node-df19dc14c0490f2e",
+      "x": 169.5,
+      "y": 542,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-21a92540bba97c70"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a562598ed42e0078"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-a333590062fcbde8"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-c329c5b61783bcfd",
+      "node_id": "topology-node-8c192f40c922de16",
+      "x": 656,
+      "y": 522,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5ade39348670aefd"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ca5032c0bbbc1d7e"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-d9a7a6174e9c0a77"
+      ],
+      "wire_ids": [
+        "wire-15c1f88ac1a9475e"
+      ],
+      "electrical_net_ids": [
+        "electrical-net-5aff8c9b1e804b5e"
+      ],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-c5e83e89444b83a6",
+      "node_id": "topology-node-36a06eeb1f783c04",
+      "x": 120,
+      "y": 418,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-50a78a0aa31321e4"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-13988204443d5bd2"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-74113658d05fb868"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-c68b526cba9cc6d3",
+      "node_id": "topology-node-7ae3fae29ce237c3",
+      "x": 611.5,
+      "y": 176,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-9a47bcdb7c588608"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-1ed865e9f7846612"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1621be0acffc643c"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-c6d93623f9ba19b5",
+      "node_id": "topology-node-218e9dac6fe4e163",
+      "x": 441.5,
+      "y": 670,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-8c8a78d667422364",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-39b24f2152c82fe5"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-04514bdfdd15a218"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e3e84d42798efd8f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-c80b61b754737ea4",
+      "node_id": "topology-node-e2de37bc02fbfbbe",
+      "x": 504,
+      "y": 119,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d9f5d306e11aedab"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-196f1bfb817a6531"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-576ab32cd3729425"
+      ],
+      "wire_ids": [
+        "wire-7eff48b68378dca4"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-caf0478e30752771",
+      "node_id": "topology-node-81335f722a6576ed",
+      "x": 173.5,
+      "y": 182,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-c98f6566b0672535",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-9d06e44b82c143c2"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-00e2e980556a2d68",
+        "conductor-boundary-evidence-b323ee0660c62fc1"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1b3eef98282ed8a6"
+      ],
+      "wire_ids": [
+        "wire-17ba2741981c1822"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ccbc7c22b9acbca1",
+      "node_id": "topology-node-bda903deb808841b",
+      "x": 258,
+      "y": 181,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-0354f8ed96111325"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-29277c61100a830a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-710572e9f0ffcc8b"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-cd7e6763698affaf",
+      "node_id": "topology-node-a47c1ac228cb4929",
+      "x": 168,
+      "y": 394,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1653dafd3582baac"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-45ace25713da0baf"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f2062a805e537814"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ce334dc2afbd4c92",
+      "node_id": "topology-node-ad5f635359a33a4e",
+      "x": 676.5,
+      "y": 457,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f6041f735529fc12"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6ce340445b6e1606"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-fa6bf80d3dc03a32"
+      ],
+      "wire_ids": [
+        "wire-45da48584643bb03"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-cf3d7ff80a348a52",
+      "node_id": "topology-node-bb8082de58729bf8",
+      "x": 280.5,
+      "y": 724,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a7d0e2ac31af07f3"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a3a1ce540fbe177c"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-a99542a0f4397b8d"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-cfa5dd57923c2cdd",
+      "node_id": "topology-node-7ede8a7562f6d69d",
+      "x": 727,
+      "y": 140,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-f3182885ffc84c5b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-c9c05745b10061da"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-065549eda60f85a5"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d0218291f703905c",
+      "node_id": "topology-node-2ef23385fecc4784",
+      "x": 568,
+      "y": 490,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-58216b071883b240"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-c85dbb7149b127db"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-0e8c3c9966f5fd60"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d4e23e2b1122335e",
+      "node_id": "topology-node-9b972db8360b44f2",
+      "x": 487,
+      "y": 176.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-af8a7fde8329a837"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-25d95a207647a9e6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-0ac56e30ae5efb49"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d4e6b4b5b6119e68",
+      "node_id": "topology-node-10afda5c9e37d8a6",
+      "x": 937,
+      "y": 491.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-31a29553d55473a0"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-1e9d92c695714895"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-c73def770a63a130"
+      ],
+      "wire_ids": [
+        "wire-1172a1d5305efe21"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d6264e2921d46b9e",
+      "node_id": "topology-node-41decc95a9002725",
+      "x": 289,
+      "y": 413,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d1939693f6604849"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-22138a211ba5ea03"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-3ba7bd2d43e0c2b3"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d70c86d659494f93",
+      "node_id": "topology-node-60a0e753f6f501a7",
+      "x": 667,
+      "y": 482,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c92b61531d4cf859"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6f55a4d5747725b4"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-f8e0fe185ed94437"
+      ],
+      "wire_ids": [
+        "wire-ea9c89f1375d5669"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d782d3db62a6d208",
+      "node_id": "topology-node-ae56d7dc80180e98",
+      "x": 520,
+      "y": 141.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-a2a0796ad5f5e3f7"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-925449f31720ad40"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-75af8a5b89c44c11"
+      ],
+      "wire_ids": [
+        "wire-ffc584f15ee8a1d7"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d7c0b9fc7fbdee8e",
+      "node_id": "topology-node-c70766040b2ccbb7",
+      "x": 112,
+      "y": 565.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-53c91094946ac964"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-95b9e4a12b35265b"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-93d63e06fe2fd4cc"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d7c3a49b639d38f5",
+      "node_id": "topology-node-fc866d2d01704a7f",
+      "x": 535,
+      "y": 509,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-cbf053c745417e4b"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-8b2059671d0adfcc"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-0cbddfe1265d8125"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-d96bf21d4586af52",
+      "node_id": "topology-node-61f42c0720be8d7c",
+      "x": 220,
+      "y": 181,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-8c65ed66162d9759"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-d2014d67de2cf9d1"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-375a6bcb5158bb5b"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-df45d71b3ed14db1",
+      "node_id": "topology-node-b933952640172985",
+      "x": 843.5,
+      "y": 458,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "medium",
+      "component_id": "component-candidate-shape-region-bfae05a427189376",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-b169fd2c12a6c1db"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-08784568c8c5c3f5",
+        "conductor-boundary-evidence-e06b4fe336334d9b"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-83dabebd95553cc9"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e0daa489946f8a79",
+      "node_id": "topology-node-c3dcdb06ae2305db",
+      "x": 226,
+      "y": 191,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-7a15f40d33547228"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-24ee120a39076133"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1a8a3eab67258aac"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e0ee015499a53796",
+      "node_id": "topology-node-42f48136134a0050",
+      "x": 403,
+      "y": 343.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5679db5962f91c7a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-9a3de1d3941b1379"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1bded02ce9eaf98a"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e198f22a16fca4be",
+      "node_id": "topology-node-d441f2b409d83043",
+      "x": 717,
+      "y": 518,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c3eae5e19a28ec78"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-0f1b65192f1ce08c"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-651b270c7cbf7ddc"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e20b33983139e153",
+      "node_id": "topology-node-9f9787515524fbfe",
+      "x": 154.5,
+      "y": 722,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-96d961b2ecbfd6f9",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-d280c82607bf3aae"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5546b19cd7c39c75"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1fce744e44266d66"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e22a8f76a48ea0e8",
+      "node_id": "topology-node-8093cba12b881440",
+      "x": 485,
+      "y": 198.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-4a3a1c3ba0bb54e9"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-539b9ea418d085a7"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-61d86155f46dc6a3"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e2da402e3f4daf60",
+      "node_id": "topology-node-da85e217cc7261b3",
+      "x": 848.5,
+      "y": 460,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "low",
+      "component_id": "component-candidate-shape-region-bfae05a427189376",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c5b10ac692f578e3"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-5fbdd7eaef6d58a6",
+        "conductor-boundary-evidence-c1399e4a7627b2a9"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-b407a1cf416fff1d"
+      ],
+      "wire_ids": [
+        "wire-0a3ab2e5ace89210"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e383a82dc2084f65",
+      "node_id": "topology-node-3355e4c7b328fbf9",
+      "x": 245,
+      "y": 202,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-054c8277f3c4eece"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-14c5ed6af51c1e89"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-2424277f8d902cfe"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e52d704d45ca9cb6",
+      "node_id": "topology-node-578a0324ef962e7f",
+      "x": 462,
+      "y": 355,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-80f7ac7a5d001cd2"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-885b7aeb1f3daf5b"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-598ba8ad6163f88e"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e62c42ed8a379552",
+      "node_id": "topology-node-744e62ceea0c4f2e",
+      "x": 168.5,
+      "y": 419,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-e6b60c94c0390995"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-b50fde0230aee55b"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-3a9424ce518b356f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e6e2540496a095fa",
+      "node_id": "topology-node-6ed87da1e4abb4e3",
+      "x": 834.5,
+      "y": 436,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-bfae05a427189376",
+      "owned_primitive_count": 2,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c37cd59176cfd222"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6f6f998b77c1cd1d",
+        "conductor-boundary-evidence-f5c6747c493db280"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-8bfde40d2958ba76"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "owning component has 2 owned symbol_primitive(s)"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e7e0eb601a0d1eee",
+      "node_id": "topology-node-580934977c7ecfcc",
+      "x": 685.5,
+      "y": 457,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-30891d7397fe1dcc"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-fbd7b9d11cf87a53"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-1522e6c29193d450"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-e9392250710fc19a",
+      "node_id": "topology-node-cf10dd596d2bfc16",
+      "x": 885.5,
+      "y": 435,
+      "kind": "component_terminal",
+      "terminal_role": "component_terminal",
+      "confidence": "medium",
+      "component_id": "component-candidate-shape-region-c2335cc575d107b1",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5c3b2e430ca59c69"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-3fa248dd9d0f2a4c",
+        "conductor-boundary-evidence-d86fc153139ad453"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-0921790baa8fa13f"
+      ],
+      "wire_ids": [
+        "wire-e49784ea9fbccace"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "INCORRECT",
+      "attribution_rationale": "attributed component is the same 'SUB FUSE 15A' annotation leader-line pointer glyph as wire-ded6cca62fbe3cd9; component owns zero symbol_primitives"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-eabcc893201c3ce8",
+      "node_id": "topology-node-014307e4e9fb41c2",
+      "x": 862.5,
+      "y": 463,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-3b131ccfc1d0393d"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ee19888aed2c3401"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-02bd944d8374e9a3"
+      ],
+      "wire_ids": [
+        "wire-cee803c9104ab21b"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ec9425413bdc1182",
+      "node_id": "topology-node-7f51055f7951a488",
+      "x": 338,
+      "y": 510,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-476abaef10ec4dd9"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-12a6fa2749c5ebf6"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-11b1ac9b876a3e4f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-eca04b37dd6bd537",
+      "node_id": "topology-node-60d8b367b8c0b5e2",
+      "x": 606.5,
+      "y": 557,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-833311c61c438b5a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-4442feb44ca80052"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-6a5adcad5aea3dd6"
+      ],
+      "wire_ids": [
+        "wire-9352bd9940130082"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ed2218acc42be580",
+      "node_id": "topology-node-829da1c12d927cff",
+      "x": 600,
+      "y": 490,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-332da4e77473212f"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-f360fa1f12d8e1d3"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-56898d20ccc5ce81"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-ee77dbb5bbd2ee97",
+      "node_id": "topology-node-ea7ba31d8ab20101",
+      "x": 854,
+      "y": 490.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-6f80f43c49a56381"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6033dcb704952e25"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-a53fd4290301313f"
+      ],
+      "wire_ids": [
+        "wire-13663e678a9f153e"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f007624f79ce21d1",
+      "node_id": "topology-node-c2322c26454797c3",
+      "x": 843.5,
+      "y": 522,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-5f1d0794112d79a9"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6dfad5ec5a8c000d"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-fb344a4fa9930b5f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f0764d26b2c0817f",
+      "node_id": "topology-node-89b2a05cccc4cc31",
+      "x": 320.5,
+      "y": 540,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-6da2d84978dcb2d0"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-8fdbc33d9d0d024c"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-b2216e6b02a7cc80"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f163a95666f05ef7",
+      "node_id": "topology-node-8f0ad82a8c3d243b",
+      "x": 711,
+      "y": 146.5,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c4eb8a42508f8b2a"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-a9b0d55b1a06b154"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-18d7df44f4ef5662"
+      ],
+      "wire_ids": [
+        "wire-071e4ff9452e508f"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f172ca92162181be",
+      "node_id": "topology-node-1143b88879a8920a",
+      "x": 687,
+      "y": 186,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-01a1860f6c4483f1"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-8fdcdb626e6f5fb4"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-5615dd0dfc97ef7f"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f1884aa8e47ccd73",
+      "node_id": "topology-node-dd4398b40f0aedd5",
+      "x": 717,
+      "y": 457,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-71adc05c7f4798cf"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-6dbc0b493899ddd9"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-13ecb6414421dca9"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f3a69e5bbf8fd165",
+      "node_id": "topology-node-0a940e03d30d0e2a",
+      "x": 121,
+      "y": 206,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c695d8d4d787fcc3"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-52ed218cf0ebc0a9"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-ab20c7c89b8ff64d"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f7750695308a6e54",
+      "node_id": "topology-node-6df8ece52cd9da63",
+      "x": 476,
+      "y": 569,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-82edddf5e3577341"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-851c4d686bd63ae3"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e494c6d6c5ecb5d7"
+      ],
+      "wire_ids": [
+        "wire-5cd518c23de0b766"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f7eaae07283f4a03",
+      "node_id": "topology-node-90ff91c62269ac46",
+      "x": 104,
+      "y": 173,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-76509af02919fe61"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-3ed15724e548039b"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-e80213246b17fe23"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f85354609dedf8c7",
+      "node_id": "topology-node-1550da10bce92315",
+      "x": 122,
+      "y": 547,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1dc69b16186563f7"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-fb98c40d01765fd4"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-32d225cf3af27479"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f89074f974f12a9c",
+      "node_id": "topology-node-33c447297bd7daff",
+      "x": 348,
+      "y": 510,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-2c275ad0eb25cbb0"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-7fdf33cf9aaecd7a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-3870bdf468d6cf34"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-f8d1198367022427",
+      "node_id": "topology-node-866875113c5ef050",
+      "x": 327.5,
+      "y": 742,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "high",
+      "component_id": "component-candidate-shape-region-0ed2e1205d6c44fd",
+      "owned_primitive_count": 0,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-aed446464f9dce08"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-0e92fc8b99540e0a"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-bef402a7ed44bd80"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-fb1e21ccc97b1fc8",
+      "node_id": "topology-node-542ff69c68381f54",
+      "x": 368,
+      "y": 412,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-c0189b9969d47a36"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-1cbe1c64f4f457c2"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-095237c347179c12"
+      ],
+      "wire_ids": [],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-fcde124a9afe6f92",
+      "node_id": "topology-node-8ff9ef5c9fda63cd",
+      "x": 726,
+      "y": 457,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-395103b9a370d5ba"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-95f651f96916b8dd"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-90f9b9809cf8c322"
+      ],
+      "wire_ids": [
+        "wire-85f0b64223ce4407"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    },
+    {
+      "endpoint_id": "endpoint-candidate-feafdbe9561190a7",
+      "node_id": "topology-node-bd1ed6d36c6761d1",
+      "x": 449,
+      "y": 161,
+      "kind": "geometric",
+      "terminal_role": "unknown",
+      "confidence": "low",
+      "component_id": null,
+      "owned_primitive_count": null,
+      "boundary_resolution_ids": [
+        "conductor-boundary-resolution-1e958863337f0908"
+      ],
+      "boundary_evidence_ids": [
+        "conductor-boundary-evidence-ad5fce88c7889347"
+      ],
+      "endpoint_semantic_reconstruction_ids": [
+        "endpoint-semantic-reconstruction-06b728f0cb4d80fc"
+      ],
+      "wire_ids": [
+        "wire-40875c91072fa260"
+      ],
+      "electrical_net_ids": [],
+      "attribution_verdict": "CONFIRMED",
+      "attribution_rationale": "geometric conductor end; no terminal/component ownership claimed"
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "findings": [
+    {
+      "id": "AUDIT-004-001",
+      "title": "Systemic: circular_symbol components with zero owned symbol_primitives can absorb terminal attribution by proximity alone",
+      "severity": "HIGH",
+      "category": "ownership / evidence architecture",
+      "description": "TerminalLocationDetector (src/topology/terminal_location_detector.cpp) computes component-terminal attribution purely from geometric distance between an endpoint and a component's bounding box (attachment_distance / point_to_rect_boundary), gated only by TerminalLocationConfig::boundary_tolerance (8.0px). It does not require the candidate component to own any SymbolPrimitive (lead/terminal geometry) establishing that the component actually has a terminal at that location. Of the 26 circular_symbol components in the current TRX300 extraction, 21 (81%) own zero SymbolPrimitives; 3 of those 21 happen to have a wire endpoint fall within boundary_tolerance and were attributed a component_terminal identity purely by that proximity accident. The other 18 escaped only because no endpoint happened to land close enough - not because of any ownership check. This is confirmed to be architectural (evidence-generation-level), not isolated to one shape.",
+      "evidence": {
+        "source_files": [
+          "src/topology/terminal_location_detector.cpp"
+        ],
+        "circular_symbol_components_total": 26,
+        "circular_symbol_components_zero_primitives": 21,
+        "zero_primitive_components_with_attribution": 3,
+        "affected_components": [
+          "component-candidate-shape-region-c2335cc575d107b1",
+          "component-candidate-shape-region-d1aefcaca5503ad9",
+          "component-candidate-shape-region-845947b0afd7451a"
+        ],
+        "affected_endpoints": [
+          "endpoint-candidate-7b1232ec85583772",
+          "endpoint-candidate-8b9c74742885946f",
+          "endpoint-candidate-e9392250710fc19a",
+          "endpoint-candidate-87250d4701edd231",
+          "endpoint-candidate-9da9c73ab52013a3"
+        ]
+      },
+      "earliest_defective_pipeline_stage": "TerminalLocationDetector::detect (terminal_candidate generation) - the ownership gap is introduced here and is never subsequently re-verified against SymbolPrimitive ownership by ConductorBoundaryResolver, EndpointSemanticReconstructor, or any later stage.",
+      "downstream_impact": "WIRE-ONLY for 4 of 5 affected endpoints (wire_semantics component attribution only, no topology/net corruption); one instance (endpoint-candidate-87250d4701edd231) is WIRE-ONLY but on a wire that participates in a resolved, high-confidence Ground-role electrical net.",
+      "not_fixed": true
+    },
+    {
+      "id": "AUDIT-004-002",
+      "title": "Known defect wire-ded6cca62fbe3cd9 is one instance of AUDIT-004-001, not isolated",
+      "severity": "HIGH",
+      "category": "terminal attribution",
+      "description": "wire-ded6cca62fbe3cd9's BOTH endpoints (endpoint-candidate-7b1232ec85583772 at (880.5,416) and endpoint-candidate-8b9c74742885946f at (880.5,442)) are attributed as component_terminal to component-candidate-shape-region-c2335cc575d107b1, a 7x7px component classified circular_symbol/geometrically_classified with zero owned SymbolPrimitives. Direct visual inspection of samples/trx300ODG.png at this location (crop (830,350)-(950,500)) shows this component is the small pointer/dot glyph where the 'SUB FUSE 15A' text label's leader line touches the right-hand vertical conductor between a bulb-holder connector box above and a fuse-holder enclosure below - annotation geometry, not an engineering symbol with real terminals. A THIRD, separate topology node/endpoint (endpoint-candidate-e9392250710fc19a, on a different wire, wire-e49784ea9fbccace) independently attributes to this SAME component. All three are distinct conductor_end topology nodes, not a shared splice/crossing node - proving this is not a one-off coincidence but the same architectural gap (AUDIT-004-001) recurring against the same spurious component.",
+      "evidence": {
+        "wire_id": "wire-ded6cca62fbe3cd9",
+        "endpoint_a": "endpoint-candidate-7b1232ec85583772",
+        "endpoint_b": "endpoint-candidate-8b9c74742885946f",
+        "attributed_component": "component-candidate-shape-region-c2335cc575d107b1",
+        "attributed_component_bounds": {
+          "x": 874,
+          "y": 430,
+          "width": 7,
+          "height": 7
+        },
+        "attributed_component_owned_primitives": 0,
+        "topology_edge": "topology-edge-9760e3ea7c75d9c9",
+        "conductor_segment": "normalized-conductor-segment-01eda2b703cc25ab",
+        "identity_evidence_ids": [
+          "conductor-boundary-resolution-a70fd7d3bbc0f36c",
+          "conductor-boundary-resolution-266c2ac4f90cf2dc"
+        ],
+        "boundary_evidence_chain": [
+          "conductor-boundary-evidence-51e31976b4c5107e (kind=terminal_candidate, source=terminal-recognition-489b9e82fae5a1e3)",
+          "conductor-boundary-evidence-3e92d17328389115 (kind=endpoint_semantic_reconstruction, source=endpoint-semantic-reconstruction-62426f840886e8d4)",
+          "conductor-boundary-evidence-676c814831cb20a1 (kind=terminal_candidate, source=terminal-candidate-endpoint-candidate-8b9c74742885946f:component-candidate-shape-region-c2335cc575d107b1)",
+          "conductor-boundary-evidence-3c4c70dcc33b7cb2 (kind=endpoint_semantic_reconstruction, source=endpoint-semantic-reconstruction-32c1dd4f18840c58)"
+        ],
+        "competing_attribution": "none registered nearby - the real bulb-holder connector box above and the fuse enclosure (component-candidate-shape-region-0771bb11fe6c347d at (870,517,52,29)) below are not close enough to have been considered by TerminalLocationDetector's nearest-component search; the connector box directly above appears not to be represented as any ComponentCandidate at all",
+        "third_wire_sharing_same_spurious_component": "wire-e49784ea9fbccace (endpoint-candidate-e9392250710fc19a)"
+      },
+      "verdict": "BOTH endpoint attributions on wire-ded6cca62fbe3cd9 are INCORRECT. The tiny nearby shape is annotation/leader-line geometry, misclassified upstream as a circular_symbol component.",
+      "earliest_defective_pipeline_stage": "ShapeDetector's geometric classification of the annotation-leader-line dot as a circular_symbol ComponentCandidate is the earliest point the defect could have been prevented; TerminalLocationDetector then compounds it by attributing terminals to that component without any ownership check.",
+      "downstream_impact": "WIRE-ONLY (wire_semantics.start_component_id / end_component_id are wrong; Wire identity, topology_edges, conductor_segments, and electrical_net membership are unaffected - this wire has no electrical_net_id in wire_semantics at all).",
+      "not_fixed": true
+    },
+    {
+      "id": "AUDIT-004-003",
+      "title": "Zero-primitive component_terminal attribution touches a wire that participates in a resolved Ground-role electrical net",
+      "severity": "MEDIUM",
+      "category": "terminal attribution / ownership",
+      "description": "wire-fd53d84a92e53bb4's start endpoint (endpoint-candidate-87250d4701edd231 at (629.5,556)) is attributed as component_terminal to component-candidate-shape-region-d1aefcaca5503ad9 (8x10px, circular_symbol, zero owned SymbolPrimitives). Visual inspection (crop (580,500)-(680,600)) shows this small rectangle sits directly above a round zigzag sensor symbol (near labels 'OIL TEMP' / 'PULSE GEN'), consistent with a real (if geometrically undetected) lead-in transition for that sensor - more plausible ownership than AUDIT-004-002, but not confirmed by any owned SymbolPrimitive evidence. This wire's OTHER endpoint is a confirmed-genuine ChassisGround (component-candidate-shape-region-1acbaeb7ac6ac87a, per AP-DIAG-AUDIT-003 section 4), and the wire's electrical_net_id (electrical-net-5de51cd3d5bac578) is resolved at high confidence and independently verified as a genuine ground-role net. The wire's own identity, topology path, and net role are NOT in question; only the semantic component-attribution metadata at its non-ground end is unverified by primitive ownership evidence.",
+      "evidence": {
+        "wire_id": "wire-fd53d84a92e53bb4",
+        "affected_endpoint": "endpoint-candidate-87250d4701edd231",
+        "attributed_component": "component-candidate-shape-region-d1aefcaca5503ad9",
+        "attributed_component_bounds": {
+          "x": 629,
+          "y": 543,
+          "width": 8,
+          "height": 10
+        },
+        "other_endpoint": "endpoint-candidate-9d7e7957c56e3777",
+        "other_endpoint_component": "component-candidate-shape-region-1acbaeb7ac6ac87a (confirmed genuine ChassisGround per AP-DIAG-AUDIT-003)",
+        "electrical_net_id": "electrical-net-5de51cd3d5bac578",
+        "electrical_net_confidence": "high"
+      },
+      "verdict": "PLAUSIBLE / AMBIGUOUS - not confirmed correct, not demonstrably incorrect.",
+      "earliest_defective_pipeline_stage": "Same as AUDIT-004-001 (TerminalLocationDetector ownership gap); ShapeDetector's failure to detect a SymbolPrimitive lead for the sensor symbol is a contributing upstream gap.",
+      "downstream_impact": "WIRE-ONLY (net role/membership independently verified correct and unaffected; only wire_semantics.start_component_id is unverified).",
+      "not_fixed": true
+    },
+    {
+      "id": "AUDIT-004-004",
+      "title": "Dangling zero-primitive component_terminal endpoint with no downstream Wire",
+      "severity": "LOW",
+      "category": "terminal attribution",
+      "description": "endpoint-candidate-9da9c73ab52013a3 (149.5,181) is attributed component_terminal to component-candidate-shape-region-845947b0afd7451a (18x24px, circular_symbol, zero owned SymbolPrimitives, high confidence) but is not an endpoint of any of the 35 physical Wire records - it is dangling. Visual inspection (crop (100,130)-(220,220)) shows this endpoint sits at a wire T-junction directly below a bulb symbol, plausibly belonging to that bulb's socket, though not confirmed by owned SymbolPrimitive evidence.",
+      "evidence": {
+        "endpoint_id": "endpoint-candidate-9da9c73ab52013a3",
+        "attributed_component": "component-candidate-shape-region-845947b0afd7451a",
+        "attributed_component_bounds": {
+          "x": 145,
+          "y": 158,
+          "width": 18,
+          "height": 24
+        },
+        "wire_membership": "none (not a start_endpoint or end_endpoint of any Wire)"
+      },
+      "verdict": "PLAUSIBLE / AMBIGUOUS.",
+      "earliest_defective_pipeline_stage": "Same as AUDIT-004-001.",
+      "downstream_impact": "NO DOWNSTREAM IMPACT (not attached to any Wire, topology edge beyond its own node, or electrical net).",
+      "not_fixed": true
+    },
+    {
+      "id": "AUDIT-004-005",
+      "title": "Ground endpoint coverage gap (re-audit) confirmed as geometry/tolerance gap, not terminal-recognition logic defect",
+      "severity": "MEDIUM",
+      "category": "ground endpoint coverage",
+      "description": "Re-audited the 2 of 6 genuine ChassisGround components lacking a resolved Ground endpoint (component-candidate-shape-region-5aa211846bb7891d and component-candidate-shape-region-6b6ccc2d59afe578, both previously identified by AP-DIAG-AUDIT-003 section 4). For 5aa211846bb7891d, the nearest endpoint candidate (endpoint-candidate-159125bfa711f45b) is ~16px from the component's bounding box - beyond TerminalLocationConfig::boundary_tolerance (8.0px) - so no terminal_candidate was ever generated for it (ground_status=unresolved, boundary_status=unresolved). For 6b6ccc2d59afe578, the nearest endpoint is ~37px away - no endpoint is close enough to be considered at all. Both are consistent with a geometry/tolerance gap: real conductor endpoints exist, but the raster's drawn ground-stem-to-conductor connection is longer or thinner than what boundary_tolerance accounts for, or ShapeDetector's ground-bar bounding box does not extend up to include the stem's true endpoint. This is NOT the same failure mode as AUDIT-004-001/002/003 (that pattern is a spurious ownership match at short distance; this is a genuine absence of any candidate at all, geometry/gap in nature) and no shared root cause was found - not combined per the task's instruction.",
+      "evidence": {
+        "component_1": "component-candidate-shape-region-5aa211846bb7891d",
+        "component_1_nearest_endpoint": "endpoint-candidate-159125bfa711f45b",
+        "component_1_nearest_distance_px": 16.3,
+        "component_2": "component-candidate-shape-region-6b6ccc2d59afe578",
+        "component_2_nearest_endpoint": "endpoint-candidate-bae93adb5ee5ca59",
+        "component_2_nearest_distance_px": 37.0,
+        "boundary_tolerance_px": 8.0
+      },
+      "verdict": "Geometry/boundary-tolerance gap, not a terminal-recognition logic issue, not a boundary-resolution logic issue, not an intentional representation limitation, and not sharing a root cause with AUDIT-004-001.",
+      "earliest_defective_pipeline_stage": "ShapeDetector ground-bar bounding-box extraction (detect_ground_symbols) most plausibly under-bounds the stem, or the source raster's stem-to-conductor connection genuinely exceeds boundary_tolerance; not conclusively isolated further without production instrumentation, which this AUDIT-ONLY AP does not perform.",
+      "downstream_impact": "NO DOWNSTREAM IMPACT beyond the already-known absence of a Ground endpoint/net membership for these 2 components (unchanged from AP-DIAG-AUDIT-003).",
+      "not_fixed": true
+    },
+    {
+      "id": "AUDIT-004-006",
+      "title": "diagram_furniture components do not exhibit the same failure mode (negative finding)",
+      "severity": "LOW",
+      "category": "false-positive terminal search",
+      "description": "11 geometric-kind endpoints were found geometrically inside or within boundary_tolerance of a component's bounding box (several at distance 0, i.e. literally inside it) yet remained unattributed (kind=geometric, component_id empty). All 11 owning components are diagram_furniture-kind (the switch-continuity table cells identified as false positives in AP-DIAG-AUDIT-002/003). TerminalCandidateKind::kind_for_component's default case (Unknown, for any ComponentCandidateKind not Ground/Enclosure/CircularSymbol/PrimitiveSymbol) combined with downstream filtering appears to prevent diagram_furniture from generating spurious component_terminal attribution, unlike circular_symbol (AUDIT-004-001). This is reported as a negative finding: the ownership gap does not affect every component kind uniformly, which narrows where remediation would need to focus in a future fix AP.",
+      "evidence": {
+        "unattributed_but_overlapping_endpoint_count": 11,
+        "all_owning_components_kind": "diagram_furniture"
+      },
+      "verdict": "No defect found in this specific sub-case.",
+      "earliest_defective_pipeline_stage": "N/A",
+      "downstream_impact": "NO DOWNSTREAM IMPACT.",
+      "not_fixed": true
+    }
+  ]
+}

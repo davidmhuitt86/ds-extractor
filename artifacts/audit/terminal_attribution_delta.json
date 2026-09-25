@@ -1,0 +1,43 @@
+{
+  "prior_ap": "AP-DIAG-AUDIT-003",
+  "prior_classification": {
+    "wire_id": "wire-ded6cca62fbe3cd9",
+    "severity": "LOW",
+    "reason_for_low": "isolated attribution uncertainty, not yet known whether it was isolated or systemic"
+  },
+  "this_ap": "AP-DIAG-AUDIT-004",
+  "determination": "B - broader terminal-attribution failure mode (not isolated)",
+  "reclassification": {
+    "wire_id": "wire-ded6cca62fbe3cd9",
+    "new_severity": "HIGH",
+    "reason": "The same spurious component (component-candidate-shape-region-c2335cc575d107b1, a zero-owned-symbol_primitive circular_symbol that visual inspection confirms is an annotation leader-line pointer glyph, not an engineering symbol) independently absorbs a THIRD wire endpoint (endpoint-candidate-e9392250710fc19a, on wire-e49784ea9fbccace) at a distinct topology node. The root cause is architectural: TerminalLocationDetector attributes component_terminal identity purely by geometric proximity to a component's bounding box, without verifying the component owns any SymbolPrimitive lead/terminal evidence. 21 of 26 circular_symbol components (81%) in this diagram own zero SymbolPrimitives; only proximity luck determines which ones end up mis-attributing a wire endpoint (3 of 21 did)."
+  },
+  "endpoint_instances_before_this_audit": 1,
+  "endpoint_instances_after_this_audit": {
+    "confirmed_same_failure_mode_incorrect": 3,
+    "confirmed_same_failure_mode_plausible_ambiguous": 2,
+    "total_flagged": 5,
+    "total_wire_endpoint_instances_examined": 70,
+    "total_endpoint_candidates_examined": 203
+  },
+  "wires_affected": [
+    "wire-ded6cca62fbe3cd9",
+    "wire-e49784ea9fbccace",
+    "wire-fd53d84a92e53bb4"
+  ],
+  "wire_count_before_after_this_audit": {
+    "before": 35,
+    "after": 35,
+    "note": "AUDIT-ONLY AP; no Wire record was added, removed, or modified. The 35 distinct physical Wire records established by AP-DIAG-FIX-004 are unchanged."
+  },
+  "ground_endpoint_coverage_gap": {
+    "prior_ap": "AP-DIAG-AUDIT-003",
+    "prior_severity": "MEDIUM",
+    "this_ap_finding": "AUDIT-004-005",
+    "reclassification": "unchanged (MEDIUM) - confirmed as geometry/boundary-tolerance gap, not combined with the terminal-attribution failure mode; no shared root cause established"
+  },
+  "production_code_changes": "none",
+  "wire_semantics_changes": "none",
+  "topology_changes": "none",
+  "electrical_net_changes": "none"
+}

@@ -259,7 +259,12 @@ int main() {
     // shared by e1, e2, AND e3) - a genuine evidence contradiction, since
     // one physical conductor cannot continue in two directions at once.
     // Both candidate continuations are produced, but marked Conflicted;
-    // neither is silently preferred.
+    // neither is silently preferred. AP-WIRE-FIX-003 regression: before
+    // that fix, walking forward from every eligible endpoint independently
+    // (ep-a, ep-b, AND ep-c) rediscovered this same three-way fork from
+    // each of its own tied edges, producing a spurious third pairing
+    // (ep-b, ep-c) that no single evidence-consistent traversal ever
+    // actually walked.
     {
         std::vector<TopologyNode> nodes = {
             make_node("n-a", TopologyNodeType::ConductorEnd),
@@ -286,6 +291,128 @@ int main() {
         }
         assert(find_wire_between(artifacts.wires, "ep-a", "ep-b") != nullptr);
         assert(find_wire_between(artifacts.wires, "ep-a", "ep-c") != nullptr);
+    }
+
+    // AP-WIRE-FIX-003 regression: two independent ConductorSegment groups
+    // meet at the SAME splice - segX (tied by e1/e2/e3, genuinely
+    // ambiguous) and segY (tied only by e4/e5, unambiguous). The fix's
+    // per-(node, segment) ambiguity dedup must not confuse the two groups:
+    // segX still yields exactly its 2 Conflicted candidates (never merged
+    // with, or suppressed by, segY's unrelated pairing), and segY's own
+    // unambiguous pass-through wire is unaffected by segX sharing the same
+    // physical node.
+    {
+        std::vector<TopologyNode> nodes = {
+            make_node("n-a", TopologyNodeType::ConductorEnd),
+            make_node("n-splice", TopologyNodeType::Splice),
+            make_node("n-b", TopologyNodeType::ConductorEnd),
+            make_node("n-c", TopologyNodeType::ConductorEnd),
+            make_node("n-d", TopologyNodeType::ConductorEnd),
+            make_node("n-e", TopologyNodeType::ConductorEnd)};
+        std::vector<TopologyEdge> edges = {
+            make_edge("e1", "n-a", "n-splice", "segX"),
+            make_edge("e2", "n-splice", "n-b", "segX"),
+            make_edge("e3", "n-splice", "n-c", "segX"),
+            make_edge("e4", "n-splice", "n-d", "segY"),
+            make_edge("e5", "n-splice", "n-e", "segY")};
+        std::vector<ConductorSegment> segments = {
+            make_segment("segX"), make_segment("segY")};
+        std::vector<EndpointCandidate> endpoints = {
+            make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b"),
+            make_endpoint("ep-c", "n-c"), make_endpoint("ep-d", "n-d"),
+            make_endpoint("ep-e", "n-e")};
+        std::vector<ConductorBoundaryResolution> boundaries = {
+            make_resolved_boundary("ep-a"), make_resolved_boundary("ep-b"),
+            make_resolved_boundary("ep-c"), make_resolved_boundary("ep-d"),
+            make_resolved_boundary("ep-e")};
+
+        const auto artifacts = reconstructor.reconstruct(
+            nodes, edges, endpoints, segments, boundaries, "src", 0);
+        assert(artifacts.wires.size() == 3);
+        const auto* wire_ab = find_wire_between(artifacts.wires, "ep-a", "ep-b");
+        const auto* wire_ac = find_wire_between(artifacts.wires, "ep-a", "ep-c");
+        const auto* wire_de = find_wire_between(artifacts.wires, "ep-d", "ep-e");
+        assert(wire_ab != nullptr && wire_ac != nullptr && wire_de != nullptr);
+        assert(wire_ab->identity_status == WireIdentityStatus::Conflicted);
+        assert(wire_ac->identity_status == WireIdentityStatus::Conflicted);
+        assert(wire_de->identity_status == WireIdentityStatus::Resolved);
+        assert(find_wire_between(artifacts.wires, "ep-b", "ep-c") == nullptr);
+    }
+
+    // AP-WIRE-FIX-003 regression: a four-way ambiguous fork (segX shared
+    // by e1..e4) must preserve all N-1 = 3 legitimate candidate
+    // identities the evidence actually supports (ep-a paired with each of
+    // ep-b/ep-c/ep-d) - the dedup must not collapse them down to a single
+    // wire merely because they all share segX, nor explode them into the
+    // full 6-pair closure.
+    {
+        std::vector<TopologyNode> nodes = {
+            make_node("n-a", TopologyNodeType::ConductorEnd),
+            make_node("n-splice", TopologyNodeType::Splice),
+            make_node("n-b", TopologyNodeType::ConductorEnd),
+            make_node("n-c", TopologyNodeType::ConductorEnd),
+            make_node("n-d", TopologyNodeType::ConductorEnd)};
+        std::vector<TopologyEdge> edges = {
+            make_edge("e1", "n-a", "n-splice", "segX"),
+            make_edge("e2", "n-splice", "n-b", "segX"),
+            make_edge("e3", "n-splice", "n-c", "segX"),
+            make_edge("e4", "n-splice", "n-d", "segX")};
+        std::vector<ConductorSegment> segments = {make_segment("segX")};
+        std::vector<EndpointCandidate> endpoints = {
+            make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b"),
+            make_endpoint("ep-c", "n-c"), make_endpoint("ep-d", "n-d")};
+        std::vector<ConductorBoundaryResolution> boundaries = {
+            make_resolved_boundary("ep-a"), make_resolved_boundary("ep-b"),
+            make_resolved_boundary("ep-c"), make_resolved_boundary("ep-d")};
+
+        const auto artifacts = reconstructor.reconstruct(
+            nodes, edges, endpoints, segments, boundaries, "src", 0);
+        assert(artifacts.wires.size() == 3);
+        for (const auto& wire : artifacts.wires) {
+            assert(wire.identity_status == WireIdentityStatus::Conflicted);
+        }
+        assert(find_wire_between(artifacts.wires, "ep-a", "ep-b") != nullptr);
+        assert(find_wire_between(artifacts.wires, "ep-a", "ep-c") != nullptr);
+        assert(find_wire_between(artifacts.wires, "ep-a", "ep-d") != nullptr);
+        assert(find_wire_between(artifacts.wires, "ep-b", "ep-c") == nullptr);
+        assert(find_wire_between(artifacts.wires, "ep-b", "ep-d") == nullptr);
+        assert(find_wire_between(artifacts.wires, "ep-c", "ep-d") == nullptr);
+    }
+
+    // AP-WIRE-FIX-003 regression: the same three-way ambiguous fork as
+    // test 8, but only two of the three tied edges have an eligible
+    // (Resolved-boundary) endpoint on their far side (ep-a's own boundary
+    // is unresolved, so ep-a never seeds a walk). The single legitimate
+    // identity the remaining evidence supports (ep-b to ep-c) must still
+    // be discovered - the ambiguity dedup must not depend on which tied
+    // edge happens to be globally "first" and accidentally suppress the
+    // only reachable pairing.
+    {
+        std::vector<TopologyNode> nodes = {
+            make_node("n-a", TopologyNodeType::ConductorEnd),
+            make_node("n-splice", TopologyNodeType::Splice),
+            make_node("n-b", TopologyNodeType::ConductorEnd),
+            make_node("n-c", TopologyNodeType::ConductorEnd)};
+        std::vector<TopologyEdge> edges = {
+            make_edge("e1", "n-a", "n-splice", "segX"),
+            make_edge("e2", "n-splice", "n-b", "segX"),
+            make_edge("e3", "n-splice", "n-c", "segX")};
+        std::vector<ConductorSegment> segments = {make_segment("segX")};
+        std::vector<EndpointCandidate> endpoints = {
+            make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b"),
+            make_endpoint("ep-c", "n-c")};
+        std::vector<ConductorBoundaryResolution> boundaries = {
+            make_resolved_boundary("ep-b"), make_resolved_boundary("ep-c")};
+        // ep-a has no ConductorBoundaryResolution - never eligible to
+        // seed a walk of its own.
+
+        const auto artifacts = reconstructor.reconstruct(
+            nodes, edges, endpoints, segments, boundaries, "src", 0);
+        assert(artifacts.wires.size() == 1);
+        const auto* wire = find_wire_between(artifacts.wires, "ep-b", "ep-c");
+        assert(wire != nullptr);
+        assert(wire->identity_status == WireIdentityStatus::Conflicted);
+        assert(!any_wire_touches(artifacts.wires, "ep-a"));
     }
 
     // 9. Ground-anchored distribution: physical Wire reconstruction takes
@@ -375,6 +502,43 @@ int main() {
         for (std::size_t i = 0; i < first.wires.size(); ++i) {
             assert(first.wires[i].id == second.wires[i].id);
             assert(first.wires[i].identity_status == second.wires[i].identity_status);
+        }
+    }
+
+    // AP-WIRE-FIX-003: the same determinism guarantee for the genuinely
+    // ambiguous three-way-fork case (test 8's topology) - repeated calls
+    // must pick the same 2 of the 3 possible pairings, with identical
+    // identity_evidence_ids and ordering, every time.
+    {
+        std::vector<TopologyNode> nodes = {
+            make_node("n-a", TopologyNodeType::ConductorEnd),
+            make_node("n-splice", TopologyNodeType::Splice),
+            make_node("n-b", TopologyNodeType::ConductorEnd),
+            make_node("n-c", TopologyNodeType::ConductorEnd)};
+        std::vector<TopologyEdge> edges = {
+            make_edge("e1", "n-a", "n-splice", "segX"),
+            make_edge("e2", "n-splice", "n-b", "segX"),
+            make_edge("e3", "n-splice", "n-c", "segX")};
+        std::vector<ConductorSegment> segments = {make_segment("segX")};
+        std::vector<EndpointCandidate> endpoints = {
+            make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b"),
+            make_endpoint("ep-c", "n-c")};
+        std::vector<ConductorBoundaryResolution> boundaries = {
+            make_resolved_boundary("ep-a"), make_resolved_boundary("ep-b"),
+            make_resolved_boundary("ep-c")};
+
+        const auto first = reconstructor.reconstruct(
+            nodes, edges, endpoints, segments, boundaries, "src", 0);
+        const auto second = reconstructor.reconstruct(
+            nodes, edges, endpoints, segments, boundaries, "src", 0);
+        assert(first.wires.size() == 2);
+        assert(first.wires.size() == second.wires.size());
+        for (std::size_t i = 0; i < first.wires.size(); ++i) {
+            assert(first.wires[i].id == second.wires[i].id);
+            assert(first.wires[i].start_endpoint == second.wires[i].start_endpoint);
+            assert(first.wires[i].end_endpoint == second.wires[i].end_endpoint);
+            assert(first.wires[i].identity_status == second.wires[i].identity_status);
+            assert(first.wires[i].identity_evidence_ids == second.wires[i].identity_evidence_ids);
         }
     }
 

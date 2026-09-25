@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "source": {
+    "path": "samples/trx300ODG.png",
+    "page": 0
+  },
+  "include_regions": [
+    {"x": 80, "y": 75, "width": 890, "height": 545}
+  ],
+  "exclusion_regions": [],
+  "annotation_regions": [
+    {
+      "id": "switch-continuity-matrix",
+      "x": 85,
+      "y": 620,
+      "width": 595,
+      "height": 160,
+      "annotation_type": "switch_matrix",
+      "description": "Ignition/Lighting/Dimmer/Engine Stop/Starter switch continuity tables"
+    },
+    {
+      "id": "wire-color-legend",
+      "x": 795,
+      "y": 614,
+      "width": 261,
+      "height": 200,
+      "annotation_type": "legend",
+      "description": "Wire color abbreviation legend (B/Y/Bu/G/R/W/Br/O/Lb/Lg/P/Gr)"
+    }
+  ],
+  "metadata": {
+    "diagram_type": "wiring_diagram",
+    "manufacturer": "Honda",
+    "make": "Honda",
+    "model": "TRX300",
+    "year": "",
+    "vehicle_type": "ATV",
+    "system": "electrical",
+    "harness_branch": "",
+    "diagram_section": "full"
+  }
+}

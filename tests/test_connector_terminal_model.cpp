@@ -1,6 +1,7 @@
 #include "eke_dx_wire/topology/connector_terminal_model.hpp"
 
 #include <cassert>
+#include <cstddef>
 
 using namespace eke::dx::wire;
 
@@ -56,6 +57,32 @@ int main() {
         {endpoint});
     assert(excluded.connectors.empty());
     assert(excluded.terminals.empty());
+
+    // AP-DIAG-FIX-002 / TEST 8: repeated recognition of the same source
+    // evidence must produce identical connector/terminal ids, ownership,
+    // and ordering - no part of this builder consults anything but its own
+    // deterministic string-based id construction and a stable sort.
+    {
+        const auto first = builder.build(
+            {connector_component}, {terminal}, {endpoint});
+        const auto second = builder.build(
+            {connector_component}, {terminal}, {endpoint});
+
+        assert(first.connectors.size() == second.connectors.size());
+        for (std::size_t i = 0; i < first.connectors.size(); ++i) {
+            assert(first.connectors[i].id == second.connectors[i].id);
+        }
+
+        assert(first.terminals.size() == second.terminals.size());
+        for (std::size_t i = 0; i < first.terminals.size(); ++i) {
+            assert(first.terminals[i].id == second.terminals[i].id);
+            assert(first.terminals[i].connector_id ==
+                   second.terminals[i].connector_id);
+            assert(first.terminals[i].endpoint_id ==
+                   second.terminals[i].endpoint_id);
+            assert(first.terminals[i].status == second.terminals[i].status);
+        }
+    }
 
     return 0;
 }

@@ -78,18 +78,29 @@ int main() {
     }
 
     {
+        // A label-to-COMPONENT association (not label-to-endpoint) must
+        // never be treated as endpoint evidence. The shared association()
+        // helper always builds an Endpoint/LabelToEndpoint association, so
+        // this scenario needs its own SemanticAssociation with the actual
+        // component-targeting fields.
+        SemanticAssociation component_association;
+        component_association.id = "a-component";
+        component_association.text_region_id = "text-shared";
+        component_association.target_id = "component-1";
+        component_association.target_kind =
+            SemanticAssociationTargetKind::Component;
+        component_association.relation =
+            SemanticAssociationRelation::LabelToComponent;
+        component_association.distance = 1.0;
+        component_association.confidence = ConfidenceClass::High;
+
         const auto result = SemanticObservationResolver().resolve(
             {semantic(
                 "s-shared",
                 "text-shared",
                 TextSemanticKind::SharedFunctionFeedLabel,
                 ConfidenceClass::High)},
-            {association(
-                "a-component",
-                "text-shared",
-                "component-1",
-                1.0,
-                ConfidenceClass::High)});
+            {component_association});
 
         assert(result.empty());
     }

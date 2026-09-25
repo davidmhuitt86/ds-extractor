@@ -15,6 +15,20 @@ Final AP-WIRE-031 commit at the start of this study: `862cd80`.
 Verified TRX300 baseline: **41 physical wires** (unchanged by this
 study — see Phase 1).
 
+**Branch note (added during AP-WIRE-TUNE-002):** this study's commit
+(`7208f10`) was originally built on `claude/modest-dirac-a3d7pw` while
+that branch was still missing AP-WIRE-024 through AP-WIRE-031 (it had
+diverged from `main` before those landed). The measurements above were
+taken against a locally built `libeke_dx_wire.a` that in fact reflected
+`main` at `862cd80`, not the feature branch's own source at the time.
+`main` was subsequently merged into `claude/modest-dirac-a3d7pw`
+(merge commit `e379d72`) during AP-WIRE-TUNE-002, after which the
+branch's real, rebuilt binary reproduced every number in this report
+bit-for-bit (spot-checked against the baseline and against the
+`gap_interpretation.maximum_gap` transition points in
+AP-WIRE-TUNE-002). The findings in this document stand unmodified;
+only the branch/commit provenance note above is new.
+
 ## Phase 0 — Repository and pipeline audit
 
 ### How parameters are exposed today

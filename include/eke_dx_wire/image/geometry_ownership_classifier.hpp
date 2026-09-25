@@ -14,6 +14,15 @@ struct GeometryOwnershipConfig {
     // conductor commonly terminates at a component or connector.
     double component_overlap_fraction = 0.50;
     double text_overlap_fraction = 0.25;
+
+    // AP-DIAG-FIX-001: a candidate whose two ends lie on the same edge of a
+    // component's own established bounds, within this many pixels, is that
+    // component's own boundary/housing outline rather than a conductor - a
+    // real lead terminates AT a boundary point, it does not run coincident
+    // with the boundary line itself. Sized to the observed gap between a
+    // drawn outline stroke and the component's own measured bounds (~1px)
+    // plus stroke width, not a generic proximity threshold.
+    double component_boundary_tolerance_px = 2.0;
 };
 
 struct GeometryOwnershipArtifacts {

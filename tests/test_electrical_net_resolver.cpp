@@ -1,5 +1,6 @@
 #include "eke_dx_wire/topology/electrical_net_resolver.hpp"
 
+#include <algorithm>
 #include <cassert>
 
 using namespace eke::dx::wire;
@@ -95,6 +96,68 @@ int main() {
     assert(power_result.nets.front().role == DistributionRole::PowerFeed);
     assert(power_result.nets.front().anchor_endpoint == "P");
     assert(power_result.nets.front().confidence == ConfidenceClass::High);
+
+    // AP-DIAG-FIX-002 / TEST 4: two ConnectorTerminal endpoints that share
+    // the same owning connector (component_id) but sit on two structurally
+    // disconnected, independently Ground-anchored trees must resolve to two
+    // independent electrical nets - a shared connector is never, by itself,
+    // electrical connectivity. Net resolution here sees only nodes/edges/
+    // segments; it has no notion of "connector" at all (confirmed by
+    // inspection: neither DistributionDecomposer nor ElectricalNetResolver
+    // reference Connector/ConnectorTerminal anywhere), so this also
+    // demonstrates that introducing connector representation elsewhere
+    // cannot leak into net decomposition.
+    {
+        std::vector<TopologyNode> connector_nodes{
+            {"gnd1", {0, 0}, TopologyNodeType::ConductorEnd, true},
+            {"j1-pin1", {10, 0}, TopologyNodeType::ConductorEnd, true},
+            {"gnd2", {0, 20}, TopologyNodeType::ConductorEnd, true},
+            {"j1-pin2", {10, 20}, TopologyNodeType::ConductorEnd, true}
+        };
+        std::vector<TopologyEdge> connector_edges{
+            {"e1", "gnd1", "j1-pin1", "c1"},
+            {"e2", "gnd2", "j1-pin2", "c2"}
+        };
+
+        EndpointCandidate gnd1 = endpoint(
+            "GND1", "gnd1", EndpointKind::Ground, TerminalRole::GroundTerminal);
+        EndpointCandidate pin1 = endpoint(
+            "PIN1", "j1-pin1", EndpointKind::ConnectorTerminal,
+            TerminalRole::ConnectorTerminal);
+        pin1.component_id = "connector-j1";
+        EndpointCandidate gnd2 = endpoint(
+            "GND2", "gnd2", EndpointKind::Ground, TerminalRole::GroundTerminal);
+        EndpointCandidate pin2 = endpoint(
+            "PIN2", "j1-pin2", EndpointKind::ConnectorTerminal,
+            TerminalRole::ConnectorTerminal);
+        pin2.component_id = "connector-j1";
+
+        const auto connector_result = ElectricalNetResolver().resolve(
+            connector_nodes,
+            connector_edges,
+            {gnd1, pin1, gnd2, pin2},
+            {
+                segment("c1", {0, 0}, {10, 0}),
+                segment("c2", {0, 20}, {10, 20})
+            },
+            {},
+            "ap-diag-fix-002-connector-independence");
+
+        assert(connector_result.nets.size() == 2);
+        for (const auto& net : connector_result.nets) {
+            assert(net.endpoint_ids.size() == 2);
+            const bool is_pin1_net =
+                std::find(
+                    net.endpoint_ids.begin(), net.endpoint_ids.end(),
+                    "PIN1") != net.endpoint_ids.end();
+            const bool is_pin2_net =
+                std::find(
+                    net.endpoint_ids.begin(), net.endpoint_ids.end(),
+                    "PIN2") != net.endpoint_ids.end();
+            // Never both in the same net, and never neither.
+            assert(is_pin1_net != is_pin2_net);
+        }
+    }
 
     return 0;
 }

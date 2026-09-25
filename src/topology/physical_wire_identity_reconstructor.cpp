@@ -49,6 +49,7 @@ void walk_from(
     const std::map<std::string, std::vector<AdjacentEdge>>& adjacency,
     const std::unordered_map<std::string, const TopologyEdge*>& edge_by_id,
     const std::unordered_map<std::string, std::string>& endpoint_by_node,
+    std::set<std::pair<std::string, std::string>>& expanded_ambiguities,
     std::vector<WalkOutcome>& outcomes) {
 
     if (!visited_nodes.insert(current_node).second) {
@@ -86,7 +87,7 @@ void walk_from(
             next->other_node, next->edge_id, visited_nodes,
             std::move(next_path), distribution_segment_evidence_ids,
             conflicted_so_far, adjacency, edge_by_id, endpoint_by_node,
-            outcomes);
+            expanded_ambiguities, outcomes);
         return;
     }
 
@@ -116,6 +117,25 @@ void walk_from(
     }
 
     const bool branch_conflict = matches.size() > 1;
+    if (branch_conflict) {
+        // A physical Wire is endpoint-to-endpoint; this node/segment
+        // ambiguity (>1 other edge sharing the arrived-on segment) is one
+        // fork event, not one event per edge that happens to touch it.
+        // Pass 2 seeds a separate walk from every eligible endpoint, so
+        // the same fork can be entered from any of its tied edges - each
+        // entry expands into a different (N-1)-sized subset of the tied
+        // set, and the union across all entries over-counts the fork as
+        // a full pairwise closure instead of the N-1 candidate identities
+        // the evidence actually supports. Expanding it only on the first
+        // arrival (deterministic: eligible endpoints are walked in sorted
+        // id order) keeps the N-1 candidates and drops the rest, without
+        // touching the unambiguous (matches.size() == 1) case at all -
+        // shared conductor geometry elsewhere still supports as many
+        // distinct Wire identities as the evidence shows.
+        if (!expanded_ambiguities.emplace(current_node, target_segment).second) {
+            return;
+        }
+    }
     for (const auto* match : matches) {
         auto next_path = path_edges;
         next_path.push_back(match->edge_id);
@@ -125,7 +145,7 @@ void walk_from(
             match->other_node, match->edge_id, visited_nodes,
             std::move(next_path), std::move(next_evidence),
             conflicted_so_far || branch_conflict, adjacency, edge_by_id,
-            endpoint_by_node, outcomes);
+            endpoint_by_node, expanded_ambiguities, outcomes);
     }
 }
 
@@ -133,7 +153,8 @@ std::vector<WalkOutcome> walk_forward(
     const EndpointCandidate& start,
     const std::map<std::string, std::vector<AdjacentEdge>>& adjacency,
     const std::unordered_map<std::string, const TopologyEdge*>& edge_by_id,
-    const std::unordered_map<std::string, std::string>& endpoint_by_node) {
+    const std::unordered_map<std::string, std::string>& endpoint_by_node,
+    std::set<std::pair<std::string, std::string>>& expanded_ambiguities) {
 
     std::vector<WalkOutcome> outcomes;
     const auto adjacency_it = adjacency.find(start.node_id);
@@ -145,7 +166,7 @@ std::vector<WalkOutcome> walk_forward(
     walk_from(
         first.other_node, first.edge_id, visited,
         std::vector<std::string>{first.edge_id}, {}, false, adjacency,
-        edge_by_id, endpoint_by_node, outcomes);
+        edge_by_id, endpoint_by_node, expanded_ambiguities, outcomes);
     return outcomes;
 }
 
@@ -247,10 +268,15 @@ PhysicalWireIdentityArtifacts PhysicalWireIdentityReconstructor::reconstruct(
     };
     std::vector<Candidate> candidates;
     std::set<std::pair<std::string, std::string>> seen_pairs;
+    // Shared across every eligible endpoint's walk (in sorted, deterministic
+    // order) so a distribution-node ambiguity already expanded from one
+    // seed is not re-expanded from a different tied edge - see walk_from.
+    std::set<std::pair<std::string, std::string>> expanded_ambiguities;
 
     for (const auto* endpoint : eligible_endpoints) {
-        const auto outcomes =
-            walk_forward(*endpoint, adjacency, edge_by_id, endpoint_by_node);
+        const auto outcomes = walk_forward(
+            *endpoint, adjacency, edge_by_id, endpoint_by_node,
+            expanded_ambiguities);
         for (const auto& outcome : outcomes) {
             if (outcome.other_endpoint_id.empty() ||
                 outcome.other_endpoint_id == endpoint->id) {

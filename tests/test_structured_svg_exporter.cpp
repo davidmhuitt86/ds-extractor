@@ -345,6 +345,13 @@ int main() {
         WireModel model;
         model.endpoint_candidates = {make_endpoint("ep-a"), make_endpoint("ep-b")};
         model.wires = {make_wire("w1", "ep-a", "ep-b")};
+        // stroke-dasharray is emitted on the wire's rendered <line>, so
+        // the wire needs real segment geometry to render one at all (see
+        // test 14 above for the same pattern) - a wire with no geometry
+        // still gets its group-level data-wire-color-status attribute,
+        // but has no <line> element to carry the dasharray.
+        model.conductor_segments = {make_segment("seg-1", 0, 0, 10, 10)};
+        model.wires[0].conductor_segments = {"seg-1"};
         WireSemanticResolution resolution;
         resolution.id = "wsr-1";
         resolution.wire_id = "w1";

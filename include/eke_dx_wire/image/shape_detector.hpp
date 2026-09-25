@@ -72,6 +72,21 @@ struct ShapeDetectorConfig {
     double circle_max_aspect_ratio = 1.35;
     double circle_min_area = 25.0;
 
+    // AP-WIRE-FIX-002: a small enclosed gap between two pairs of crossing
+    // straight conductors can otherwise pass every check above. What a
+    // genuinely drawn circle never has is all four sides of its own
+    // bounding box continuing as a thin straight line for a long
+    // distance in both directions - that is the signature of an empty
+    // cell bounded by crossing lines, not a symbol's own self-contained
+    // ink. `circle_crossing_probe_distance` is how far beyond each side
+    // to look; `circle_crossing_probe_thickness` is the half-thickness
+    // of the band checked for a continuing line; a candidate is rejected
+    // only when every one of its four sides shows continuation at or
+    // above `circle_crossing_min_line_continuity`.
+    int circle_crossing_probe_distance = 25;
+    int circle_crossing_probe_thickness = 2;
+    double circle_crossing_min_line_continuity = 0.5;
+
     // Chassis-ground candidate validation.
     int ground_min_bar_length = 5;
     int ground_max_bar_length = 35;

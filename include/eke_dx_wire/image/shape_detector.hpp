@@ -93,10 +93,34 @@ struct ShapeDetectorConfig {
     int ground_max_height = 30;
     int ground_min_bar_spacing = 2;
     int ground_max_bar_spacing = 14;
-    int ground_min_bars = 2;
+    // AP-DIAG-FIX-003: the classic chassis-ground glyph is drawn as a stem
+    // above THREE progressively shorter bars - not two. This was
+    // previously 2 (with the loop below falling back to a shorter match
+    // "if image quality has erased one of the bars"), but forensic
+    // evidence (AP-DIAG-AUDIT-002, docs/AP-DIAG-FIX-003_ChassisGround_
+    // Evidence_Classification.md) showed that fallback path is what let 7
+    // of 8 confirmed false positives (rectifier diodes, connector-plug
+    // notches, text glyphs, a table-cell marker) through: on the only
+    // real-world diagram evidence gathered to date, EVERY use of the
+    // 2-bar path produced a false positive, and BOTH confirmed genuine
+    // ground symbols independently satisfy the full 3-bar pattern without
+    // needing it. The fallback loop itself is left in place (it still
+    // matters if more than 3 candidate bars are ever found and a
+    // 3-of-N subset must be selected), but the accepted minimum length is
+    // now the same as the maximum, so a 2-bar match is never accepted.
+    int ground_min_bars = 3;
     int ground_max_bars = 3;
     double ground_width_ratio_tolerance = 0.15;
     double ground_min_width_difference = 0.15;
+    // AP-DIAG-FIX-003: a real ground symbol is one drawn glyph, so its
+    // bars keep a consistent vertical rhythm - the gaps between
+    // consecutive bars are all similar. The one remaining 3-bar false
+    // positive (text glyphs coincidentally forming a decreasing-width
+    // sequence) had gaps of 11px then 3px (ratio 3.67); both confirmed
+    // genuine symbols have gap ratios of 1.0 and 1.5. This is only
+    // evaluated when a candidate has 2+ gaps (i.e. 3+ bars), which is now
+    // every accepted candidate.
+    double ground_max_bar_spacing_ratio = 2.0;
     int ground_stem_search_height = 14;
     int ground_min_exclusion_height = 12;
 };

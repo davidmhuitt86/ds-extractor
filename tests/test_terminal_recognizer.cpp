@@ -74,8 +74,12 @@ int main() {
             {"lead-1", "component-1", SymbolPrimitiveKind::TerminalLead,
              {100, 108, 8, 2}, 16.0, ConfidenceClass::High,
              {"fixture", 0, {100, 108, 8, 2}, "test"}}};
-        auto a = endpoint("a", "node-a", {108, 109});
-        auto b = endpoint("b", "node-b", {108, 107});
+        // Primitive bounds are (100,108,8,2), i.e. x in [100,108]. Placing
+        // one endpoint 2px outside each side gives two endpoints at the
+        // exact same distance (2px) from the primitive box - a genuine
+        // tie, not merely two different distances.
+        auto a = endpoint("a", "node-a", {98, 109});
+        auto b = endpoint("b", "node-b", {110, 109});
         const auto result = recognizer.recognize(
             components, {}, primitives, {a, b}, {}, {}, {});
         assert(result.candidates.empty());
@@ -133,6 +137,67 @@ int main() {
             {component("furniture", ComponentCandidateKind::DiagramFurniture,
                        {100, 100, 20, 20})},
             {}, {}, {endpoint("ep", "n1", {105, 105})}, {}, {}, {});
+        assert(result.candidates.empty());
+    }
+
+    // AP-DIAG-FIX-002: the component-kind -> TerminalCandidateKind mapping
+    // this stage relies on to eventually distinguish a Connector terminal
+    // from a generic component terminal or a ground terminal. Each of these
+    // reuses the boundary-alignment fallback path exercised above, varying
+    // only the owning component's kind.
+    const auto boundary_alignment_kind =
+        [&](ComponentCandidateKind component_kind) {
+            auto ep = endpoint("ep", "n1", {90, 110}, {"e1"});
+            TopologyNode n1{"n1", {90, 110}, TopologyNodeType::ConductorEnd, true};
+            TopologyNode n2{"n2", {95, 110}, TopologyNodeType::Continuation, true};
+            TopologyEdge e{"e1", "n1", "n2", "seg"};
+            return recognizer.recognize(
+                {component("component-kind-probe", component_kind,
+                           {100, 100, 20, 20})},
+                {}, {}, {ep}, {n1, n2}, {e}, {});
+        };
+
+    // TEST 5: a generic Enclosure/CircularSymbol component's terminal
+    // evidence remains a ComponentBoundary/ComponentTerminal - it is never
+    // reclassified as a connector merely because it is a plausible,
+    // recognized terminal.
+    {
+        const auto result = boundary_alignment_kind(
+            ComponentCandidateKind::Enclosure);
+        assert(result.candidates.size() == 1);
+        assert(result.candidates[0].kind ==
+               TerminalCandidateKind::ComponentBoundary);
+    }
+
+    // A PrimitiveSymbol-kind component is the only existing, evidence-based
+    // route to connector terminal evidence in this pipeline (AP-WIRE-024's
+    // own terminal_kind() mapping) - confirmed here directly rather than
+    // assumed, since no existing test exercised this specific mapping.
+    {
+        const auto result = boundary_alignment_kind(
+            ComponentCandidateKind::PrimitiveSymbol);
+        assert(result.candidates.size() == 1);
+        assert(result.candidates[0].kind ==
+               TerminalCandidateKind::ConnectorBoundary);
+    }
+
+    // TEST 6: ChassisGround remains distinct from a connector - a ground
+    // symbol's terminal evidence is GroundConnection, never
+    // ConnectorBoundary, however similar its geometry might otherwise be.
+    {
+        const auto result = boundary_alignment_kind(
+            ComponentCandidateKind::ChassisGround);
+        assert(result.candidates.size() == 1);
+        assert(result.candidates[0].kind ==
+               TerminalCandidateKind::GroundConnection);
+    }
+
+    // TEST 7: insufficient/absent component evidence (Unknown) never
+    // produces a guessed Connector (or any other) classification - the
+    // candidate is dropped entirely rather than invented.
+    {
+        const auto result = boundary_alignment_kind(
+            ComponentCandidateKind::Unknown);
         assert(result.candidates.empty());
     }
 

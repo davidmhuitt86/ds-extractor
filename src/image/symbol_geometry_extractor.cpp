@@ -109,6 +109,58 @@ ClassifiedBlob classify_blob(
     return result;
 }
 
+// Perpendicular distance from `point` to the finite segment `segment`,
+// clamping the projection to the segment's own span - a point beyond
+// either endpoint is measured to that endpoint, never treated as "on"
+// an infinite extension of the line.
+double point_to_segment_distance(const Point2D& point, const Segment2D& segment) {
+    const double dx = segment.b.x - segment.a.x;
+    const double dy = segment.b.y - segment.a.y;
+    const double length_sq = dx * dx + dy * dy;
+    if (length_sq <= 1e-9) {
+        return distance(point, segment.a);
+    }
+    double t = ((point.x - segment.a.x) * dx + (point.y - segment.a.y) * dy) / length_sq;
+    t = std::clamp(t, 0.0, 1.0);
+    const Point2D closest{segment.a.x + t * dx, segment.a.y + t * dy};
+    return distance(point, closest);
+}
+
+// AP-WIRE-FIX-001: a blob is already-accounted-for external conductor
+// ink - not a genuine internal component primitive - when its entire
+// bounding box lies within an existing ConductorSegment's own drawn
+// stroke width. Requiring all four corners within tolerance of the same
+// segment keeps this a narrow "is this the same stroke" test: a
+// component's own distinct internal geometry that merely sits near, but
+// is not aligned with, a conductor's centerline is not excluded.
+bool blob_is_existing_conductor_ink(
+    const BoundingBox& bounds,
+    const std::vector<ConductorSegment>& conductor_segments,
+    double slack_px) {
+
+    const Point2D corners[4] = {
+        {double(bounds.x), double(bounds.y)},
+        {double(bounds.x + bounds.width), double(bounds.y)},
+        {double(bounds.x), double(bounds.y + bounds.height)},
+        {double(bounds.x + bounds.width), double(bounds.y + bounds.height)},
+    };
+
+    for (const auto& segment : conductor_segments) {
+        const double tolerance = segment.thickness_px / 2.0 + slack_px;
+        bool all_corners_covered = true;
+        for (const auto& corner : corners) {
+            if (point_to_segment_distance(corner, segment.geometry) > tolerance) {
+                all_corners_covered = false;
+                break;
+            }
+        }
+        if (all_corners_covered) {
+            return true;
+        }
+    }
+    return false;
+}
+
 } // namespace
 
 SymbolGeometryExtractor::SymbolGeometryExtractor(SymbolGeometryExtractorConfig config)
@@ -117,6 +169,7 @@ SymbolGeometryExtractor::SymbolGeometryExtractor(SymbolGeometryExtractorConfig c
 SymbolGeometryExtractionArtifacts SymbolGeometryExtractor::extract(
     const cv::Mat& normalized,
     const std::vector<ComponentCandidate>& components,
+    const std::vector<ConductorSegment>& conductor_segments,
     const std::string& source_id,
     int page) const {
 
@@ -205,6 +258,21 @@ SymbolGeometryExtractionArtifacts SymbolGeometryExtractor::extract(
             blob.bounds = BoundingBox{
                 roi.x + local_bounds.x, roi.y + local_bounds.y,
                 local_bounds.width, local_bounds.height};
+
+            // AP-WIRE-FIX-001: this component's bounding box can overlap
+            // a neighboring component's box (both real, adjacent
+            // symbols). A blob that is actually an existing conductor's
+            // own drawn stroke - most commonly a wire's exit lead
+            // already correctly excluded as ITS OWN component's
+            // boundary - must not be re-attributed as internal geometry
+            // of a different, merely-overlapping component. Evidence
+            // that already exists (the normalized ConductorSegment) is
+            // what makes this exclusion, not a guess about ownership.
+            if (blob_is_existing_conductor_ink(
+                    blob.bounds, conductor_segments,
+                    config_.conductor_exclusion_slack_px)) {
+                continue;
+            }
 
             blobs.emplace_back(
                 Point2D{double(local_bounds.y), double(local_bounds.x)}, blob);

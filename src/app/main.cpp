@@ -6,7 +6,11 @@
 #include "eke_dx_wire/core/http_transport.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
 #include "eke_dx_wire/image/image_loader.hpp"
+#include "eke_dx_wire/ingest/extraction_scope_io.hpp"
+#include "eke_dx_wire/ingest/source_scoper.hpp"
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
+
+#include <opencv2/imgcodecs.hpp>
 
 #include <filesystem>
 #include <cstdlib>
@@ -81,10 +85,14 @@ static void usage() {
         << "Usage:\n"
         << "  dx-extract inspect <image>\n"
         << "  dx-extract extract <image> --output <directory> [--recognition <observations.json>]\n"
-        << "  dx-extract extract <image> --output <directory> --vision-recognition\n\n"
+        << "  dx-extract extract <image> --output <directory> --vision-recognition\n"
+        << "  dx-extract extract <image> --output <directory> [--scope <scope.json>]\n\n"
         << "--vision-recognition automates the recognition hand-off via the Anthropic\n"
         << "API instead of importing observations produced by hand. It requires\n"
-        << "EKE_DX_WIRE_ANTHROPIC_API_KEY (or ANTHROPIC_API_KEY) to be set.\n";
+        << "EKE_DX_WIRE_ANTHROPIC_API_KEY (or ANTHROPIC_API_KEY) to be set.\n\n"
+        << "--scope applies an AP-INGEST-001 ExtractionScope (include/exclusion\n"
+        << "regions plus diagram metadata) before extraction. Omitting it preserves\n"
+        << "the established unscoped baseline exactly.\n";
 }
 
 static int inspect(const std::string& path) {
@@ -103,8 +111,44 @@ static int extract(
     const std::string& image_path,
     const std::string& output,
     const std::string& recognition_path = {},
-    bool use_vision_recognition = false) {
+    bool use_vision_recognition = false,
+    const std::string& scope_path = {}) {
     const bool has_recognition = !recognition_path.empty() || use_vision_recognition;
+
+    // AP-INGEST-001: source scoping is an ingestion-layer pre-step. When a
+    // scope is supplied, SourceScoper produces a same-dimension scoped
+    // image that the completely unmodified ExtractionPipeline then loads
+    // exactly as it would any other image - the extractor never knows
+    // scoping happened. Omitting --scope leaves image_path untouched,
+    // preserving the established unscoped baseline exactly (Sec 12).
+    std::string effective_image_path = image_path;
+    if (!scope_path.empty()) {
+        const ExtractionScope scope = ExtractionScopeIO::load(scope_path);
+        const cv::Mat original = ImageLoader::load(image_path);
+
+        SourceScoper scoper;
+        const ScopedSourceArtifacts scoped =
+            scoper.apply(original, scope, image_path);
+
+        const fs::path scoping_dir = fs::path(output) / "artifacts" / "scoping";
+        fs::create_directories(scoping_dir);
+
+        const fs::path scoped_image_path = scoping_dir / "scoped_source.png";
+        if (!cv::imwrite(scoped_image_path.string(), scoped.scoped_image)) {
+            throw std::runtime_error(
+                "Unable to write scoped source image: " +
+                scoped_image_path.string());
+        }
+
+        std::ofstream provenance_out(scoping_dir / "scope_provenance.json");
+        if (!provenance_out) {
+            throw std::runtime_error("Unable to create scope provenance JSON");
+        }
+        provenance_out
+            << SourceScoper::serialize_provenance(scoped.provenance);
+
+        effective_image_path = scoped_image_path.string();
+    }
 
     // AP-WIRE-013: when recognition observations are supplied, execute
     // both the deterministic baseline and the recognition-assisted pipeline.
@@ -113,7 +157,7 @@ static int extract(
     std::optional<WireModel> baseline_model;
     if (has_recognition) {
         ExtractionPipeline baseline_pipeline;
-        baseline_model = baseline_pipeline.run(image_path, image_path);
+        baseline_model = baseline_pipeline.run(effective_image_path, image_path);
     }
 
     ExtractionConfig config;
@@ -134,7 +178,7 @@ static int extract(
     }
 
     ExtractionPipeline pipeline(config);
-    WireModel model = pipeline.run(image_path, image_path);
+    WireModel model = pipeline.run(effective_image_path, image_path);
 
     if (has_recognition) {
         fs::create_directories(fs::path(output) / "artifacts" / "recognition");
@@ -207,7 +251,7 @@ static int extract(
 
     ExtractionArtifactWriter::write(
         model,
-        ImageNormalizer::normalize(ImageLoader::load(image_path)),
+        ImageNormalizer::normalize(ImageLoader::load(effective_image_path)),
         image_path,
         fs::path(output));
 
@@ -253,15 +297,25 @@ int main(int argc, char** argv) {
             }
             std::string recognition_path;
             bool use_vision_recognition = false;
-            if (argc == 7 && std::string(argv[5]) == "--recognition") {
-                recognition_path = argv[6];
-            } else if (argc == 6 && std::string(argv[5]) == "--vision-recognition") {
-                use_vision_recognition = true;
-            } else if (argc != 5) {
-                usage();
-                return 2;
+            std::string scope_path;
+
+            for (int i = 5; i < argc; ++i) {
+                const std::string flag = argv[i];
+                if (flag == "--recognition" && i + 1 < argc) {
+                    recognition_path = argv[++i];
+                } else if (flag == "--vision-recognition") {
+                    use_vision_recognition = true;
+                } else if (flag == "--scope" && i + 1 < argc) {
+                    scope_path = argv[++i];
+                } else {
+                    usage();
+                    return 2;
+                }
             }
-            return extract(argv[2], argv[4], recognition_path, use_vision_recognition);
+
+            return extract(
+                argv[2], argv[4], recognition_path, use_vision_recognition,
+                scope_path);
         }
 
         usage();

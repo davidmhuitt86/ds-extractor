@@ -1,0 +1,63 @@
+{
+  "conflict_label": "CONFLICT-02",
+  "endpoint_candidate_id": "endpoint-candidate-b0e3d6bb622a227c",
+  "topology_node_id": "topology-node-40e232d05a45cfb6",
+  "position": {"x": 161.5, "y": 182},
+  "boundary_resolution_id": "conductor-boundary-resolution-3119f42d457ef725",
+  "boundary_kind": "component_terminal",
+  "boundary_status": "conflicted",
+  "wire": {
+    "id": "wire-430f59213afaef3a",
+    "identity_status": "resolved",
+    "start_endpoint": "endpoint-candidate-ab79957523aeb954",
+    "end_endpoint": "endpoint-candidate-b0e3d6bb622a227c",
+    "start_node_position": {"x": 161.5, "y": 157},
+    "end_node_position": {"x": 161.5, "y": 182},
+    "length_px": 25,
+    "topology_edges": ["topology-edge-b451366a8529b321"],
+    "conductor_segments": ["normalized-conductor-segment-536e21203510a354"],
+    "note": "single, unambiguous vertical conductor; AP-WIRE-031 wire identity is Resolved and unaffected by the boundary conflict below"
+  },
+  "candidates": [
+    {
+      "label": "candidate_A",
+      "component_id": "component-candidate-shape-region-845947b0afd7451a",
+      "component_bounds": {"x": 145, "y": 158, "width": 18, "height": 24},
+      "symbol_kind": "circular_symbol (geometrically_classified only)",
+      "evidence_source": "TerminalLocationDetector (terminal_candidate)",
+      "evidence_id": "conductor-boundary-evidence-95a5d91c48d1042e",
+      "distance_to_component_box_px": 0,
+      "confidence": "high",
+      "confidence_mechanism": "distance(0px) <= terminals.high_confidence_distance (2.5px) -> High, per src/topology/terminal_location_detector.cpp:103",
+      "internal_primitives_reported": 0,
+      "note": "endpoint sits exactly on this component's own bottom boundary edge (y=182 == box bottom); its own boundary-margin exclusion correctly suppressed the wire's tail stroke from being reported as an internal primitive of A itself"
+    },
+    {
+      "label": "candidate_B",
+      "component_id": "component-candidate-shape-region-c98f6566b0672535",
+      "component_bounds": {"x": 158, "y": 173, "width": 20, "height": 21},
+      "symbol_kind": "circular_symbol (geometrically_classified only)",
+      "evidence_source": "TerminalRecognizer (terminal_recognition, TerminalLead path)",
+      "evidence_id": "conductor-boundary-evidence-e93195f848e2d097",
+      "source_primitive_id": "symbol-primitive-c9bca4105e248446",
+      "source_primitive_bounds": {"x": 160, "y": 175, "width": 3, "height": 8},
+      "distance_to_primitive_px_approx": 0,
+      "confidence": "low",
+      "confidence_mechanism": "combine_confidence() takes min(primitive_confidence=Low, distance_confidence=High) = Low, per src/topology/terminal_recognizer.cpp:59-72",
+      "note": "the source primitive's bounding box (160-163, 175-183) is the last ~7px of the SAME wire's own vertical run before it terminates at (161.5,182); component A's own ROI extraction masked this exact ink as boundary stroke, but component B's independently-cropped, overlapping ROI (their boxes overlap by ~5x9px at this corner) re-detected the same ink as if it were B's own internal terminal-lead symbol"
+    }
+  ],
+  "component_bbox_overlap_px": {"x_range": [158, 163], "y_range": [173, 182], "area": 45},
+  "earliest_ambiguity_stage": "component/symbol geometry extraction (SymbolGeometryExtractor::extract, src/image/symbol_geometry_extractor.cpp, per-component ROI blob scan, approx lines 135-250)",
+  "root_cause_hypothesis": "SymbolGeometryExtractor processes each ComponentCandidate's bounding-box ROI independently with no check for overlap with a neighboring ComponentCandidate's box; when two component boxes overlap (as A and B do here, both real, separate, closely-packed components), ink correctly excluded as component A's own boundary/exit stroke is re-detected as an internal primitive when it also falls inside neighboring component B's separately-cropped ROI, producing spurious terminal-association evidence for B",
+  "parameters_tested": [
+    {"name": "terminals.boundary_tolerance", "values": [7.6, 8.0, 8.4], "effect_on_conflict02": "none (persists identically at all three)"},
+    {"name": "terminal_recognition.terminal_lead_max_distance", "values": [5.5, 6.0, 6.5], "effect_on_conflict02": "none (persists identically at all three)"},
+    {"name": "terminal_recognition.aligned_boundary_max_distance", "values": [15.2, 16.0, 16.8], "effect_on_conflict02": "none (persists identically at all three; 16.8 introduces an unrelated new conflict elsewhere)"},
+    {"name": "terminal_recognition.minimum_alignment_cosine", "values": [0.81, 0.85, 0.89], "effect_on_conflict02": "none (persists identically at all three)"}
+  ],
+  "resolution_vs_suppression": "not applicable - no tested parameter caused CONFLICT-02 to disappear",
+  "ap_wire_029_compliance": "confirmed - ConductorBoundaryResolver correctly reports Conflicted given two distinct component ids in evidence, applies no confidence-based tie-break (consistent with its own 'never pick one' principle used elsewhere for connector conflicts); the wire's own AP-WIRE-031 identity_status remains Resolved, correctly decoupled from the boundary-level conflict",
+  "final_determination": "UPSTREAM EXTRACTION DEFECT",
+  "recommended_next_action": "SymbolGeometryExtractor::extract() should exclude, or de-duplicate, ink lying in the geometric overlap between two ComponentCandidate bounding boxes before attributing a blob to either component as an internal primitive - not implemented in this task per its forensic-only charter"
+}

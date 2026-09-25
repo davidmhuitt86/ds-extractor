@@ -106,5 +106,36 @@ int main() {
                ConfidenceClass::High);
     }
 
+    // AP-DIAG-FIX-002 / TEST 3: a conductor terminating at a recognized
+    // connector terminal resolves to EndpointKind::ConnectorTerminal when
+    // the upstream evidence (TerminalCandidateKind::ConnectorBoundary, via
+    // TerminalSemanticEvidenceBuilder) supports it - this is the one link
+    // in the existing connector-representation chain no prior test
+    // exercised directly at this stage.
+    {
+        const std::vector<EndpointCandidate> endpoints{endpoint("e1")};
+        const std::vector<TerminalSemanticEvidence> evidence_set{
+            evidence("e1", "component-connector",
+                     EndpointKind::ConnectorTerminal,
+                     TerminalRole::ConnectorTerminal,
+                     ConfidenceClass::High)
+        };
+
+        const auto result =
+            EndpointSemanticReconstructor().reconstruct(
+                endpoints, evidence_set);
+
+        assert(result.reconstructions.front().status ==
+               EndpointSemanticReconstructionStatus::Resolved);
+        assert(result.endpoints.front().kind ==
+               EndpointKind::ConnectorTerminal);
+        assert(result.endpoints.front().terminal_role ==
+               TerminalRole::ConnectorTerminal);
+        assert(result.endpoints.front().component_id ==
+               "component-connector");
+        assert(result.endpoints.front().confidence ==
+               ConfidenceClass::High);
+    }
+
     return 0;
 }

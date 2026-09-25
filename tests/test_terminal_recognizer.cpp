@@ -140,6 +140,67 @@ int main() {
         assert(result.candidates.empty());
     }
 
+    // AP-DIAG-FIX-002: the component-kind -> TerminalCandidateKind mapping
+    // this stage relies on to eventually distinguish a Connector terminal
+    // from a generic component terminal or a ground terminal. Each of these
+    // reuses the boundary-alignment fallback path exercised above, varying
+    // only the owning component's kind.
+    const auto boundary_alignment_kind =
+        [&](ComponentCandidateKind component_kind) {
+            auto ep = endpoint("ep", "n1", {90, 110}, {"e1"});
+            TopologyNode n1{"n1", {90, 110}, TopologyNodeType::ConductorEnd, true};
+            TopologyNode n2{"n2", {95, 110}, TopologyNodeType::Continuation, true};
+            TopologyEdge e{"e1", "n1", "n2", "seg"};
+            return recognizer.recognize(
+                {component("component-kind-probe", component_kind,
+                           {100, 100, 20, 20})},
+                {}, {}, {ep}, {n1, n2}, {e}, {});
+        };
+
+    // TEST 5: a generic Enclosure/CircularSymbol component's terminal
+    // evidence remains a ComponentBoundary/ComponentTerminal - it is never
+    // reclassified as a connector merely because it is a plausible,
+    // recognized terminal.
+    {
+        const auto result = boundary_alignment_kind(
+            ComponentCandidateKind::Enclosure);
+        assert(result.candidates.size() == 1);
+        assert(result.candidates[0].kind ==
+               TerminalCandidateKind::ComponentBoundary);
+    }
+
+    // A PrimitiveSymbol-kind component is the only existing, evidence-based
+    // route to connector terminal evidence in this pipeline (AP-WIRE-024's
+    // own terminal_kind() mapping) - confirmed here directly rather than
+    // assumed, since no existing test exercised this specific mapping.
+    {
+        const auto result = boundary_alignment_kind(
+            ComponentCandidateKind::PrimitiveSymbol);
+        assert(result.candidates.size() == 1);
+        assert(result.candidates[0].kind ==
+               TerminalCandidateKind::ConnectorBoundary);
+    }
+
+    // TEST 6: ChassisGround remains distinct from a connector - a ground
+    // symbol's terminal evidence is GroundConnection, never
+    // ConnectorBoundary, however similar its geometry might otherwise be.
+    {
+        const auto result = boundary_alignment_kind(
+            ComponentCandidateKind::ChassisGround);
+        assert(result.candidates.size() == 1);
+        assert(result.candidates[0].kind ==
+               TerminalCandidateKind::GroundConnection);
+    }
+
+    // TEST 7: insufficient/absent component evidence (Unknown) never
+    // produces a guessed Connector (or any other) classification - the
+    // candidate is dropped entirely rather than invented.
+    {
+        const auto result = boundary_alignment_kind(
+            ComponentCandidateKind::Unknown);
+        assert(result.candidates.empty());
+    }
+
     std::cout << "terminal recognizer tests passed\n";
     return 0;
 }

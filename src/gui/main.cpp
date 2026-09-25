@@ -396,6 +396,21 @@ void load_image(
     gui_log("LOAD: state updated; exit");
 }
 
+// AP-GUI-003: single entry point for "the user just picked/handed us a
+// file to open" - used by both the OPEN toolbar button/O shortcut and a
+// file passed on the command line (which is how the Windows Explorer
+// "Extract with DS-Extractor" context-menu entry launches the GUI). Both
+// paths get the same import-choice screen; there is no silent/implicit
+// import anywhere in the GUI.
+void begin_open_image(GuiState& state, const std::string& path) {
+    if (path.empty()) return;
+    state.pending_source = ImageLoader::load(path);
+    state.pending_path = path;
+    state.editor_regions.clear();
+    state.editor_exclude_mode = false;
+    state.mode = GuiMode::ImportChoice;
+}
+
 // AP-GUI-002: builds an ExtractionScope from the editor's drawn regions and
 // runs it through the exact same SourceScoper the CLI's --scope uses
 // (src/app/main.cpp), writing the same artifacts/scoping/scoped_source.png
@@ -1885,7 +1900,7 @@ int main(int argc, char** argv) {
         gui_log("ARTIFACT ROOT: " + state.artifact_root.string());
 
         if (argc > 1)
-            load_image(state, argv[1]);
+            begin_open_image(state, argv[1]);
 
         cv::namedWindow(kWindow, cv::WINDOW_NORMAL);
         cv::resizeWindow(kWindow, 1400, 850);
@@ -1912,11 +1927,7 @@ int main(int argc, char** argv) {
                         // straight into extraction anymore - the user
                         // always sees the import-as-is-vs-mask choice
                         // first, right after picking the file.
-                        state.pending_source = ImageLoader::load(path);
-                        state.pending_path = path;
-                        state.editor_regions.clear();
-                        state.editor_exclude_mode = false;
-                        state.mode = GuiMode::ImportChoice;
+                        begin_open_image(state, path);
                     }
                 } catch (const std::exception& e) {
                     std::cerr << "open error: " << e.what() << '\\n';

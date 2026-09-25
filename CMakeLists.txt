@@ -79,6 +79,8 @@ add_library(eke_dx_wire
     src/export/review_artifact_writer.cpp
     src/export/topology_exporter.cpp
     src/export/recognition_input_exporter.cpp
+    src/ingest/extraction_scope_io.cpp
+    src/ingest/source_scoper.cpp
     src/pipeline/extraction_pipeline.cpp
 )
 
@@ -301,6 +303,14 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-svg-structure-validator tests/test_svg_structure_validator.cpp)
     target_link_libraries(dx-wire-test-svg-structure-validator PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-svg-structure-validator COMMAND dx-wire-test-svg-structure-validator)
+
+    add_executable(dx-wire-test-extraction-scope-io tests/test_extraction_scope_io.cpp)
+    target_link_libraries(dx-wire-test-extraction-scope-io PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-extraction-scope-io COMMAND dx-wire-test-extraction-scope-io)
+
+    add_executable(dx-wire-test-source-scoper tests/test_source_scoper.cpp)
+    target_link_libraries(dx-wire-test-source-scoper PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-source-scoper COMMAND dx-wire-test-source-scoper)
 
     add_executable(dx-wire-test-assertions-enabled tests/test_assertions_enabled.cpp)
     add_test(NAME dx-wire-test-assertions-enabled COMMAND dx-wire-test-assertions-enabled)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T08:36:10Z",
+  "generated_at": "2026-09-25T08:36:30Z",
   "source_id": "C:\dev\ds-extractor\samples\trx300ODG.png",
   "page": 0,
   "image_width": 1056,
@@ -13,7 +13,7 @@
     "connector_terminals": 0,
     "splices_and_junctions": 401,
     "grounds": 12,
-    "labels": 808,
+    "labels": 806,
     "topology_edges": 522,
     "component_bounds": 37,
     "endpoint_debug": 141,

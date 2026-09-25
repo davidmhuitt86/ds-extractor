@@ -109,6 +109,43 @@ ConfidenceClass confidence_for_distance(
     return ConfidenceClass::Unresolved;
 }
 
+// AP-DIAG-FIX-005: geometric proximity to a component's bounding box is not
+// sufficient by itself to establish ComponentTerminal identity - the
+// candidate component must have positive engineering evidence connecting
+// it to real symbol/connector geometry. This reuses the two ownership
+// evidence structures already present in the architecture rather than
+// inventing a new one: an owned SymbolPrimitive (any kind - a component may
+// legitimately own primitives never classified TerminalLead), or an
+// explicit component/connector-associated RejectedGeometryEvidence entry
+// (geometry independently attributed to this component's boundary by
+// GeometryOwnershipClassifier, for symbols whose terminal geometry was not
+// captured as a SymbolPrimitive at all). A component with neither is not
+// distinguishable from unrelated geometry (e.g. an annotation glyph) that
+// happens to be classified as a component candidate.
+bool has_ownership_evidence(
+    const ComponentCandidate& component,
+    const std::vector<SymbolPrimitive>& symbol_primitives,
+    const std::vector<RejectedGeometryEvidence>& rejected_geometry) {
+
+    for (const auto& primitive : symbol_primitives) {
+        if (primitive.component_id == component.id)
+            return true;
+    }
+
+    for (const auto& evidence : rejected_geometry) {
+        const bool associated =
+            (evidence.classification ==
+                 RejectedGeometryClass::ComponentAssociated ||
+             evidence.classification ==
+                 RejectedGeometryClass::ConnectorAssociated) &&
+            evidence.associated_object_id == component.id;
+        if (associated)
+            return true;
+    }
+
+    return false;
+}
+
 TerminalCandidateKind kind_for_component(ComponentCandidateKind kind) {
     switch (kind) {
     case ComponentCandidateKind::ChassisGround:
@@ -133,7 +170,8 @@ TerminalLocationDetector::TerminalLocationDetector(
 TerminalLocationArtifacts TerminalLocationDetector::detect(
     const std::vector<ComponentCandidate>& components,
     const std::vector<EndpointCandidate>& endpoints,
-    const std::vector<RejectedGeometryEvidence>& rejected_geometry) const {
+    const std::vector<RejectedGeometryEvidence>& rejected_geometry,
+    const std::vector<SymbolPrimitive>& symbol_primitives) const {
 
     TerminalLocationArtifacts result;
 
@@ -142,6 +180,10 @@ TerminalLocationArtifacts TerminalLocationDetector::detect(
         const ComponentCandidate* best_component = nullptr;
 
         for (const auto& component : components) {
+            if (!has_ownership_evidence(
+                    component, symbol_primitives, rejected_geometry))
+                continue;
+
             double distance =
                 attachment_distance(endpoint.position, component, config_);
 

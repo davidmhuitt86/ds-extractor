@@ -30,7 +30,8 @@ public:
     [[nodiscard]] TerminalLocationArtifacts detect(
         const std::vector<ComponentCandidate>& components,
         const std::vector<EndpointCandidate>& endpoints,
-        const std::vector<RejectedGeometryEvidence>& rejected_geometry = {}) const;
+        const std::vector<RejectedGeometryEvidence>& rejected_geometry = {},
+        const std::vector<SymbolPrimitive>& symbol_primitives = {}) const;
 
 private:
     TerminalLocationConfig config_;

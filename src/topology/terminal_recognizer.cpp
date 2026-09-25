@@ -250,6 +250,18 @@ TerminalRecognitionArtifacts TerminalRecognizer::recognize(
         if (has_terminal_lead)
             continue;
 
+        // AP-DIAG-FIX-005: boundary distance plus conductor alignment is
+        // not sufficient positive evidence on its own - a component with no
+        // owned SymbolPrimitive at all (of any kind) has nothing
+        // establishing it as a real engineering symbol here, so a nearby
+        // conductor happening to point toward it (e.g. because it merely
+        // runs past unrelated annotation geometry) must not be read as a
+        // terminal/lead relationship. A component that owns at least one
+        // primitive - even one not classified TerminalLead - still has
+        // real symbol geometry backing this fallback.
+        if (owned_primitives.empty())
+            continue;
+
         for (const auto& endpoint : endpoints) {
             const std::string pair = endpoint.id + ":" + component.id;
             if (existing_pairs.find(pair) != existing_pairs.end())

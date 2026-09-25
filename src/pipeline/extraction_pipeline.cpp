@@ -260,7 +260,8 @@ WireModel ExtractionPipeline::run(
         terminal_detector.detect(
             component_candidates,
             endpoint_artifacts.candidates,
-            rejected_geometry);
+            rejected_geometry,
+            model.symbol_primitives);
     model.terminal_candidates = terminal_artifacts.candidates;
 
     // AP-WIRE-024: recognize additional component-terminal associations

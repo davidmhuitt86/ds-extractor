@@ -1,0 +1,221 @@
+{
+  "findings": [
+    {
+      "contradictory_evidence": "None of the three anchor components are chassis-ground symbols on visual inspection of samples/trx300ODG.png at 6x crop.",
+      "downstream_effect": "Only 1 of the 4 nets reporting role=ground (electrical-net-f593a0fe55da1e86) is confirmed to anchor on a genuine chassis-ground symbol. net_roles.ground=4 (reported in every AP's audit JSON, unchanged by this AP) overstates confirmed ground distributions by 3x.",
+      "earliest_pipeline_stage": "component/shape classification (ChassisGround shape-classification gate) - same stage as AP-DIAG-004",
+      "id": "AUDIT-002-001",
+      "object_ids": [
+        "electrical-net-082a9ad2226c9737",
+        "electrical-net-3cf9b219b6c7f976",
+        "electrical-net-d54a4ae898a702b1"
+      ],
+      "object_type": "ElectricalNet",
+      "scoping_relationship": "Not caused by or related to scoping; all 3 misclassified nets and their anchor components lie inside the production include region and are byte-identical between unscoped and scoped runs.",
+      "severity": "CRITICAL",
+      "source_evidence": {
+        "electrical-net-082a9ad2226c9737": {
+          "actual_source_object": "rectifier diode symbol (already known, AP-DIAG-005)",
+          "anchor_endpoint": "endpoint-candidate-731ae6a45fb30f5a",
+          "anchor_xy": [
+            448,
+            161
+          ],
+          "component_bounds": [
+            449,
+            154,
+            26,
+            17
+          ],
+          "component_id": "component-candidate-shape-region-4cae53cce7f2640f"
+        },
+        "electrical-net-3cf9b219b6c7f976": {
+          "actual_source_object": "text glyphs of the word SWITCH in the IGNITION SWITCH label (new finding)",
+          "anchor_xy": [
+            410,
+            121.5
+          ],
+          "component_bounds": [
+            398,
+            114,
+            12,
+            15
+          ],
+          "component_id": "component-candidate-shape-region-590ab65693883ba3"
+        },
+        "electrical-net-d54a4ae898a702b1": {
+          "actual_source_object": "small 2-pin connector/splice housing near the tail light (new finding)",
+          "anchor_xy": [
+            868,
+            397
+          ],
+          "component_bounds": [
+            861,
+            366,
+            29,
+            23
+          ],
+          "component_id": "component-candidate-shape-region-432be0a200811b76"
+        }
+      },
+      "status": "NEW (extends AP-DIAG-005, which had only checked 1 of the 4 ground nets)",
+      "title": "3 of 4 reported Ground-role electrical nets are misclassified (not just 1)",
+      "why_sufficient": "Each anchor endpoint's component_id was cross-referenced to its ComponentCandidate bounds, and that exact source region was cropped and visually inspected. None show a ground triangle/bar glyph."
+    },
+    {
+      "contradictory_evidence": "2 of 10 (component-candidate-shape-region-3a66374832b3abdc at [923,535,24,16] and component-candidate-shape-region-899a2442ecba3be6 at [748,535,22,19]) are confirmed genuine chassis-ground symbols on visual inspection.",
+      "downstream_effect": "Directly produces AUDIT-002-001. Confirms and roughly doubles the confirmed false-positive count from AP-DIAG-004 (was 4/5 sampled; now 8/10, exhaustive).",
+      "earliest_pipeline_stage": "shape detection / component classification (the same ChassisGround shape-classification gate identified in AP-DIAG-004)",
+      "id": "AUDIT-002-002",
+      "object_ids": [
+        "component-candidate-shape-region-4cae53cce7f2640f",
+        "component-candidate-shape-region-590ab65693883ba3",
+        "component-candidate-shape-region-f29a073b76f906b7",
+        "component-candidate-shape-region-432be0a200811b76",
+        "component-candidate-shape-region-30f9ed02532ba956",
+        "component-candidate-shape-region-6a7001c24fe4c252",
+        "component-candidate-shape-region-1790c5fb3a4f437c",
+        "component-candidate-shape-region-b2a4933bc728db93"
+      ],
+      "object_type": "ComponentCandidate",
+      "severity": "HIGH",
+      "source_evidence": {
+        "component-candidate-shape-region-1790c5fb3a4f437c": {
+          "actual": "switch-continuity table cell marker (also outside the production scope include region)",
+          "bounds": [
+            255,
+            687,
+            12,
+            22
+          ]
+        },
+        "component-candidate-shape-region-30f9ed02532ba956": {
+          "actual": "CDI Unit connector-plug notch glyph",
+          "bounds": [
+            258,
+            167,
+            26,
+            23
+          ]
+        },
+        "component-candidate-shape-region-432be0a200811b76": {
+          "actual": "2-pin connector/splice housing",
+          "bounds": [
+            861,
+            366,
+            29,
+            23
+          ]
+        },
+        "component-candidate-shape-region-4cae53cce7f2640f": {
+          "actual": "rectifier diode symbol",
+          "bounds": [
+            449,
+            154,
+            26,
+            17
+          ]
+        },
+        "component-candidate-shape-region-590ab65693883ba3": {
+          "actual": "SWITCH text glyphs",
+          "bounds": [
+            398,
+            114,
+            12,
+            15
+          ]
+        },
+        "component-candidate-shape-region-6a7001c24fe4c252": {
+          "actual": "flasher/relay internal connector notch glyph",
+          "bounds": [
+            565,
+            459,
+            40,
+            17
+          ]
+        },
+        "component-candidate-shape-region-b2a4933bc728db93": {
+          "actual": "second rectifier diode symbol, labeled RECTIFIER",
+          "bounds": [
+            591,
+            97,
+            34,
+            30
+          ]
+        },
+        "component-candidate-shape-region-f29a073b76f906b7": {
+          "actual": "pin-label text glyphs",
+          "bounds": [
+            677,
+            132,
+            38,
+            19
+          ]
+        }
+      },
+      "status": "STILL PRESENT / STRENGTHENED (AP-DIAG-004 was a partial sample; this closes SUSPECT-001 with full coverage)",
+      "title": "8 of 10 ChassisGround-kind components are confirmed false positives (full inventory, not a sample)",
+      "why_sufficient": "All 10 ChassisGround-kind ComponentCandidates in the extraction were individually cropped from samples/trx300ODG.png and visually inspected - full inventory coverage, not a sample."
+    },
+    {
+      "contradictory_evidence": "Visual inspection (crop_small_component.png, region 855-905,405-455) confirms wire-ded6cca62fbe3cd9 is a real drawn conductor lead (part of a dual-coil component's right lead) - the wire itself is real, but the small 7x7 component both its endpoints are attributed to sits entirely inside the wire's own vertical span (component y-range 430-437 vs wire y-range 416-442) rather than terminating it.",
+      "downstream_effect": "The wire itself is not fabricated (do not treat as an AP-DIAG-001-class defect), but its component_terminal attribution is misleading for anyone reading component-level connectivity from this specific wire's endpoints.",
+      "earliest_pipeline_stage": "terminal/component-association (proximity-based component_id assignment on EndpointCandidate)",
+      "id": "AUDIT-002-003",
+      "object_ids": [
+        "wire-ded6cca62fbe3cd9",
+        "endpoint-candidate-7b1232ec85583772",
+        "endpoint-candidate-8b9c74742885946f",
+        "component-candidate-shape-region-c2335cc575d107b1"
+      ],
+      "object_type": "Wire / EndpointCandidate",
+      "severity": "MEDIUM",
+      "source_evidence": {
+        "component_bounds": [
+          874,
+          430,
+          7,
+          7
+        ],
+        "wire": {
+          "both_endpoints_component_id": "component-candidate-shape-region-c2335cc575d107b1",
+          "end_xy": [
+            880.5,
+            442
+          ],
+          "start_xy": [
+            880.5,
+            416
+          ]
+        }
+      },
+      "status": "NEW",
+      "title": "Two wire endpoints both attributed to the same small nearby component despite the wire passing well beyond it on both sides",
+      "why_sufficient": "Endpoint-to-component proximity matching attributed both ends of a single passing-through conductor to one small incidental shape (likely a junction-dot artifact), rather than either endpoint reflecting where the wire actually starts or ends structurally."
+    },
+    {
+      "contradictory_evidence": "All three wires are present, unchanged, at the exact same coordinates recorded in AP-DIAG-AUDIT-001; only the last hex character was dropped in that document's markdown table.",
+      "downstream_effect": "None on the pipeline; flagged only because this AP's own initial ID lookup reported these 3 as \"MISSING\" before the truncation was found - recorded so a future audit doesn't repeat the false alarm.",
+      "earliest_pipeline_stage": "N/A - documentation artifact, not an extraction defect",
+      "id": "AUDIT-002-004",
+      "object_ids": [
+        "wire-17ba2741981c1822",
+        "wire-8b05f44e08427e18",
+        "wire-e5aa23bee5b2384c"
+      ],
+      "object_type": "Documentation",
+      "severity": "LOW",
+      "source_evidence": {
+        "actual_ids_len_21": true,
+        "prior_doc_ids": [
+          "wire-17ba2741981c182",
+          "wire-8b05f44e08427e1",
+          "wire-e5aa23bee5b2384"
+        ]
+      },
+      "status": "RESOLVED (documentation correction, not a code or extraction issue)",
+      "title": "AP-DIAG-AUDIT-001's own wire-ID table has 3 transcription errors (one hex digit truncated)",
+      "why_sufficient": "Every wire ID in this extraction is deterministically 21 characters (\"wire-\" + 16 hex chars); the three IDs as printed in AP-DIAG-AUDIT-001 section 6 are 20 characters."
+    }
+  ]
+}

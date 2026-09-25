@@ -1,0 +1,150 @@
+{
+  "note": "pre_fix003 built fresh in an isolated git worktree at be4bf0d for independent comparison, not trusted from any prior report. post_fix003 pulled from this AP's own fresh extraction at ca2e9f1.",
+  "post_fix003_scoped_production": {
+    "components_by_kind": {
+      "chassis_ground": 6,
+      "circular_symbol": 26,
+      "enclosure": 2
+    },
+    "components_total": 34,
+    "conductor_boundary_evidence_total": 205,
+    "conductor_boundary_resolutions_total": 185,
+    "connector_candidates_total": 0,
+    "connector_terminals_total": 0,
+    "electrical_nets_by_role": {
+      "ground": 4,
+      "unknown": 6
+    },
+    "electrical_nets_total": 10,
+    "endpoint_by_kind": {
+      "component_terminal": 16,
+      "geometric": 165,
+      "ground": 4
+    },
+    "endpoint_by_terminal_role": {
+      "component_terminal": 16,
+      "ground_terminal": 4,
+      "unknown": 165
+    },
+    "physical_wire_records_total": 37,
+    "physical_wires_by_identity_status": {
+      "resolved": 37
+    },
+    "physical_wires_distinct_conductors": 35,
+    "rejected_geometry_by_reason": {
+      "graphical_object_ownership_component_boundary": 9
+    },
+    "rejected_geometry_total": 9,
+    "symbol_primitives_total": 34,
+    "terminal_candidates_total": 185,
+    "text_recognition_evidence_total": 0,
+    "topology_edges_total": 641,
+    "topology_nodes_by_type": {
+      "conductor_end": 185,
+      "continuation": 114,
+      "crossing": 182,
+      "splice": 47
+    },
+    "topology_nodes_total": 528
+  },
+  "post_fix003_unscoped": {
+    "components_by_kind": {
+      "chassis_ground": 6,
+      "circular_symbol": 26,
+      "diagram_furniture": 47,
+      "enclosure": 2
+    },
+    "components_total": 81,
+    "conductor_boundary_evidence_total": 223,
+    "conductor_boundary_resolutions_total": 203,
+    "connector_candidates_total": 0,
+    "connector_terminals_total": 0,
+    "electrical_nets_by_role": {
+      "ground": 4,
+      "unknown": 6
+    },
+    "electrical_nets_total": 10,
+    "endpoint_by_kind": {
+      "component_terminal": 16,
+      "geometric": 183,
+      "ground": 4
+    },
+    "endpoint_by_terminal_role": {
+      "component_terminal": 16,
+      "ground_terminal": 4,
+      "unknown": 183
+    },
+    "physical_wire_records_total": 37,
+    "physical_wires_by_identity_status": {
+      "resolved": 37
+    },
+    "physical_wires_distinct_conductors": 35,
+    "rejected_geometry_by_reason": {
+      "graphical_object_ownership_component_boundary": 9,
+      "insufficient_supporting_ink": 1
+    },
+    "rejected_geometry_total": 10,
+    "symbol_primitives_total": 34,
+    "terminal_candidates_total": 203,
+    "text_recognition_evidence_total": 0,
+    "topology_edges_total": 876,
+    "topology_nodes_by_type": {
+      "conductor_end": 203,
+      "continuation": 139,
+      "crossing": 239,
+      "splice": 105
+    },
+    "topology_nodes_total": 686
+  },
+  "pre_fix003_unscoped_be4bf0d": {
+    "components_by_kind": {
+      "chassis_ground": 10,
+      "circular_symbol": 26,
+      "diagram_furniture": 47,
+      "enclosure": 2
+    },
+    "components_total": 85,
+    "conductor_boundary_evidence_total": 228,
+    "conductor_boundary_resolutions_total": 200,
+    "connector_candidates_total": 0,
+    "connector_terminals_total": 0,
+    "electrical_nets_by_role": {
+      "ground": 4,
+      "unknown": 6
+    },
+    "electrical_nets_total": 10,
+    "endpoint_by_kind": {
+      "component_terminal": 16,
+      "geometric": 172,
+      "ground": 12
+    },
+    "endpoint_by_terminal_role": {
+      "component_terminal": 16,
+      "ground_terminal": 12,
+      "unknown": 172
+    },
+    "physical_wire_records_total": 35,
+    "physical_wires_by_identity_status": {
+      "resolved": 35
+    },
+    "physical_wires_distinct_conductors": 34,
+    "rejected_geometry_by_reason": {
+      "graphical_object_ownership_component_boundary": 9,
+      "insufficient_supporting_ink": 1
+    },
+    "rejected_geometry_total": 10,
+    "symbol_primitives_total": 40,
+    "terminal_candidates_total": 200,
+    "text_recognition_evidence_total": 0,
+    "topology_edges_total": 868,
+    "topology_nodes_by_type": {
+      "conductor_end": 200,
+      "continuation": 135,
+      "crossing": 237,
+      "splice": 106
+    },
+    "topology_nodes_total": 678
+  },
+  "scope_fixture": "fixtures/trx300/scope_production.json",
+  "source": "samples/trx300ODG.png"
+}

@@ -1184,16 +1184,24 @@ void render_region_editor(cv::Mat& canvas, GuiState& state) {
     state.editor_image_screen_rect = placed;
     state.editor_scale = scale;
 
-    auto to_screen = [&](const cv::Rect& source_rect) {
+    // Converts a SOURCE-image region to coordinates local to view_copy
+    // (which has its own (0,0) origin at the image's top-left corner - it
+    // only gets placed onto the canvas at `placed` afterward, via
+    // view_copy.copyTo(canvas(placed)) below). This must NOT add placed's
+    // offset: doing so double-offsets the drawn rectangle once here and
+    // again when view_copy is pasted onto the canvas, which is exactly
+    // what previously made saved regions render shifted away from where
+    // they were actually drawn.
+    auto to_view = [&](const cv::Rect& source_rect) {
         return cv::Rect(
-            placed.x + static_cast<int>(source_rect.x * scale),
-            placed.y + static_cast<int>(source_rect.y * scale),
+            static_cast<int>(source_rect.x * scale),
+            static_cast<int>(source_rect.y * scale),
             static_cast<int>(source_rect.width * scale),
             static_cast<int>(source_rect.height * scale));
     };
 
     for (const auto& region : state.editor_regions) {
-        const cv::Rect r = to_screen(region.rect) &
+        const cv::Rect r = to_view(region.rect) &
             cv::Rect(0, 0, view_copy.cols, view_copy.rows);
         if (r.width <= 0 || r.height <= 0) continue;
         const cv::Scalar color =

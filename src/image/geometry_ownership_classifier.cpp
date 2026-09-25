@@ -107,6 +107,71 @@ bool both_endpoints_strictly_inside(
            point_strictly_inside_rect(segment.b, box);
 }
 
+// AP-DIAG-FIX-001: true when this axis-aligned segment runs ALONG one edge
+// of the given component's own established bounds - i.e. it is (a run of)
+// that component's own boundary/housing outline, not a conductor. This is
+// deliberately narrower than "near" or "inside" the box: a real lead that
+// terminates at (or passes through) the boundary approaches it from a
+// different axis and only touches it at one point, so it never satisfies
+// this test. A segment must be near-horizontal or near-vertical, coincide
+// with one specific edge's coordinate within tolerance, and lie within
+// that edge's span (with the same tolerance) to qualify.
+bool segment_traces_component_boundary(
+    const Segment2D& segment,
+    const BoundingBox& box,
+    double tolerance) {
+
+    const double left = static_cast<double>(box.x);
+    const double right = left + box.width;
+    const double top = static_cast<double>(box.y);
+    const double bottom = top + box.height;
+
+    const bool near_horizontal =
+        std::abs(segment.a.y - segment.b.y) <= tolerance;
+    const bool near_vertical =
+        std::abs(segment.a.x - segment.b.x) <= tolerance;
+
+    // A diagonal segment is never a rectilinear housing-outline stroke.
+    if (near_horizontal == near_vertical)
+        return near_horizontal &&
+            segment.length() <= tolerance; // degenerate point only
+    if (near_horizontal) {
+        const double y = (segment.a.y + segment.b.y) * 0.5;
+        if (std::abs(y - top) > tolerance && std::abs(y - bottom) > tolerance)
+            return false;
+
+        const double x_min = (std::min)(segment.a.x, segment.b.x);
+        const double x_max = (std::max)(segment.a.x, segment.b.x);
+        return x_min >= left - tolerance && x_max <= right + tolerance;
+    }
+
+    const double x = (segment.a.x + segment.b.x) * 0.5;
+    if (std::abs(x - left) > tolerance && std::abs(x - right) > tolerance)
+        return false;
+
+    const double y_min = (std::min)(segment.a.y, segment.b.y);
+    const double y_max = (std::max)(segment.a.y, segment.b.y);
+    return y_min >= top - tolerance && y_max <= bottom + tolerance;
+}
+
+const ComponentCandidate* component_whose_boundary_is_traced(
+    const Segment2D& geometry,
+    const std::vector<ComponentCandidate>& components,
+    double tolerance) {
+
+    const ComponentCandidate* result = nullptr;
+    for (const auto& component : components) {
+        if (!segment_traces_component_boundary(
+                geometry, component.bounds, tolerance)) {
+            continue;
+        }
+        if (result == nullptr || component.id < result->id) {
+            result = &component;
+        }
+    }
+    return result;
+}
+
 double overlap_fraction(
     const Segment2D& segment,
     const BoundingBox& box) {
@@ -291,6 +356,32 @@ GeometryOwnershipArtifacts GeometryOwnershipClassifier::classify(
                     "graphical_object_ownership_text_overlap";
                 evidence.measurement = best_text_overlap;
             }
+
+            result.rejected.push_back(std::move(evidence));
+            continue;
+        }
+
+        // AP-DIAG-FIX-001: a component's own boundary/housing outline is
+        // drawn ink, but it is not a conductor - the checks above never
+        // catch it, because it is deliberately excluded from "inside" (it
+        // runs along the boundary, not inside it) and it commonly falls
+        // outside the shape detector's own measured bounds by a pixel or
+        // two (the stroke sits astride the measured edge). This is an
+        // independent, narrower signal: the candidate's own two ends must
+        // lie on the same edge of some component's established bounds.
+        if (const ComponentCandidate* boundary_owner =
+                component_whose_boundary_is_traced(
+                    candidate.geometry, components,
+                    config_.component_boundary_tolerance_px)) {
+            RejectedGeometryEvidence evidence;
+            evidence.id = candidate.id;
+            evidence.geometry = candidate.geometry;
+            evidence.provenance = candidate.provenance;
+            evidence.classification = rejected_class_for_component(
+                boundary_owner->kind);
+            evidence.associated_object_id = boundary_owner->id;
+            evidence.reason = "graphical_object_ownership_component_boundary";
+            evidence.measurement = config_.component_boundary_tolerance_px;
 
             result.rejected.push_back(std::move(evidence));
             continue;

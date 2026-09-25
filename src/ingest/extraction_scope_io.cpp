@@ -86,6 +86,61 @@ std::vector<AnnotationRegion> read_annotation_regions(const cv::FileNode& node) 
     return result;
 }
 
+// AP-INGEST-002 Sec 11: structural validation that does not require the
+// source image (no bounds check here - that requires the actual image size
+// and belongs to SourceScoper::apply(), which performs it independently).
+// Failing explicitly here catches a malformed scope file as early as
+// possible, before any pixel work happens.
+void validate_schema_version(int schema_version) {
+    if (schema_version != 1) {
+        throw std::runtime_error(
+            "ExtractionScopeIO: unsupported schema_version " +
+            std::to_string(schema_version) + " (only 1 is supported)");
+    }
+}
+
+void validate_region_geometry(
+    const BoundingBox& region, const char* region_kind,
+    const std::string& region_id = {}) {
+
+    const std::string label = region_id.empty()
+        ? std::string(region_kind)
+        : std::string(region_kind) + " \"" + region_id + "\"";
+
+    if (region.width <= 0 || region.height <= 0) {
+        throw std::runtime_error(
+            "ExtractionScopeIO: " + label +
+            " region has non-positive dimensions (width=" +
+            std::to_string(region.width) + ", height=" +
+            std::to_string(region.height) + ")");
+    }
+    // A negative x/y origin is not rejected here - see the matching note
+    // in SourceScoper::validate_region. Whether it is legitimate (partial
+    // overlap) or actually out of bounds entirely can only be decided once
+    // the source image's own size is known, which this stage does not
+    // have; SourceScoper::apply() performs that bounds check itself.
+}
+
+void validate_scope(const ExtractionScope& scope) {
+    validate_schema_version(scope.schema_version);
+
+    if (scope.source_page < 0) {
+        throw std::runtime_error(
+            "ExtractionScopeIO: source_page must not be negative (got " +
+            std::to_string(scope.source_page) + ")");
+    }
+
+    for (const auto& region : scope.include_regions) {
+        validate_region_geometry(region, "include");
+    }
+    for (const auto& region : scope.exclusion_regions) {
+        validate_region_geometry(region, "exclusion");
+    }
+    for (const auto& region : scope.annotation_regions) {
+        validate_region_geometry(region.bounds, "annotation", region.id);
+    }
+}
+
 DiagramMetadata read_metadata(const cv::FileNode& node) {
     DiagramMetadata metadata;
     if (node.empty() || !node.isMap()) {
@@ -211,6 +266,8 @@ ExtractionScope ExtractionScopeIO::parse(const std::string& json_text) {
     scope.annotation_regions =
         read_annotation_regions(storage["annotation_regions"]);
     scope.metadata = read_metadata(storage["metadata"]);
+
+    validate_scope(scope);
 
     return scope;
 }

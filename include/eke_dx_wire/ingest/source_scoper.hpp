@@ -9,15 +9,24 @@
 
 namespace eke::dx::wire {
 
-// AP-INGEST-001 Sec 10: the deterministic, traceable record of how a scoped
-// source relates back to its original. Deliberately excludes anything
-// non-deterministic (timestamps, process/machine identity) - see Sec 11.
+// AP-INGEST-001 Sec 10 / AP-INGEST-002 Sec 7: the deterministic, traceable
+// record of how a scoped source relates back to its original. Deliberately
+// excludes anything non-deterministic (timestamps, process/machine
+// identity) - see Sec 11/Sec 8.
 struct ScopeProvenance {
     // stable_id("scoped-source", ...) over source_id + page + scope_id.
     std::string id;
 
     std::string source_id;
     int source_page = 0;
+
+    // AP-INGEST-002: explicit, unambiguous answer to "was this source
+    // scoped?" - always true for any ScopeProvenance SourceScoper::apply()
+    // produces (an unscoped run never constructs one at all), but recorded
+    // as its own field rather than left implicit in "a provenance file
+    // exists," so a consumer reading only the JSON's own content - not the
+    // fact of its presence on disk - can answer the question directly.
+    bool scoped = true;
 
     // stable_id("extraction-scope", ...) over the scope's own regions and
     // metadata content only - identical scopes always produce the same id,
@@ -26,6 +35,12 @@ struct ScopeProvenance {
 
     std::vector<BoundingBox> include_regions;
     std::vector<BoundingBox> exclusion_regions;
+
+    // AP-INGEST-002: previously omitted from provenance even though
+    // AnnotationRegions were part of the applied scope - closes that gap
+    // (Sec 7's "What annotation regions were used?").
+    std::vector<AnnotationRegion> annotation_regions;
+
     DiagramMetadata metadata;
 
     int scoped_width = 0;

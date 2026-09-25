@@ -1,8 +1,24 @@
 #include "eke_dx_wire/ingest/extraction_scope_io.hpp"
 
 #include <cassert>
+#include <stdexcept>
+#include <string>
 
 using namespace eke::dx::wire;
+
+namespace {
+
+bool parse_throws(const std::string& json) {
+    try {
+        [[maybe_unused]] const ExtractionScope scope =
+            ExtractionScopeIO::parse(json);
+    } catch (const std::runtime_error&) {
+        return true;
+    }
+    return false;
+}
+
+} // namespace
 
 int main() {
     // Full round trip: every field populated, including annotation
@@ -87,6 +103,67 @@ int main() {
         const std::string first = ExtractionScopeIO::serialize(scope);
         const std::string second = ExtractionScopeIO::serialize(scope);
         assert(first == second);
+    }
+
+    // AP-INGEST-002 Sec 11: invalid scopes fail explicitly rather than
+    // being silently accepted or guessed at.
+
+    // Unsupported schema version.
+    assert(parse_throws(R"({"schema_version": 2, "source": {"path": "x", "page": 0}})"));
+
+    // A valid, currently-supported schema version does not throw.
+    {
+        const ExtractionScope scope = ExtractionScopeIO::parse(
+            R"({"schema_version": 1, "source": {"path": "x", "page": 0}})");
+        assert(scope.schema_version == 1);
+    }
+
+    // Negative dimensions on an include region.
+    assert(parse_throws(
+        R"({"schema_version": 1, "source": {"path": "x", "page": 0},
+            "include_regions": [{"x": 0, "y": 0, "width": -10, "height": 20}]})"));
+
+    // Zero-width region (zero-area) is rejected, not silently accepted as
+    // a harmless no-op - almost certainly an authoring mistake.
+    assert(parse_throws(
+        R"({"schema_version": 1, "source": {"path": "x", "page": 0},
+            "exclusion_regions": [{"x": 0, "y": 0, "width": 0, "height": 20}]})"));
+
+    // A negative region origin is NOT rejected at this stage - it may be a
+    // legitimate region that starts before the image's top-left corner and
+    // still substantially overlaps it. Whether it is actually out of
+    // bounds can only be decided once the source image's size is known
+    // (SourceScoper::apply() performs that check - see test_source_scoper.cpp).
+    {
+        const ExtractionScope scope = ExtractionScopeIO::parse(
+            R"({"schema_version": 1, "source": {"path": "x", "page": 0},
+                "include_regions": [{"x": -5, "y": 0, "width": 10, "height": 20}]})");
+        assert(scope.include_regions.size() == 1);
+        assert(scope.include_regions[0].x == -5);
+    }
+
+    // Malformed geometry on an annotation region is caught too, even
+    // though annotation regions never affect masking (Sec 21).
+    assert(parse_throws(
+        R"({"schema_version": 1, "source": {"path": "x", "page": 0},
+            "annotation_regions": [{"id": "a", "x": 0, "y": 0, "width": 0, "height": 0,
+                                     "annotation_type": "legend", "description": ""}]})"));
+
+    // Negative source_page.
+    assert(parse_throws(R"({"schema_version": 1, "source": {"path": "x", "page": -1}})"));
+
+    // A well-formed scope with valid, positive-area regions on all three
+    // region kinds does not throw.
+    {
+        const ExtractionScope scope = ExtractionScopeIO::parse(
+            R"({"schema_version": 1, "source": {"path": "x", "page": 0},
+                "include_regions": [{"x": 0, "y": 0, "width": 100, "height": 100}],
+                "exclusion_regions": [{"x": 10, "y": 10, "width": 5, "height": 5}],
+                "annotation_regions": [{"id": "a", "x": 1, "y": 1, "width": 1, "height": 1,
+                                         "annotation_type": "legend", "description": ""}]})");
+        assert(scope.include_regions.size() == 1);
+        assert(scope.exclusion_regions.size() == 1);
+        assert(scope.annotation_regions.size() == 1);
     }
 
     return 0;

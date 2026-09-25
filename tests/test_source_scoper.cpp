@@ -3,6 +3,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include <cassert>
+#include <stdexcept>
 
 using namespace eke::dx::wire;
 
@@ -215,6 +216,166 @@ int main() {
         assert(result.provenance.metadata.manufacturer == "Honda");
         assert(!result.provenance.id.empty());
         assert(!result.provenance.scope_id.empty());
+    }
+
+    // AP-INGEST-002 Sec 7: provenance answers "was this scoped?" and "what
+    // annotation regions were used?" explicitly, not just include/exclusion
+    // regions and metadata.
+    {
+        cv::Mat image = white_page();
+        ExtractionScope scope;
+        AnnotationRegion annotation;
+        annotation.id = "legend-1";
+        annotation.bounds = {10, 10, 5, 5};
+        annotation.annotation_type = "legend";
+        annotation.description = "wire color key";
+        scope.annotation_regions.push_back(annotation);
+
+        const auto result = scoper.apply(image, scope, "src-id");
+
+        assert(result.provenance.scoped == true);
+        assert(result.provenance.annotation_regions.size() == 1);
+        assert(result.provenance.annotation_regions[0].id == "legend-1");
+        assert(result.provenance.annotation_regions[0].annotation_type ==
+               "legend");
+    }
+
+    // AP-INGEST-002 Sec 5/11: scope boundary integrity.
+
+    // A region entirely outside the source image must fail explicitly,
+    // not be silently clipped away to nothing.
+    {
+        cv::Mat image = white_page();
+        ExtractionScope scope;
+        scope.exclusion_regions.push_back({200, 200, 50, 50});
+
+        bool threw = false;
+        try {
+            [[maybe_unused]] const auto result =
+                scoper.apply(image, scope, "src");
+        } catch (const std::runtime_error&) {
+            threw = true;
+        }
+        assert(threw);
+    }
+
+    // A region with non-positive dimensions, constructed programmatically
+    // (never round-tripped through ExtractionScopeIO), must also fail
+    // explicitly - defense in depth alongside ExtractionScopeIO's own
+    // check, since ExtractionScope can be built directly in code.
+    {
+        cv::Mat image = white_page();
+        ExtractionScope scope;
+        scope.include_regions.push_back({0, 0, 0, 10});
+
+        bool threw = false;
+        try {
+            [[maybe_unused]] const auto result =
+                scoper.apply(image, scope, "src");
+        } catch (const std::runtime_error&) {
+            threw = true;
+        }
+        assert(threw);
+    }
+
+    // A region that only partially leaves the image (drawn slightly past
+    // an edge - the ordinary, expected case) is clipped, not rejected.
+    {
+        cv::Mat image = white_page();
+        cv::line(image, {10, 50}, {90, 50}, cv::Scalar(0), 2);
+
+        ExtractionScope scope;
+        scope.include_regions.push_back({-20, -20, 140, 140});
+        const auto result = scoper.apply(image, scope, "src");
+
+        assert(is_black(result.scoped_image, 50, 50));
+    }
+
+    // Overlapping include regions behave as a union: content in either
+    // region (including the overlap) survives, nothing is double-applied
+    // or corrupted by the overlap.
+    {
+        cv::Mat image = white_page();
+        cv::line(image, {5, 15}, {15, 15}, cv::Scalar(0), 1); // region A only
+        cv::line(image, {25, 25}, {35, 25}, cv::Scalar(0), 1); // overlap of A and B
+        cv::line(image, {45, 45}, {55, 45}, cv::Scalar(0), 1); // region B only
+        cv::line(image, {80, 80}, {90, 80}, cv::Scalar(0), 1); // neither
+
+        ExtractionScope scope;
+        scope.include_regions.push_back({0, 0, 40, 40});   // region A
+        scope.include_regions.push_back({20, 20, 40, 40}); // region B, overlaps A
+        const auto result = scoper.apply(image, scope, "src");
+
+        assert(is_black(result.scoped_image, 10, 15));
+        assert(is_black(result.scoped_image, 30, 25));
+        assert(is_black(result.scoped_image, 50, 45));
+        assert(is_white(result.scoped_image, 85, 80));
+    }
+
+    // Overlapping exclusion regions behave as a union too: anything in
+    // either exclusion region is removed, regardless of the overlap.
+    {
+        cv::Mat image = white_page();
+        cv::line(image, {5, 15}, {15, 15}, cv::Scalar(0), 1);  // in excl A
+        cv::line(image, {25, 25}, {35, 25}, cv::Scalar(0), 1); // overlap of A and B
+        cv::line(image, {45, 45}, {55, 45}, cv::Scalar(0), 1); // in excl B
+        cv::line(image, {80, 80}, {90, 80}, cv::Scalar(0), 1); // untouched
+
+        ExtractionScope scope;
+        scope.exclusion_regions.push_back({0, 0, 40, 40});
+        scope.exclusion_regions.push_back({20, 20, 40, 40});
+        const auto result = scoper.apply(image, scope, "src");
+
+        assert(is_white(result.scoped_image, 10, 15));
+        assert(is_white(result.scoped_image, 30, 25));
+        assert(is_white(result.scoped_image, 50, 45));
+        assert(is_black(result.scoped_image, 85, 80));
+    }
+
+    // AP-INGEST-002 Sec 5: an object straddling a scope boundary is
+    // truncated exactly at the boundary - the surviving portion is
+    // pixel-for-pixel identical to the source, and the boundary itself
+    // introduces no new edge (this is the formally defined, deterministic
+    // policy for boundary-intersecting geometry: OpenCV's own half-open
+    // cv::Rect semantics decide the exact cut column/row, consistently).
+    {
+        cv::Mat image = white_page();
+        cv::line(image, {10, 50}, {90, 50}, cv::Scalar(0), 1);
+
+        ExtractionScope scope;
+        scope.exclusion_regions.push_back({50, 0, 50, 100}); // excludes x in [50,100)
+        const auto result = scoper.apply(image, scope, "src");
+
+        // Surviving portion (x < 50) is untouched.
+        cv::Mat original_slice = image(cv::Rect(10, 49, 39, 3));
+        cv::Mat scoped_slice = result.scoped_image(cv::Rect(10, 49, 39, 3));
+        cv::Mat diff;
+        cv::absdiff(original_slice, scoped_slice, diff);
+        assert(cv::countNonZero(diff) == 0);
+
+        // The excluded portion (x >= 50) is gone.
+        assert(is_white(result.scoped_image, 60, 50));
+
+        // Exactly at the boundary column (x=49, still eligible) the
+        // original line pixel remains; at x=50 (first excluded column)
+        // it does not - a single deterministic cut point, not a
+        // fabricated edge of any kind.
+        assert(is_black(result.scoped_image, 49, 50));
+        assert(is_white(result.scoped_image, 50, 50));
+    }
+
+    // A component/conductor entirely inside an excluded region never
+    // survives scoping at all - not truncated, not partially visible.
+    {
+        cv::Mat image = white_page();
+        cv::rectangle(image, {60, 60}, {70, 70}, cv::Scalar(0), cv::FILLED);
+
+        ExtractionScope scope;
+        scope.exclusion_regions.push_back({50, 50, 30, 30});
+        const auto result = scoper.apply(image, scope, "src");
+
+        cv::Mat region = result.scoped_image(cv::Rect(50, 50, 30, 30));
+        assert(cv::countNonZero(region != 255) == 0);
     }
 
     return 0;

@@ -74,8 +74,12 @@ int main() {
             {"lead-1", "component-1", SymbolPrimitiveKind::TerminalLead,
              {100, 108, 8, 2}, 16.0, ConfidenceClass::High,
              {"fixture", 0, {100, 108, 8, 2}, "test"}}};
-        auto a = endpoint("a", "node-a", {108, 109});
-        auto b = endpoint("b", "node-b", {108, 107});
+        // Primitive bounds are (100,108,8,2), i.e. x in [100,108]. Placing
+        // one endpoint 2px outside each side gives two endpoints at the
+        // exact same distance (2px) from the primitive box - a genuine
+        // tie, not merely two different distances.
+        auto a = endpoint("a", "node-a", {98, 109});
+        auto b = endpoint("b", "node-b", {110, 109});
         const auto result = recognizer.recognize(
             components, {}, primitives, {a, b}, {}, {}, {});
         assert(result.candidates.empty());

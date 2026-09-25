@@ -12,6 +12,11 @@ int main() {
     cv::Mat image(220, 320, CV_8UC1, cv::Scalar(255));
 
     cv::rectangle(image, {20, 20}, {80, 70}, cv::Scalar(0), 2);
+    // A bare, empty rectangle is deliberately never classified as a
+    // Rectangle candidate (detect_rectangles() requires actual interior
+    // content as a discriminator against empty wire loops) - a small
+    // mark inside represents a real component's internal content.
+    cv::circle(image, {50, 45}, 4, cv::Scalar(0), cv::FILLED);
     cv::circle(image, {130, 50}, 18, cv::Scalar(0), 2);
 
     // Chassis-ground style: three centered horizontal bars with decreasing
@@ -48,7 +53,12 @@ int main() {
     assert(has_kind(ShapeKind::ChassisGround));
 
     assert(result.exclusion_mask.at<std::uint8_t>(45, 50) == 255);
-    assert(result.exclusion_mask.at<std::uint8_t>(50, 130) == 255);
+    // Circle regions are always added with ShapeRole::Primitive (see
+    // detect_circles()), and detect()'s own exclusion-mask loop
+    // deliberately skips ShapeRole::Primitive regions ("Primitive
+    // symbols remain visible in SHAPES but do not erase the conductor
+    // field") - a circle is therefore never part of the exclusion mask.
+    assert(result.exclusion_mask.at<std::uint8_t>(50, 130) == 0);
     assert(result.exclusion_mask.at<std::uint8_t>(67, 220) == 255);
 
     const auto circle_near = [](

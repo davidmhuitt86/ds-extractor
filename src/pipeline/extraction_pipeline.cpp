@@ -19,6 +19,7 @@
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
 #include "eke_dx_wire/topology/physical_wire_identity_reconstructor.hpp"
+#include "eke_dx_wire/topology/wire_identity_key.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/terminal_recognizer.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
@@ -459,12 +460,26 @@ WireModel ExtractionPipeline::run(
     // different traversal strategies. Wire identity is deterministic from
     // its source/page/endpoints, so duplicate IDs represent the same wire
     // artifact and must not be emitted twice.
-    std::unordered_set<std::string> emitted_wire_ids;
-    emitted_wire_ids.reserve(
+    //
+    // AP-DIAG-FIX-004: PhysicalWireIdentityReconstructor orders a wire's
+    // endpoints "smaller endpoint id first", while DistributionDecomposer
+    // (invoked from within ElectricalNetResolver below) always orders them
+    // "anchor endpoint first" regardless of lexicographic order. The same
+    // physical wire discovered by both therefore gets two different
+    // Wire::id values (Wire::id is itself derived from start/end), which
+    // let duplicate Wire records through this dedup set when it compared
+    // raw ids. Deduplicate on canonical_wire_identity_key(), which
+    // normalizes endpoint ordering (and sorts topology_edges/
+    // conductor_segments, since reversing traversal direction also
+    // reverses path order) so the same physical wire compares equal
+    // regardless of which reconstructor discovered it first - see
+    // docs/AP-DIAG-FIX-004_Physical_Wire_Record_Deduplication.md.
+    std::unordered_set<std::string> emitted_wire_keys;
+    emitted_wire_keys.reserve(
         model.wires.size() + net_artifacts.wires.size());
 
     for (const auto& wire : model.wires) {
-        emitted_wire_ids.insert(wire.id);
+        emitted_wire_keys.insert(canonical_wire_identity_key(wire));
     }
 
     // AP-WIRE-031: DistributionDecomposer (invoked from within
@@ -486,7 +501,7 @@ WireModel ExtractionPipeline::run(
             resolution.endpoint_id, &resolution);
     }
     for (auto wire : net_artifacts.wires) {
-        if (emitted_wire_ids.insert(wire.id).second) {
+        if (emitted_wire_keys.insert(canonical_wire_identity_key(wire)).second) {
             wire.identity_status = WireIdentityStatus::Resolved;
             const auto start_it =
                 boundary_resolution_by_endpoint.find(wire.start_endpoint);

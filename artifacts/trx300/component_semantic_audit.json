@@ -1,0 +1,2633 @@
+{
+  "schema": "trx300-component-semantic-audit-v1",
+  "ap_id": "AP-DIAG-AUDIT-008",
+  "starting_commit": "6213187",
+  "source_id": "samples/trx300ODG.png",
+  "source_hash": "a145fffeb4cc9261152930936737048e39e92b030de5c9427b8f60e427d5da6",
+  "extraction_configuration": {
+    "text_recognition_provider": "none (no-op default)",
+    "component_identity_registry": "none (no-op default)",
+    "symbol_recognition_provider": "none (no-op default)"
+  },
+  "candidate_count": 81,
+  "resolved_count": 0,
+  "unresolved_count": 28,
+  "rejected_count": 53,
+  "rejected_by_reason": {
+    "diagram_furniture": 47,
+    "chassis_ground_reference": 6,
+    "connector_interface": 0
+  },
+  "expected_trx300_semantic_target": 24,
+  "evidence_classification_summary": {
+    "category_distribution": {
+      "E": 4,
+      "B": 7,
+      "C": 1,
+      "H": 14,
+      "G": 2
+    },
+    "evidence_level_distribution": {
+      "E1": 9,
+      "E0": 14,
+      "E2": 3,
+      "E3": 2
+    },
+    "false_positive_suspected_count": 14,
+    "candidates_with_terminal_evidence": 5,
+    "candidates_with_wire_evidence": 2,
+    "candidates_with_resolved_symbol_family": 0,
+    "candidates_with_recognized_text": 0,
+    "candidates_with_zero_semantic_associations": 6
+  },
+  "global_context": {
+    "text_recognition_evidence_count": 0,
+    "semantic_associations_count": 1729,
+    "terminal_candidates_count": 18,
+    "connector_candidates_count": 0,
+    "physical_wires_count": 37,
+    "electrical_nets_count": 12
+  },
+  "unresolved_candidates": [
+    {
+      "id": "component-candidate-shape-region-066e8ad0e7654cff",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 911,
+        "y": 509,
+        "width": 8,
+        "height": 9
+      },
+      "center": {
+        "x": 915,
+        "y": 513.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-46",
+          "distance": 50,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-49",
+          "distance": 29.1548,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-50",
+          "distance": 3,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-54",
+          "distance": 16.4924,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-59",
+          "distance": 32.0624,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-63",
+          "distance": 37.3631,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "E",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "Small filled mark directly on a wire lead entering an enclosure; visually consistent with a genuine junction/connection dot. No terminal/topology/wire evidence attributed. Modeling-boundary question (component vs. Splice) unresolved."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-0771bb11fe6c347d",
+      "kind": "enclosure",
+      "bounds": {
+        "x": 870,
+        "y": 517,
+        "width": 52,
+        "height": 29
+      },
+      "center": {
+        "x": 896,
+        "y": 531.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "enclosure",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [
+        {
+          "id": "symbol-primitive-0cd47529f1f876d7",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 25
+        },
+        {
+          "id": "symbol-primitive-1606b92a3e5c6f07",
+          "kind": "circle",
+          "confidence": "high",
+          "area": 49
+        },
+        {
+          "id": "symbol-primitive-22705c2dd74eaf1c",
+          "kind": "rectangle",
+          "confidence": "high",
+          "area": 9
+        },
+        {
+          "id": "symbol-primitive-31226a54f7a71fdf",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 23
+        },
+        {
+          "id": "symbol-primitive-77914cbb56667b59",
+          "kind": "line",
+          "confidence": "high",
+          "area": 5
+        },
+        {
+          "id": "symbol-primitive-9efc98379c4b079d",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 30
+        }
+      ],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [
+        {
+          "id": "conductor-segment-412f6a4daaad9247",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        },
+        {
+          "id": "conductor-segment-6b31956015f58eac",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        },
+        {
+          "id": "conductor-segment-c7f44492cf6f3416",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        }
+      ],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-46",
+          "distance": 58,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-49",
+          "distance": 0,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-50",
+          "distance": 0,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-54",
+          "distance": 0,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-59",
+          "distance": 4,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-63",
+          "distance": 10.6301,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-65",
+          "distance": 35.8469,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-78",
+          "distance": 78,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "B",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "AUDIT OBSERVATION (non-authoritative): visually a battery symbol (two terminal leads with +/- circles) with adjacent raster text that appears to read 'BATTERY' and '12V12AH'. text_recognition_evidence is empty (OCR not connected) so this reading is not production-established. 6 SymbolPrimitives present; 0 TerminalCandidates/EndpointCandidates attributed despite visibly drawn leads - a terminal-extraction gap, not merely a labeling gap."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-0a02724ece05df31",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 600,
+        "y": 523,
+        "width": 11,
+        "height": 13
+      },
+      "center": {
+        "x": 605.5,
+        "y": 529.5
+      },
+      "confidence": "medium",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "medium"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [
+        {
+          "id": "symbol-primitive-34d10aa502fea379",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 9
+        }
+      ],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-53",
+          "distance": 56,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-60",
+          "distance": 43.4626,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-66",
+          "distance": 50.774,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-69",
+          "distance": 38,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-70",
+          "distance": 52.3546,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-71",
+          "distance": 57.4282,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-73",
+          "distance": 56.7186,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-75",
+          "distance": 67.2681,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "C",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "Small bracket/jog shape positioned above a round symbol with an internal zigzag mark (visually similar to two neighboring shapes at the same y-position); likely a fragment of that larger symbol rather than a standalone component. One of three visually near-identical bracket+circle groups in this row; only two (this one and 9c4d423986244e04) have any ComponentCandidate at all - the third has none (Section 13 candidate)."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-0b053d4e7a47606f",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 553,
+        "y": 324,
+        "width": 22,
+        "height": 20
+      },
+      "center": {
+        "x": 564,
+        "y": 334
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: bounding box sits at a plain grid/bus wire crossing with no drawn circle - the same 'enclosed gap' false-positive pattern AP-WIRE-FIX-002 partially corrected (for 3 different coordinates). This coordinate was not among those 3 and remains unaddressed."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-16df4d7df3b94a27",
+      "kind": "enclosure",
+      "bounds": {
+        "x": 216,
+        "y": 128,
+        "width": 68,
+        "height": 39
+      },
+      "center": {
+        "x": 250,
+        "y": 147.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "enclosure",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [
+        {
+          "id": "symbol-primitive-5d2d5ebe50a8ee9b",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 32
+        },
+        {
+          "id": "symbol-primitive-9155a5b9e60d49a7",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 8
+        },
+        {
+          "id": "symbol-primitive-f54920f904e5b21a",
+          "kind": "rectangle",
+          "confidence": "medium",
+          "area": 28
+        }
+      ],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [
+        {
+          "id": "conductor-segment-22c6b3c4d181e4f5",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        },
+        {
+          "id": "conductor-segment-388a111ba656a9f1",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        },
+        {
+          "id": "conductor-segment-55ca402ee193233b",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        },
+        {
+          "id": "conductor-segment-e10be449a7a7d3aa",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        }
+      ],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-0",
+          "distance": 55.4707,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-1",
+          "distance": 72.0139,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-14",
+          "distance": 25,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-16",
+          "distance": 65,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-17",
+          "distance": 45,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-19",
+          "distance": 0,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-2",
+          "distance": 20,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-26",
+          "distance": 24,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-27",
+          "distance": 24,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-28",
+          "distance": 31.8904,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-3",
+          "distance": 52.8015,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-6",
+          "distance": 12,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-8",
+          "distance": 2,
+          "confidence": "high",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "B",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "AUDIT OBSERVATION (non-authoritative): the enclosure's raster text appears to read 'CDI UNIT' directly inside the box outline. text_recognition_evidence is empty (OCR not connected). 3 SymbolPrimitives present; 0 TerminalCandidates attributed despite visible leads at the box's bottom edge."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-1975579e8330101e",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 545,
+        "y": 379,
+        "width": 7,
+        "height": 9
+      },
+      "center": {
+        "x": 548.5,
+        "y": 383.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "AP-DIAG-AUDIT-007 finding, re-confirmed: sits at a 4-way conductor crossing with a small loop/arc drawn at the intersection - consistent with a 'hop'/'no-connection' crossing convention rather than a component."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-1acff69cbd97d3ef",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 425,
+        "y": 144,
+        "width": 9,
+        "height": 9
+      },
+      "center": {
+        "x": 429.5,
+        "y": 148.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-11",
+          "distance": 3,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-12",
+          "distance": 21.095,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-20",
+          "distance": 19,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-21",
+          "distance": 9.05539,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-23",
+          "distance": 18,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-25",
+          "distance": 30.1496,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-29",
+          "distance": 41.7732,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-3",
+          "distance": 64.405,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-5",
+          "distance": 71.1758,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-7",
+          "distance": 26,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-9",
+          "distance": 73.5459,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "G",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "AP-DIAG-AUDIT-007 finding, re-confirmed: one of three visually identical repeated ring symbols on a wire run. Genuine drawn geometry, not fabricated ink; no terminal/family evidence exists to establish a specific identity."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-25e5f8f85abff207",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 780,
+        "y": 509,
+        "width": 7,
+        "height": 6
+      },
+      "center": {
+        "x": 783.5,
+        "y": 512
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-45",
+          "distance": 66.8431,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-51",
+          "distance": 13.4536,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-52",
+          "distance": 11,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-59",
+          "distance": 40.3113,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-61",
+          "distance": 66.8506,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-62",
+          "distance": 41.2311,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-65",
+          "distance": 45,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-67",
+          "distance": 53.7122,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "E",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "AP-DIAG-AUDIT-007 finding, re-confirmed: small connection dot on a wire lead entering a motor-circle-like enclosure. Genuine ink; modeling-boundary question (component vs. Splice) unresolved."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-3272c9e5f76ee915",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 584,
+        "y": 284,
+        "width": 10,
+        "height": 11
+      },
+      "center": {
+        "x": 589,
+        "y": 289.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle. Part of a 3-candidate vertical cluster (with 41ff861aeda09fb7, 558bc00c87382a7d) at x~584-585, y~264/274/284, each ~10px apart - all three independently confirmed as the same crossing-gap pattern."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-3bf0724f52f58c73",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 489,
+        "y": 324,
+        "width": 10,
+        "height": 10
+      },
+      "center": {
+        "x": 494,
+        "y": 329
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-36",
+          "distance": 54.9181,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle. Adjacent to 428e96f28d67cd74 (9.5px away), which shows the identical pattern."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-41ff861aeda09fb7",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 585,
+        "y": 264,
+        "width": 9,
+        "height": 10
+      },
+      "center": {
+        "x": 589.5,
+        "y": 269
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle. Part of the same vertical cluster as 3272c9e5f76ee915/558bc00c87382a7d."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-428e96f28d67cd74",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 488,
+        "y": 334,
+        "width": 11,
+        "height": 9
+      },
+      "center": {
+        "x": 493.5,
+        "y": 338.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-36",
+          "distance": 49.6588,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle. Adjacent to 3bf0724f52f58c73."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-4903417d6d8a60bb",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 534,
+        "y": 265,
+        "width": 11,
+        "height": 9
+      },
+      "center": {
+        "x": 539.5,
+        "y": 269.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-29",
+          "distance": 79.0253,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-558bc00c87382a7d",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 584,
+        "y": 274,
+        "width": 10,
+        "height": 10
+      },
+      "center": {
+        "x": 589,
+        "y": 279
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle. Part of the same vertical cluster as 3272c9e5f76ee915/41ff861aeda09fb7."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-62af50129e3fe173",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 575,
+        "y": 284,
+        "width": 9,
+        "height": 11
+      },
+      "center": {
+        "x": 579.5,
+        "y": 289.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-68f8e8348812d438",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 249,
+        "y": 404,
+        "width": 9,
+        "height": 9
+      },
+      "center": {
+        "x": 253.5,
+        "y": 408.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-47",
+          "distance": 79.511,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "E",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "Direct raster inspection: sits within a small grid of filled dots drawn precisely at conductor intersections - visually consistent with genuine drawn junction/splice markers, not empty crossings. Modeling-boundary question (component vs. Splice) unresolved."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-710412374a750fc8",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 874,
+        "y": 509,
+        "width": 7,
+        "height": 9
+      },
+      "center": {
+        "x": 877.5,
+        "y": 513.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-46",
+          "distance": 56.8243,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-49",
+          "distance": 3,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-50",
+          "distance": 30.1496,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-54",
+          "distance": 17.088,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-59",
+          "distance": 32,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-63",
+          "distance": 60,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-65",
+          "distance": 55.9732,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "E",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "Direct raster inspection: small connection dot on a wire lead entering an enclosure, same visual pattern as 066e8ad0e7654cff."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-763aea0b9f4edcf6",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 425,
+        "y": 537,
+        "width": 17,
+        "height": 16
+      },
+      "center": {
+        "x": 433.5,
+        "y": 545
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [
+        {
+          "id": "symbol-primitive-185f03840569fa3b",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 35
+        }
+      ],
+      "terminal_candidates": [
+        {
+          "id": "terminal-candidate-endpoint-candidate-0e8f8373399d704e:component-candidate-shape-region-763aea0b9f4edcf6",
+          "kind": "component_boundary",
+          "confidence": "high",
+          "distance_to_component": 0,
+          "endpoint_id": "endpoint-candidate-0e8f8373399d704e"
+        }
+      ],
+      "endpoint_candidates": [
+        {
+          "id": "endpoint-candidate-0e8f8373399d704e",
+          "kind": "component_terminal",
+          "confidence": "high",
+          "node_id": "topology-node-e3d68df2a09bbf4d"
+        }
+      ],
+      "topology_nodes": [
+        "topology-node-e3d68df2a09bbf4d"
+      ],
+      "topology_edges": [
+        "topology-edge-9243c269861c6b8f"
+      ],
+      "conductor_segments_referenced": [
+        "normalized-conductor-segment-b8d9c5942888bd00"
+      ],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-48",
+          "distance": 65.7343,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-55",
+          "distance": 0,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-57",
+          "distance": 26,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-58",
+          "distance": 46,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-64",
+          "distance": 4,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-68",
+          "distance": 18.7883,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-72",
+          "distance": 37,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-74",
+          "distance": 49.6488,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-76",
+          "distance": 70.214,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "B",
+        "evidence_level": "E2",
+        "false_positive_suspected": false,
+        "note": "1 TerminalCandidate (high confidence), 1 EndpointCandidate (component_terminal), 1 topology edge, 0 physical Wires (dangling). Visually a ring/grommet symbol above a horizontal bar, near unread text (closest text region at distance 0px) that may include the word 'SWITCH' per an adjacent, separately-drawn label - non-authoritative."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-845947b0afd7451a",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 145,
+        "y": 158,
+        "width": 18,
+        "height": 24
+      },
+      "center": {
+        "x": 154,
+        "y": 170
+      },
+      "confidence": "medium",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "medium"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [
+        {
+          "id": "terminal-candidate-endpoint-candidate-9da9c73ab52013a3:component-candidate-shape-region-845947b0afd7451a",
+          "kind": "component_boundary",
+          "confidence": "high",
+          "distance_to_component": 0,
+          "endpoint_id": "endpoint-candidate-9da9c73ab52013a3"
+        }
+      ],
+      "endpoint_candidates": [
+        {
+          "id": "endpoint-candidate-9da9c73ab52013a3",
+          "kind": "component_terminal",
+          "confidence": "high",
+          "node_id": "topology-node-028e65dcf3df4599"
+        }
+      ],
+      "topology_nodes": [
+        "topology-node-028e65dcf3df4599"
+      ],
+      "topology_edges": [
+        "topology-edge-711b625fb400c434"
+      ],
+      "conductor_segments_referenced": [
+        "normalized-conductor-segment-6d1e6a277fa8e788"
+      ],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [
+        {
+          "id": "conductor-segment-6f10027fd45a78e2",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        },
+        {
+          "id": "conductor-segment-d0e51de9a7d54ea2",
+          "reason": "graphical_object_ownership_component_boundary",
+          "classification": "component_associated",
+          "measurement": 2
+        }
+      ],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-0",
+          "distance": 61,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-1",
+          "distance": 61,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-13",
+          "distance": 21.4009,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-14",
+          "distance": 17.4929,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-16",
+          "distance": 5,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-17",
+          "distance": 4,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-19",
+          "distance": 74.027,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-2",
+          "distance": 50,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-26",
+          "distance": 71.5681,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-30",
+          "distance": 32.0156,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-6",
+          "distance": 42.107,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-8",
+          "distance": 32.9848,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "B",
+        "evidence_level": "E2",
+        "false_positive_suspected": false,
+        "note": "AP-DIAG-FIX-006 known case: 1 TerminalCandidate/EndpointCandidate backed by 2 component_associated RejectedGeometryEvidence entries (not SymbolPrimitives). 0 SymbolPrimitives, 0 physical Wires (dangling topology edge)."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-9aef4bd701b22c45",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 686,
+        "y": 324,
+        "width": 19,
+        "height": 18
+      },
+      "center": {
+        "x": 695.5,
+        "y": 333
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-39",
+          "distance": 66,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing (larger 19x18 bounds), no drawn circle."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-9c4d423986244e04",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 579,
+        "y": 523,
+        "width": 11,
+        "height": 13
+      },
+      "center": {
+        "x": 584.5,
+        "y": 529.5
+      },
+      "confidence": "medium",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "medium"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [
+        {
+          "id": "symbol-primitive-558b9c9f721c909d",
+          "kind": "rectangle",
+          "confidence": "medium",
+          "area": 12
+        }
+      ],
+      "terminal_candidates": [
+        {
+          "id": "terminal-candidate-endpoint-candidate-48ea62e824fb1455:component-candidate-shape-region-9c4d423986244e04",
+          "kind": "component_boundary",
+          "confidence": "medium",
+          "distance_to_component": 4.5,
+          "endpoint_id": "endpoint-candidate-48ea62e824fb1455"
+        }
+      ],
+      "endpoint_candidates": [
+        {
+          "id": "endpoint-candidate-48ea62e824fb1455",
+          "kind": "component_terminal",
+          "confidence": "medium",
+          "node_id": "topology-node-5021a2d874a4f800"
+        }
+      ],
+      "topology_nodes": [
+        "topology-node-5021a2d874a4f800"
+      ],
+      "topology_edges": [
+        "topology-edge-368ba53e34719412"
+      ],
+      "conductor_segments_referenced": [
+        "normalized-conductor-segment-7d6147482878ebec"
+      ],
+      "physical_wires": [],
+      "electrical_nets": [
+        "electrical-net-820124e155bacd37"
+      ],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-53",
+          "distance": 77,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-57",
+          "distance": 75.1332,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-60",
+          "distance": 63.3246,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-66",
+          "distance": 69.4622,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-69",
+          "distance": 40.1622,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-70",
+          "distance": 46.1736,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-71",
+          "distance": 71.5891,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-73",
+          "distance": 56,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-75",
+          "distance": 74.2428,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "B",
+        "evidence_level": "E2",
+        "false_positive_suspected": false,
+        "note": "1 TerminalCandidate/EndpointCandidate, 1 topology edge, 1 ElectricalNet (electrical-net-820124e155bacd37), 0 physical Wires. Visually a small bracket shape above a round zigzag symbol - likely a fragment of that larger symbol (see 0a02724ece05df31) despite carrying real terminal evidence itself."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-b061e4623d55459e",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 594,
+        "y": 379,
+        "width": 9,
+        "height": 9
+      },
+      "center": {
+        "x": 598.5,
+        "y": 383.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-42",
+          "distance": 56.8595,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-43",
+          "distance": 66.8431,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-b9c802997a4ef73a",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 479,
+        "y": 421,
+        "width": 10,
+        "height": 9
+      },
+      "center": {
+        "x": 484,
+        "y": 425.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-36",
+          "distance": 62.426,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "Direct raster inspection: plain grid crossing, no drawn circle."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-bfae05a427189376",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 829,
+        "y": 436,
+        "width": 21,
+        "height": 17
+      },
+      "center": {
+        "x": 839.5,
+        "y": 444.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [
+        {
+          "id": "symbol-primitive-48f6d0b726c0466f",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 14
+        },
+        {
+          "id": "symbol-primitive-d111181837bd7509",
+          "kind": "unknown",
+          "confidence": "low",
+          "area": 10
+        }
+      ],
+      "terminal_candidates": [
+        {
+          "id": "terminal-candidate-endpoint-candidate-8a621a290c5214cd:component-candidate-shape-region-bfae05a427189376",
+          "kind": "component_boundary",
+          "confidence": "high",
+          "distance_to_component": 0,
+          "endpoint_id": "endpoint-candidate-8a621a290c5214cd"
+        },
+        {
+          "id": "terminal-candidate-endpoint-candidate-9250ed74edb85c9e:component-candidate-shape-region-bfae05a427189376",
+          "kind": "component_boundary",
+          "confidence": "medium",
+          "distance_to_component": 5,
+          "endpoint_id": "endpoint-candidate-9250ed74edb85c9e"
+        },
+        {
+          "id": "terminal-candidate-endpoint-candidate-a0ba1457a84cb647:component-candidate-shape-region-bfae05a427189376",
+          "kind": "component_boundary",
+          "confidence": "low",
+          "distance_to_component": 7,
+          "endpoint_id": "endpoint-candidate-a0ba1457a84cb647"
+        },
+        {
+          "id": "terminal-candidate-endpoint-candidate-ad108e7be3bd0df8:component-candidate-shape-region-bfae05a427189376",
+          "kind": "component_boundary",
+          "confidence": "high",
+          "distance_to_component": 1,
+          "endpoint_id": "endpoint-candidate-ad108e7be3bd0df8"
+        },
+        {
+          "id": "terminal-candidate-endpoint-candidate-df45d71b3ed14db1:component-candidate-shape-region-bfae05a427189376",
+          "kind": "component_boundary",
+          "confidence": "medium",
+          "distance_to_component": 5,
+          "endpoint_id": "endpoint-candidate-df45d71b3ed14db1"
+        },
+        {
+          "id": "terminal-candidate-endpoint-candidate-e2da402e3f4daf60:component-candidate-shape-region-bfae05a427189376",
+          "kind": "component_boundary",
+          "confidence": "low",
+          "distance_to_component": 7,
+          "endpoint_id": "endpoint-candidate-e2da402e3f4daf60"
+        },
+        {
+          "id": "terminal-candidate-endpoint-candidate-e6e2540496a095fa:component-candidate-shape-region-bfae05a427189376",
+          "kind": "component_boundary",
+          "confidence": "high",
+          "distance_to_component": 0,
+          "endpoint_id": "endpoint-candidate-e6e2540496a095fa"
+        }
+      ],
+      "endpoint_candidates": [
+        {
+          "id": "endpoint-candidate-8a621a290c5214cd",
+          "kind": "component_terminal",
+          "confidence": "high",
+          "node_id": "topology-node-da907617cc7bb1b4"
+        },
+        {
+          "id": "endpoint-candidate-9250ed74edb85c9e",
+          "kind": "component_terminal",
+          "confidence": "medium",
+          "node_id": "topology-node-30452ea98fcc36d6"
+        },
+        {
+          "id": "endpoint-candidate-a0ba1457a84cb647",
+          "kind": "component_terminal",
+          "confidence": "low",
+          "node_id": "topology-node-4b6fb9d208bdc68e"
+        },
+        {
+          "id": "endpoint-candidate-ad108e7be3bd0df8",
+          "kind": "component_terminal",
+          "confidence": "high",
+          "node_id": "topology-node-4b652ad208b47f0c"
+        },
+        {
+          "id": "endpoint-candidate-df45d71b3ed14db1",
+          "kind": "component_terminal",
+          "confidence": "medium",
+          "node_id": "topology-node-b933952640172985"
+        },
+        {
+          "id": "endpoint-candidate-e2da402e3f4daf60",
+          "kind": "component_terminal",
+          "confidence": "low",
+          "node_id": "topology-node-da85e217cc7261b3"
+        },
+        {
+          "id": "endpoint-candidate-e6e2540496a095fa",
+          "kind": "component_terminal",
+          "confidence": "high",
+          "node_id": "topology-node-6ed87da1e4abb4e3"
+        }
+      ],
+      "topology_nodes": [
+        "topology-node-da907617cc7bb1b4",
+        "topology-node-30452ea98fcc36d6",
+        "topology-node-4b6fb9d208bdc68e",
+        "topology-node-4b652ad208b47f0c",
+        "topology-node-b933952640172985",
+        "topology-node-da85e217cc7261b3",
+        "topology-node-6ed87da1e4abb4e3"
+      ],
+      "topology_edges": [
+        "topology-edge-02051d1293459cfd",
+        "topology-edge-430d637d6f4776cc",
+        "topology-edge-7fc60186320a5c10",
+        "topology-edge-9f3fad0a4ec4b470",
+        "topology-edge-b5ce8c856a787cd1"
+      ],
+      "conductor_segments_referenced": [
+        "normalized-conductor-segment-72d3c3bb9d14123b",
+        "normalized-conductor-segment-7e9dfa668a4760c4",
+        "normalized-conductor-segment-89572f33871a8bf5",
+        "normalized-conductor-segment-b02cdb33e930c0bc",
+        "normalized-conductor-segment-e79892a66076579e"
+      ],
+      "physical_wires": [
+        "wire-0a3ab2e5ace89210",
+        "wire-e5f7ff766561e9b7"
+      ],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-35",
+          "distance": 80,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-37",
+          "distance": 79.6492,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-38",
+          "distance": 61.0737,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-41",
+          "distance": 51.4198,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-46",
+          "distance": 58,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-49",
+          "distance": 72.111,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "B",
+        "evidence_level": "E3",
+        "false_positive_suspected": false,
+        "note": "Strongest structural-evidence candidate among all 28: 7 TerminalCandidates/EndpointCandidates (confidence low-high), 5 topology edges, 5 conductor segments, 2 physical Wires (wire-0a3ab2e5ace89210, wire-e5f7ff766561e9b7). Visually a boxed multi-lead body with several wires converging - resembles a multi-pin connector body more than a simple 2-terminal component; connector_candidates is 0 globally, so if this is in fact a connector it represents a connector-recognition coverage gap, not merely an unresolved ElectricalComponent."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-c2335cc575d107b1",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 874,
+        "y": 430,
+        "width": 7,
+        "height": 7
+      },
+      "center": {
+        "x": 877.5,
+        "y": 433.5
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-37",
+          "distance": 59.1354,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-38",
+          "distance": 41.7732,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-41",
+          "distance": 19.9249,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-46",
+          "distance": 31.3847,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "AP-DIAG-AUDIT-004 confirmed false positive: the pointer/dot glyph of a 'SUB FUSE 15A' annotation leader line, not an engineering symbol. 0 SymbolPrimitives, 0 terminals (AP-DIAG-FIX-005 ownership gate confirmed still suppressing it)."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-c98f6566b0672535",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 158,
+        "y": 173,
+        "width": 20,
+        "height": 21
+      },
+      "center": {
+        "x": 168,
+        "y": 183.5
+      },
+      "confidence": "medium",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "medium"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [
+        {
+          "id": "symbol-primitive-c9bca4105e248446",
+          "kind": "terminal_lead",
+          "confidence": "low",
+          "area": 12
+        },
+        {
+          "id": "symbol-primitive-fcd5261d49abac82",
+          "kind": "terminal_lead",
+          "confidence": "low",
+          "area": 16
+        }
+      ],
+      "terminal_candidates": [
+        {
+          "id": "terminal-candidate-endpoint-candidate-6cbdf6241227bbba:component-candidate-shape-region-c98f6566b0672535",
+          "kind": "component_boundary",
+          "confidence": "high",
+          "distance_to_component": 0,
+          "endpoint_id": "endpoint-candidate-6cbdf6241227bbba"
+        },
+        {
+          "id": "terminal-candidate-endpoint-candidate-caf0478e30752771:component-candidate-shape-region-c98f6566b0672535",
+          "kind": "component_boundary",
+          "confidence": "high",
+          "distance_to_component": 0,
+          "endpoint_id": "endpoint-candidate-caf0478e30752771"
+        }
+      ],
+      "endpoint_candidates": [
+        {
+          "id": "endpoint-candidate-6cbdf6241227bbba",
+          "kind": "component_terminal",
+          "confidence": "high",
+          "node_id": "topology-node-cf3a5ddb0d95018a"
+        },
+        {
+          "id": "endpoint-candidate-caf0478e30752771",
+          "kind": "component_terminal",
+          "confidence": "high",
+          "node_id": "topology-node-81335f722a6576ed"
+        }
+      ],
+      "topology_nodes": [
+        "topology-node-cf3a5ddb0d95018a",
+        "topology-node-81335f722a6576ed"
+      ],
+      "topology_edges": [
+        "topology-edge-844a51a02026fe71",
+        "topology-edge-cabaa80f8b69ae34"
+      ],
+      "conductor_segments_referenced": [
+        "normalized-conductor-segment-720398d05fbfdf50",
+        "normalized-conductor-segment-c0aff8e34d58cd35"
+      ],
+      "physical_wires": [
+        "wire-17ba2741981c1822"
+      ],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-0",
+          "distance": 76,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-1",
+          "distance": 76.3217,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-13",
+          "distance": 41.2311,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-14",
+          "distance": 30,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-16",
+          "distance": 21.1896,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-17",
+          "distance": 19,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-19",
+          "distance": 61.4003,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-2",
+          "distance": 65,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-26",
+          "distance": 56,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-30",
+          "distance": 28.3196,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-6",
+          "distance": 57,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-8",
+          "distance": 47,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "B",
+        "evidence_level": "E3",
+        "false_positive_suspected": false,
+        "note": "2 TerminalCandidates/EndpointCandidates (both high confidence), 2 topology edges, 1 physical Wire (wire-17ba2741981c1822). Visually captures a small strap/bridge between two adjacent legs of what looks like a multi-position fuse/terminal block - possible fragment of a larger multi-position assembly (Category C) despite carrying its own real terminal/wire evidence."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-d1aefcaca5503ad9",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 629,
+        "y": 543,
+        "width": 8,
+        "height": 10
+      },
+      "center": {
+        "x": 633,
+        "y": 548
+      },
+      "confidence": "medium",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "medium"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-53",
+          "distance": 30,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-60",
+          "distance": 14,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-61",
+          "distance": 78,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-66",
+          "distance": 19.7231,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-69",
+          "distance": 21,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-70",
+          "distance": 61.2944,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-71",
+          "distance": 30.8058,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-73",
+          "distance": 54.4518,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-75",
+          "distance": 49,
+          "confidence": "low",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "H",
+        "evidence_level": "E0",
+        "false_positive_suspected": true,
+        "note": "AP-DIAG-AUDIT-004/FIX-005 confirmed ambiguous non-symbol mark. 0 SymbolPrimitives, 0 terminals (ownership gate confirmed still suppressing it)."
+      }
+    },
+    {
+      "id": "component-candidate-shape-region-d82ce67010a762de",
+      "kind": "circular_symbol",
+      "bounds": {
+        "x": 412,
+        "y": 144,
+        "width": 9,
+        "height": 8
+      },
+      "center": {
+        "x": 416.5,
+        "y": 148
+      },
+      "confidence": "high",
+      "semantic_labels": [],
+      "provenance": "NOT_PRESENT_IN_CURRENT_MODEL",
+      "electrical_component_status": "unresolved",
+      "electrical_component_rejection_reason": "not_applicable",
+      "component_symbol_recognition": {
+        "present": true,
+        "symbol_kind": "circular_symbol",
+        "status": "geometrically_classified",
+        "confidence": "high"
+      },
+      "symbol_family": {
+        "present": true,
+        "family": "unknown",
+        "status": "unresolved",
+        "confidence": "unresolved",
+        "evidence_count": 0
+      },
+      "symbol_primitives": [],
+      "terminal_candidates": [],
+      "endpoint_candidates": [],
+      "topology_nodes": [],
+      "topology_edges": [],
+      "conductor_segments_referenced": [],
+      "physical_wires": [],
+      "electrical_nets": [],
+      "rejected_geometry_associated": [],
+      "semantic_associations": [
+        {
+          "text_region_id": "text-region-11",
+          "distance": 3,
+          "confidence": "high",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-12",
+          "distance": 12.083,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-20",
+          "distance": 32,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-21",
+          "distance": 17.2047,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-23",
+          "distance": 19,
+          "confidence": "medium",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-25",
+          "distance": 34.8855,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-29",
+          "distance": 46.9574,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-3",
+          "distance": 54.4518,
+          "confidence": "low",
+          "recognized_text_available": false
+        },
+        {
+          "text_region_id": "text-region-7",
+          "distance": 26,
+          "confidence": "medium",
+          "recognized_text_available": false
+        }
+      ],
+      "audit_classification": {
+        "category": "G",
+        "evidence_level": "E1",
+        "false_positive_suspected": false,
+        "note": "AP-DIAG-AUDIT-007 finding, re-confirmed: one of three visually identical repeated ring symbols on a wire run (with 1acff69cbd97d3ef). Genuine drawn geometry; no terminal/family evidence exists."
+      }
+    }
+  ]
+}

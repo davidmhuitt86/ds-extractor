@@ -1,7 +1,7 @@
 {
   "audit_id": "AP-DIAG-AUDIT-007",
   "starting_commit": "b8f53a2d8c9ee30c0c47a8a83f953535c2fa4dea",
-  "final_commit": null,
+  "final_commit": "f34c2a9b5117bcc74ad6e3d31ae81407fed5ecd9",
   "branch": "main",
   "source_hash": "a145fffeb4cc9261152930936737048e39e92b030de5c9427b8f60e427d5da6",
   "extraction_configuration": {

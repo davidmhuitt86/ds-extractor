@@ -1,0 +1,288 @@
+{
+  "audit_id": "AP-DIAG-AUDIT-007",
+  "starting_commit": "b8f53a2d8c9ee30c0c47a8a83f953535c2fa4dea",
+  "final_commit": null,
+  "branch": "main",
+  "source_hash": "a145fffeb4cc9261152930936737048e39e92b030de5c9427b8f60e427d5da6",
+  "extraction_configuration": {
+    "text_recognition_provider": "none (no-op default)",
+    "component_identity_registry": "none (no-op default)",
+    "symbol_recognition_provider": "none (no-op default)",
+    "source_id": "samples/trx300ODG.png"
+  },
+  "scope_configuration": {
+    "scope_file": "fixtures/trx300/scope_production.json",
+    "scope_file_hash": "8dd478483a26c93caef65a586c054d420cadb2032b370ad6f2e14c874021b491"
+  },
+  "build_result": {
+    "clean_release_build": true,
+    "errors": 0
+  },
+  "test_result": {
+    "passed": 60,
+    "total": 60
+  },
+  "assertion_status": "active",
+  "compiler_warnings": {
+    "count": 8,
+    "new_warnings": 0
+  },
+  "unscoped_metrics": {
+    "component_candidates": 81,
+    "component_symbol_recognitions": 81,
+    "symbol_primitives": 34,
+    "connector_candidates": 0,
+    "connector_terminals": 0,
+    "endpoint_candidates": 207,
+    "rejected_geometry": 13,
+    "conductor_segments_total": 292,
+    "topology_nodes": 690,
+    "topology_edges": 878,
+    "wires": 37,
+    "wire_semantics": 37,
+    "electrical_nets": 12,
+    "conductor_boundary_resolutions": 207,
+    "validation_errors": 0,
+    "validation_warnings": 34,
+    "component_symbol_kind_distribution": {
+      "diagram_furniture": 47,
+      "circular_symbol": 26,
+      "enclosure": 2,
+      "chassis_ground": 6
+    },
+    "endpoint_kind_distribution": {
+      "geometric": 189,
+      "component_terminal": 12,
+      "ground": 6
+    },
+    "wire_identity_status_distribution": {
+      "resolved": 37,
+      "unresolved": 0,
+      "conflicted": 0
+    },
+    "electrical_net_role_distribution": {
+      "unknown": 6,
+      "ground": 6
+    }
+  },
+  "scoped_metrics": {
+    "component_candidates": 34,
+    "component_symbol_recognitions": 34,
+    "symbol_primitives": 34,
+    "connector_candidates": 0,
+    "connector_terminals": 0,
+    "endpoint_candidates": 189,
+    "rejected_geometry": 12,
+    "topology_nodes": 532,
+    "topology_edges": 643,
+    "wires": 37,
+    "wire_semantics": 37,
+    "electrical_nets": 12,
+    "conductor_boundary_resolutions": 189,
+    "validation_errors": 0,
+    "validation_warnings": 34,
+    "component_symbol_kind_distribution": {
+      "circular_symbol": 26,
+      "enclosure": 2,
+      "chassis_ground": 6
+    },
+    "endpoint_kind_distribution": {
+      "geometric": 171,
+      "component_terminal": 12,
+      "ground": 6
+    },
+    "wire_identity_status_distribution": {
+      "resolved": 37,
+      "unresolved": 0,
+      "conflicted": 0
+    },
+    "electrical_net_role_distribution": {
+      "unknown": 6,
+      "ground": 6
+    }
+  },
+  "canonical_artifact_hashes": {
+    "topology_json_unscoped": "99c24f99d2f59e1f502a8d66d5e2b55a714673cfd59bd31fbcdbd4547d329ee9",
+    "engineering_diagram_json_unscoped": "7e7d46da8f2d2dbdfeb359ea177cced0bd97e5ec447bfc86d7ccbbe9d93634d0",
+    "topology_json_scoped": "94b65c3addd0f1dfdb05b73cd379f72e86183bb1ea807700351fbe9d95030aa8",
+    "engineering_diagram_json_scoped": "91775ffdd28dfa133a04fa1949787f5b368072f4cd33d423b7c907061c793157"
+  },
+  "component_inventory": {
+    "total": 81,
+    "diagram_furniture": 47,
+    "real_candidates": 34,
+    "real_with_terminal_evidence": 11,
+    "real_without_terminal_evidence": 23,
+    "confirmed_false_positives": [
+      "component-candidate-shape-region-c2335cc575d107b1",
+      "component-candidate-shape-region-d1aefcaca5503ad9"
+    ],
+    "suspected_false_positives_unconfirmed": [
+      "component-candidate-shape-region-066e8ad0e7654cff",
+      "component-candidate-shape-region-0771bb11fe6c347d",
+      "component-candidate-shape-region-0a02724ece05df31",
+      "component-candidate-shape-region-0b053d4e7a47606f",
+      "component-candidate-shape-region-16df4d7df3b94a27",
+      "component-candidate-shape-region-1975579e8330101e",
+      "component-candidate-shape-region-1acff69cbd97d3ef",
+      "component-candidate-shape-region-25e5f8f85abff207",
+      "component-candidate-shape-region-3272c9e5f76ee915",
+      "component-candidate-shape-region-3bf0724f52f58c73",
+      "component-candidate-shape-region-41ff861aeda09fb7",
+      "component-candidate-shape-region-428e96f28d67cd74",
+      "component-candidate-shape-region-4903417d6d8a60bb",
+      "component-candidate-shape-region-558bc00c87382a7d",
+      "component-candidate-shape-region-62af50129e3fe173",
+      "component-candidate-shape-region-68f8e8348812d438",
+      "component-candidate-shape-region-710412374a750fc8",
+      "component-candidate-shape-region-9aef4bd701b22c45",
+      "component-candidate-shape-region-b061e4623d55459e",
+      "component-candidate-shape-region-b9c802997a4ef73a",
+      "component-candidate-shape-region-d82ce67010a762de"
+    ],
+    "visually_confirmed_genuine_among_suspected": [
+      "component-candidate-shape-region-d82ce67010a762de",
+      "component-candidate-shape-region-1acff69cbd97d3ef"
+    ]
+  },
+  "terminal_inventory": {
+    "component_terminal_or_ground_endpoints_total": 18,
+    "ownership_evidence_violations": 0
+  },
+  "ground_endpoint_inventory": {
+    "genuine_chassis_ground_count": 6,
+    "resolved_ground_endpoints": 6,
+    "components": [
+      {"component_id": "component-candidate-shape-region-0edf5ce35037fec3", "endpoint_id": "endpoint-candidate-bfae64deea64562f", "confidence": "high", "x": 585.5, "y": 585, "unchanged_from_pre_fix007": true},
+      {"component_id": "component-candidate-shape-region-1acbaeb7ac6ac87a", "endpoint_id": "endpoint-candidate-9d7e7957c56e3777", "confidence": "high", "x": 629.5, "y": 585, "unchanged_from_pre_fix007": true},
+      {"component_id": "component-candidate-shape-region-a434a925670e9b65", "endpoint_id": "endpoint-candidate-682d9fd165bc9fcf", "confidence": "medium", "x": 935, "y": 542, "unchanged_from_pre_fix007": true},
+      {"component_id": "component-candidate-shape-region-791276441805b2e0", "endpoint_id": "endpoint-candidate-94c3703334d041e1", "confidence": "high", "x": 656, "y": 546, "unchanged_from_pre_fix007": true},
+      {"component_id": "component-candidate-shape-region-5aa211846bb7891d", "endpoint_id": "endpoint-candidate-489024c295007fa9", "confidence": "high", "x": 719, "y": 547, "recovered_by": "AP-DIAG-FIX-007"},
+      {"component_id": "component-candidate-shape-region-6b6ccc2d59afe578", "endpoint_id": "endpoint-candidate-ee69f47db68cb6bf", "confidence": "high", "x": 759, "y": 547, "recovered_by": "AP-DIAG-FIX-007"}
+    ],
+    "raster_ink_verification": {
+      "5aa211846bb7891d_roi_ink_pixels": 109,
+      "5aa211846bb7891d_roi_total_pixels": 500,
+      "6b6ccc2d59afe578_roi_ink_pixels": 108,
+      "6b6ccc2d59afe578_roi_total_pixels": 500
+    },
+    "dangling_far_endpoint_pattern": {
+      "observed_in_all_6_ground_wires": true,
+      "note": "all 6 ground Wires terminate at a degree-1 geometric far endpoint; not FIX-007-specific"
+    }
+  },
+  "recovered_conductor_inventory": [
+    {
+      "component_id": "component-candidate-shape-region-5aa211846bb7891d",
+      "wire_id": "wire-5f577a77a7d7f3d1",
+      "accepted_segment": {"x1": 719, "y1": 534, "x2": 719, "y2": 547},
+      "rejected_segments": [
+        {"x1": 707.5, "y1": 527, "x2": 708, "y2": 533, "reason": "below_minimum_continuous_length", "classification": "unresolved"},
+        {"x1": 708, "y1": 533, "x2": 719, "y2": 534, "reason": "below_minimum_continuous_length", "classification": "unresolved"}
+      ],
+      "topology_edge": "topology-edge-0192426398ea0a68",
+      "electrical_net": "electrical-net-ad8ebe90235978f9"
+    },
+    {
+      "component_id": "component-candidate-shape-region-6b6ccc2d59afe578",
+      "wire_id": "wire-cc1a42c6ede95cf1",
+      "accepted_segment": {"x1": 758, "y1": 532, "x2": 759, "y2": 547},
+      "rejected_segments": [
+        {"x1": 768, "y1": 527, "x2": 758, "y2": 532, "reason": "below_minimum_continuous_length", "classification": "text_associated", "associated_object_id": "text-region-51"}
+      ],
+      "topology_edge": "topology-edge-3f1a3ddcfe22fc0b",
+      "electrical_net": "electrical-net-647be111f38562cc"
+    }
+  ],
+  "wire_inventory": {
+    "total": 37,
+    "duplicate_endpoint_pairs": 0,
+    "self_loop_wires": 0,
+    "shared_conductor_segments_across_wires": 0,
+    "identity_status_distribution": {"resolved": 37, "unresolved": 0, "conflicted": 0}
+  },
+  "electrical_net_inventory": {
+    "total": 12,
+    "role_distribution": {"unknown": 6, "ground": 6},
+    "endpoints_in_multiple_nets": 0,
+    "new_nets_isolation_confirmed": true
+  },
+  "validation_diagnostics": {
+    "errors": 0,
+    "warnings": 34,
+    "warning_codes": {
+      "NET-ROLE-UNRESOLVED": 6,
+      "WIRE-GEOMETRIC-ENDPOINTS": 28
+    },
+    "unchanged_from_pre_fix007": true
+  },
+  "coverage_diagnostics_summary": {
+    "total_findings": 1414,
+    "notice_findings": 1391,
+    "warning_findings": 23,
+    "warning_finding_code": "COMPONENT-NO-TERMINAL-EVIDENCE",
+    "pre_fix007_warning_count": 25,
+    "post_fix007_warning_count": 23,
+    "delta_explained_by": [
+      "component-candidate-shape-region-5aa211846bb7891d",
+      "component-candidate-shape-region-6b6ccc2d59afe578"
+    ]
+  },
+  "confirmed_findings": [
+    {
+      "finding_id": "AP-DIAG-AUDIT-007-F1",
+      "severity": "INFORMATIONAL",
+      "summary": "2 pre-existing false-positive shape classifications remain present at the ShapeDetector level, with zero downstream impact due to AP-DIAG-FIX-005's ownership gate.",
+      "affected_object_ids": [
+        "component-candidate-shape-region-c2335cc575d107b1",
+        "component-candidate-shape-region-d1aefcaca5503ad9"
+      ],
+      "earliest_defective_stage": "ShapeDetector circle-acceptance path",
+      "downstream_impact": "none (0 owned endpoints for both)",
+      "scoped_unscoped_impact": "identical in both",
+      "deterministic": true,
+      "regression": false,
+      "recommended_next_ap": "AP-DIAG-FIX scoped to ShapeDetector circle/annotation-glyph disambiguation"
+    }
+  ],
+  "suspected_findings": [
+    {
+      "finding_id": "AP-DIAG-AUDIT-007-S1",
+      "severity": "LOW",
+      "summary": "Up to 21 additional small circular_symbol/enclosure components with no terminal evidence may include further false-positive shape classifications (crossing-hop/junction-dot conventions).",
+      "missing_evidence_to_confirm": "per-candidate circularity/edge-support/interior-density forensic pass, as used in AP-WIRE-FIX-002",
+      "current_downstream_impact": "zero (all own 0 endpoints, protected by FIX-005 ownership gate)"
+    },
+    {
+      "finding_id": "AP-DIAG-AUDIT-007-S2",
+      "severity": "INFORMATIONAL",
+      "summary": "Whether additional genuinely missing conductor sections exist beyond the two FIX-007 recovered was not exhaustively verified pixel-by-pixel across the whole diagram.",
+      "missing_evidence_to_confirm": "systematic raster-coverage comparison across the full source image; no existing signal currently points at a specific unexamined region"
+    }
+  ],
+  "known_limitations": [
+    "OCR/text recognition not enabled in canonical baseline",
+    "Connector recognition coverage remains 0/0 (connector_candidates/connector_terminals)",
+    "Incomplete component semantic classification for ~21 small circular_symbol/enclosure candidates",
+    "6 ElectricalNets remain role: unknown (NET-ROLE-UNRESOLVED)",
+    "WireReconstructor scope boundary: 251/292 conductor segments remain topology_only",
+    "No Junction-type topology nodes currently produced (0)",
+    "All 6 ground Wires terminate at a dangling geometric far endpoint, not connected onward to the rest of the circuit",
+    "component_identity_registry and symbol_recognition_provider remain no-op in canonical baseline"
+  ],
+  "clean_categories": [
+    "terminal_attribution_ownership_evidence",
+    "ground_endpoint_coverage_and_provenance",
+    "recovered_conductor_provenance",
+    "topology_referential_integrity",
+    "physical_wire_identity",
+    "electrical_net_integrity",
+    "wire_semantics",
+    "scoped_unscoped_consistency",
+    "determinism",
+    "symbol_primitive_integrity_for_chassis_ground"
+  ],
+  "deterministic": true,
+  "production_changes": false,
+  "recommended_next_ap": "Baseline consolidation (no confirmed defect above the pre-existing, already-mitigated AP-DIAG-AUDIT-004-class false positive); if further work is prioritized: (1) ShapeDetector circle/annotation-glyph disambiguation AP-DIAG-FIX, (2) connector-recognition AP, (3) WireReconstructor decomposition-stage AP per AP-WIRE-029 section 20"
+}

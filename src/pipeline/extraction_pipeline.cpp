@@ -250,11 +250,16 @@ WireModel ExtractionPipeline::run(
             return a.provider < b.provider;
         });
     model.conductor_segments = normalized_segments;
-    model.rejected_geometry = std::move(rejected_geometry);
     model.nodes = graph.nodes;
     model.edges = graph.edges;
     model.endpoint_candidates = endpoint_artifacts.candidates;
 
+    // AP-DIAG-FIX-006: TerminalLocationDetector::has_ownership_evidence()
+    // accepts an associated RejectedGeometryEvidence entry as sufficient
+    // terminal ownership evidence, so it must consume the populated
+    // rejected_geometry evidence before that local vector is moved into
+    // model.rejected_geometry - AP-DIAG-AUDIT-005 confirmed the previous
+    // ordering left the detector with an empty (moved-from) vector.
     TerminalLocationDetector terminal_detector(config_.terminals);
     const TerminalLocationArtifacts terminal_artifacts =
         terminal_detector.detect(
@@ -263,6 +268,7 @@ WireModel ExtractionPipeline::run(
             rejected_geometry,
             model.symbol_primitives);
     model.terminal_candidates = terminal_artifacts.candidates;
+    model.rejected_geometry = std::move(rejected_geometry);
 
     // AP-WIRE-024: recognize additional component-terminal associations
     // from AP-WIRE-023 internal geometry and conservative conductor-to-

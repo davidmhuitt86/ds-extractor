@@ -281,6 +281,11 @@ if(DX_WIRE_BUILD_TESTS)
     target_compile_definitions(dx-wire-test-recognition-input-exporter PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     target_link_libraries(dx-wire-test-recognition-input-exporter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-recognition-input-exporter COMMAND dx-wire-test-recognition-input-exporter)
+
+    add_executable(dx-wire-test-rejected-geometry-handoff tests/test_rejected_geometry_handoff.cpp)
+    target_compile_definitions(dx-wire-test-rejected-geometry-handoff PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_link_libraries(dx-wire-test-rejected-geometry-handoff PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-rejected-geometry-handoff COMMAND dx-wire-test-rejected-geometry-handoff)
     target_link_libraries(dx-wire-test-extraction-audit PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-extraction-audit COMMAND dx-wire-test-extraction-audit)
 

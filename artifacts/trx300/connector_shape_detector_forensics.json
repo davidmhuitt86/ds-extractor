@@ -1,0 +1,314 @@
+{
+  "audit_id": "AP-DIAG-AUDIT-011",
+  "title": "ShapeDetector Connector Forensic Instrumentation",
+  "starting_commit": "3d6e98ffa0e2de8559628da681b30b12359b6cfb",
+  "ending_commit": null,
+  "branch": "main",
+  "production_changes": false,
+  "control_requirement": {
+    "pre_instrumentation_baseline_topology_sha256": "3fc904e7a62580e35c252cbeda9e2cdc76fef47cdd5d05ecf23a274361e40ed6",
+    "instrumented_run_topology_sha256": "3fc904e7a62580e35c252cbeda9e2cdc76fef47cdd5d05ecf23a274361e40ed6",
+    "post_revert_run1_topology_sha256": "3fc904e7a62580e35c252cbeda9e2cdc76fef47cdd5d05ecf23a274361e40ed6",
+    "post_revert_run2_topology_sha256": "3fc904e7a62580e35c252cbeda9e2cdc76fef47cdd5d05ecf23a274361e40ed6",
+    "byte_identical": true
+  },
+  "baseline": {
+    "tests_passed": 61,
+    "tests_total": 61,
+    "assertions_active": true,
+    "compiler_warnings": 8,
+    "new_compiler_warnings": 0,
+    "runtime_warnings": 34,
+    "validation_errors": 0,
+    "wires": 37,
+    "electrical_nets": 12,
+    "chassis_ground_references": 6,
+    "component_candidates": 81,
+    "resolved_electrical_components": 0,
+    "unresolved_component_candidates": 28,
+    "rejected_component_candidates": 53,
+    "prompt_transcription_note": "Task prompt stated '28 resolved, 53 unresolved, 0 rejected'; actual verified values are 0 resolved, 28 unresolved, 53 rejected. Same recurring inversion pattern documented in AP-DIAG-AUDIT-010."
+  },
+  "detector_inventory": [
+    {
+      "name": "detect_rectangles",
+      "shape_kind": "Rectangle",
+      "contour_mode": "RETR_TREE with MORPH_CLOSE preprocessing",
+      "checkpoints": ["area>=40", "width>=15,height>=12", "bounds_area<=20%_image", "approxPolyDP==4_convex", "fill_ratio>=0.55", "perimeter_ratio in [0.55,1.60]", "side_support>=0.65_all_sides", "interior_density in [0.005,0.22]", "isolated_components>=1", "internal_line_density<=0.08"]
+    },
+    {
+      "name": "detect_circles",
+      "shape_kind": "Circle",
+      "contour_mode": "RETR_LIST, no closing",
+      "checkpoints": ["area>=25", "circularity>=0.65", "aspect<=1.35", "radius in [3,60]", "edge_support>=0.65", "not_bounded_by_crossing_lines", "interior_density<=0.30"]
+    },
+    {
+      "name": "detect_ground_symbols/evaluate_ground_run",
+      "shape_kind": "ChassisGround",
+      "contour_mode": "MORPH_OPEN horizontal bar isolation + connectedComponentsWithStats",
+      "checkpoints": ["bar_width in [5,35]", "bar_height<=30", "run.size()==3 (min==max==3)", "decreasing_width_sequence", "uniform_spacing", "stem_presence_above_first_bar"]
+    }
+  ],
+  "connectors": [
+    {
+      "id": "CONN-001",
+      "bounds": [829, 436, 21, 17],
+      "pins": 2,
+      "region": "Tail-light/fuse",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [829, 436, 20, 16], "outcome": "rejected", "stage": "approxPolyDP", "reason": "5 vertices, not 4/convex"},
+        {"detector": "circle", "bounds": [829, 436, 21, 17], "outcome": "accepted", "confidence": 0.907, "circularity": 0.6858, "aspect": 1.235, "edge_support": 0.847, "interior_density": 0.0},
+        {"detector": "ground", "runs": [{"size": 1}, {"size": 1}, {"size": 2}, {"size": 2}], "outcome": "all rejected: fewer than 3 bars"}
+      ],
+      "shape_results": [{"kind": "Circle", "role": "Primitive", "accepted": true}],
+      "rejections": [{"detector": "rect", "reason": "polygon vertex count != 4 or not convex"}],
+      "downstream_status": "ShapeKind::Circle -> ComponentCandidateKind::CircularSymbol -> ComponentBoundary path (established in prior APs); never ConnectorBoundary",
+      "category": "A_positive_control",
+      "severity": "informational"
+    },
+    {
+      "id": "CONN-002",
+      "bounds": [865, 388, 20, 12],
+      "pins": 2,
+      "region": "Tail-light (R) label",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [864, 381, 23, 12], "outcome": "rejected", "stage": "approxPolyDP", "reason": "5 vertices, not 4/convex"},
+        {"detector": "circle", "bounds": [864, 381, 23, 12], "outcome": "rejected", "stage": "aspect", "circularity": 0.6601, "aspect": 1.917, "reason": "aspect ratio exceeds maximum (1.35)"},
+        {"detector": "ground", "runs": [{"size": 3, "bars": ["864,380,23,2", "871,392,9,1", "864,398,23,2"], "outcome": "cleared count gate; later checks not individually instrumented"}]}
+      ],
+      "shape_results": [],
+      "rejections": [
+        {"detector": "rect", "reason": "polygon vertex count != 4 or not convex"},
+        {"detector": "circle", "reason": "aspect ratio exceeds maximum"}
+      ],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "C",
+      "severity": "high"
+    },
+    {
+      "id": "CONN-003",
+      "bounds": [213, 178, 45, 15],
+      "pins": 4,
+      "region": "CDI Unit",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [216, 128, 68, 39], "outcome": "accepted_but_different_feature", "note": "CDI housing box, not the connector notch (11px away)", "confidence": 0.990, "role": "Enclosure"},
+        {"detector": "rect", "bounds": "multiple small fragments 226-266 x 166-201", "outcome": "rejected", "reason": "min_width/min_height or approxPolyDP vertex count (5-8)"},
+        {"detector": "circle", "bounds": [216, 128, 69, 39], "outcome": "rejected", "stage": "aspect", "circularity": 0.7358, "aspect": 1.769},
+        {"detector": "ground", "runs": [{"size": 4, "outcome": "cleared count gate; later checks not individually instrumented"}]}
+      ],
+      "shape_results": [{"kind": "Rectangle", "role": "Enclosure", "accepted": true, "note": "not the connector"}],
+      "rejections": [{"detector": "circle", "reason": "aspect ratio exceeds maximum"}],
+      "downstream_status": "housing accepted as Enclosure; connector notch produces no candidate",
+      "category": "C",
+      "severity": "high"
+    },
+    {
+      "id": "CONN-004",
+      "bounds": [258, 178, 20, 15],
+      "pins": 2,
+      "region": "CDI Unit (twin)",
+      "detectors_invoked": ["detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "outcome": "no_qualifying_contour", "note": "zero contours logged overlapping this box"},
+        {"detector": "circle", "bounds": [272, 191, 5, 3], "outcome": "rejected", "stage": "area", "area": 8.0, "reason": "below circle_min_area (25)"},
+        {"detector": "ground", "runs": [{"size": 4, "outcome": "cleared count gate; later checks not individually instrumented"}]}
+      ],
+      "shape_results": [],
+      "rejections": [{"detector": "circle", "reason": "area below minimum"}],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "A_rect_B_circle",
+      "severity": "low"
+    },
+    {
+      "id": "CONN-005",
+      "bounds": [295, 175, 35, 15],
+      "pins": 3,
+      "region": "Alarm Unit",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [295, 127, 70, 40], "outcome": "rejected", "stage": "interior_density", "value": 0.0, "reason": "interior_density out of range (housing box, no ink content)"},
+        {"detector": "circle", "bounds": [295, 127, 70, 40], "outcome": "rejected", "stage": "aspect", "circularity": 0.7307, "aspect": 1.750},
+        {"detector": "ground", "note": "explicit length/height rejections for housing edges (69px, 36px); notch fragments below count gate"}
+      ],
+      "shape_results": [],
+      "rejections": [
+        {"detector": "rect", "reason": "interior_density out of range"},
+        {"detector": "circle", "reason": "aspect ratio exceeds maximum"}
+      ],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "C",
+      "severity": "high"
+    },
+    {
+      "id": "CONN-006",
+      "bounds": [335, 175, 25, 15],
+      "pins": 2,
+      "region": "Alarm Unit (twin)",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "outcome": "rejected", "reason": "min_width/min_height, all 3 contours"},
+        {"detector": "circle", "bounds": [342, 166, 19, 15], "outcome": "rejected", "stage": "circularity", "circularity": 0.3003},
+        {"detector": "ground", "runs": [{"size": 1}, {"size": 2}], "outcome": "all rejected: fewer than 3 bars"}
+      ],
+      "shape_results": [],
+      "rejections": [{"detector": "all", "reason": "earliest-stage structural rejection, no near-misses"}],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "C",
+      "severity": "low"
+    },
+    {
+      "id": "CONN-007",
+      "bounds": [410, 318, 40, 42],
+      "pins": 4,
+      "region": "Relay cluster (B)(MINI)",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [415, 319, 18, 42], "outcome": "rejected", "stage": "approxPolyDP", "reason": "6 vertices (interlocking-staircase geometry)"},
+        {"detector": "rect", "bounds": [426, 319, 13, 42], "outcome": "rejected", "reason": "min_width/min_height"},
+        {"detector": "circle", "bounds": [415, 319, 18, 42], "outcome": "rejected", "stage": "circularity", "circularity": 0.5041},
+        {"detector": "ground", "runs": [{"size": 4, "location": "x~405-410,y=323-355", "outcome": "cleared count gate; matches connector-plug-notch pattern"}, {"size": 3, "location": "x~438"}]}
+      ],
+      "shape_results": [],
+      "rejections": [
+        {"detector": "rect", "reason": "polygon vertex count != 4 (interlocking geometry)"},
+        {"detector": "circle", "reason": "circularity below minimum"}
+      ],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "C",
+      "severity": "high"
+    },
+    {
+      "id": "CONN-008",
+      "bounds": [400, 412, 40, 42],
+      "pins": 3,
+      "region": "Relay cluster (twin to CONN-007)",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [426, 449, 119, 79], "outcome": "rejected", "stage": "approxPolyDP", "reason": "6 vertices"},
+        {"detector": "rect", "bounds": [358, 404, 121, 16], "outcome": "rejected", "stage": "isolated_components", "value": 0, "reason": "below minimum 1"},
+        {"detector": "circle", "bounds": [423, 427, 17, 26], "outcome": "rejected", "stage": "circularity", "circularity": 0.6492, "note": "closest circularity near-miss in census (threshold 0.65)"},
+        {"detector": "ground", "runs": [{"size": 6, "location": "x~415-425,y=416-452", "outcome": "cleared count gate; largest run in census"}, {"size": 3, "location": "x~432"}]}
+      ],
+      "shape_results": [],
+      "rejections": [
+        {"detector": "rect", "reason": "polygon vertex count != 4 or isolated_components below minimum"},
+        {"detector": "circle", "reason": "circularity below minimum (near-miss)"}
+      ],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "C",
+      "severity": "high"
+    },
+    {
+      "id": "CONN-009",
+      "bounds": [625, 398, 45, 35],
+      "pins": 3,
+      "region": "Pulse Gen/Reverse Switch [MINI](G)",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [622, 363, 46, 25], "outcome": "rejected", "stage": "interior_density", "value": 0.0},
+        {"detector": "circle", "bounds": [622, 363, 46, 25], "outcome": "rejected", "stage": "aspect", "circularity": 0.7269, "aspect": 1.840, "note": "confirms oval-variant aspect-ratio hypothesis"},
+        {"detector": "ground", "runs": [{"size": 1}, {"size": 2}], "outcome": "all rejected: fewer than 3 bars"}
+      ],
+      "shape_results": [],
+      "rejections": [
+        {"detector": "rect", "reason": "interior_density out of range"},
+        {"detector": "circle", "reason": "aspect ratio exceeds maximum"}
+      ],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "C",
+      "severity": "high"
+    },
+    {
+      "id": "CONN-010",
+      "bounds": [695, 398, 45, 35],
+      "pins": 3,
+      "region": "Pulse Gen/Reverse Switch (twin, unlabeled)",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [713, 423, 28, 13], "outcome": "rejected", "stage": "approxPolyDP", "reason": "6 vertices"},
+        {"detector": "circle", "bounds": [713, 430, 28, 12], "outcome": "rejected", "stage": "circularity", "circularity": 0.4754},
+        {"detector": "circle", "bounds": [713, 423, 28, 13], "outcome": "rejected", "stage": "circularity", "circularity": 0.4868},
+        {"detector": "ground", "runs": [{"size": 1}], "outcome": "all rejected: fewer than 3 bars"}
+      ],
+      "shape_results": [],
+      "rejections": [
+        {"detector": "circle", "reason": "circularity below minimum (lower than nominally-identical CONN-009)"}
+      ],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "C",
+      "severity": "medium"
+    },
+    {
+      "id": "CONN-011",
+      "bounds": [595, 142, 25, 13],
+      "pins": 2,
+      "region": "Rectifier (newly discovered in AUDIT-010)",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "bounds": [594, 111, 28, 31], "outcome": "rejected", "stage": "internal_line_density", "value": 0.0809, "threshold": 0.08, "margin": 0.0009, "note": "closest numeric near-miss in census; wire-crossing artifact"},
+        {"detector": "circle", "bounds": [594, 111, 28, 31], "outcome": "rejected", "stage": "edge_support", "circularity": 0.8215, "aspect": 1.107, "edge_support": 0.417, "threshold": 0.65, "note": "best circularity/aspect combination in census, but broken/open boundary"},
+        {"detector": "ground", "runs": [{"size": 5, "location": "x~598-603,y=123-153"}, {"size": 3, "location": "x~600-610,y=165-166"}], "outcome": "two runs cleared count gate"}
+      ],
+      "shape_results": [],
+      "rejections": [
+        {"detector": "rect", "reason": "internal_line_density exceeds maximum (near-miss)"},
+        {"detector": "circle", "reason": "edge_support below minimum (open/interrupted boundary)"}
+      ],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "C",
+      "severity": "medium"
+    },
+    {
+      "id": "CONN-012",
+      "bounds": [695, 158, 45, 20],
+      "pins": 3,
+      "region": "Regulator/Rectifier (newly discovered in AUDIT-010)",
+      "detectors_invoked": ["detect_rectangles", "detect_circles", "detect_ground_symbols"],
+      "candidates_generated": [
+        {"detector": "rect", "outcome": "rejected", "reason": "min_width/min_height, all 7 contours; never reaches approxPolyDP"},
+        {"detector": "circle", "outcome": "rejected", "reason": "circularity 0.42/0.49/0.33, all far below 0.65"},
+        {"detector": "ground", "runs": [{"size": 3, "location": "x~680-691,y=146-162"}], "outcome": "cleared count gate"}
+      ],
+      "shape_results": [],
+      "rejections": [{"detector": "rect", "reason": "never reaches structural checks; most fragmented ink of census"}],
+      "downstream_status": "no candidate reaches ComponentCandidate",
+      "category": "B_C",
+      "severity": "low"
+    }
+  ],
+  "failure_modes": [
+    {"mode": "non_quadrilateral_polygon_approximation", "connectors": ["CONN-001", "CONN-002", "CONN-003", "CONN-007", "CONN-008"], "checkpoint": "approxPolyDP vertex count != 4 or not convex"},
+    {"mode": "aspect_ratio_too_high", "connectors": ["CONN-002", "CONN-003", "CONN-005", "CONN-009"], "checkpoint": "circle_max_aspect_ratio (1.35)"},
+    {"mode": "circularity_too_low", "connectors": ["CONN-004", "CONN-006", "CONN-007", "CONN-010", "CONN-012"], "checkpoint": "circle_min_circularity (0.65)"},
+    {"mode": "empty_near_empty_interior", "connectors": ["CONN-005", "CONN-007", "CONN-009"], "checkpoint": "rectangle_min_interior_ink_density (0.005)"},
+    {"mode": "sub_minimum_contour_size", "connectors": ["CONN-002", "CONN-003", "CONN-004", "CONN-005", "CONN-006", "CONN-009", "CONN-010", "CONN-011", "CONN-012"], "checkpoint": "min_area/min_width/min_height"},
+    {"mode": "internal_wire_crossing", "connectors": ["CONN-011"], "checkpoint": "rectangle_max_internal_line_density (0.08)", "near_miss_margin": 0.0009},
+    {"mode": "broken_interrupted_boundary", "connectors": ["CONN-011"], "checkpoint": "circle_min_edge_support (0.65)"},
+    {"mode": "insufficient_isolated_interior_components", "connectors": ["CONN-008"], "checkpoint": "rectangle_min_interior_components (1)"},
+    {"mode": "ground_bar_count_gate_cleared_unresolved", "connectors": ["CONN-002", "CONN-003", "CONN-004", "CONN-007", "CONN-008", "CONN-011", "CONN-012"], "checkpoint": "ground_min_bars/ground_max_bars (3)"},
+    {"mode": "no_qualifying_contour", "connectors": ["CONN-004", "CONN-012"], "checkpoint": "pre-min_width/min_height (rectangle path)"}
+  ],
+  "geometry_families": [
+    {"family": "single_coherent_near_exact_match", "connectors": ["CONN-001"]},
+    {"family": "oval_elongated_housing_above_notch", "connectors": ["CONN-002", "CONN-005", "CONN-009"]},
+    {"family": "housing_plus_fragmented_notch", "connectors": ["CONN-003"]},
+    {"family": "fully_fragmented_sub_threshold_ink", "connectors": ["CONN-004", "CONN-006", "CONN-012"]},
+    {"family": "interlocking_staircase", "connectors": ["CONN-007", "CONN-008"]},
+    {"family": "oval_variant_lower_circularity", "connectors": ["CONN-010"]},
+    {"family": "wire_crossed_housing_open_boundary", "connectors": ["CONN-011"]}
+  ],
+  "conductor_interaction": {
+    "confirmed_wire_crossing_rejection": ["CONN-011"],
+    "confirmed_empty_interior_rejection": ["CONN-003_housing", "CONN-005", "CONN-007", "CONN-009"],
+    "unresolved_for_notch_fragments": "10 of 12 connectors' notch-region fragments are rejected before reaching internal_line_density; cannot distinguish through-wire fragmentation from insufficient closed-contour formation without RETR_TREE parent/child hierarchy inspection (out of scope for this AP)"
+  },
+  "instrumentation_limitations": [
+    "evaluate_ground_run's decreasing-width-sequence, uniform-spacing, and stem-presence checks were not individually instrumented beyond the top-level run.size()>=3 count gate; 7 connectors' ground runs cleared that gate with unresolved final disposition, inferred (not directly observed) via the whole-diagram chassis_ground shape total (6, independently attributable elsewhere)",
+    "RETR_TREE contour parent/child hierarchy was not instrumented; cannot determine whether through-wires actively fragment connector-notch contours or whether those contours simply never form large enough regardless of wire presence"
+  ],
+  "deterministic": true,
+  "recommended_next_ap": "A contour-hierarchy forensic AP instrumenting RETR_TREE parent/child relationships and the three unlogged evaluate_ground_run sub-checks for the connectors identified in instrumentation_limitations, before any connector-detector design work begins."
+}

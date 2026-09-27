@@ -41,6 +41,7 @@
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
 #include "eke_dx_wire/topology/wire_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/symbol_family_recognizer.hpp"
+#include "eke_dx_wire/topology/electrical_component_resolver.hpp"
 #include "eke_dx_wire/topology/electrical_net_resolver.hpp"
 
 #include <algorithm>
@@ -452,6 +453,20 @@ WireModel ExtractionPipeline::run(
             symbol_observations);
     model.symbol_family_evidence = symbol_family_artifacts.evidence;
     model.symbol_family_resolutions = symbol_family_artifacts.resolutions;
+
+    // AP-DIAG-FIX-008: resolves the ComponentCandidate -> ElectricalComponent
+    // semantic boundary from already-established evidence (symbol-family
+    // resolution, connector ownership, component-terminal endpoints).
+    // Read-only with respect to every input; does not affect topology,
+    // wires, or electrical nets below.
+    ElectricalComponentResolver electrical_component_resolver;
+    const ElectricalComponentResolutionArtifacts electrical_component_artifacts =
+        electrical_component_resolver.resolve(
+            model.component_candidates,
+            model.symbol_family_resolutions,
+            model.connector_candidates,
+            model.endpoint_candidates);
+    model.electrical_components = electrical_component_artifacts.electrical_components;
 
     // AP-WIRE-031: the authoritative physical-Wire-identity reconstruction
     // stage. Internally runs the conservative AP-WIRE-013 WireReconstructor

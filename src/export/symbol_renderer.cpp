@@ -266,6 +266,10 @@ const SymbolRenderer& symbol_renderer_for(SymbolFamily family) {
     case SymbolFamily::Battery: return battery;
     case SymbolFamily::Solenoid: return solenoid;
     case SymbolFamily::Coil: return coil;
+    // AP-DIAG-FIX-008: no dedicated FuseRenderer exists yet (this AP is
+    // semantic-boundary-only, not a rendering AP); fall back to the
+    // generic unresolved renderer rather than fabricating fuse artwork.
+    case SymbolFamily::Fuse: return fallback;
     case SymbolFamily::Unknown: return fallback;
     }
     return fallback;

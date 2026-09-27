@@ -70,6 +70,7 @@ add_library(eke_dx_wire
     src/topology/wire_semantic_resolver.cpp
     src/topology/symbol_recognition_provider.cpp
     src/topology/symbol_family_recognizer.cpp
+    src/topology/electrical_component_resolver.cpp
     src/diagram/engineering_diagram_builder.cpp
     src/export/engineering_diagram_exporter.cpp
     src/image/component_candidate_classifier.cpp
@@ -318,6 +319,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-symbol-family-recognizer tests/test_symbol_family_recognizer.cpp)
     target_link_libraries(dx-wire-test-symbol-family-recognizer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-symbol-family-recognizer COMMAND dx-wire-test-symbol-family-recognizer)
+
+    add_executable(dx-wire-test-electrical-component-resolver tests/test_electrical_component_resolver.cpp)
+    target_link_libraries(dx-wire-test-electrical-component-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-electrical-component-resolver COMMAND dx-wire-test-electrical-component-resolver)
 
     add_executable(dx-wire-test-structured-svg-exporter tests/test_structured_svg_exporter.cpp)
     target_link_libraries(dx-wire-test-structured-svg-exporter PRIVATE eke_dx_wire)

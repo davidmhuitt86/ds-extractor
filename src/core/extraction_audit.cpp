@@ -243,6 +243,7 @@ ExtractionAudit build_extraction_audit(
             case SymbolFamily::Battery: ++families.battery_resolved; break;
             case SymbolFamily::Solenoid: ++families.solenoid_resolved; break;
             case SymbolFamily::Coil: ++families.coil_resolved; break;
+            case SymbolFamily::Fuse: ++families.fuse_resolved; break;
             case SymbolFamily::Unknown: break;
             }
             break;
@@ -258,6 +259,39 @@ ExtractionAudit build_extraction_audit(
 
     audit.conductor_boundaries =
         build_conductor_boundary_coverage(model.conductor_boundary_resolutions);
+
+    // AP-DIAG-FIX-008: ComponentCandidate -> ElectricalComponent coverage.
+    // `audit.shapes` (model.component_candidates.size()) remains the
+    // extraction-level candidate count; it must never be read as the
+    // number of electrical components in the diagram.
+    ElectricalComponentCoverage& electrical = audit.electrical_components;
+    electrical.total = model.electrical_components.size();
+    for (const auto& component : model.electrical_components) {
+        switch (component.status) {
+        case ElectricalComponentResolutionStatus::Resolved:
+            ++electrical.resolved;
+            break;
+        case ElectricalComponentResolutionStatus::Unresolved:
+            ++electrical.unresolved;
+            break;
+        case ElectricalComponentResolutionStatus::Rejected:
+            ++electrical.rejected;
+            switch (component.rejection_reason) {
+            case ElectricalComponentRejectionReason::DiagramFurniture:
+                ++electrical.rejected_diagram_furniture;
+                break;
+            case ElectricalComponentRejectionReason::ChassisGroundReference:
+                ++electrical.rejected_chassis_ground_reference;
+                break;
+            case ElectricalComponentRejectionReason::ConnectorInterface:
+                ++electrical.rejected_connector_interface;
+                break;
+            case ElectricalComponentRejectionReason::NotApplicable:
+                break;
+            }
+            break;
+        }
+    }
 
     return audit;
 }

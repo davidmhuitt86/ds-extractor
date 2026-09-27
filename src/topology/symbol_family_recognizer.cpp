@@ -29,6 +29,7 @@ const char* family_name(SymbolFamily family) {
     case SymbolFamily::Battery: return "battery";
     case SymbolFamily::Solenoid: return "solenoid";
     case SymbolFamily::Coil: return "coil";
+    case SymbolFamily::Fuse: return "fuse";
     case SymbolFamily::Unknown: return "unknown";
     }
     return "unknown";

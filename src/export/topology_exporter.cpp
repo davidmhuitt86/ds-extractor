@@ -499,6 +499,7 @@ void TopologyExporter::export_json(
         case SymbolFamily::Battery: return "battery";
         case SymbolFamily::Solenoid: return "solenoid";
         case SymbolFamily::Coil: return "coil";
+        case SymbolFamily::Fuse: return "fuse";
         case SymbolFamily::Unknown: return "unknown";
         }
         return "unknown";
@@ -556,6 +557,53 @@ void TopologyExporter::export_json(
         }
         out << "]\n    }";
         if (i + 1 != model.symbol_family_resolutions.size()) out << ",";
+        out << "\n";
+    }
+
+    // AP-DIAG-FIX-008: ComponentCandidate -> ElectricalComponent semantic
+    // resolution. `component_candidates` above remains the extraction-
+    // level count; this array is the authoritative electrical-component
+    // resolution per candidate and must not be conflated with it.
+    auto electrical_component_status_name = [](ElectricalComponentResolutionStatus status) {
+        switch (status) {
+        case ElectricalComponentResolutionStatus::Resolved: return "resolved";
+        case ElectricalComponentResolutionStatus::Unresolved: return "unresolved";
+        case ElectricalComponentResolutionStatus::Rejected: return "rejected";
+        }
+        return "unresolved";
+    };
+    auto electrical_component_rejection_reason_name = [](ElectricalComponentRejectionReason reason) {
+        switch (reason) {
+        case ElectricalComponentRejectionReason::DiagramFurniture: return "diagram_furniture";
+        case ElectricalComponentRejectionReason::ChassisGroundReference: return "chassis_ground_reference";
+        case ElectricalComponentRejectionReason::ConnectorInterface: return "connector_interface";
+        case ElectricalComponentRejectionReason::NotApplicable: return "not_applicable";
+        }
+        return "not_applicable";
+    };
+
+    out << "  ],\n  \"electrical_components\": [\n";
+    for (std::size_t i = 0; i < model.electrical_components.size(); ++i) {
+        const auto& c = model.electrical_components[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(c.id) << "\",\n"
+            << "      \"component_candidate_id\": \"" << json_escape(c.component_candidate_id) << "\",\n"
+            << "      \"family\": \"" << symbol_family_name(c.family) << "\",\n"
+            << "      \"status\": \"" << electrical_component_status_name(c.status) << "\",\n"
+            << "      \"rejection_reason\": \"" << electrical_component_rejection_reason_name(c.rejection_reason) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(c.confidence) << "\",\n"
+            << "      \"terminal_endpoint_ids\": [";
+        for (std::size_t j = 0; j < c.terminal_endpoint_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(c.terminal_endpoint_ids[j]) << "\"";
+        }
+        out << "],\n      \"evidence_ids\": [";
+        for (std::size_t j = 0; j < c.evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(c.evidence_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.electrical_components.size()) out << ",";
         out << "\n";
     }
 

@@ -1,0 +1,202 @@
+{
+  "design_id": "AP-DIAG-DESIGN-001",
+  "status": "DESIGN_ONLY",
+  "starting_commit": "de87e62f2c34d1d474eb30394f2541c570aa1413",
+  "branch": "main",
+  "production_changes": false,
+
+  "source_baseline": {
+    "connector_count": 12,
+    "visible_connector_pins": 33,
+    "conductor_entries": 33,
+    "conductor_exits": 33,
+    "ambiguous_pins": 0,
+    "current_representation": {"partial": 1, "absent": 11, "complete": 0},
+    "invalid_prior_assumption": "8 connectors / 46 terminals (explicitly not used anywhere in this design)"
+  },
+
+  "geometry_model": {
+    "type": "boundary_plus_conductor_context_evidence",
+    "rejected_alternatives": ["primitive_geometry", "pure_contour_derived_geometry", "composite_geometry"],
+    "rationale": "No single primitive-shape test is satisfied by more than 1 of 12 connectors; approxPolyDP vertex count alone cannot distinguish genuine interlocking notch from noisy non-connector blob (AP-DIAG-AUDIT-012); pin count varies 2-4 so a fixed composite schema would need a variant per sub-variant, reintroducing per-connector proliferation.",
+    "evidence_fields": [
+      "boundary_polygon_vertex_count (range, not fixed value: observed 4-7)",
+      "convexity",
+      "aspect_ratio",
+      "fill_ratio",
+      "conductor_crossing_count",
+      "conductor_crossing_points",
+      "has_interior_void"
+    ],
+    "variants": [
+      {"family": "A", "description": "single closed contour", "connectors": ["CONN-001"]},
+      {"family": "B", "description": "outer+inner contour (interior void)", "connectors": ["CONN-011"]},
+      {"family": "D", "description": "multiple sibling contours (universal, non-discriminating)", "connectors": ["CONN-001","CONN-002","CONN-003","CONN-004","CONN-005","CONN-006","CONN-007","CONN-008","CONN-009","CONN-010","CONN-011","CONN-012"]},
+      {"family": "E", "description": "open contour fragments / insufficient boundary ink", "connectors": ["CONN-004","CONN-006","CONN-012"]},
+      {"family": "F", "description": "conductor-interrupted contour", "connectors": ["CONN-011"]},
+      {"family": "G", "description": "notch as indentation in one contour", "connectors": ["CONN-007","CONN-008"]},
+      {"family": "I", "description": "interlocking/staircase geometry (same underlying evidence as G)", "connectors": ["CONN-007","CONN-008"]},
+      {"family": "J", "description": "mixed: housing (Enclosure, unchanged) + separately-evaluated notch", "connectors": ["CONN-003"]}
+    ]
+  },
+
+  "detection_architecture": {
+    "stage": "hybrid_geometry_plus_semantic",
+    "option_selected": "D",
+    "options_rejected": [
+      {"option": "A", "name": "inside ShapeDetector", "reason": "ConductorSegment data does not exist yet when ShapeDetector::detect() runs; conductor-crossing evidence is structurally unavailable at that pipeline point"},
+      {"option": "B", "name": "dedicated ConnectorGeometryDetector alone", "reason": "correct for geometry-only evidence but cannot evaluate conductor-crossing evidence on its own"},
+      {"option": "C", "name": "post-ShapeDetector semantic recognizer alone", "reason": "cannot re-examine raw contour geometry already discarded by ShapeDetector for rejected candidates"}
+    ],
+    "rationale": "Connector recognition requires both image-only geometric evidence (vertex count, aspect, notch structure) and conductor-interaction evidence (crossing count/points), which are available at two different points in the existing pipeline. A new standalone image-stage ConnectorGeometryDetector emits ShapeKind::ConnectorBody regions into the existing ShapeDetectionArtifacts type; a second, later semantic-stage extension (co-located with TerminalLocationDetector/TerminalRecognizer) evaluates conductor-crossing evidence once ConductorSegments exist."
+  },
+
+  "representation": {
+    "component_model": "ComponentCandidate unchanged; ConnectorBody-kind ShapeRegions bypass ComponentCandidate entirely and feed the ConnectorCandidate pipeline directly (avoids adding ComponentCandidateKind::Connector, which would conflate component/connector semantics and require every existing consumer to add a case)",
+    "shape_model": "New ShapeKind::ConnectorBody value added to the existing 3-value enum {Rectangle, Circle, ChassisGround}; geometry-only, no electrical/pin/wire implication",
+    "connector_model": "Reuse existing ConnectorCandidate struct (id, component_candidate_id, bounds, confidence, semantic_labels) verbatim, no field changes",
+    "terminal_model": "Reuse existing ConnectorTerminal and TerminalCandidateKind::ConnectorBoundary verbatim, no field changes; new ConnectorPin struct added as the missing intermediate state between connector-body recognition and terminal-candidate evidence"
+  },
+
+  "wire_semantics": {
+    "unchanged": true,
+    "notes": "Wire remains strictly endpoint-to-endpoint (start_endpoint/end_endpoint, both EndpointCandidate ids). Splice/Junction/Crossing topology nodes are never Wire boundaries (AP-WIRE-029 invariant, unmodified). A ConnectorPin or Resolved ConnectorTerminal existing at a location is necessary context for WireSemanticResolver's existing semantic labeling of an already-decided Wire endpoint, never sufficient cause to create a new Wire boundary. PhysicalWireIdentityReconstructor's topology/ConductorSegment-based boundary decisions are not modified."
+  },
+
+  "electrical_net_semantics": {
+    "unchanged": true,
+    "notes": "ElectricalNetResolver and ElectricalNet fields are not modified. ONE NET != ONE WIRE and ONE WIRE != ONE NET both preserved. Connector terminal net membership is decided entirely by existing topology/distribution logic once an endpoint exists; no net-membership evidence is manufactured from connector visual adjacency."
+  },
+
+  "model_changes": [
+    {
+      "change": "Add ShapeKind::ConnectorBody enum value",
+      "classification": "REQUIRED",
+      "existing_limitation": "ShapeKind has exactly {Rectangle, Circle, ChassisGround}; none can represent a notched, variable-vertex, conductor-crossed boundary without semantic distortion",
+      "evidence": "AP-DIAG-AUDIT-011/012: 11 of 12 connectors never produce a Rectangle/Circle candidate at all; the one that does (CONN-001, Circle) is architecturally blocked from reaching ConnectorBoundary",
+      "smallest_change": "One new enum value; no field changes to ShapeRegion"
+    },
+    {
+      "change": "New ConnectorGeometryDetector component (image stage)",
+      "classification": "REQUIRED",
+      "existing_limitation": "No existing component evaluates connector geometry at all",
+      "evidence": "AP-DIAG-AUDIT-010/011/012 census and forensic trace show zero connector-capable detector anywhere in ShapeDetector",
+      "smallest_change": "New standalone detector producing ShapeRegion entries of the new ConnectorBody kind; no change to ShapeDetector's own three detectors"
+    },
+    {
+      "change": "New ConnectorPin struct in model.hpp",
+      "classification": "REQUIRED",
+      "existing_limitation": "No model object represents a visually observed pin location prior to earning terminal-candidate/endpoint evidence; every existing candidate type either represents a whole body or an already-endpoint-attached terminal",
+      "evidence": "AP-DIAG-DESIGN-001 Design Question 7/Part 8 explicitly forbids fabricating an EndpointCandidate prematurely, and Design Question 11 requires an Unresolved state to be representable",
+      "smallest_change": "struct ConnectorPin { id; connector_id; position; ordinal; conductor_crossing_evidence_ids; confidence; } - 5 fields, no changes to any existing struct"
+    },
+    {
+      "change": "Add ComponentCandidateKind::Connector enum value",
+      "classification": "REJECTED",
+      "existing_limitation": "n/a",
+      "evidence": "Would require every existing ComponentCandidateKind consumer to add a new case and would conflate component/connector semantics",
+      "smallest_change": "Not pursued; ConnectorBody-kind regions bypass ComponentCandidate entirely instead"
+    },
+    {
+      "change": "Weaken ShapeDetector's Circle/Rectangle/ChassisGround thresholds",
+      "classification": "REJECTED",
+      "existing_limitation": "n/a",
+      "evidence": "Explicitly forbidden by the governing AP; unnecessary given the additive ConnectorBody evidence model",
+      "smallest_change": "Not pursued"
+    },
+    {
+      "change": "Rename ConnectorBoundary from enum tag to a struct",
+      "classification": "NOT_REQUIRED",
+      "existing_limitation": "n/a",
+      "evidence": "ConnectorCandidate already fills the connector-body role such a struct would serve",
+      "smallest_change": "Not pursued"
+    },
+    {
+      "change": "ConnectorCandidate.component_candidate_id rename",
+      "classification": "NOT_REQUIRED",
+      "existing_limitation": "n/a",
+      "evidence": "AP forbids renaming existing fields; field type (string id reference) is already unconstrained and can hold a connector-geometry-derived id without renaming",
+      "smallest_change": "Usage clarification only, no schema change"
+    },
+    {
+      "change": "TerminalCandidateKind / EndpointKind / ConnectorTerminalStatus / WireIdentityStatus / ElectricalComponentRejectionReason enum changes",
+      "classification": "NOT_REQUIRED",
+      "existing_limitation": "n/a",
+      "evidence": "All already have the exact values needed (ConnectorBoundary, ConnectorTerminal, Resolved/Unresolved/Conflicted, ConnectorInterface), confirmed present and already wired to consumers",
+      "smallest_change": "Not pursued"
+    }
+  ],
+
+  "validation_invariants": [
+    "Connector count: exactly 12 source-grounded locations; no silent drift without documented evidence",
+    "Visible pin count: 33 across all 12 connectors; no silent drift without documented evidence",
+    "Physical Wire: no duplicate Wire records (unchanged, enforced by existing PhysicalWireIdentityReconstructor)",
+    "Topology: connector recognition creates zero new Junction/Splice/Crossing nodes",
+    "Ground: no connector becomes ChassisGround merely from connector-bar geometry (already true today, 0 false positives, no change proposed)",
+    "Terminals: no TerminalCandidate or ConnectorTerminal manufactured without the same independent EndpointCandidate-proximity evidence every terminal already requires",
+    "Determinism: repeated extraction byte-identical except documented volatile fields",
+    "Regression: 37 wires, 12 nets, 81 ComponentCandidates, 0 resolved/28 unresolved/53 rejected, 6/6 chassis-ground references, 0 validation errors, 34 runtime warnings all remain unchanged unless a documented, legitimate connector-related dependency is identified"
+  ],
+
+  "test_matrix": [
+    {"area": "CONN-001 control", "expected_evidence": "ConnectorBody region recognized in addition to existing Circle region (both present, non-conflicting); crossing-evidence references real ConductorSegments; status reported not assumed Resolved"},
+    {"area": "CONN-002 through CONN-012", "expected_evidence": "Per-connector geometry evidence matching AP-DIAG-AUDIT-012 measured vertex-count/aspect values; explicit assertion of which evidence fields are populated vs absent"},
+    {"area": "Oval connector (CONN-009/010)", "expected_evidence": "Aspect-ratio evidence field reflects measured 1.75-1.92 range; detect_circles' own circle_max_aspect_ratio gate unchanged"},
+    {"area": "Staircase/interlocking connector (CONN-007/008)", "expected_evidence": "Vertex-count evidence in 5-7 range accepted by ConnectorBody recognition while detect_rectangles' unmodified 4-vertex gate still rejects them"},
+    {"area": "Notched rectangle/oval", "expected_evidence": "One fixture per geometry family, not per connector"},
+    {"area": "Interior-void case (CONN-011)", "expected_evidence": "has_interior_void=true recorded from real child-contour evidence; not mislabeled as wire crossing without a matching ConductorSegment reference"},
+    {"area": "Ground-bar interaction", "expected_evidence": "Re-run all 9 known count-gate-clearing ground-bar scenarios; assert 0 ChassisGround candidates with new connector stage active"},
+    {"area": "Conductor pass-through", "expected_evidence": "Multiple independent crossing-evidence entries recorded without forced entry/exit pairing"},
+    {"area": "Connector terminal", "expected_evidence": "ConnectorTerminal reaches Resolved only when both geometry and independently-found endpoint evidence exist"},
+    {"area": "Connector boundary", "expected_evidence": "TerminalCandidateKind::ConnectorBoundary assigned only via existing proximity logic, with a ConnectorPin as owning geometry"},
+    {"area": "Physical Wire relationship", "expected_evidence": "No Wire boundary created/moved by connector recognition alone, for all 12 connectors, absent independent topology evidence"},
+    {"area": "Electrical Net relationship", "expected_evidence": "ElectricalNetResolver output byte-identical with/without new connector stages, except post-hoc semantic labels from unmodified WireSemanticResolver"},
+    {"area": "False-positive enclosures", "expected_evidence": "CONN-003/005/009 housing boxes continue classifying as Enclosure exactly as today"},
+    {"area": "False-positive ground symbols", "expected_evidence": "All 9 known count-gate-clearing ground-bar runs remain rejected"},
+    {"area": "Deterministic repeated extraction", "expected_evidence": "Two extractions with new stages active produce byte-identical topology output (SHA-256 comparison)"}
+  ],
+
+  "implementation_boundary": {
+    "production_files": [
+      "include/eke_dx_wire/image/connector_geometry_detector.hpp (new)",
+      "src/image/connector_geometry_detector.cpp (new)",
+      "include/eke_dx_wire/image/shape_detector.hpp (narrow: add ShapeKind::ConnectorBody only)",
+      "src/image/component_candidate_classifier.cpp (narrow: routing only)",
+      "include/eke_dx_wire/topology/terminal_location_detector.hpp",
+      "src/topology/terminal_location_detector.cpp",
+      "include/eke_dx_wire/topology/terminal_recognizer.hpp",
+      "src/topology/terminal_recognizer.cpp",
+      "include/eke_dx_wire/pipeline/extraction_pipeline.hpp",
+      "src/pipeline/extraction_pipeline.cpp"
+    ],
+    "model_files": [
+      "include/eke_dx_wire/core/model.hpp (add ConnectorPin struct and crossing-evidence record struct only)",
+      "src/core/ids.cpp (additive only, new stable_id namespace constant if needed)"
+    ],
+    "test_files": [
+      "tests/test_connector_geometry_detector.cpp (new)",
+      "tests/test_terminal_location_detector.cpp (extend, no deletions)",
+      "tests/test_terminal_recognizer.cpp (extend, no deletions)",
+      "tests/test_connector_terminal_model.cpp (extend, no deletions)",
+      "tests/test_shape_detector.cpp (extend, no deletions)"
+    ],
+    "not_permitted_without_further_design_review": [
+      "ShapeDetector's detect_rectangles/detect_circles/detect_ground_symbols bodies or any ShapeDetectorConfig threshold",
+      "ConnectorTerminalModelBuilder, ConductorBoundaryResolver, PhysicalWireIdentityReconstructor, ElectricalNetResolver, WireSemanticResolver logic bodies",
+      "Wire, ElectricalNet, TerminalCandidate, EndpointCandidate, ComponentCandidate struct fields",
+      "ComponentCandidateKind, TerminalCandidateKind, EndpointKind, ShapeRole, ConnectorTerminalStatus, WireIdentityStatus, ElectricalComponentRejectionReason enum values"
+    ]
+  },
+
+  "design_gates": [
+    {"gate": "A", "question": "Does the geometry model represent all 12 source-grounded connector families?", "result": "PASS"},
+    {"gate": "B", "question": "Can all 33 visible connector-side pins be represented without conflating them with Wire endpoints?", "result": "PASS"},
+    {"gate": "C", "question": "Can the existing Wire identity semantics remain unchanged?", "result": "PASS"},
+    {"gate": "D", "question": "Can Electrical Net resolution remain unchanged except for legitimate connector-terminal evidence?", "result": "PASS"},
+    {"gate": "E", "question": "Can connector detection avoid the known ground false-positive patterns?", "result": "PASS"},
+    {"gate": "F", "question": "Can the design represent an unresolved connector without guessing?", "result": "PASS"},
+    {"gate": "G", "question": "Is every required model change actually justified?", "result": "PASS"}
+  ],
+
+  "recommended_next_ap": "AP-DIAG-IMPL-001: implement ShapeKind::ConnectorBody, the new ConnectorGeometryDetector, the ConnectorPin model addition and serialization, and the TerminalLocationDetector/TerminalRecognizer extensions per the implementation_boundary above, in that order, with full regression against the validation_invariants and test_matrix defined here. Defer entry/exit pairing resolution and cross-connector 'repeated symbol convention' evidence to a later AP."
+}

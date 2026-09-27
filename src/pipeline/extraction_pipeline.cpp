@@ -8,6 +8,7 @@
 #include "eke_dx_wire/image/rejected_geometry_classifier.hpp"
 #include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
+#include "eke_dx_wire/image/ground_approach_conductor_recovery.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
 #include "eke_dx_wire/image/symbol_geometry_extractor.hpp"
@@ -119,10 +120,43 @@ WireModel ExtractionPipeline::run(
             component_candidates,
             text_regions.regions);
 
+    // AP-DIAG-FIX-007: AP-DIAG-AUDIT-006 established that
+    // MorphologyWireDetector's fixed-orientation, fixed-minimum-length
+    // morphological openings cannot preserve every real approach conductor
+    // immediately above an already-detected ChassisGround symbol. This is
+    // a narrow, local gap-filling pass only: it reuses the same binary
+    // threshold image and exclusion mask already computed above, only
+    // examines ChassisGround regions ShapeDetector already accepted, and
+    // never runs for a symbol the standard detector already reached. Its
+    // output is inserted after GeometryOwnershipClassifier (not before)
+    // because the generic component/text bounding-box overlap check that
+    // stage performs is calibrated for ordinary long conductor runs; a
+    // short recovered approach segment can legitimately pass directly
+    // beneath a nearby text label's bounding box (observed for
+    // component-candidate-shape-region-6b6ccc2d59afe578) without being
+    // owned by it. The bounded, connectivity-based trace this recovery
+    // already performed - anchored to a genuine ChassisGround symbol and
+    // requiring an unbroken ink path reaching it - is itself the ownership
+    // determination for this narrow case. Recovered geometry still passes
+    // through ConductorEvidenceEvaluator's raster ink-support check and
+    // every stage after it exactly like any other conductor.
+    GroundApproachConductorRecovery ground_approach_recovery(
+        config_.ground_approach_recovery);
+    const GroundApproachRecoveryArtifacts ground_approach_artifacts =
+        ground_approach_recovery.recover(
+            detected.binary, shapes.regions, detected.conductor_segments,
+            combined_exclusion, source_id, 0);
+    std::vector<ConductorSegment> conductor_candidates =
+        ownership.conductor_candidates;
+    conductor_candidates.insert(
+        conductor_candidates.end(),
+        ground_approach_artifacts.conductor_segments.begin(),
+        ground_approach_artifacts.conductor_segments.end());
+
     ConductorEvidenceEvaluator evidence_evaluator(config_.conductor_evidence);
     const ConductorEvidenceArtifacts evidence =
         evidence_evaluator.evaluate(
-            ownership.conductor_candidates,
+            conductor_candidates,
             normalized);
 
     std::vector<RejectedGeometryEvidence> rejected_geometry =

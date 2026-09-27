@@ -1,0 +1,144 @@
+{
+  "ap_id": "AP-DIAG-FIX-007",
+  "starting_commit": "6e8f2d07daf538b54e6226dd71d864e9cd97c040",
+  "final_commit": null,
+  "branch": "main",
+  "root_cause": {
+    "component": "MorphologyWireDetector",
+    "description": "Fixed-orientation (horizontal/vertical only), fixed-minimum-length (minimum_segment_length=12) morphological line extraction cannot preserve the real approach-conductor ink immediately above two genuine ChassisGround symbols.",
+    "global_morphology_parameters_changed": false
+  },
+  "affected_components": [
+    {
+      "component_id": "component-candidate-shape-region-5aa211846bb7891d",
+      "shape_description": "diagonal jog (~(707,533)->(719,538)) into a short (~10px) vertical run to the ground bar",
+      "ground_anchor": {"x": 719, "y": 547},
+      "resolved_ground_endpoint_id": "endpoint-candidate-489024c295007fa9",
+      "resolved_confidence": "high",
+      "new_wire_id": "wire-5f577a77a7d7f3d1",
+      "new_electrical_net_id": "electrical-net-ad8ebe90235978f9",
+      "geometry_simplified_to_straight_line": false
+    },
+    {
+      "component_id": "component-candidate-shape-region-6b6ccc2d59afe578",
+      "shape_description": "L-bend into a ~17-20px vertical run, completely erased by the vertical morphological opening in isolation (134 raw pixels -> 0 surviving)",
+      "ground_anchor": {"x": 759, "y": 547},
+      "resolved_ground_endpoint_id": "endpoint-candidate-ee69f47db68cb6bf",
+      "resolved_confidence": "high",
+      "new_wire_id": "wire-cc1a42c6ede95cf1",
+      "new_electrical_net_id": "electrical-net-647be111f38562cc",
+      "geometry_simplified_to_straight_line": false
+    }
+  ],
+  "previous_ground_endpoint_count": 4,
+  "current_ground_endpoint_count": 6,
+  "chassis_ground_recognition_count": 6,
+  "successful_ground_regressions": [
+    {
+      "component_id": "component-candidate-shape-region-0edf5ce35037fec3",
+      "x": 585.5, "y": 585, "confidence": "high", "unchanged": true
+    },
+    {
+      "component_id": "component-candidate-shape-region-1acbaeb7ac6ac87a",
+      "x": 629.5, "y": 585, "confidence": "high", "unchanged": true
+    },
+    {
+      "component_id": "component-candidate-shape-region-a434a925670e9b65",
+      "x": 935, "y": 542, "confidence": "medium", "unchanged": true
+    },
+    {
+      "component_id": "component-candidate-shape-region-791276441805b2e0",
+      "x": 656, "y": 546, "confidence": "high", "unchanged": true
+    }
+  ],
+  "negative_controls": [
+    "already_covered_skips_recovery",
+    "no_ink_produces_nothing",
+    "disconnected_ink_not_adopted",
+    "wide_blob_rejected_as_ambiguous",
+    "exclusion_mask_ink_not_read",
+    "non_chassis_ground_shapes_never_examined",
+    "determinism_identical_ids_and_geometry"
+  ],
+  "wire_topology_electrical_net_changes": {
+    "component_candidates": {"before": 81, "after": 81, "added": 0, "removed": 0, "changed": 0},
+    "component_symbol_recognitions": {"before": 81, "after": 81, "added": 0, "removed": 0, "changed": 0},
+    "symbol_primitives": {"before": 34, "after": 34, "added": 0, "removed": 0, "changed": 0},
+    "topology_nodes": {"before": 686, "after": 690, "added": 4, "removed": 0, "changed": 0},
+    "topology_edges": {"before": 876, "after": 878, "added": 2, "removed": 0, "changed": 0},
+    "endpoint_candidates": {"before": 203, "after": 207, "added": 4, "removed": 0, "changed": 0},
+    "rejected_geometry": {"before": 10, "after": 13, "added": 3, "removed": 0, "changed": 0},
+    "wires": {"before": 35, "after": 37, "added": 2, "removed": 0, "changed": 0},
+    "wire_semantics": {"before": 35, "after": 37, "added": 2, "removed": 0, "changed": 0},
+    "electrical_nets": {"before": 10, "after": 12, "added": 2, "removed": 0, "changed": 0},
+    "conductor_boundary_resolutions": {"before": 203, "after": 207, "added": 4, "removed": 0, "changed": 0},
+    "new_electrical_nets_role": "ground",
+    "new_electrical_nets_confidence": "high",
+    "electrical_net_resolver_modified": false
+  },
+  "scoped_results": {
+    "scope_file": "fixtures/trx300/scope_production.json",
+    "before": {"topology_edges": 641, "wires": 35, "electrical_nets": 10, "endpoint_candidates": 185, "validation_errors": 0, "validation_warnings": 34},
+    "after": {"topology_edges": 643, "wires": 37, "electrical_nets": 12, "endpoint_candidates": 189, "validation_errors": 0, "validation_warnings": 34},
+    "ground_endpoints_resolved": 6
+  },
+  "unscoped_results": {
+    "before": {"topology_edges": 876, "wires": 35, "electrical_nets": 10, "endpoint_candidates": 203, "validation_errors": 0, "validation_warnings": 34},
+    "after": {"topology_edges": 878, "wires": 37, "electrical_nets": 12, "endpoint_candidates": 207, "validation_errors": 0, "validation_warnings": 34},
+    "ground_endpoints_resolved": 6
+  },
+  "deterministic": true,
+  "determinism_runs": {
+    "unscoped": 2,
+    "scoped": 2,
+    "baseline_unscoped": 2,
+    "all_byte_identical": true
+  },
+  "performance": {
+    "scope": "local per-ChassisGround-region only",
+    "max_regions_examined": 6,
+    "roi_size_px": "25x20",
+    "diagram_wide_scan": false
+  },
+  "tests_passed": true,
+  "test_counts": {
+    "before": 58,
+    "after": 60,
+    "new_tests": [
+      "dx-wire-test-ground-approach-conductor-recovery",
+      "dx-wire-test-ground-approach-recovery-production"
+    ]
+  },
+  "assertions_active": true,
+  "compiler_warnings": {
+    "before": 8,
+    "after": 8,
+    "new_warnings": 0
+  },
+  "production_changes": true,
+  "production_files_changed": [
+    "CMakeLists.txt",
+    "include/eke_dx_wire/pipeline/extraction_pipeline.hpp",
+    "src/pipeline/extraction_pipeline.cpp",
+    "include/eke_dx_wire/image/ground_approach_conductor_recovery.hpp",
+    "src/image/ground_approach_conductor_recovery.cpp"
+  ],
+  "test_files_added": [
+    "tests/test_ground_approach_conductor_recovery.cpp",
+    "tests/test_ground_approach_recovery_production.cpp"
+  ],
+  "out_of_scope_confirmed_unchanged": [
+    "TerminalLocationDetector",
+    "TerminalRecognizer",
+    "ConductorBoundaryResolver",
+    "EndpointSemanticReconstructor",
+    "ElectricalNetResolver",
+    "ChassisGround classification logic",
+    "global morphology kernel lengths",
+    "global minimum_segment_length",
+    "Wire identity/deduplication",
+    "source scoping",
+    "OCR/text recognition",
+    "connector taxonomy"
+  ]
+}

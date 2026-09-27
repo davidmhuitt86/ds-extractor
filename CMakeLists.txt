@@ -31,6 +31,7 @@ add_library(eke_dx_wire
     src/image/rejected_geometry_classifier.cpp
     src/image/geometry_ownership_classifier.cpp
     src/image/shape_detector.cpp
+    src/image/ground_approach_conductor_recovery.cpp
     src/image/text_region_detector.cpp
     src/image/symbol_geometry_extractor.cpp
     src/topology/topology_reconstructor.cpp
@@ -286,6 +287,15 @@ if(DX_WIRE_BUILD_TESTS)
     target_compile_definitions(dx-wire-test-rejected-geometry-handoff PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     target_link_libraries(dx-wire-test-rejected-geometry-handoff PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-rejected-geometry-handoff COMMAND dx-wire-test-rejected-geometry-handoff)
+
+    add_executable(dx-wire-test-ground-approach-recovery-production tests/test_ground_approach_recovery_production.cpp)
+    target_compile_definitions(dx-wire-test-ground-approach-recovery-production PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_link_libraries(dx-wire-test-ground-approach-recovery-production PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-ground-approach-recovery-production COMMAND dx-wire-test-ground-approach-recovery-production)
+
+    add_executable(dx-wire-test-ground-approach-conductor-recovery tests/test_ground_approach_conductor_recovery.cpp)
+    target_link_libraries(dx-wire-test-ground-approach-conductor-recovery PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-ground-approach-conductor-recovery COMMAND dx-wire-test-ground-approach-conductor-recovery)
     target_link_libraries(dx-wire-test-extraction-audit PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-extraction-audit COMMAND dx-wire-test-extraction-audit)
 

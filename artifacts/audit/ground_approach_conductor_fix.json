@@ -1,7 +1,7 @@
 {
   "ap_id": "AP-DIAG-FIX-007",
   "starting_commit": "6e8f2d07daf538b54e6226dd71d864e9cd97c040",
-  "final_commit": null,
+  "final_commit": "c5a203eeeef76da591e413ed13e44316629a2728",
   "branch": "main",
   "root_cause": {
     "component": "MorphologyWireDetector",

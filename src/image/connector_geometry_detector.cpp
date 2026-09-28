@@ -3,6 +3,7 @@
 #include "eke_dx_wire/core/ids.hpp"
 
 #include <opencv2/imgproc.hpp>
+#include <opencv2/geometry/2d.hpp>
 
 #include <algorithm>
 #include <cstdint>

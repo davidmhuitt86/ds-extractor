@@ -498,9 +498,43 @@ WireModel ExtractionPipeline::run(
     }
 
     for (const auto& pin : model.connector_pins) {
+        std::vector<std::string> pin_segment_ids;
+        for (const auto& crossing :
+             model.connector_conductor_crossing_evidence) {
+            if (crossing.pin_id == pin.id)
+                pin_segment_ids.push_back(crossing.conductor_segment_id);
+        }
+
         std::vector<const EndpointCandidate*> matches;
         for (const auto& endpoint : model.endpoint_candidates) {
-            if (distance(endpoint.position, pin.position) <= 6.0)
+            if (distance(endpoint.position, pin.position) > 6.0)
+                continue;
+
+            // Endpoint proximity alone is not sufficient. The endpoint must
+            // also be independently attached to one of the conductor
+            // segments observed at this connector pin.
+            bool conductor_supported = false;
+            for (const auto& edge_id : endpoint.incident_edges) {
+                const auto edge_it = std::find_if(
+                    model.edges.begin(),
+                    model.edges.end(),
+                    [&edge_id](const TopologyEdge& edge) {
+                        return edge.id == edge_id;
+                    });
+                if (edge_it == model.edges.end())
+                    continue;
+
+                if (std::find(
+                        pin_segment_ids.begin(),
+                        pin_segment_ids.end(),
+                        edge_it->conductor_segment) !=
+                    pin_segment_ids.end()) {
+                    conductor_supported = true;
+                    break;
+                }
+            }
+
+            if (conductor_supported)
                 matches.push_back(&endpoint);
         }
 

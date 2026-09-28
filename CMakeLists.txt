@@ -31,6 +31,7 @@ add_library(eke_dx_wire
     src/image/rejected_geometry_classifier.cpp
     src/image/geometry_ownership_classifier.cpp
     src/image/shape_detector.cpp
+    src/image/connector_geometry_detector.cpp
     src/image/ground_approach_conductor_recovery.cpp
     src/image/text_region_detector.cpp
     src/image/symbol_geometry_extractor.cpp
@@ -271,6 +272,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-gap-interpreter tests/test_gap_interpreter.cpp)
     target_link_libraries(dx-wire-test-gap-interpreter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-gap-interpreter COMMAND dx-wire-test-gap-interpreter)
+
+    add_executable(dx-wire-test-connector-geometry-detector tests/test_connector_geometry_detector.cpp)
+    target_link_libraries(dx-wire-test-connector-geometry-detector PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-connector-geometry-detector COMMAND dx-wire-test-connector-geometry-detector)
 
     add_executable(dx-wire-test-shape-detector tests/test_shape_detector.cpp)
     target_link_libraries(dx-wire-test-shape-detector PRIVATE eke_dx_wire)

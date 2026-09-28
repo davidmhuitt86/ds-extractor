@@ -143,6 +143,12 @@ ExtractionAudit build_extraction_audit(
         audit.validation_warning_summaries.push_back({code, count});
     }
 
+    audit.connector_pins = model.connector_pins.size();
+    audit.connector_conductor_crossings =
+        model.connector_conductor_crossing_evidence.size();
+    audit.connector_terminal_associations =
+        model.connector_terminal_associations.size();
+
     audit.gaps_bridged = gaps_bridged;
 
     for (const auto& geometry : model.component_symbol_geometries) {

@@ -11,7 +11,8 @@ namespace eke::dx::wire {
 enum class ShapeKind {
     Rectangle,
     Circle,
-    ChassisGround
+    ChassisGround,
+    ConnectorBody
 };
 
 enum class ShapeRole {

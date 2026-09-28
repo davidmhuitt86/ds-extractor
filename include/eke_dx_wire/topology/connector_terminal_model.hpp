@@ -18,6 +18,12 @@ public:
         const std::vector<ComponentCandidate>& components,
         const std::vector<TerminalCandidate>& terminal_candidates,
         const std::vector<EndpointCandidate>& endpoints) const;
+
+    [[nodiscard]] ConnectorModelArtifacts build_native(
+        const std::vector<ConnectorCandidate>& connectors,
+        const std::vector<ConnectorPin>& pins,
+        const std::vector<ConnectorTerminalAssociationEvidence>& associations,
+        const std::vector<EndpointCandidate>& endpoints) const;
 };
 
 } // namespace eke::dx::wire

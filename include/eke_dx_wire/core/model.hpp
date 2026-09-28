@@ -153,6 +153,48 @@ struct ConnectorCandidate {
     std::vector<std::string> semantic_labels;
 };
 
+// AP-DIAG-IMPL-002: a connector pin is a geometric observation between
+// connector-body recognition and terminal association. It is never an
+// EndpointCandidate and carries no Wire or ElectricalNet identity.
+struct ConnectorPin {
+    std::string id;
+    std::string connector_id;
+    Point2D position {};
+    int ordinal = 0;
+    std::vector<std::string> conductor_crossing_evidence_ids;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
+struct ConnectorConductorCrossingEvidence {
+    std::string id;
+    std::string connector_id;
+    std::string pin_id;
+    std::string conductor_segment_id;
+    Point2D crossing_point {};
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    Provenance provenance {};
+};
+
+// AP-DIAG-IMPL-002: connector-native association evidence. It is intentionally
+// distinct from TerminalCandidate::component_candidate_id because a genuine
+// ConnectorBody has no ComponentCandidate owner.
+enum class ConnectorTerminalAssociationStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
+struct ConnectorTerminalAssociationEvidence {
+    std::string id;
+    std::string connector_id;
+    std::string pin_id;
+    std::string endpoint_id;
+    std::vector<std::string> evidence_ids;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    ConnectorTerminalAssociationStatus status =
+        ConnectorTerminalAssociationStatus::Unresolved;
+};
+
 enum class ConnectorTerminalStatus {
     Resolved,
     Unresolved,
@@ -807,6 +849,11 @@ struct ExtractionAudit {
     std::size_t valid_wires = 0;
     std::vector<WireValidationIssueSummary> validation_warning_summaries;
 
+    // AP-DIAG-IMPL-002: connector-native extraction evidence
+    std::size_t connector_pins = 0;
+    std::size_t connector_conductor_crossings = 0;
+    std::size_t connector_terminal_associations = 0;
+
     // Pipeline evidence
     std::size_t gaps_bridged = 0;
 
@@ -985,6 +1032,11 @@ struct WireModel {
     std::vector<ComponentSymbolGeometry> component_symbol_geometries;
     std::vector<SymbolPrimitive> symbol_primitives;
     std::vector<ConnectorCandidate> connector_candidates;
+    std::vector<ConnectorPin> connector_pins;
+    std::vector<ConnectorConductorCrossingEvidence>
+        connector_conductor_crossing_evidence;
+    std::vector<ConnectorTerminalAssociationEvidence>
+        connector_terminal_associations;
     std::vector<ConnectorTerminal> connector_terminals;
     std::vector<TextRegion> text_regions;
     std::vector<TextRecognitionEvidence> text_recognition_evidence;

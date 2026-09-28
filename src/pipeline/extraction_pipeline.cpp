@@ -342,8 +342,54 @@ WireModel ExtractionPipeline::run(
             std::string segment_id;
             Point2D position {};
             double overlap = 0.0;
+            ConnectorConductorInteractionKind interaction =
+                ConnectorConductorInteractionKind::Unknown;
         };
         std::vector<PinObservation> observations;
+
+        auto point_in_expanded_bounds =
+            [](const Point2D& point, const BoundingBox& bounds, double margin) {
+                return point.x >= bounds.x - margin &&
+                       point.x <= bounds.x + bounds.width + margin &&
+                       point.y >= bounds.y - margin &&
+                       point.y <= bounds.y + bounds.height + margin;
+            };
+
+        // Connector topology is determined from independent geometry:
+        // exactly one component physically touching the connector body makes
+        // it a component-attached connector. Multiple plausible owners are
+        // deliberately left Unknown rather than selecting a nearest winner.
+        std::vector<const ComponentCandidate*> attached_components;
+        for (const auto& component : component_candidates) {
+            if (component.kind == ComponentCandidateKind::DiagramFurniture)
+                continue;
+
+            const bool overlap =
+                region.bounds.x < component.bounds.x + component.bounds.width &&
+                region.bounds.x + region.bounds.width > component.bounds.x &&
+                region.bounds.y < component.bounds.y + component.bounds.height &&
+                region.bounds.y + region.bounds.height > component.bounds.y;
+            const bool near =
+                point_in_expanded_bounds(
+                    {static_cast<double>(region.bounds.x),
+                     static_cast<double>(region.bounds.y)},
+                    component.bounds, 2.0) ||
+                point_in_expanded_bounds(
+                    {static_cast<double>(region.bounds.x + region.bounds.width),
+                     static_cast<double>(region.bounds.y + region.bounds.height)},
+                    component.bounds, 2.0);
+
+            if (overlap || near)
+                attached_components.push_back(&component);
+        }
+
+        if (attached_components.size() == 1) {
+            connector.topology = ConnectorTopologyKind::ComponentAttached;
+            connector.attached_component_candidate_id =
+                attached_components.front()->id;
+        } else {
+            connector.topology = ConnectorTopologyKind::Inline;
+        }
 
         for (const auto& segment : model.conductor_segments) {
             double t0 = 0.0;
@@ -357,12 +403,31 @@ WireModel ExtractionPipeline::run(
             if (overlap < 3.0)
                 continue;
 
-            const double tm = (t0 + t1) * 0.5;
-            const Point2D position{
-                segment.geometry.a.x +
-                    (segment.geometry.b.x - segment.geometry.a.x) * tm,
-                segment.geometry.a.y +
-                    (segment.geometry.b.y - segment.geometry.a.y) * tm};
+            const bool a_near =
+                point_in_expanded_bounds(segment.geometry.a, region.bounds, 2.0);
+            const bool b_near =
+                point_in_expanded_bounds(segment.geometry.b, region.bounds, 2.0);
+
+            const ConnectorConductorInteractionKind interaction =
+                (a_near != b_near)
+                    ? ConnectorConductorInteractionKind::Termination
+                    : ConnectorConductorInteractionKind::PassThrough;
+
+            // For a terminating conductor, the pin location is anchored to
+            // the existing conductor endpoint. For an inline connector,
+            // retain the prior interior observation point.
+            const Point2D position =
+                (a_near && !b_near)
+                    ? segment.geometry.a
+                    : (!a_near && b_near)
+                        ? segment.geometry.b
+                        : Point2D{
+                            segment.geometry.a.x +
+                                (segment.geometry.b.x - segment.geometry.a.x) *
+                                    ((t0 + t1) * 0.5),
+                            segment.geometry.a.y +
+                                (segment.geometry.b.y - segment.geometry.a.y) *
+                                    ((t0 + t1) * 0.5)};
 
             bool duplicate = false;
             for (const auto& existing : observations) {
@@ -416,6 +481,7 @@ WireModel ExtractionPipeline::run(
             crossing.pin_id = pin.id;
             crossing.conductor_segment_id = observation.segment_id;
             crossing.crossing_point = observation.position;
+            crossing.interaction = observation.interaction;
             crossing.confidence = pin.confidence;
             crossing.provenance.source_id = source_id;
             crossing.provenance.page = 0;

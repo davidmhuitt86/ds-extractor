@@ -1,7 +1,10 @@
 #include "eke_dx_wire/topology/connector_terminal_model.hpp"
 
+#include "eke_dx_wire/core/ids.hpp"
+
 #include <algorithm>
 #include <unordered_map>
+#include <utility>
 
 namespace eke::dx::wire {
 namespace {
@@ -101,6 +104,82 @@ ConnectorModelArtifacts ConnectorTerminalModelBuilder::build(
             return a.id < b.id;
         });
 
+    std::sort(
+        result.terminals.begin(),
+        result.terminals.end(),
+        [](const ConnectorTerminal& a, const ConnectorTerminal& b) {
+            return a.id < b.id;
+        });
+
+    return result;
+}
+
+ConnectorModelArtifacts ConnectorTerminalModelBuilder::build_native(
+    const std::vector<ConnectorCandidate>& connectors,
+    const std::vector<ConnectorPin>& pins,
+    const std::vector<ConnectorTerminalAssociationEvidence>& associations,
+    const std::vector<EndpointCandidate>& endpoints) const {
+
+    ConnectorModelArtifacts result;
+    std::unordered_map<std::string, const ConnectorCandidate*> connectors_by_id;
+    std::unordered_map<std::string, const ConnectorPin*> pins_by_id;
+    std::unordered_map<std::string, const EndpointCandidate*> endpoints_by_id;
+
+    for (const auto& connector : connectors)
+        connectors_by_id.emplace(connector.id, &connector);
+    for (const auto& pin : pins)
+        pins_by_id.emplace(pin.id, &pin);
+    for (const auto& endpoint : endpoints)
+        endpoints_by_id.emplace(endpoint.id, &endpoint);
+
+    result.connectors.assign(connectors.begin(), connectors.end());
+
+    for (const auto& association : associations) {
+        if (association.status != ConnectorTerminalAssociationStatus::Resolved)
+            continue;
+
+        const auto connector_it =
+            connectors_by_id.find(association.connector_id);
+        const auto pin_it = pins_by_id.find(association.pin_id);
+        const auto endpoint_it =
+            endpoints_by_id.find(association.endpoint_id);
+        if (connector_it == connectors_by_id.end() ||
+            pin_it == pins_by_id.end() ||
+            endpoint_it == endpoints_by_id.end()) {
+            continue;
+        }
+
+        const auto* endpoint = endpoint_it->second;
+        // Never let a connector terminal override an independently resolved
+        // component/ground boundary. The endpoint must still be geometric or
+        // already connector-native.
+        if (endpoint->kind != EndpointKind::GeometricConductorEnd &&
+            endpoint->kind != EndpointKind::ConnectorTerminal) {
+            continue;
+        }
+
+        ConnectorTerminal terminal;
+        terminal.id = stable_id(
+            "connector-terminal",
+            association.id + ":" + endpoint->id);
+        terminal.connector_id = connector_it->second->id;
+        terminal.endpoint_id = endpoint->id;
+        terminal.position = pin_it->second->position;
+        terminal.terminal_name = endpoint->terminal_name;
+        terminal.function_label = endpoint->function_label;
+        terminal.wire_color = endpoint->wire_color;
+        terminal.role = TerminalRole::ConnectorTerminal;
+        terminal.confidence = association.confidence;
+        terminal.status = ConnectorTerminalStatus::Resolved;
+        result.terminals.push_back(std::move(terminal));
+    }
+
+    std::sort(
+        result.connectors.begin(),
+        result.connectors.end(),
+        [](const ConnectorCandidate& a, const ConnectorCandidate& b) {
+            return a.id < b.id;
+        });
     std::sort(
         result.terminals.begin(),
         result.terminals.end(),

@@ -275,6 +275,84 @@ void TopologyExporter::export_json(
         if (i + 1 != model.connector_candidates.size()) out << ",";
         out << "\n";
     }
+    out << "  ],\n  \"connector_pins\": [\n";
+    for (std::size_t i = 0; i < model.connector_pins.size(); ++i) {
+        const auto& pin = model.connector_pins[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(pin.id) << "\",\n"
+            << "      \"connector_id\": \"" << json_escape(pin.connector_id) << "\",\n"
+            << "      \"x\": " << pin.position.x << ",\n"
+            << "      \"y\": " << pin.position.y << ",\n"
+            << "      \"ordinal\": " << pin.ordinal << ",\n"
+            << "      \"confidence\": \"" << confidence_name(pin.confidence) << "\",\n"
+            << "      \"conductor_crossing_evidence_ids\": [";
+        for (std::size_t j = 0;
+             j < pin.conductor_crossing_evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(pin.conductor_crossing_evidence_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.connector_pins.size()) out << ",";
+        out << "\n";
+    }
+
+    out << "  ],\n  \"connector_conductor_crossing_evidence\": [\n";
+    for (std::size_t i = 0;
+         i < model.connector_conductor_crossing_evidence.size(); ++i) {
+        const auto& evidence =
+            model.connector_conductor_crossing_evidence[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(evidence.id) << "\",\n"
+            << "      \"connector_id\": \"" << json_escape(evidence.connector_id) << "\",\n"
+            << "      \"pin_id\": \"" << json_escape(evidence.pin_id) << "\",\n"
+            << "      \"conductor_segment_id\": \"" << json_escape(evidence.conductor_segment_id) << "\",\n"
+            << "      \"x\": " << evidence.crossing_point.x << ",\n"
+            << "      \"y\": " << evidence.crossing_point.y << ",\n"
+            << "      \"confidence\": \"" << confidence_name(evidence.confidence) << "\",\n"
+            << "      \"source_id\": \"" << json_escape(evidence.provenance.source_id) << "\",\n"
+            << "      \"page\": " << evidence.provenance.page << ",\n"
+            << "      \"stage\": \"" << json_escape(evidence.provenance.stage) << "\"\n"
+            << "    }";
+        if (i + 1 != model.connector_conductor_crossing_evidence.size()) out << ",";
+        out << "\n";
+    }
+
+    auto connector_association_status_name =
+        [](ConnectorTerminalAssociationStatus status) {
+            switch (status) {
+            case ConnectorTerminalAssociationStatus::Resolved:
+                return "resolved";
+            case ConnectorTerminalAssociationStatus::Unresolved:
+                return "unresolved";
+            case ConnectorTerminalAssociationStatus::Conflicted:
+                return "conflicted";
+            }
+            return "unresolved";
+        };
+
+    out << "  ],\n  \"connector_terminal_associations\": [\n";
+    for (std::size_t i = 0;
+         i < model.connector_terminal_associations.size(); ++i) {
+        const auto& association =
+            model.connector_terminal_associations[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(association.id) << "\",\n"
+            << "      \"connector_id\": \"" << json_escape(association.connector_id) << "\",\n"
+            << "      \"pin_id\": \"" << json_escape(association.pin_id) << "\",\n"
+            << "      \"endpoint_id\": \"" << json_escape(association.endpoint_id) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(association.confidence) << "\",\n"
+            << "      \"status\": \"" << connector_association_status_name(association.status) << "\",\n"
+            << "      \"evidence_ids\": [";
+        for (std::size_t j = 0;
+             j < association.evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(association.evidence_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.connector_terminal_associations.size()) out << ",";
+        out << "\n";
+    }
+
     out << "  ],\n  \"connector_terminals\": [\n";
     auto connector_terminal_status_name =
         [](ConnectorTerminalStatus status) {
@@ -499,6 +577,7 @@ void TopologyExporter::export_json(
         case SymbolFamily::Battery: return "battery";
         case SymbolFamily::Solenoid: return "solenoid";
         case SymbolFamily::Coil: return "coil";
+        case SymbolFamily::Fuse: return "fuse";
         case SymbolFamily::Unknown: return "unknown";
         }
         return "unknown";
@@ -556,6 +635,53 @@ void TopologyExporter::export_json(
         }
         out << "]\n    }";
         if (i + 1 != model.symbol_family_resolutions.size()) out << ",";
+        out << "\n";
+    }
+
+    // AP-DIAG-FIX-008: ComponentCandidate -> ElectricalComponent semantic
+    // resolution. `component_candidates` above remains the extraction-
+    // level count; this array is the authoritative electrical-component
+    // resolution per candidate and must not be conflated with it.
+    auto electrical_component_status_name = [](ElectricalComponentResolutionStatus status) {
+        switch (status) {
+        case ElectricalComponentResolutionStatus::Resolved: return "resolved";
+        case ElectricalComponentResolutionStatus::Unresolved: return "unresolved";
+        case ElectricalComponentResolutionStatus::Rejected: return "rejected";
+        }
+        return "unresolved";
+    };
+    auto electrical_component_rejection_reason_name = [](ElectricalComponentRejectionReason reason) {
+        switch (reason) {
+        case ElectricalComponentRejectionReason::DiagramFurniture: return "diagram_furniture";
+        case ElectricalComponentRejectionReason::ChassisGroundReference: return "chassis_ground_reference";
+        case ElectricalComponentRejectionReason::ConnectorInterface: return "connector_interface";
+        case ElectricalComponentRejectionReason::NotApplicable: return "not_applicable";
+        }
+        return "not_applicable";
+    };
+
+    out << "  ],\n  \"electrical_components\": [\n";
+    for (std::size_t i = 0; i < model.electrical_components.size(); ++i) {
+        const auto& c = model.electrical_components[i];
+        out << "    {\n"
+            << "      \"id\": \"" << json_escape(c.id) << "\",\n"
+            << "      \"component_candidate_id\": \"" << json_escape(c.component_candidate_id) << "\",\n"
+            << "      \"family\": \"" << symbol_family_name(c.family) << "\",\n"
+            << "      \"status\": \"" << electrical_component_status_name(c.status) << "\",\n"
+            << "      \"rejection_reason\": \"" << electrical_component_rejection_reason_name(c.rejection_reason) << "\",\n"
+            << "      \"confidence\": \"" << confidence_name(c.confidence) << "\",\n"
+            << "      \"terminal_endpoint_ids\": [";
+        for (std::size_t j = 0; j < c.terminal_endpoint_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(c.terminal_endpoint_ids[j]) << "\"";
+        }
+        out << "],\n      \"evidence_ids\": [";
+        for (std::size_t j = 0; j < c.evidence_ids.size(); ++j) {
+            if (j) out << ", ";
+            out << "\"" << json_escape(c.evidence_ids[j]) << "\"";
+        }
+        out << "]\n    }";
+        if (i + 1 != model.electrical_components.size()) out << ",";
         out << "\n";
     }
 

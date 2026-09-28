@@ -153,6 +153,48 @@ struct ConnectorCandidate {
     std::vector<std::string> semantic_labels;
 };
 
+// AP-DIAG-IMPL-002: a connector pin is a geometric observation between
+// connector-body recognition and terminal association. It is never an
+// EndpointCandidate and carries no Wire or ElectricalNet identity.
+struct ConnectorPin {
+    std::string id;
+    std::string connector_id;
+    Point2D position {};
+    int ordinal = 0;
+    std::vector<std::string> conductor_crossing_evidence_ids;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+};
+
+struct ConnectorConductorCrossingEvidence {
+    std::string id;
+    std::string connector_id;
+    std::string pin_id;
+    std::string conductor_segment_id;
+    Point2D crossing_point {};
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    Provenance provenance {};
+};
+
+// AP-DIAG-IMPL-002: connector-native association evidence. It is intentionally
+// distinct from TerminalCandidate::component_candidate_id because a genuine
+// ConnectorBody has no ComponentCandidate owner.
+enum class ConnectorTerminalAssociationStatus {
+    Resolved,
+    Unresolved,
+    Conflicted
+};
+
+struct ConnectorTerminalAssociationEvidence {
+    std::string id;
+    std::string connector_id;
+    std::string pin_id;
+    std::string endpoint_id;
+    std::vector<std::string> evidence_ids;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    ConnectorTerminalAssociationStatus status =
+        ConnectorTerminalAssociationStatus::Unresolved;
+};
+
 enum class ConnectorTerminalStatus {
     Resolved,
     Unresolved,
@@ -454,6 +496,15 @@ enum class SymbolFamily {
     Battery,
     Solenoid,
     Coil,
+    // AP-DIAG-FIX-008: added to the taxonomy because the TRX300 semantic
+    // ground-truth inventory explicitly includes fuses as electrical
+    // components. No SymbolFamilyRecognizer rule currently produces this
+    // value (no keyword table entry exists for it) - it exists so a
+    // resolved Fuse identity has somewhere to be represented once such a
+    // rule is added, and so ElectricalComponentResolver's promotion logic
+    // can be exercised and tested against a genuine protection-function
+    // family rather than an unrelated stand-in.
+    Fuse,
     Unknown
 };
 
@@ -523,6 +574,95 @@ struct SymbolFamilyCoverage {
     std::size_t battery_resolved = 0;
     std::size_t solenoid_resolved = 0;
     std::size_t coil_resolved = 0;
+    std::size_t fuse_resolved = 0;
+};
+
+// AP-DIAG-FIX-008: formal semantic boundary between extraction-level
+// candidates and engineering-level electrical identity.
+//
+//   "Extraction detects evidence. Semantic reconstruction establishes
+//   engineering identity."
+//
+//   "Geometry can create a candidate. Geometry alone cannot establish an
+//   electrical component."
+//
+// A ComponentCandidate is NEVER equivalent to an ElectricalComponent.
+// Promotion from the former to the latter requires independent evidence
+// of (1) electrical identity/function and (2) at least one attributable
+// electrical terminal - geometric resemblance to a component shape is
+// never sufficient on its own. See
+// docs/AP-DIAG-FIX-008_Electrical_Component_Semantic_Boundary.md for the
+// full rule set this governs, in the same role AP-WIRE-029 plays for
+// physical Wire identity.
+//
+// This enum intentionally does not include Conflicted: this AP does not
+// implement any evidence source capable of producing two independently
+// contradictory electrical-identity claims for the same
+// ComponentCandidate. A future semantic-recognition AP that adds such a
+// source should extend this enum then, not before.
+enum class ElectricalComponentResolutionStatus {
+    Resolved,
+    Unresolved,
+    Rejected
+};
+
+// A ComponentCandidate is Rejected (never simply omitted) when
+// independent, already-established evidence categorically places it
+// outside the ElectricalComponent/Module definition - not because no
+// electrical-function evidence happens to exist yet (that case is
+// Unresolved), but because the object is a different kind of thing
+// entirely. See the "Electrical Interface" and "Electrical Reference"
+// definitions in AP-DIAG-FIX-008's governing document.
+enum class ElectricalComponentRejectionReason {
+    // Diagram furniture (legend/color-key tables, switch-continuity
+    // charts, title blocks) - never a candidate for component identity.
+    DiagramFurniture,
+    // Chassis ground: an electrical reference/termination object, not an
+    // ordinary component/module (Definition F).
+    ChassisGroundReference,
+    // Owned by a ConnectorCandidate: an electrical interface, kept
+    // distinct from component/module semantics even though it has
+    // terminals (Definition E).
+    ConnectorInterface,
+    // Not applicable - only meaningful when status is Rejected.
+    NotApplicable
+};
+
+// The engineering-level electrical object. Distinct from ComponentCandidate
+// (extraction-level uncertainty) by construction: an ElectricalComponent
+// only exists as a resolution *of* a ComponentCandidate, never as a
+// standalone geometric assertion. Never fabricated from geometry alone -
+// promotion to `Resolved` requires both terminal evidence
+// (`terminal_endpoint_ids` non-empty) and electrical-function evidence
+// (a non-Ground, non-Unknown `SymbolFamilyResolution`, referenced via
+// `evidence_ids`).
+struct ElectricalComponent {
+    std::string id;
+    std::string component_candidate_id;
+    SymbolFamily family = SymbolFamily::Unknown;
+    ElectricalComponentResolutionStatus status =
+        ElectricalComponentResolutionStatus::Unresolved;
+    ElectricalComponentRejectionReason rejection_reason =
+        ElectricalComponentRejectionReason::NotApplicable;
+    ConfidenceClass confidence = ConfidenceClass::Unresolved;
+    // Electrical terminal references (AP-WIRE-019 EndpointCandidate IDs
+    // of kind ComponentTerminal attributed to this ComponentCandidate).
+    // Never fabricated - populated only from already-established
+    // endpoint-to-component ownership evidence.
+    std::vector<std::string> terminal_endpoint_ids;
+    // Evidence supporting `status` (currently: the backing
+    // SymbolFamilyResolution's id when one with Resolved status exists).
+    std::vector<std::string> evidence_ids;
+};
+
+struct ElectricalComponentCoverage {
+    std::size_t total = 0;
+    std::size_t resolved = 0;
+    std::size_t unresolved = 0;
+    std::size_t rejected = 0;
+    std::size_t rejected_diagram_furniture = 0;
+    std::size_t rejected_chassis_ground_reference = 0;
+    std::size_t rejected_connector_interface = 0;
 };
 
 // AP-WIRE-030: conductor-boundary / terminal-resolution evidence and
@@ -709,6 +849,11 @@ struct ExtractionAudit {
     std::size_t valid_wires = 0;
     std::vector<WireValidationIssueSummary> validation_warning_summaries;
 
+    // AP-DIAG-IMPL-002: connector-native extraction evidence
+    std::size_t connector_pins = 0;
+    std::size_t connector_conductor_crossings = 0;
+    std::size_t connector_terminal_associations = 0;
+
     // Pipeline evidence
     std::size_t gaps_bridged = 0;
 
@@ -727,6 +872,13 @@ struct ExtractionAudit {
 
     // AP-WIRE-026A: symbol-family recognition
     SymbolFamilyCoverage symbol_families {};
+
+    // AP-DIAG-FIX-008: ComponentCandidate -> ElectricalComponent semantic
+    // resolution. `shapes` above (model.component_candidates.size())
+    // remains the extraction-level candidate count and MUST NOT be read
+    // as an electrical-component count - see
+    // docs/AP-DIAG-FIX-008_Electrical_Component_Semantic_Boundary.md.
+    ElectricalComponentCoverage electrical_components {};
 
     // AP-WIRE-030: conductor-boundary / terminal resolution
     ConductorBoundaryCoverage conductor_boundaries {};
@@ -880,6 +1032,11 @@ struct WireModel {
     std::vector<ComponentSymbolGeometry> component_symbol_geometries;
     std::vector<SymbolPrimitive> symbol_primitives;
     std::vector<ConnectorCandidate> connector_candidates;
+    std::vector<ConnectorPin> connector_pins;
+    std::vector<ConnectorConductorCrossingEvidence>
+        connector_conductor_crossing_evidence;
+    std::vector<ConnectorTerminalAssociationEvidence>
+        connector_terminal_associations;
     std::vector<ConnectorTerminal> connector_terminals;
     std::vector<TextRegion> text_regions;
     std::vector<TextRecognitionEvidence> text_recognition_evidence;
@@ -901,6 +1058,7 @@ struct WireModel {
     std::vector<WireSemanticResolution> wire_semantics;
     std::vector<SymbolFamilyEvidence> symbol_family_evidence;
     std::vector<SymbolFamilyResolution> symbol_family_resolutions;
+    std::vector<ElectricalComponent> electrical_components;
     std::vector<ConductorBoundaryEvidence> conductor_boundary_evidence;
     std::vector<ConductorBoundaryResolution> conductor_boundary_resolutions;
     WireValidationReport wire_validation;

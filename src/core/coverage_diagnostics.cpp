@@ -344,6 +344,10 @@ CoverageReport build_coverage_report(const WireModel& model) {
     for (const auto& terminal : model.connector_terminals) {
         ++connector_terminal_counts[terminal.connector_id];
     }
+    std::unordered_map<std::string, std::size_t> connector_pin_counts;
+    for (const auto& pin : model.connector_pins) {
+        ++connector_pin_counts[pin.connector_id];
+    }
 
     report.connectors.total = model.connector_candidates.size();
     report.connectors.terminals_total = model.connector_terminals.size();
@@ -362,6 +366,19 @@ CoverageReport build_coverage_report(const WireModel& model) {
                    connector.id, {connector.component_candidate_id},
                    CoverageSeverity::Warning,
                    "connector candidate is anchored to a component classified as diagram furniture");
+        } else if (connector.component_candidate_id.empty()) {
+            const std::size_t pins =
+                connector_pin_counts.count(connector.id)
+                    ? connector_pin_counts[connector.id]
+                    : 0;
+            if (pins > 0) {
+                ++report.connectors.genuine_looking;
+            } else {
+                ++report.connectors.unresolved;
+                record(report, "connector", "CONNECTOR-UNRESOLVED", connector.id,
+                       {}, CoverageSeverity::Warning,
+                       "connector-native candidate has no pin/conductor evidence");
+            }
         } else if (component_it == component_by_id.end() || terminals == 0) {
             ++report.connectors.unresolved;
             record(report, "connector", "CONNECTOR-UNRESOLVED", connector.id,

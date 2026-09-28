@@ -1,0 +1,174 @@
+{
+  "audit_id": "AP-DIAG-AUDIT-005",
+  "starting_commit": "754f0781365f411b0c463bf0b4e86097d5f13d36",
+  "ending_commit": null,
+  "branch": "main",
+  "tests_passed": true,
+  "test_count": 57,
+  "assertions_active": true,
+  "compiler_warnings": 8,
+
+  "rejected_geometry": {
+    "type": "std::vector<eke::dx::wire::RejectedGeometryEvidence>",
+    "producers": [
+      "GeometryOwnershipClassifier::classify() [src/image/geometry_ownership_classifier.cpp:337-360,372-388]",
+      "ConductorEvidenceEvaluator::evaluate() [src/image/conductor_evidence_evaluator.cpp:79-101]"
+    ],
+    "enrichers": [
+      "RejectedGeometryClassifier::classify() [src/image/rejected_geometry_classifier.cpp] - mutates existing entries in place via a mutable reference parameter; does not add or remove entries"
+    ],
+    "consumers": [
+      "TerminalLocationDetector::detect() [src/topology/terminal_location_detector.cpp] - has_ownership_evidence() and attachment_distance()'s rejected-geometry distance-narrowing branch",
+      "topology_exporter.cpp:321-336 - serializes model.rejected_geometry (unaffected, reads the model's own copy)"
+    ],
+    "non_consumers": [
+      "TerminalRecognizer::recognize() - confirmed zero references to rejected_geometry/RejectedGeometryEvidence in src/topology/terminal_recognizer.cpp or its header"
+    ],
+    "moves": [
+      {
+        "statement": "model.rejected_geometry = std::move(rejected_geometry);",
+        "location": "src/pipeline/extraction_pipeline.cpp:253"
+      }
+    ],
+    "post_move_accesses": [
+      {
+        "statement": "terminal_detector.detect(component_candidates, endpoint_artifacts.candidates, rejected_geometry, model.symbol_primitives);",
+        "location": "src/pipeline/extraction_pipeline.cpp:263",
+        "argument": "rejected_geometry (same local variable moved-from 10 lines earlier)"
+      }
+    ],
+    "production_populated": false,
+    "production_populated_note": "model.rejected_geometry is correctly populated (10 entries unscoped, 9 scoped); the LOCAL variable subsequently passed into TerminalLocationDetector::detect() is empirically confirmed empty (size()==0) on this build, in every real extraction run.",
+    "terminal_detector_receives_populated_data": false,
+    "empirically_observed_sizes": {
+      "unscoped": {
+        "pre_move_local_size": 10,
+        "post_move_local_size": 0,
+        "model_rejected_geometry_size": 10,
+        "detect_received_size": 0
+      },
+      "scoped": {
+        "pre_move_local_size": 9,
+        "post_move_local_size": 0,
+        "model_rejected_geometry_size": 9,
+        "detect_received_size": 0
+      }
+    },
+    "move_semantics": {
+      "cpp_standard_guarantee": "valid but unspecified state - the standard does not guarantee the moved-from vector is empty",
+      "observed_implementation_state": "empty (size()==0) - confirmed via temporary stderr instrumentation on this build's libstdc++ std::vector move-assignment implementation, not assumed",
+      "distinction": "guaranteed empty (false, not a standard guarantee) vs observed empty on this implementation (true, empirically confirmed)"
+    }
+  },
+
+  "terminal_ownership_path": {
+    "rejected_geometry_role": "optional corroborating evidence (B) - one of two alternative sufficient conditions (owned SymbolPrimitive OR associated RejectedGeometryEvidence) in TerminalLocationDetector::has_ownership_evidence(); not mandatory, not exclusion/rejection evidence, not merely diagnostic",
+    "terminal_recognizer_dependency": "none - TerminalRecognizer's AP-DIAG-FIX-005 ownership check uses only SymbolPrimitive ownership",
+    "terminal_location_detector_dependency": "yes, but currently unreachable in production due to the moved-from-vector handoff"
+  },
+
+  "endpoint_candidate_9da9c73ab52013a3": {
+    "status": "geometric / unresolved in current committed production output (component_id empty)",
+    "producer": "TerminalLocationDetector::detect() (would produce it via has_ownership_evidence()'s RejectedGeometryEvidence branch, if reachable)",
+    "attributed_component_if_evidence_reachable": "component-candidate-shape-region-845947b0afd7451a",
+    "component_owned_symbol_primitives": 0,
+    "component_associated_rejected_geometry_entries": 2,
+    "rejected_geometry_dependency": "sole ownership evidence - this component has zero owned SymbolPrimitives, so RejectedGeometryEvidence is the only channel through which it can pass has_ownership_evidence()",
+    "would_exist_if_rejected_geometry_populated": true,
+    "confirmed_by_control_experiment": true,
+    "conclusion": "confirmed direct consequence of the missing rejected_geometry evidence, not an unrelated or indeterminate AP-DIAG-FIX-005 side effect",
+    "wire_membership": "none (dangling, unchanged from AP-DIAG-AUDIT-004)"
+  },
+
+  "scoped_result": {
+    "rejected_geometry_count": 9,
+    "detect_received_count_production": 0,
+    "detect_received_count_control_b": 9,
+    "endpoint_candidates_total": 185,
+    "component_terminal_count": 11,
+    "affected_endpoint_delta": ["endpoint-candidate-9da9c73ab52013a3"],
+    "wires": 35,
+    "electrical_nets": 10,
+    "wires_identical_to_control_b": true,
+    "electrical_nets_identical_to_control_b": true
+  },
+  "unscoped_result": {
+    "rejected_geometry_count": 10,
+    "detect_received_count_production": 0,
+    "detect_received_count_control_b": 10,
+    "endpoint_candidates_total": 203,
+    "component_terminal_count": 11,
+    "affected_endpoint_delta": ["endpoint-candidate-9da9c73ab52013a3"],
+    "wires": 35,
+    "electrical_nets": 10,
+    "wires_identical_to_control_b": true,
+    "electrical_nets_identical_to_control_b": true
+  },
+
+  "control_experiment": {
+    "control_a": "current committed production data flow (moved-from vector passed to detect())",
+    "control_b": "temporary diagnostic reordering: model.rejected_geometry assigned AFTER terminal_detector.detect() call, so detect() receives the fully populated vector",
+    "temporary_instrumentation": "stderr fprintf diagnostics in extraction_pipeline.cpp and terminal_location_detector.cpp, plus the Control B statement reorder - all reverted from working files before any committed change; git status --short confirmed clean",
+    "differences_found": [
+      {
+        "object": "endpoint-candidate-9da9c73ab52013a3",
+        "control_a": {"kind": "geometric", "terminal_role": "unknown", "confidence": "low", "component_id": ""},
+        "control_b": {"kind": "component_terminal", "terminal_role": "component_terminal", "confidence": "high", "component_id": "component-candidate-shape-region-845947b0afd7451a"}
+      }
+    ],
+    "wires_identical": true,
+    "wire_semantics_identical": true,
+    "topology_nodes_identical": true,
+    "topology_edges_identical": true,
+    "electrical_nets_identical": true,
+    "component_candidates_identical": true,
+    "symbol_primitives_identical": true,
+    "conductor_boundary_resolutions_identical": false,
+    "conductor_boundary_evidence_identical": false,
+    "reproducible_both_scopes": true,
+    "control_b_deterministic": true
+  },
+
+  "related_moved_from_patterns": [
+    {"location": "src/pipeline/extraction_pipeline.cpp:253/263", "classification": "CONFIRMED DEFECT"},
+    {"location": "src/pipeline/extraction_pipeline.cpp:233", "classification": "SAFE"},
+    {"location": "src/pipeline/extraction_pipeline.cpp:517", "classification": "SAFE"},
+    {"location": "src/topology/component_identity_evidence_builder.cpp:81", "classification": "SAFE"},
+    {"location": "src/topology/component_identity_resolver.cpp:75", "classification": "SAFE"},
+    {"location": "src/topology/electrical_net_resolver.cpp:63", "classification": "SAFE"},
+    {"location": "src/topology/electrical_net_resolver.cpp:125", "classification": "SAFE"}
+  ],
+
+  "findings": [
+    {
+      "id": "AUDIT-005-001",
+      "severity": "MEDIUM",
+      "summary": "extraction_pipeline.cpp passes a moved-from rejected_geometry vector to TerminalLocationDetector::detect(); empirically confirmed empty on this build in every real extraction run"
+    },
+    {
+      "id": "AUDIT-005-002",
+      "severity": "MEDIUM",
+      "summary": "endpoint-candidate-9da9c73ab52013a3 resolves to geometric/unresolved in production but would resolve to component_terminal (high confidence) if its sole ownership evidence (RejectedGeometryEvidence) reached the detector"
+    },
+    {
+      "id": "AUDIT-005-003",
+      "severity": "none",
+      "summary": "No Wire, topology, or ElectricalNet result is affected - the impacted endpoint is not part of any physical Wire"
+    },
+    {
+      "id": "AUDIT-005-004",
+      "severity": "LOW",
+      "summary": "No unit test exercises the real pipeline handoff of RejectedGeometryEvidence into TerminalLocationDetector; existing coverage uses manually constructed fixtures passed directly to the function under test"
+    },
+    {
+      "id": "AUDIT-005-005",
+      "severity": "none",
+      "summary": "TerminalRecognizer's AP-DIAG-FIX-005 ownership rule has zero dependency on rejected_geometry and is unaffected"
+    }
+  ],
+
+  "deterministic": true,
+  "production_changes": false,
+  "conclusion": "C. Observable production extraction defect",
+  "recommended_next_ap": "AP-DIAG-FIX-006 - Rejected Geometry Evidence Handoff Correction: reorder the model.rejected_geometry move to occur after the TerminalLocationDetector::detect() call, so the detector receives the evidence already computed for it. Smallest possible fix: single statement reorder, no signature or semantic change."
+}

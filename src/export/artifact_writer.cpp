@@ -190,6 +190,11 @@ void write_audit(const WireModel& model, const fs::path& path) {
         << "    \"unresolved\": " << audit.unresolved_nets << "\n"
         << "  },\n"
         << "  \"gaps_bridged\": " << audit.gaps_bridged << ",\n"
+        << "  \"connector_evidence\": {\n"
+        << "    \"pins\": " << audit.connector_pins << ",\n"
+        << "    \"conductor_crossings\": " << audit.connector_conductor_crossings << ",\n"
+        << "    \"terminal_associations\": " << audit.connector_terminal_associations << "\n"
+        << "  },\n"
         << "  \"symbol_geometry\": {\n"
         << "    \"components_with_symbol_geometry\": " << audit.components_with_symbol_geometry << ",\n"
         << "    \"components_without_symbol_geometry\": " << audit.components_without_symbol_geometry << ",\n"
@@ -244,7 +249,25 @@ void write_audit(const WireModel& model, const fs::path& path) {
         << "      \"alternator\": " << audit.symbol_families.alternator_resolved << ",\n"
         << "      \"battery\": " << audit.symbol_families.battery_resolved << ",\n"
         << "      \"solenoid\": " << audit.symbol_families.solenoid_resolved << ",\n"
-        << "      \"coil\": " << audit.symbol_families.coil_resolved << "\n"
+        << "      \"coil\": " << audit.symbol_families.coil_resolved << ",\n"
+        << "      \"fuse\": " << audit.symbol_families.fuse_resolved << "\n"
+        << "    }\n"
+        << "  },\n"
+        // AP-DIAG-FIX-008: ComponentCandidate -> ElectricalComponent
+        // semantic resolution coverage. `shapes` above
+        // (model.component_candidates.size()) remains the extraction-
+        // level candidate count and must never be read as this diagram's
+        // electrical-component count - see
+        // docs/AP-DIAG-FIX-008_Electrical_Component_Semantic_Boundary.md.
+        << "  \"electrical_components\": {\n"
+        << "    \"component_candidates\": " << audit.shapes << ",\n"
+        << "    \"resolved_electrical_components\": " << audit.electrical_components.resolved << ",\n"
+        << "    \"unresolved_component_candidates\": " << audit.electrical_components.unresolved << ",\n"
+        << "    \"rejected_component_candidates\": " << audit.electrical_components.rejected << ",\n"
+        << "    \"rejected_by_reason\": {\n"
+        << "      \"diagram_furniture\": " << audit.electrical_components.rejected_diagram_furniture << ",\n"
+        << "      \"chassis_ground_reference\": " << audit.electrical_components.rejected_chassis_ground_reference << ",\n"
+        << "      \"connector_interface\": " << audit.electrical_components.rejected_connector_interface << "\n"
         << "    }\n"
         << "  },\n"
         << "  \"conductor_boundaries\": {\n"

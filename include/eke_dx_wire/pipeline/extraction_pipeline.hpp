@@ -9,6 +9,8 @@
 #include "eke_dx_wire/topology/topology_reconstructor.hpp"
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
+#include "eke_dx_wire/image/connector_geometry_detector.hpp"
+#include "eke_dx_wire/image/ground_approach_conductor_recovery.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
 #include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
 #include "eke_dx_wire/image/symbol_geometry_extractor.hpp"
@@ -27,6 +29,8 @@ namespace eke::dx::wire {
 struct ExtractionConfig {
     MorphologyConfig morphology {};
     ShapeDetectorConfig shapes {};
+    ConnectorGeometryDetectorConfig connectors {};
+    GroundApproachRecoveryConfig ground_approach_recovery {};
     TextDetectorConfig text {};
     DiagramFurnitureConfig diagram_furniture {};
     SymbolGeometryExtractorConfig symbol_geometry {};

@@ -1,0 +1,102 @@
+{
+  "findings": [
+    {
+      "contradictory_evidence": "None found - both pairs are unambiguous exact duplicates by topology_edges and conductor_segments (the two most specific structural identity fields a Wire carries).",
+      "downstream_effect": "The reported wire count (37) and the AP-DIAG-FIX-003 report's headline \"35 -> 37\" both overstate the true count of distinct physical conductors by 2. ElectricalNet membership is unaffected (nets reference topology_edges/endpoint_ids directly, not Wire records, and were independently confirmed clean - see the ground_role_nets section of post_ground_fix_delta.json), so this defect is contained to the Wire layer and does not propagate into net role/membership corruption.",
+      "earliest_pipeline_stage": "Physical wire identity reconstruction (PhysicalWireIdentityReconstructor) - the same stage AP-WIRE-FIX-003 already patches for this general failure mode, evidently not covering this specific new case",
+      "id": "AUDIT-003-001",
+      "object_ids": [
+        "wire-9da1927f1f6dbf98",
+        "wire-fd53d84a92e53bb4",
+        "wire-49477c4a4828ab6e",
+        "wire-7fa7c11e9eed226a"
+      ],
+      "object_type": "Wire",
+      "severity": "CRITICAL",
+      "source_evidence": {
+        "pair_1": {
+          "difference": "start_endpoint/end_endpoint order swapped between the two wire records; identity_evidence_ids order swapped identically",
+          "endpoints": [
+            "endpoint-candidate-9d7e7957c56e3777 (629.5,585,ground)",
+            "endpoint-candidate-87250d4701edd231 (629.5,556,component_terminal)"
+          ],
+          "shared_conductor_segment": "normalized-conductor-segment-0787ea8a78f08cba",
+          "shared_topology_edge": "topology-edge-7b4bc0d5b22a8513",
+          "wire_a": "wire-9da1927f1f6dbf98",
+          "wire_b": "wire-fd53d84a92e53bb4"
+        },
+        "pair_2": {
+          "difference": "same pattern as pair 1 - reversed endpoint order",
+          "endpoints": [
+            "endpoint-candidate at (585.5,585,ground)",
+            "endpoint-candidate at (585.5,557,geometric)"
+          ],
+          "shared_conductor_segment": "normalized-conductor-segment-6ec8c451d0ef2961",
+          "shared_topology_edge": "topology-edge-7dccad922e6f2958",
+          "wire_a": "wire-49477c4a4828ab6e",
+          "wire_b": "wire-7fa7c11e9eed226a"
+        }
+      },
+      "status": "NEW - introduced as a side effect of AP-DIAG-FIX-003 recovering 2 of the 4 new ground-anchored wires; not present in the pre-FIX-003 35-wire population (independently rebuilt and checked in an isolated worktree at be4bf0d).",
+      "title": "Two physical Wire duplicate-record pairs: 37 reported wires represent only 35 distinct conductors",
+      "why_sufficient": "Grouping all 37 current wires by their (sorted) topology_edges tuple yields only 35 distinct keys; the two keys with 2 members each are pairs 1 and 2 above. AP-WIRE-FIX-003 (earlier in this project's history) exists specifically to deduplicate equivalent physical-wire discoveries reached from opposite traversal directions - both duplicate pairs here are examples of exactly that failure mode, on the two newly-resolved ChassisGround-anchored endpoints (\"...SWITCH\" and \"NEUTRAL SWITCH\") that AP-DIAG-FIX-003 introduced."
+    },
+    {
+      "contradictory_evidence": "Both symbols are visually confirmed genuine (stem + 3 decreasing bars, real wire connecting from a component above) - this is not a classification defect.",
+      "downstream_effect": "These 2 symbols are excluded from any Ground-role electrical net (only 4 of 6 genuine ChassisGround symbols anchor a net). Not a correctness defect (no false evidence is produced) but a coverage gap.",
+      "earliest_pipeline_stage": "For the pulse-generator instance: terminal/component-distance classification (TerminalLocationDetector). For the alternator instance: earlier - conductor/topology detection appears not to produce a node near the symbol at all.",
+      "id": "AUDIT-003-002",
+      "object_ids": [
+        "component-candidate-shape-region-5aa211846bb7891d",
+        "component-candidate-shape-region-6b6ccc2d59afe578"
+      ],
+      "object_type": "ComponentCandidate / EndpointCandidate",
+      "severity": "MEDIUM",
+      "source_evidence": {
+        "alternator_749_547": {
+          "component_bounds": [
+            749,
+            547,
+            20,
+            13
+          ],
+          "nearest_endpoint": "none found within +/-20px in any direction",
+          "nearest_topology_node": "none found within +/-20px"
+        },
+        "pulse_generator_709_547": {
+          "boundary_tolerance_config": 8.0,
+          "component_bounds": [
+            709,
+            547,
+            21,
+            13
+          ],
+          "distance_to_component_top": "11px (component top y=547, endpoint y=536)",
+          "nearest_endpoint": "endpoint-candidate-159125bfa711f45b at (707.5, 536), kind=geometric, component_id=<empty>"
+        }
+      },
+      "status": "PARTIALLY PRE-EXISTING - AP-DIAG-FIX-003 documented that the alternator case already lacked a resolved ground endpoint before that fix (this audit reconfirms it independently). The pulse-generator case is new territory since that symbol was not detected as ChassisGround at all before FIX-003; this audit is its first characterization.",
+      "title": "2 of 6 confirmed-genuine ChassisGround symbols do not produce a resolved ground endpoint",
+      "why_sufficient": "TerminalLocationDetector's boundary_tolerance (8.0px) is exceeded by 3px for the pulse-generator case (11px measured); the alternator case has no traced endpoint or topology node at all within 20px, meaning the conductor is not being detected as reaching the symbol at all on that side."
+    },
+    {
+      "contradictory_evidence": "None - this finding is explicitly out of scope for AP-DIAG-FIX-003 (ChassisGround-only) and is confirmed completely untouched by it.",
+      "downstream_effect": "None beyond what AP-DIAG-AUDIT-002 already reported.",
+      "earliest_pipeline_stage": "Unchanged from AP-DIAG-AUDIT-002's own characterization: terminal/component-attribution (proximity-based component_id assignment on EndpointCandidate), unrelated to ground/shape classification.",
+      "id": "AUDIT-003-003",
+      "object_ids": [
+        "wire-ded6cca62fbe3cd9",
+        "component-candidate-shape-region-c2335cc575d107b1"
+      ],
+      "object_type": "Wire / EndpointCandidate / ComponentCandidate",
+      "severity": "LOW",
+      "source_evidence": {
+        "attributed_component": "component-candidate-shape-region-c2335cc575d107b1, bounds (874,430,7,7), kind=circular_symbol - byte-identical bounds/fields before and after FIX-003 (independently confirmed in the isolated pre-FIX-003 worktree)",
+        "wire": "wire-ded6cca62fbe3cd9, endpoints (880.5,416) and (880.5,442), both attributed component_terminal on the same component"
+      },
+      "status": "STILL PRESENT, CONFIRMED UNCHANGED - reconfirmed per this AP's explicit instruction not to fix it.",
+      "title": "Terminal-attribution oddity (AP-DIAG-AUDIT-002 finding AUDIT-002-003) unchanged by FIX-003",
+      "why_sufficient": "Exact byte-for-byte comparison of the component record between the independently-rebuilt pre-FIX-003 state and the current state."
+    }
+  ]
+}

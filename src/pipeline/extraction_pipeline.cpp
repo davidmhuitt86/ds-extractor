@@ -8,6 +8,8 @@
 #include "eke_dx_wire/image/rejected_geometry_classifier.hpp"
 #include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
+#include "eke_dx_wire/image/connector_geometry_detector.hpp"
+#include "eke_dx_wire/image/ground_approach_conductor_recovery.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
 #include "eke_dx_wire/image/symbol_geometry_extractor.hpp"
@@ -19,6 +21,7 @@
 #include "eke_dx_wire/topology/gap_interpreter.hpp"
 #include "eke_dx_wire/topology/wire_reconstructor.hpp"
 #include "eke_dx_wire/topology/physical_wire_identity_reconstructor.hpp"
+#include "eke_dx_wire/topology/wire_identity_key.hpp"
 #include "eke_dx_wire/topology/terminal_location_detector.hpp"
 #include "eke_dx_wire/topology/terminal_recognizer.hpp"
 #include "eke_dx_wire/topology/terminal_semantic_evidence_builder.hpp"
@@ -39,9 +42,13 @@
 #include "eke_dx_wire/topology/wire_model_validator.hpp"
 #include "eke_dx_wire/topology/wire_semantic_resolver.hpp"
 #include "eke_dx_wire/topology/symbol_family_recognizer.hpp"
+#include "eke_dx_wire/topology/electrical_component_resolver.hpp"
 #include "eke_dx_wire/topology/electrical_net_resolver.hpp"
 
+#include "eke_dx_wire/core/ids.hpp"
+
 #include <algorithm>
+#include <cmath>
 #include <map>
 #include <memory>
 #include <unordered_set>
@@ -118,10 +125,43 @@ WireModel ExtractionPipeline::run(
             component_candidates,
             text_regions.regions);
 
+    // AP-DIAG-FIX-007: AP-DIAG-AUDIT-006 established that
+    // MorphologyWireDetector's fixed-orientation, fixed-minimum-length
+    // morphological openings cannot preserve every real approach conductor
+    // immediately above an already-detected ChassisGround symbol. This is
+    // a narrow, local gap-filling pass only: it reuses the same binary
+    // threshold image and exclusion mask already computed above, only
+    // examines ChassisGround regions ShapeDetector already accepted, and
+    // never runs for a symbol the standard detector already reached. Its
+    // output is inserted after GeometryOwnershipClassifier (not before)
+    // because the generic component/text bounding-box overlap check that
+    // stage performs is calibrated for ordinary long conductor runs; a
+    // short recovered approach segment can legitimately pass directly
+    // beneath a nearby text label's bounding box (observed for
+    // component-candidate-shape-region-6b6ccc2d59afe578) without being
+    // owned by it. The bounded, connectivity-based trace this recovery
+    // already performed - anchored to a genuine ChassisGround symbol and
+    // requiring an unbroken ink path reaching it - is itself the ownership
+    // determination for this narrow case. Recovered geometry still passes
+    // through ConductorEvidenceEvaluator's raster ink-support check and
+    // every stage after it exactly like any other conductor.
+    GroundApproachConductorRecovery ground_approach_recovery(
+        config_.ground_approach_recovery);
+    const GroundApproachRecoveryArtifacts ground_approach_artifacts =
+        ground_approach_recovery.recover(
+            detected.binary, shapes.regions, detected.conductor_segments,
+            combined_exclusion, source_id, 0);
+    std::vector<ConductorSegment> conductor_candidates =
+        ownership.conductor_candidates;
+    conductor_candidates.insert(
+        conductor_candidates.end(),
+        ground_approach_artifacts.conductor_segments.begin(),
+        ground_approach_artifacts.conductor_segments.end());
+
     ConductorEvidenceEvaluator evidence_evaluator(config_.conductor_evidence);
     const ConductorEvidenceArtifacts evidence =
         evidence_evaluator.evaluate(
-            ownership.conductor_candidates,
+            conductor_candidates,
             normalized);
 
     std::vector<RejectedGeometryEvidence> rejected_geometry =
@@ -249,18 +289,209 @@ WireModel ExtractionPipeline::run(
             return a.provider < b.provider;
         });
     model.conductor_segments = normalized_segments;
-    model.rejected_geometry = std::move(rejected_geometry);
     model.nodes = graph.nodes;
     model.edges = graph.edges;
     model.endpoint_candidates = endpoint_artifacts.candidates;
 
+    // AP-DIAG-IMPL-002: connector-native semantic observation.
+    ConnectorGeometryDetector connector_geometry_detector(config_.connectors);
+    const ConnectorGeometryDetectionArtifacts connector_geometry =
+        connector_geometry_detector.detect(normalized, source_id, 0);
+
+    auto segment_rect_overlap = [](const Segment2D& segment,
+                                   const BoundingBox& bounds,
+                                   double& t0,
+                                   double& t1) {
+        const double dx = segment.b.x - segment.a.x;
+        const double dy = segment.b.y - segment.a.y;
+        t0 = 0.0;
+        t1 = 1.0;
+        auto clip = [&](double p, double q) {
+            if (std::abs(p) < 1e-9)
+                return q >= 0.0;
+            const double r = q / p;
+            if (p < 0.0) {
+                if (r > t1) return false;
+                if (r > t0) t0 = r;
+            } else {
+                if (r < t0) return false;
+                if (r < t1) t1 = r;
+            }
+            return true;
+        };
+        return clip(-dx, segment.a.x - bounds.x) &&
+               clip(dx, bounds.x + bounds.width - segment.a.x) &&
+               clip(-dy, segment.a.y - bounds.y) &&
+               clip(dy, bounds.y + bounds.height - segment.a.y) &&
+               t1 >= t0;
+    };
+
+    for (const auto& region : connector_geometry.regions) {
+        ConnectorCandidate connector;
+        connector.id = stable_id("connector", region.id);
+        connector.bounds = region.bounds;
+        connector.confidence =
+            region.confidence >= 0.85
+                ? ConfidenceClass::High
+                : region.confidence >= 0.70
+                    ? ConfidenceClass::Medium
+                    : ConfidenceClass::Low;
+        model.connector_candidates.push_back(connector);
+
+        struct PinObservation {
+            std::string segment_id;
+            Point2D position {};
+            double overlap = 0.0;
+        };
+        std::vector<PinObservation> observations;
+
+        for (const auto& segment : model.conductor_segments) {
+            double t0 = 0.0;
+            double t1 = 0.0;
+            if (!segment_rect_overlap(
+                    segment.geometry, region.bounds, t0, t1))
+                continue;
+
+            const double overlap =
+                segment.geometry.length() * (t1 - t0);
+            if (overlap < 3.0)
+                continue;
+
+            const double tm = (t0 + t1) * 0.5;
+            const Point2D position{
+                segment.geometry.a.x +
+                    (segment.geometry.b.x - segment.geometry.a.x) * tm,
+                segment.geometry.a.y +
+                    (segment.geometry.b.y - segment.geometry.a.y) * tm};
+
+            bool duplicate = false;
+            for (const auto& existing : observations) {
+                if (existing.segment_id == segment.id &&
+                    distance(existing.position, position) < 3.0) {
+                    duplicate = true;
+                    break;
+                }
+            }
+            if (!duplicate)
+                observations.push_back({segment.id, position, overlap});
+        }
+
+        std::sort(
+            observations.begin(), observations.end(),
+            [](const PinObservation& a, const PinObservation& b) {
+                if (a.position.y != b.position.y)
+                    return a.position.y < b.position.y;
+                if (a.position.x != b.position.x)
+                    return a.position.x < b.position.x;
+                return a.segment_id < b.segment_id;
+            });
+
+        int ordinal = 0;
+        for (const auto& observation : observations) {
+            const std::string pin_key =
+                connector.id + ":" + observation.segment_id + ":" +
+                std::to_string(static_cast<long long>(
+                    std::llround(observation.position.x * 1000.0))) +
+                ":" +
+                std::to_string(static_cast<long long>(
+                    std::llround(observation.position.y * 1000.0)));
+
+            ConnectorPin pin;
+            pin.id = stable_id("connector-pin", pin_key);
+            pin.connector_id = connector.id;
+            pin.position = observation.position;
+            pin.ordinal = ordinal++;
+            pin.confidence =
+                observation.overlap >= 8.0
+                    ? ConfidenceClass::High
+                    : observation.overlap >= 4.0
+                        ? ConfidenceClass::Medium
+                        : ConfidenceClass::Low;
+
+            ConnectorConductorCrossingEvidence crossing;
+            crossing.id = stable_id(
+                "connector-conductor-crossing",
+                pin.id + ":" + observation.segment_id);
+            crossing.connector_id = connector.id;
+            crossing.pin_id = pin.id;
+            crossing.conductor_segment_id = observation.segment_id;
+            crossing.crossing_point = observation.position;
+            crossing.confidence = pin.confidence;
+            crossing.provenance.source_id = source_id;
+            crossing.provenance.page = 0;
+            crossing.provenance.source_region = region.bounds;
+            crossing.provenance.stage = "connector-geometry";
+
+            pin.conductor_crossing_evidence_ids.push_back(crossing.id);
+            model.connector_conductor_crossing_evidence.push_back(
+                std::move(crossing));
+            model.connector_pins.push_back(std::move(pin));
+        }
+    }
+
+    for (const auto& pin : model.connector_pins) {
+        std::vector<const EndpointCandidate*> matches;
+        for (const auto& endpoint : model.endpoint_candidates) {
+            if (distance(endpoint.position, pin.position) <= 6.0)
+                matches.push_back(&endpoint);
+        }
+
+        ConnectorTerminalAssociationEvidence association;
+        association.id = stable_id(
+            "connector-terminal-association",
+            pin.id + ":" +
+            (matches.empty() ? std::string("none") : matches.front()->id));
+        association.connector_id = pin.connector_id;
+        association.pin_id = pin.id;
+        association.confidence = pin.confidence;
+        association.evidence_ids =
+            pin.conductor_crossing_evidence_ids;
+
+        if (matches.size() == 1 &&
+            (matches.front()->kind == EndpointKind::GeometricConductorEnd ||
+             matches.front()->kind == EndpointKind::ConnectorTerminal)) {
+            association.endpoint_id = matches.front()->id;
+            association.status =
+                ConnectorTerminalAssociationStatus::Resolved;
+        } else if (matches.size() > 1) {
+            association.status =
+                ConnectorTerminalAssociationStatus::Conflicted;
+            for (const auto* endpoint : matches)
+                association.evidence_ids.push_back(endpoint->id);
+        } else {
+            association.status =
+                ConnectorTerminalAssociationStatus::Unresolved;
+        }
+
+        model.connector_terminal_associations.push_back(
+            std::move(association));
+    }
+
+    ConnectorTerminalModelBuilder connector_terminal_builder;
+    const ConnectorModelArtifacts connector_artifacts =
+        connector_terminal_builder.build_native(
+            model.connector_candidates,
+            model.connector_pins,
+            model.connector_terminal_associations,
+            model.endpoint_candidates);
+    model.connector_candidates = connector_artifacts.connectors;
+    model.connector_terminals = connector_artifacts.terminals;
+
+    // AP-DIAG-FIX-006: TerminalLocationDetector::has_ownership_evidence()
+    // accepts an associated RejectedGeometryEvidence entry as sufficient
+    // terminal ownership evidence, so it must consume the populated
+    // rejected_geometry evidence before that local vector is moved into
+    // model.rejected_geometry - AP-DIAG-AUDIT-005 confirmed the previous
+    // ordering left the detector with an empty (moved-from) vector.
     TerminalLocationDetector terminal_detector(config_.terminals);
     const TerminalLocationArtifacts terminal_artifacts =
         terminal_detector.detect(
             component_candidates,
             endpoint_artifacts.candidates,
-            rejected_geometry);
+            rejected_geometry,
+            model.symbol_primitives);
     model.terminal_candidates = terminal_artifacts.candidates;
+    model.rejected_geometry = std::move(rejected_geometry);
 
     // AP-WIRE-024: recognize additional component-terminal associations
     // from AP-WIRE-023 internal geometry and conservative conductor-to-
@@ -337,16 +568,9 @@ WireModel ExtractionPipeline::run(
         model.engineering_object_semantics);
 
     // AP-WIRE-020: materialize explicit connector and connector-terminal
-    // objects only from already established connector-boundary evidence.
-    // This stage does not infer connector identity, pin numbers, or topology.
-    ConnectorTerminalModelBuilder connector_terminal_builder;
-    const ConnectorModelArtifacts connector_artifacts =
-        connector_terminal_builder.build(
-            model.component_candidates,
-            model.terminal_candidates,
-            model.endpoint_candidates);
-    model.connector_candidates = connector_artifacts.connectors;
-    model.connector_terminals = connector_artifacts.terminals;
+    // Connector-native materialization was completed above. The historical
+    // component-based builder remains unchanged and is not invoked for
+    // ConnectorBody candidates.
 
     // AP-WIRE-030: resolve each endpoint's Conductor Boundary and
     // engineering-terminal association from already-produced evidence
@@ -411,6 +635,20 @@ WireModel ExtractionPipeline::run(
     model.symbol_family_evidence = symbol_family_artifacts.evidence;
     model.symbol_family_resolutions = symbol_family_artifacts.resolutions;
 
+    // AP-DIAG-FIX-008: resolves the ComponentCandidate -> ElectricalComponent
+    // semantic boundary from already-established evidence (symbol-family
+    // resolution, connector ownership, component-terminal endpoints).
+    // Read-only with respect to every input; does not affect topology,
+    // wires, or electrical nets below.
+    ElectricalComponentResolver electrical_component_resolver;
+    const ElectricalComponentResolutionArtifacts electrical_component_artifacts =
+        electrical_component_resolver.resolve(
+            model.component_candidates,
+            model.symbol_family_resolutions,
+            model.connector_candidates,
+            model.endpoint_candidates);
+    model.electrical_components = electrical_component_artifacts.electrical_components;
+
     // AP-WIRE-031: the authoritative physical-Wire-identity reconstruction
     // stage. Internally runs the conservative AP-WIRE-013 WireReconstructor
     // pass, then extends physical identity through Splice/Junction/Crossing
@@ -459,12 +697,26 @@ WireModel ExtractionPipeline::run(
     // different traversal strategies. Wire identity is deterministic from
     // its source/page/endpoints, so duplicate IDs represent the same wire
     // artifact and must not be emitted twice.
-    std::unordered_set<std::string> emitted_wire_ids;
-    emitted_wire_ids.reserve(
+    //
+    // AP-DIAG-FIX-004: PhysicalWireIdentityReconstructor orders a wire's
+    // endpoints "smaller endpoint id first", while DistributionDecomposer
+    // (invoked from within ElectricalNetResolver below) always orders them
+    // "anchor endpoint first" regardless of lexicographic order. The same
+    // physical wire discovered by both therefore gets two different
+    // Wire::id values (Wire::id is itself derived from start/end), which
+    // let duplicate Wire records through this dedup set when it compared
+    // raw ids. Deduplicate on canonical_wire_identity_key(), which
+    // normalizes endpoint ordering (and sorts topology_edges/
+    // conductor_segments, since reversing traversal direction also
+    // reverses path order) so the same physical wire compares equal
+    // regardless of which reconstructor discovered it first - see
+    // docs/AP-DIAG-FIX-004_Physical_Wire_Record_Deduplication.md.
+    std::unordered_set<std::string> emitted_wire_keys;
+    emitted_wire_keys.reserve(
         model.wires.size() + net_artifacts.wires.size());
 
     for (const auto& wire : model.wires) {
-        emitted_wire_ids.insert(wire.id);
+        emitted_wire_keys.insert(canonical_wire_identity_key(wire));
     }
 
     // AP-WIRE-031: DistributionDecomposer (invoked from within
@@ -486,7 +738,7 @@ WireModel ExtractionPipeline::run(
             resolution.endpoint_id, &resolution);
     }
     for (auto wire : net_artifacts.wires) {
-        if (emitted_wire_ids.insert(wire.id).second) {
+        if (emitted_wire_keys.insert(canonical_wire_identity_key(wire)).second) {
             wire.identity_status = WireIdentityStatus::Resolved;
             const auto start_it =
                 boundary_resolution_by_endpoint.find(wire.start_endpoint);

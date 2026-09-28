@@ -1,0 +1,220 @@
+{
+  "component_candidates": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 48
+    },
+    "removed_count": 48,
+    "scoped_count": 37,
+    "unchanged_count": 37,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 85
+  },
+  "component_symbol_geometries": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 1
+    },
+    "removed_count": 1,
+    "scoped_count": 37,
+    "unchanged_count": 37,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 38
+  },
+  "component_symbol_recognitions": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 48
+    },
+    "removed_count": 48,
+    "scoped_count": 37,
+    "unchanged_count": 37,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 85
+  },
+  "conductor_boundary_evidence": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 18
+    },
+    "removed_count": 18,
+    "scoped_count": 210,
+    "unchanged_count": 210,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 228
+  },
+  "conductor_boundary_resolutions": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 18
+    },
+    "removed_count": 18,
+    "scoped_count": 182,
+    "unchanged_count": 182,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 200
+  },
+  "edges": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 234
+    },
+    "removed_count": 234,
+    "scoped_count": 634,
+    "unchanged_count": 634,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 868
+  },
+  "electrical_nets": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {},
+    "removed_count": 0,
+    "scoped_count": 10,
+    "unchanged_count": 10,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 10
+  },
+  "endpoint_candidates": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 18
+    },
+    "removed_count": 18,
+    "scoped_count": 182,
+    "unchanged_count": 182,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 200
+  },
+  "endpoint_semantic_reconstructions": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 18
+    },
+    "removed_count": 18,
+    "scoped_count": 182,
+    "unchanged_count": 182,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 200
+  },
+  "nodes": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 158
+    },
+    "removed_count": 158,
+    "scoped_count": 520,
+    "unchanged_count": 520,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 678
+  },
+  "rejected_geometry": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 1
+    },
+    "removed_count": 1,
+    "scoped_count": 9,
+    "unchanged_count": 9,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 10
+  },
+  "symbol_family_evidence": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 1
+    },
+    "removed_count": 1,
+    "scoped_count": 9,
+    "unchanged_count": 9,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 10
+  },
+  "symbol_family_resolutions": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 1
+    },
+    "removed_count": 1,
+    "scoped_count": 37,
+    "unchanged_count": 37,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 38
+  },
+  "symbol_primitives": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {
+      "EXPECTED_SCOPE_REMOVAL": 2
+    },
+    "removed_count": 2,
+    "scoped_count": 38,
+    "unchanged_count": 38,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 40
+  },
+  "wire_semantics": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {},
+    "removed_count": 0,
+    "scoped_count": 35,
+    "unchanged_count": 35,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 35
+  },
+  "wires": {
+    "added_count": 0,
+    "added_ids": [],
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_classification_tally": {},
+    "removed_count": 0,
+    "scoped_count": 35,
+    "unchanged_count": 35,
+    "unexpected_removal_ids": [],
+    "unscoped_count": 35
+  }
+}

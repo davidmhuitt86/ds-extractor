@@ -86,33 +86,66 @@ int main() {
     }
 
     // Boundary-alignment fallback recognizes an existing endpoint only when
-    // its conductor points toward the component.
+    // its conductor points toward the component AND the component owns at
+    // least one SymbolPrimitive (AP-DIAG-FIX-005: boundary distance plus
+    // conductor alignment alone is not sufficient ownership evidence - a
+    // component with zero owned primitives at all must never reach this
+    // fallback, however well its geometry happens to align).
     {
         std::vector<ComponentCandidate> components = {
             component("component-2", ComponentCandidateKind::CircularSymbol,
                       {100, 100, 20, 20})};
+        std::vector<SymbolPrimitive> primitives = {
+            {"primitive-2", "component-2", SymbolPrimitiveKind::Unknown,
+             {100, 100, 20, 20}, 400.0, ConfidenceClass::Medium,
+             {"fixture", 0, {100, 100, 20, 20}, "test"}}};
         auto ep = endpoint("ep", "n1", {90, 110}, {"e1"});
         TopologyNode n1{"n1", {90, 110}, TopologyNodeType::ConductorEnd, true};
         TopologyNode n2{"n2", {95, 110}, TopologyNodeType::Continuation, true};
         TopologyEdge e{"e1", "n1", "n2", "seg"};
         const auto result = recognizer.recognize(
-            components, {}, {}, {ep}, {n1, n2}, {e}, {});
+            components, {}, primitives, {ep}, {n1, n2}, {e}, {});
         assert(result.candidates.size() == 1);
         assert(result.candidates[0].endpoint_id == "ep");
         assert(result.candidates[0].component_candidate_id == "component-2");
         assert(result.candidates[0].confidence == ConfidenceClass::Low);
     }
 
-    // A conductor pointing away from the component is not terminal evidence.
+    // A conductor pointing away from the component is not terminal evidence
+    // - this remains true even for a component that does own a primitive,
+    // isolating the alignment check from the ownership check.
     {
         auto ep = endpoint("ep", "n1", {90, 110}, {"e1"});
         TopologyNode n1{"n1", {90, 110}, TopologyNodeType::ConductorEnd, true};
         TopologyNode n2{"n2", {85, 110}, TopologyNodeType::Continuation, true};
         TopologyEdge e{"e1", "n1", "n2", "seg"};
+        std::vector<SymbolPrimitive> primitives = {
+            {"primitive-3", "component-3", SymbolPrimitiveKind::Unknown,
+             {100, 100, 20, 20}, 400.0, ConfidenceClass::Medium,
+             {"fixture", 0, {100, 100, 20, 20}, "test"}}};
         const auto result = recognizer.recognize(
             {component("component-3", ComponentCandidateKind::CircularSymbol,
                        {100, 100, 20, 20})},
-            {}, {}, {ep}, {n1, n2}, {e}, {});
+            {}, primitives, {ep}, {n1, n2}, {e}, {});
+        assert(result.candidates.empty());
+    }
+
+    // AP-DIAG-FIX-005: the exact defect AP-DIAG-AUDIT-004 found - a
+    // component with ZERO owned SymbolPrimitives must never reach the
+    // boundary-alignment fallback, even when its conductor alignment is
+    // perfect. Same geometry as the first boundary-alignment case above,
+    // with the owned primitive removed.
+    {
+        std::vector<ComponentCandidate> components = {
+            component("component-zero-evidence",
+                      ComponentCandidateKind::CircularSymbol,
+                      {100, 100, 20, 20})};
+        auto ep = endpoint("ep", "n1", {90, 110}, {"e1"});
+        TopologyNode n1{"n1", {90, 110}, TopologyNodeType::ConductorEnd, true};
+        TopologyNode n2{"n2", {95, 110}, TopologyNodeType::Continuation, true};
+        TopologyEdge e{"e1", "n1", "n2", "seg"};
+        const auto result = recognizer.recognize(
+            components, {}, /*primitives=*/{}, {ep}, {n1, n2}, {e}, {});
         assert(result.candidates.empty());
     }
 
@@ -151,10 +184,20 @@ int main() {
             TopologyNode n1{"n1", {90, 110}, TopologyNodeType::ConductorEnd, true};
             TopologyNode n2{"n2", {95, 110}, TopologyNodeType::Continuation, true};
             TopologyEdge e{"e1", "n1", "n2", "seg"};
+            // AP-DIAG-FIX-005: the boundary-alignment fallback now requires
+            // ownership evidence, so this shared probe must supply a
+            // (non-TerminalLead) owned primitive to keep testing what it
+            // was designed to test - the kind mapping/alignment math -
+            // rather than incidentally re-testing the ownership gate.
+            std::vector<SymbolPrimitive> primitives = {
+                {"primitive-kind-probe", "component-kind-probe",
+                 SymbolPrimitiveKind::Unknown, {100, 100, 20, 20}, 400.0,
+                 ConfidenceClass::Medium,
+                 {"fixture", 0, {100, 100, 20, 20}, "test"}}};
             return recognizer.recognize(
                 {component("component-kind-probe", component_kind,
                            {100, 100, 20, 20})},
-                {}, {}, {ep}, {n1, n2}, {e}, {});
+                {}, primitives, {ep}, {n1, n2}, {e}, {});
         };
 
     // TEST 5: a generic Enclosure/CircularSymbol component's terminal

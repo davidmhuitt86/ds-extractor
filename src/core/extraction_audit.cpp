@@ -143,6 +143,12 @@ ExtractionAudit build_extraction_audit(
         audit.validation_warning_summaries.push_back({code, count});
     }
 
+    audit.connector_pins = model.connector_pins.size();
+    audit.connector_conductor_crossings =
+        model.connector_conductor_crossing_evidence.size();
+    audit.connector_terminal_associations =
+        model.connector_terminal_associations.size();
+
     audit.gaps_bridged = gaps_bridged;
 
     for (const auto& geometry : model.component_symbol_geometries) {
@@ -243,6 +249,7 @@ ExtractionAudit build_extraction_audit(
             case SymbolFamily::Battery: ++families.battery_resolved; break;
             case SymbolFamily::Solenoid: ++families.solenoid_resolved; break;
             case SymbolFamily::Coil: ++families.coil_resolved; break;
+            case SymbolFamily::Fuse: ++families.fuse_resolved; break;
             case SymbolFamily::Unknown: break;
             }
             break;
@@ -258,6 +265,39 @@ ExtractionAudit build_extraction_audit(
 
     audit.conductor_boundaries =
         build_conductor_boundary_coverage(model.conductor_boundary_resolutions);
+
+    // AP-DIAG-FIX-008: ComponentCandidate -> ElectricalComponent coverage.
+    // `audit.shapes` (model.component_candidates.size()) remains the
+    // extraction-level candidate count; it must never be read as the
+    // number of electrical components in the diagram.
+    ElectricalComponentCoverage& electrical = audit.electrical_components;
+    electrical.total = model.electrical_components.size();
+    for (const auto& component : model.electrical_components) {
+        switch (component.status) {
+        case ElectricalComponentResolutionStatus::Resolved:
+            ++electrical.resolved;
+            break;
+        case ElectricalComponentResolutionStatus::Unresolved:
+            ++electrical.unresolved;
+            break;
+        case ElectricalComponentResolutionStatus::Rejected:
+            ++electrical.rejected;
+            switch (component.rejection_reason) {
+            case ElectricalComponentRejectionReason::DiagramFurniture:
+                ++electrical.rejected_diagram_furniture;
+                break;
+            case ElectricalComponentRejectionReason::ChassisGroundReference:
+                ++electrical.rejected_chassis_ground_reference;
+                break;
+            case ElectricalComponentRejectionReason::ConnectorInterface:
+                ++electrical.rejected_connector_interface;
+                break;
+            case ElectricalComponentRejectionReason::NotApplicable:
+                break;
+            }
+            break;
+        }
+    }
 
     return audit;
 }

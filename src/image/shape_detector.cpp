@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <sstream>
 
 namespace eke::dx::wire {
@@ -626,6 +627,180 @@ bool ground_bar_width_sequence(
     return true;
 }
 
+// AP-DIAG-FIX-003: a real ground symbol is one continuous drawn glyph, so
+// its bars are spaced with a consistent vertical rhythm. Unrelated ink
+// (a text label sitting above a box edge, a diode row's leads) that
+// coincidentally forms a decreasing-width sequence tends not to share
+// that rhythm - see the header comment on ground_max_bar_spacing_ratio
+// for the confirmed evidence this is based on.
+bool ground_bar_spacing_uniform(
+    const std::vector<GroundBar>& bars,
+    std::size_t begin,
+    std::size_t end,
+    const ShapeDetectorConfig& config) {
+
+    if (end <= begin || end - begin < 3)
+        return true;
+
+    int min_gap = std::numeric_limits<int>::max();
+    int max_gap = 0;
+    for (std::size_t i = begin + 1; i < end; ++i) {
+        const int gap =
+            bars[i].bounds.y -
+            (bars[i - 1].bounds.y + bars[i - 1].bounds.height);
+        min_gap = (std::min)(min_gap, gap);
+        max_gap = (std::max)(max_gap, gap);
+    }
+
+    if (min_gap <= 0)
+        return false;
+
+    return static_cast<double>(max_gap) / static_cast<double>(min_gap) <=
+        config.ground_max_bar_spacing_ratio;
+}
+
+// AP-DIAG-FIX-003: evaluates ONE spatially-contiguous run of candidate
+// bars (see the Y-locality split in detect_ground_symbols below) for a
+// valid chassis-ground bar-and-stem pattern, adding at most one accepted
+// region for it.
+void evaluate_ground_run(
+    const std::vector<GroundBar>& run,
+    const cv::Mat& binary,
+    ShapeDetectionArtifacts& result,
+    const ShapeDetectorConfig& config,
+    const std::string& source_id,
+    int page) {
+
+    if (run.size() < static_cast<std::size_t>(config.ground_min_bars))
+        return;
+
+    const std::size_t max_bars =
+        (std::min)(
+            run.size(),
+            static_cast<std::size_t>(config.ground_max_bars));
+
+    for (std::size_t begin = 0;
+         begin + config.ground_min_bars <= max_bars;
+         ++begin) {
+
+        // Prefer the longest valid sequence, then allow a shorter
+        // sequence if image quality has erased one of the bars.
+        for (std::size_t length = max_bars - begin;
+             length >= static_cast<std::size_t>(
+                 config.ground_min_bars);
+             --length) {
+
+            const std::size_t end = begin + length;
+
+            bool spacing_ok = true;
+            for (std::size_t n = begin + 1; n < end; ++n) {
+                const int gap =
+                    run[n].bounds.y -
+                    (run[n - 1].bounds.y +
+                     run[n - 1].bounds.height);
+
+                if (gap < config.ground_min_bar_spacing ||
+                    gap > config.ground_max_bar_spacing) {
+                    spacing_ok = false;
+                    break;
+                }
+            }
+
+            if (!spacing_ok ||
+                !ground_bar_width_sequence(
+                    run, begin, end, config) ||
+                !ground_bar_spacing_uniform(
+                    run, begin, end, config)) {
+                if (length ==
+                    static_cast<std::size_t>(
+                        config.ground_min_bars))
+                    break;
+                continue;
+            }
+
+            const int first_center = run[begin].center_x;
+            const int stem_y0 =
+                (std::max)(
+                    0,
+                    run[begin].bounds.y -
+                    config.ground_stem_search_height);
+            const int stem_y1 = run[begin].bounds.y;
+
+            // The stem may be represented by the wire itself. We
+            // therefore accept either explicit ink in the stem
+            // corridor or a conductor-like connection immediately
+            // above the first bar.
+            const int stem_width = 4;
+            const int sx0 =
+                (std::max)(0, first_center - stem_width);
+            const int sx1 =
+                (std::min)(
+                    binary.cols,
+                    first_center + stem_width + 1);
+
+            if (sx1 <= sx0 || stem_y1 <= stem_y0)
+                return;
+
+            const cv::Rect stem_region(
+                sx0, stem_y0,
+                sx1 - sx0, stem_y1 - stem_y0);
+
+            if (cv::countNonZero(binary(stem_region)) < 2)
+                return;
+
+            cv::Rect bounds = run[begin].bounds;
+            for (std::size_t n = begin + 1; n < end; ++n)
+                bounds |= run[n].bounds;
+
+            // AP-DIAG-FIX-003: the stem-search corridor above (up to
+            // ground_stem_search_height, 14px) is deliberately generous
+            // for the presence CHECK above - a real symbol's stem is
+            // often visually indistinguishable from the wire approaching
+            // it, so a wide search window is the right way to confirm
+            // "something connects here". But that same 14px used as an
+            // EXCLUSION width was found (AP-DIAG-AUDIT-002 follow-up
+            // during this fix) to erase real approach-wire ink for
+            // several genuine ground symbols packed close to other
+            // components - the wire's own drawn path continues right
+            // through most of that corridor before reaching the bars.
+            // Masking is therefore restricted to the one region we can
+            // be sure is the symbol's own exclusive ink: the bars
+            // themselves, plus a small fixed margin for anti-aliasing.
+            // The wire leading up to the bars stays visible to conductor
+            // detection and is classified `ground` by
+            // TerminalLocationDetector's own distance-to-component check
+            // once it reaches this (now tight) boundary - exactly the
+            // mechanism that already correctly classifies every endpoint
+            // that reaches a ChassisGround component's bounds.
+            constexpr int kGroundExclusionMargin = 2;
+            bounds.x = (std::max)(0, bounds.x - kGroundExclusionMargin);
+            bounds.y = (std::max)(0, bounds.y - kGroundExclusionMargin);
+            bounds.width = (std::min)(
+                binary.cols - bounds.x,
+                bounds.width + 2 * kGroundExclusionMargin);
+            bounds.height = (std::min)(
+                binary.rows - bounds.y,
+                bounds.height + 2 * kGroundExclusionMargin);
+
+            const double confidence =
+                length >= 3 ? 0.95 : 0.82;
+
+            add_region(
+                result,
+                ShapeKind::ChassisGround,
+                ShapeRole::Exclusion,
+                bounds,
+                confidence,
+                source_id,
+                page);
+
+            // One accepted ground candidate is sufficient for this
+            // run. Do not emit overlapping shorter variants.
+            return;
+        }
+    }
+}
+
 void detect_ground_symbols(
     const cv::Mat& binary,
     ShapeDetectionArtifacts& result,
@@ -693,113 +868,39 @@ void detect_ground_symbols(
                 return a.bounds.width > b.bounds.width;
             });
 
-        if (group.size() >=
-                static_cast<std::size_t>(config.ground_min_bars)) {
-
-            const std::size_t max_bars =
-                (std::min)(
-                    group.size(),
-                    static_cast<std::size_t>(config.ground_max_bars));
-
-            for (std::size_t begin = 0;
-                 begin + config.ground_min_bars <= max_bars;
-                 ++begin) {
-
-                // Prefer the longest valid sequence, then allow a shorter
-                // sequence if image quality has erased one of the bars.
-                for (std::size_t length = max_bars - begin;
-                     length >= static_cast<std::size_t>(
-                         config.ground_min_bars);
-                     --length) {
-
-                    const std::size_t end = begin + length;
-
-                    bool spacing_ok = true;
-                    for (std::size_t n = begin + 1; n < end; ++n) {
-                        const int gap =
-                            group[n].bounds.y -
-                            (group[n - 1].bounds.y +
-                             group[n - 1].bounds.height);
-
-                        if (gap < config.ground_min_bar_spacing ||
-                            gap > config.ground_max_bar_spacing) {
-                            spacing_ok = false;
-                            break;
-                        }
-                    }
-
-                    if (!spacing_ok ||
-                        !ground_bar_width_sequence(
-                            group, begin, end, config)) {
-                        if (length ==
-                            static_cast<std::size_t>(
-                                config.ground_min_bars))
-                            break;
-                        continue;
-                    }
-
-                    const int first_center = group[begin].center_x;
-                    const int stem_y0 =
-                        (std::max)(
-                            0,
-                            group[begin].bounds.y -
-                            config.ground_stem_search_height);
-                    const int stem_y1 = group[begin].bounds.y;
-
-                    // The stem may be represented by the wire itself. We
-                    // therefore accept either explicit ink in the stem
-                    // corridor or a conductor-like connection immediately
-                    // above the first bar.
-                    const int stem_width = 4;
-                    const int sx0 =
-                        (std::max)(0, first_center - stem_width);
-                    const int sx1 =
-                        (std::min)(
-                            binary.cols,
-                            first_center + stem_width + 1);
-
-                    if (sx1 <= sx0 || stem_y1 <= stem_y0)
-                        break;
-
-                    const cv::Rect stem_region(
-                        sx0, stem_y0,
-                        sx1 - sx0, stem_y1 - stem_y0);
-
-                    if (cv::countNonZero(binary(stem_region)) < 2)
-                        break;
-
-                    cv::Rect bounds = group[begin].bounds;
-                    for (std::size_t n = begin + 1; n < end; ++n)
-                        bounds |= group[n].bounds;
-
-                    bounds.x = (std::max)(0, bounds.x - 3);
-                    bounds.y = (std::max)(
-                        0,
-                        bounds.y - config.ground_stem_search_height);
-                    bounds.width = (std::min)(
-                        binary.cols - bounds.x,
-                        bounds.width + 6);
-                    bounds.height = (std::min)(
-                        binary.rows - bounds.y,
-                        bounds.height + 10);
-
-                    const double confidence =
-                        length >= 3 ? 0.95 : 0.82;
-
-                    add_region(
-                        result,
-                        ShapeKind::ChassisGround,
-                        ShapeRole::Exclusion,
-                        bounds,
-                        confidence,
-                        source_id,
-                        page);
-
-                    // One accepted ground candidate is sufficient for this
-                    // centerline. Do not emit overlapping shorter variants.
-                    break;
+        // AP-DIAG-FIX-003: the x-tolerance scan above only constrains
+        // center_x - it says nothing about how close together in Y the
+        // bars actually are. Forensic evidence (AP-DIAG-AUDIT-002,
+        // docs/AP-DIAG-FIX-003_ChassisGround_Evidence_Classification.md)
+        // found this let a bar over 100px away (from an entirely
+        // unrelated part of the diagram) merge into the same candidate
+        // group purely because its rounded center_x happened to land
+        // within the +/-3px tolerance - corrupting the sort-by-Y order
+        // and making the real, closely-spaced bar sequence unreachable.
+        // A single drawn ground glyph has all its bars close together in
+        // Y (within ground_max_bar_spacing of each other); splitting the
+        // x-tolerance group into maximal Y-contiguous runs and evaluating
+        // each run independently keeps that real spatial constraint
+        // without weakening the x-tolerance itself (still needed to
+        // tolerate +/-1px center_x rounding between bars of different
+        // odd/even width - see the two known genuine symbols, whose own
+        // three bars round to center_x values one pixel apart).
+        std::vector<std::vector<GroundBar>> runs;
+        for (const auto& bar : group) {
+            if (!runs.empty()) {
+                const auto& prev = runs.back().back();
+                const int gap = bar.bounds.y - (prev.bounds.y + prev.bounds.height);
+                if (gap >= -2 && gap <= config.ground_max_bar_spacing) {
+                    runs.back().push_back(bar);
+                    continue;
                 }
             }
+            runs.push_back({bar});
+        }
+
+        for (const auto& run : runs) {
+            evaluate_ground_run(
+                run, binary, result, config, source_id, page);
         }
 
         i = j;

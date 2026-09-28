@@ -1,0 +1,242 @@
+{
+  "chassis_ground": {
+    "added_ids": [
+      "component-candidate-shape-region-0edf5ce35037fec3",
+      "component-candidate-shape-region-1acbaeb7ac6ac87a",
+      "component-candidate-shape-region-5aa211846bb7891d",
+      "component-candidate-shape-region-6b6ccc2d59afe578",
+      "component-candidate-shape-region-791276441805b2e0",
+      "component-candidate-shape-region-a434a925670e9b65"
+    ],
+    "after_bounds": {
+      "component-candidate-shape-region-0edf5ce35037fec3": [
+        576,
+        586,
+        20,
+        13
+      ],
+      "component-candidate-shape-region-1acbaeb7ac6ac87a": [
+        621,
+        586,
+        19,
+        13
+      ],
+      "component-candidate-shape-region-5aa211846bb7891d": [
+        709,
+        547,
+        21,
+        13
+      ],
+      "component-candidate-shape-region-6b6ccc2d59afe578": [
+        749,
+        547,
+        20,
+        13
+      ],
+      "component-candidate-shape-region-791276441805b2e0": [
+        646,
+        547,
+        22,
+        13
+      ],
+      "component-candidate-shape-region-a434a925670e9b65": [
+        924,
+        547,
+        22,
+        13
+      ]
+    },
+    "after_ids": [
+      "component-candidate-shape-region-0edf5ce35037fec3",
+      "component-candidate-shape-region-1acbaeb7ac6ac87a",
+      "component-candidate-shape-region-5aa211846bb7891d",
+      "component-candidate-shape-region-6b6ccc2d59afe578",
+      "component-candidate-shape-region-791276441805b2e0",
+      "component-candidate-shape-region-a434a925670e9b65"
+    ],
+    "before_ids": [
+      "component-candidate-shape-region-1790c5fb3a4f437c",
+      "component-candidate-shape-region-30f9ed02532ba956",
+      "component-candidate-shape-region-3a66374832b3abdc",
+      "component-candidate-shape-region-432be0a200811b76",
+      "component-candidate-shape-region-4cae53cce7f2640f",
+      "component-candidate-shape-region-590ab65693883ba3",
+      "component-candidate-shape-region-6a7001c24fe4c252",
+      "component-candidate-shape-region-899a2442ecba3be6",
+      "component-candidate-shape-region-b2a4933bc728db93",
+      "component-candidate-shape-region-f29a073b76f906b7"
+    ],
+    "removed_ids": [
+      "component-candidate-shape-region-1790c5fb3a4f437c",
+      "component-candidate-shape-region-30f9ed02532ba956",
+      "component-candidate-shape-region-3a66374832b3abdc",
+      "component-candidate-shape-region-432be0a200811b76",
+      "component-candidate-shape-region-4cae53cce7f2640f",
+      "component-candidate-shape-region-590ab65693883ba3",
+      "component-candidate-shape-region-6a7001c24fe4c252",
+      "component-candidate-shape-region-899a2442ecba3be6",
+      "component-candidate-shape-region-b2a4933bc728db93",
+      "component-candidate-shape-region-f29a073b76f906b7"
+    ]
+  },
+  "ground_role_nets": {
+    "after": {
+      "electrical-net-5aff8c9b1e804b5e": {
+        "anchor_component_bounds": [
+          646,
+          547,
+          22,
+          13
+        ],
+        "anchor_component_id": "component-candidate-shape-region-791276441805b2e0",
+        "anchor_xy": [
+          656,
+          546
+        ],
+        "confidence": "high"
+      },
+      "electrical-net-5de51cd3d5bac578": {
+        "anchor_component_bounds": [
+          621,
+          586,
+          19,
+          13
+        ],
+        "anchor_component_id": "component-candidate-shape-region-1acbaeb7ac6ac87a",
+        "anchor_xy": [
+          629.5,
+          585
+        ],
+        "confidence": "high"
+      },
+      "electrical-net-d6fbaeb0e3e8c468": {
+        "anchor_component_bounds": [
+          924,
+          547,
+          22,
+          13
+        ],
+        "anchor_component_id": "component-candidate-shape-region-a434a925670e9b65",
+        "anchor_xy": [
+          935,
+          542
+        ],
+        "confidence": "medium"
+      },
+      "electrical-net-e1f70187ddfaca24": {
+        "anchor_component_bounds": [
+          576,
+          586,
+          20,
+          13
+        ],
+        "anchor_component_id": "component-candidate-shape-region-0edf5ce35037fec3",
+        "anchor_xy": [
+          585.5,
+          585
+        ],
+        "confidence": "high"
+      }
+    },
+    "before": {
+      "electrical-net-082a9ad2226c9737": {
+        "anchor_component_bounds": [
+          449,
+          154,
+          26,
+          17
+        ],
+        "anchor_component_id": "component-candidate-shape-region-4cae53cce7f2640f",
+        "anchor_xy": [
+          448,
+          161
+        ],
+        "confidence": "high"
+      },
+      "electrical-net-3cf9b219b6c7f976": {
+        "anchor_component_bounds": [
+          398,
+          114,
+          12,
+          15
+        ],
+        "anchor_component_id": "component-candidate-shape-region-590ab65693883ba3",
+        "anchor_xy": [
+          410,
+          121.5
+        ],
+        "confidence": "high"
+      },
+      "electrical-net-d54a4ae898a702b1": {
+        "anchor_component_bounds": [
+          861,
+          366,
+          29,
+          23
+        ],
+        "anchor_component_id": "component-candidate-shape-region-432be0a200811b76",
+        "anchor_xy": [
+          868,
+          397
+        ],
+        "confidence": "low"
+      },
+      "electrical-net-f593a0fe55da1e86": {
+        "anchor_component_bounds": [
+          923,
+          535,
+          24,
+          16
+        ],
+        "anchor_component_id": "component-candidate-shape-region-3a66374832b3abdc",
+        "anchor_xy": [
+          935,
+          534
+        ],
+        "confidence": "high"
+      }
+    }
+  },
+  "wires": {
+    "added_count": 10,
+    "added_ids": [
+      "wire-071e4ff9452e508f",
+      "wire-15c1f88ac1a9475e",
+      "wire-40875c91072fa260",
+      "wire-49477c4a4828ab6e",
+      "wire-5550b1df12b7384a",
+      "wire-7fa7c11e9eed226a",
+      "wire-9206bdddb7b10778",
+      "wire-9da1927f1f6dbf98",
+      "wire-fc5a030419936972",
+      "wire-fd53d84a92e53bb4"
+    ],
+    "distinct_conductors_after": 35,
+    "duplicate_wire_groups": {
+      "('topology-edge-7b4bc0d5b22a8513',)": [
+        "wire-9da1927f1f6dbf98",
+        "wire-fd53d84a92e53bb4"
+      ],
+      "('topology-edge-7dccad922e6f2958',)": [
+        "wire-49477c4a4828ab6e",
+        "wire-7fa7c11e9eed226a"
+      ]
+    },
+    "finding": "2 duplicate wire-record pairs confirmed: each pair shares an identical topology_edges/conductor_segments entry with only start/end endpoint order swapped. True distinct physical-conductor count after FIX-003 is 35, not the reported 37.",
+    "modified_count": 0,
+    "modified_ids": [],
+    "removed_count": 8,
+    "removed_ids": [
+      "wire-2b012258f9c71a24",
+      "wire-2ff76e5e03e31dde",
+      "wire-416ebba4325354d2",
+      "wire-50f02dfda81539ff",
+      "wire-53dd5f3f6d683c43",
+      "wire-8422c822ed49d057",
+      "wire-8b05f44e08427e18",
+      "wire-d6b927fb6c6d8a0b"
+    ],
+    "total_wire_records_after": 37,
+    "unchanged_count": 27
+  }
+}

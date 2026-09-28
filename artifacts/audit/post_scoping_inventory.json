@@ -1,0 +1,131 @@
+{
+  "note": "Counts pulled directly from artifacts/topology/topology.json of a fresh extraction; not trusted from any prior report.",
+  "scope_fixture": "fixtures/trx300/scope_production.json",
+  "scoped_production": {
+    "components_by_kind": {
+      "chassis_ground": 9,
+      "circular_symbol": 26,
+      "enclosure": 2
+    },
+    "components_total": 37,
+    "conductor_boundary_evidence_total": 210,
+    "conductor_boundary_resolutions_by_boundary_kind": {
+      "component_terminal": 16,
+      "geometric": 154,
+      "ground": 12
+    },
+    "conductor_boundary_resolutions_by_boundary_status": {
+      "resolved": 28,
+      "unresolved": 154
+    },
+    "conductor_boundary_resolutions_total": 182,
+    "connector_candidates_total": 0,
+    "connector_terminals_total": 0,
+    "electrical_nets_by_role": {
+      "ground": 4,
+      "unknown": 6
+    },
+    "electrical_nets_total": 10,
+    "endpoint_candidates_by_kind": {
+      "component_terminal": 16,
+      "geometric": 154,
+      "ground": 12
+    },
+    "endpoint_candidates_by_terminal_role": {
+      "component_terminal": 16,
+      "ground_terminal": 12,
+      "unknown": 154
+    },
+    "physical_wires_by_identity_status": {
+      "resolved": 35
+    },
+    "physical_wires_total": 35,
+    "rejected_geometry_by_reason": {
+      "graphical_object_ownership_component_boundary": 9
+    },
+    "rejected_geometry_total": 9,
+    "semantic_associations_total": 1110,
+    "symbol_family_evidence_by_family": {
+      "ground": 9
+    },
+    "symbol_family_resolutions_resolved_by_family": {
+      "ground": 9
+    },
+    "symbol_primitives_total": 38,
+    "terminal_candidates_total": 182,
+    "text_recognition_evidence_total": 0,
+    "topology_edges_total": 634,
+    "topology_nodes_by_type": {
+      "conductor_end": 182,
+      "continuation": 110,
+      "crossing": 182,
+      "splice": 46
+    },
+    "topology_nodes_total": 520
+  },
+  "source": "samples/trx300ODG.png",
+  "unscoped": {
+    "components_by_kind": {
+      "chassis_ground": 10,
+      "circular_symbol": 26,
+      "diagram_furniture": 47,
+      "enclosure": 2
+    },
+    "components_total": 85,
+    "conductor_boundary_evidence_total": 228,
+    "conductor_boundary_resolutions_by_boundary_kind": {
+      "component_terminal": 16,
+      "geometric": 172,
+      "ground": 12
+    },
+    "conductor_boundary_resolutions_by_boundary_status": {
+      "resolved": 28,
+      "unresolved": 172
+    },
+    "conductor_boundary_resolutions_total": 200,
+    "connector_candidates_total": 0,
+    "connector_terminals_total": 0,
+    "electrical_nets_by_role": {
+      "ground": 4,
+      "unknown": 6
+    },
+    "electrical_nets_total": 10,
+    "endpoint_candidates_by_kind": {
+      "component_terminal": 16,
+      "geometric": 172,
+      "ground": 12
+    },
+    "endpoint_candidates_by_terminal_role": {
+      "component_terminal": 16,
+      "ground_terminal": 12,
+      "unknown": 172
+    },
+    "physical_wires_by_identity_status": {
+      "resolved": 35
+    },
+    "physical_wires_total": 35,
+    "rejected_geometry_by_reason": {
+      "graphical_object_ownership_component_boundary": 9,
+      "insufficient_supporting_ink": 1
+    },
+    "rejected_geometry_total": 10,
+    "semantic_associations_total": 1704,
+    "symbol_family_evidence_by_family": {
+      "ground": 10
+    },
+    "symbol_family_resolutions_resolved_by_family": {
+      "ground": 10
+    },
+    "symbol_primitives_total": 40,
+    "terminal_candidates_total": 200,
+    "text_recognition_evidence_total": 0,
+    "topology_edges_total": 868,
+    "topology_nodes_by_type": {
+      "conductor_end": 200,
+      "continuation": 135,
+      "crossing": 237,
+      "splice": 106
+    },
+    "topology_nodes_total": 678
+  }
+}

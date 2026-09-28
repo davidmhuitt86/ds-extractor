@@ -31,6 +31,8 @@ add_library(eke_dx_wire
     src/image/rejected_geometry_classifier.cpp
     src/image/geometry_ownership_classifier.cpp
     src/image/shape_detector.cpp
+    src/image/connector_geometry_detector.cpp
+    src/image/ground_approach_conductor_recovery.cpp
     src/image/text_region_detector.cpp
     src/image/symbol_geometry_extractor.cpp
     src/topology/topology_reconstructor.cpp
@@ -40,6 +42,7 @@ add_library(eke_dx_wire
     src/topology/wire_reconstructor.cpp
     src/topology/physical_wire_identity_reconstructor.cpp
     src/topology/distribution_decomposer.cpp
+    src/topology/wire_identity_key.cpp
     src/topology/terminal_semantic_resolver.cpp
     src/topology/endpoint_semantic_reconstructor.cpp
     src/topology/terminal_semantic_evidence_builder.cpp
@@ -68,6 +71,7 @@ add_library(eke_dx_wire
     src/topology/wire_semantic_resolver.cpp
     src/topology/symbol_recognition_provider.cpp
     src/topology/symbol_family_recognizer.cpp
+    src/topology/electrical_component_resolver.cpp
     src/diagram/engineering_diagram_builder.cpp
     src/export/engineering_diagram_exporter.cpp
     src/image/component_candidate_classifier.cpp
@@ -101,6 +105,12 @@ endif()
 
 add_executable(dx-extract src/app/main.cpp)
 target_link_libraries(dx-extract PRIVATE eke_dx_wire)
+
+# AP-DIAG-AUDIT-008: audit-only diagnostic tool. Runs the unmodified
+# ExtractionPipeline and dumps a full ComponentCandidate evidence
+# inventory; does not participate in production extraction.
+add_executable(dx-audit-component-semantic tools/component_semantic_audit.cpp)
+target_link_libraries(dx-audit-component-semantic PRIVATE eke_dx_wire)
 
 if(WIN32)
     add_executable(dx-extractor-gui src/gui/main.cpp)
@@ -159,6 +169,10 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-distribution-decomposer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-distribution-decomposer COMMAND dx-wire-test-distribution-decomposer)
 
+    add_executable(dx-wire-test-wire-identity-key tests/test_wire_identity_key.cpp)
+    target_link_libraries(dx-wire-test-wire-identity-key PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-wire-identity-key COMMAND dx-wire-test-wire-identity-key)
+
     add_executable(dx-wire-test-endpoint-semantic-reconstructor tests/test_endpoint_semantic_reconstructor.cpp)
     target_link_libraries(dx-wire-test-endpoint-semantic-reconstructor PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-endpoint-semantic-reconstructor COMMAND dx-wire-test-endpoint-semantic-reconstructor)
@@ -172,6 +186,7 @@ if(DX_WIRE_BUILD_TESTS)
 
     add_executable(dx-wire-test-terminal-location-detector tests/test_terminal_location_detector.cpp)
     add_executable(dx-wire-test-terminal-recognizer tests/test_terminal_recognizer.cpp)
+    add_executable(dx-wire-test-terminal-ownership-evidence tests/test_terminal_ownership_evidence.cpp)
     add_executable(dx-wire-test-connector-terminal-model tests/test_connector_terminal_model.cpp)
     add_executable(dx-wire-test-circuit-role-resolver tests/test_circuit_role_resolver.cpp)
     add_executable(dx-wire-test-electrical-net-resolver tests/test_electrical_net_resolver.cpp)
@@ -231,9 +246,11 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-base64 COMMAND dx-wire-test-base64)
     target_link_libraries(dx-wire-test-terminal-location-detector PRIVATE eke_dx_wire)
     target_link_libraries(dx-wire-test-terminal-recognizer PRIVATE eke_dx_wire)
+    target_link_libraries(dx-wire-test-terminal-ownership-evidence PRIVATE eke_dx_wire)
     target_link_libraries(dx-wire-test-connector-terminal-model PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-terminal-location-detector COMMAND dx-wire-test-terminal-location-detector)
     add_test(NAME dx-wire-test-terminal-recognizer COMMAND dx-wire-test-terminal-recognizer)
+    add_test(NAME dx-wire-test-terminal-ownership-evidence COMMAND dx-wire-test-terminal-ownership-evidence)
     add_test(NAME dx-wire-test-connector-terminal-model COMMAND dx-wire-test-connector-terminal-model)
 
     add_executable(dx-wire-test-conductor-boundary-resolver tests/test_conductor_boundary_resolver.cpp)
@@ -256,6 +273,10 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-gap-interpreter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-gap-interpreter COMMAND dx-wire-test-gap-interpreter)
 
+    add_executable(dx-wire-test-connector-geometry-detector tests/test_connector_geometry_detector.cpp)
+    target_link_libraries(dx-wire-test-connector-geometry-detector PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-connector-geometry-detector COMMAND dx-wire-test-connector-geometry-detector)
+
     add_executable(dx-wire-test-shape-detector tests/test_shape_detector.cpp)
     target_link_libraries(dx-wire-test-shape-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-shape-detector COMMAND dx-wire-test-shape-detector)
@@ -273,6 +294,20 @@ if(DX_WIRE_BUILD_TESTS)
     target_compile_definitions(dx-wire-test-recognition-input-exporter PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     target_link_libraries(dx-wire-test-recognition-input-exporter PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-recognition-input-exporter COMMAND dx-wire-test-recognition-input-exporter)
+
+    add_executable(dx-wire-test-rejected-geometry-handoff tests/test_rejected_geometry_handoff.cpp)
+    target_compile_definitions(dx-wire-test-rejected-geometry-handoff PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_link_libraries(dx-wire-test-rejected-geometry-handoff PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-rejected-geometry-handoff COMMAND dx-wire-test-rejected-geometry-handoff)
+
+    add_executable(dx-wire-test-ground-approach-recovery-production tests/test_ground_approach_recovery_production.cpp)
+    target_compile_definitions(dx-wire-test-ground-approach-recovery-production PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_link_libraries(dx-wire-test-ground-approach-recovery-production PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-ground-approach-recovery-production COMMAND dx-wire-test-ground-approach-recovery-production)
+
+    add_executable(dx-wire-test-ground-approach-conductor-recovery tests/test_ground_approach_conductor_recovery.cpp)
+    target_link_libraries(dx-wire-test-ground-approach-conductor-recovery PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-ground-approach-conductor-recovery COMMAND dx-wire-test-ground-approach-conductor-recovery)
     target_link_libraries(dx-wire-test-extraction-audit PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-extraction-audit COMMAND dx-wire-test-extraction-audit)
 
@@ -295,6 +330,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-symbol-family-recognizer tests/test_symbol_family_recognizer.cpp)
     target_link_libraries(dx-wire-test-symbol-family-recognizer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-symbol-family-recognizer COMMAND dx-wire-test-symbol-family-recognizer)
+
+    add_executable(dx-wire-test-electrical-component-resolver tests/test_electrical_component_resolver.cpp)
+    target_link_libraries(dx-wire-test-electrical-component-resolver PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-electrical-component-resolver COMMAND dx-wire-test-electrical-component-resolver)
 
     add_executable(dx-wire-test-structured-svg-exporter tests/test_structured_svg_exporter.cpp)
     target_link_libraries(dx-wire-test-structured-svg-exporter PRIVATE eke_dx_wire)

@@ -94,6 +94,28 @@ void TopologyExporter::export_json(
         return "unresolved";
     };
 
+    auto connector_topology_name = [](ConnectorTopologyKind topology) {
+        switch (topology) {
+        case ConnectorTopologyKind::Inline: return "inline";
+        case ConnectorTopologyKind::ComponentAttached: return "component_attached";
+        case ConnectorTopologyKind::Unknown: return "unknown";
+        }
+        return "unknown";
+    };
+
+    auto connector_interaction_name =
+        [](ConnectorConductorInteractionKind interaction) {
+            switch (interaction) {
+            case ConnectorConductorInteractionKind::PassThrough:
+                return "pass_through";
+            case ConnectorConductorInteractionKind::Termination:
+                return "termination";
+            case ConnectorConductorInteractionKind::Unknown:
+                return "unknown";
+            }
+            return "unknown";
+        };
+
     auto text_semantic_kind_name = [](TextSemanticKind kind) {
         switch (kind) {
         case TextSemanticKind::GroundLabel: return "ground_label";
@@ -261,6 +283,8 @@ void TopologyExporter::export_json(
         out << "    {\n"
             << "      \"id\": \"" << json_escape(connector.id) << "\",\n"
             << "      \"component_candidate_id\": \"" << json_escape(connector.component_candidate_id) << "\",\n"
+            << "      \"attached_component_candidate_id\": \"" << json_escape(connector.attached_component_candidate_id) << "\",\n"
+            << "      \"topology\": \"" << connector_topology_name(connector.topology) << "\",\n"
             << "      \"x\": " << connector.bounds.x << ",\n"
             << "      \"y\": " << connector.bounds.y << ",\n"
             << "      \"width\": " << connector.bounds.width << ",\n"
@@ -308,6 +332,7 @@ void TopologyExporter::export_json(
             << "      \"conductor_segment_id\": \"" << json_escape(evidence.conductor_segment_id) << "\",\n"
             << "      \"x\": " << evidence.crossing_point.x << ",\n"
             << "      \"y\": " << evidence.crossing_point.y << ",\n"
+            << "      \"interaction\": \"" << connector_interaction_name(evidence.interaction) << "\",\n"
             << "      \"confidence\": \"" << confidence_name(evidence.confidence) << "\",\n"
             << "      \"source_id\": \"" << json_escape(evidence.provenance.source_id) << "\",\n"
             << "      \"page\": " << evidence.provenance.page << ",\n"

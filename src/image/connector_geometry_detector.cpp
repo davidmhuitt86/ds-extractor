@@ -204,14 +204,19 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
         const double continuity =
             pass_through_continuity(binary, bounds, config_);
 
-        // A connector body is not accepted from shape alone. It must show
-        // a non-rectilinear/notched or internally open body AND conductor
-        // continuity through its footprint. This keeps ordinary boxes,
-        // labels, and isolated symbols out of the connector-native path.
+        // Connector identity comes from the characteristic connector-body
+        // geometry, not from a mandatory pass-through conductor. The TRX300
+        // contains both inline connectors and connectors physically attached
+        // to modules/components, where conductors terminate rather than pass
+        // through the connector body.
+        //
+        // Continuity remains evidence and contributes to confidence, but it
+        // is no longer a hard recognition gate. Terminal/interaction
+        // classification is performed downstream from independent conductor
+        // and component evidence.
         const bool body_evidence =
             non_convex || interior_void || polygon.size() > 4;
-        if (!body_evidence ||
-            continuity < config_.min_pass_through_continuity) {
+        if (!body_evidence) {
             continue;
         }
 

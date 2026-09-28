@@ -387,8 +387,10 @@ WireModel ExtractionPipeline::run(
             connector.topology = ConnectorTopologyKind::ComponentAttached;
             connector.attached_component_candidate_id =
                 attached_components.front()->id;
-        } else {
+        } else if (attached_components.empty()) {
             connector.topology = ConnectorTopologyKind::Inline;
+        } else {
+            connector.topology = ConnectorTopologyKind::Unknown;
         }
 
         for (const auto& segment : model.conductor_segments) {

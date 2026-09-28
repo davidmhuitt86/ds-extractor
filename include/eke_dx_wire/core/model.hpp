@@ -145,9 +145,26 @@ struct TerminalCandidate {
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
 };
 
+enum class ConnectorTopologyKind {
+    Inline,
+    ComponentAttached,
+    Unknown
+};
+
+enum class ConnectorConductorInteractionKind {
+    PassThrough,
+    Termination,
+    Unknown
+};
+
 struct ConnectorCandidate {
     std::string id;
     std::string component_candidate_id;
+    // Explicit physical attachment relationship. This is intentionally
+    // separate from component_candidate_id: a connector-native object is
+    // not itself a ComponentCandidate.
+    std::string attached_component_candidate_id;
+    ConnectorTopologyKind topology = ConnectorTopologyKind::Unknown;
     BoundingBox bounds {};
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     std::vector<std::string> semantic_labels;
@@ -171,6 +188,8 @@ struct ConnectorConductorCrossingEvidence {
     std::string pin_id;
     std::string conductor_segment_id;
     Point2D crossing_point {};
+    ConnectorConductorInteractionKind interaction =
+        ConnectorConductorInteractionKind::Unknown;
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
     Provenance provenance {};
 };

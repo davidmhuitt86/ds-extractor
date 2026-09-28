@@ -2,6 +2,7 @@
 #include "eke_dx_wire/diagram/engineering_diagram_builder.hpp"
 
 #include <cassert>
+#include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <string>
@@ -587,11 +588,12 @@ int main() {
         model.component_candidates = {make_component("comp-1")};
         const auto diagram = builder.build(model);
         const std::string rendered = StructuredSvgExporter::render(diagram, model);
-        const std::string path = "/tmp/dx-wire-test-structured-svg-export.svg";
+        const std::string path = (std::filesystem::temp_directory_path() / "dx-wire-test-structured-svg-export.svg").string();
         StructuredSvgExporter::export_svg(diagram, model, path);
         std::ifstream in(path);
         const std::string written((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         assert(written == rendered);
+    std::filesystem::remove(path);
     }
 
     // 35. A full mixed scene (component + connector + wire + splice +

@@ -336,7 +336,6 @@ WireModel ExtractionPipeline::run(
                 : region.confidence >= 0.70
                     ? ConfidenceClass::Medium
                     : ConfidenceClass::Low;
-        model.connector_candidates.push_back(connector);
 
         struct PinObservation {
             std::string segment_id;
@@ -452,6 +451,27 @@ WireModel ExtractionPipeline::run(
                     return a.position.x < b.position.x;
                 return a.segment_id < b.segment_id;
             });
+
+        // AP-DIAG-FIX-010: connector geometry is candidate evidence,
+        // not connector identity. The previous geometry-only acceptance
+        // path admitted circular symbols, grounds, lamp bases, and other
+        // non-connector objects simply because their raster contour was
+        // non-convex or had >4 polygon vertices. The governing connector
+        // design requires independent conductor-interaction evidence.
+        //
+        // All source-grounded connector locations currently inventoried
+        // have at least two visible conductor-side pins. Requiring two
+        // distinct ConductorSegment observations here is therefore a
+        // source-grounded semantic gate, not a generic contour threshold.
+        // It also remains valid for ComponentAttached connectors: their
+        // conductors may terminate at the connector/component boundary, and
+        // the observation classifier above already records that interaction
+        // as Termination rather than requiring pass-through continuity.
+        constexpr std::size_t kMinimumConnectorConductorInteractions = 2;
+        if (observations.size() < kMinimumConnectorConductorInteractions)
+            continue;
+
+        model.connector_candidates.push_back(connector);
 
         int ordinal = 0;
         for (const auto& observation : observations) {

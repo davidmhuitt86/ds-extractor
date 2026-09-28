@@ -34,6 +34,22 @@ int main() {
     assert(first.regions.front().kind == ShapeKind::ConnectorBody);
     assert(first.regions.front().confidence >= 0.65);
 
+    // Component-attached connector body: there is deliberately no
+    // pass-through conductor. Recognition must still be geometry-driven.
+    cv::Mat attached = cv::Mat::zeros(120, 180, CV_8UC1);
+    const std::vector<cv::Point> attached_body{
+        {60, 45}, {115, 45}, {115, 58}, {105, 58},
+        {105, 65}, {115, 65}, {115, 78}, {60, 78},
+        {60, 65}, {70, 65}, {70, 58}, {60, 58}
+    };
+    cv::polylines(
+        attached, attached_body, true, cv::Scalar(255), 2);
+
+    const auto attached_result =
+        detector.detect(attached, "synthetic-attached", 0);
+    assert(!attached_result.regions.empty());
+    assert(attached_result.regions.front().kind == ShapeKind::ConnectorBody);
+
     std::cout << "connector geometry detector tests passed\n";
     return 0;
 }

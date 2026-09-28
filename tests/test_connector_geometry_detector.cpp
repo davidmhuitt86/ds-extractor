@@ -20,7 +20,9 @@ int main() {
     cv::polylines(image, body, true, cv::Scalar(255), 2);
     cv::line(image, {35, 61}, {140, 61}, cv::Scalar(255), 2);
 
-    ConnectorGeometryDetector detector;
+    ConnectorGeometryDetectorConfig config;
+    config.max_area_ratio = 0.20;
+    ConnectorGeometryDetector detector(config);
     const auto first = detector.detect(image, "synthetic", 0);
     const auto second = detector.detect(image, "synthetic", 0);
 

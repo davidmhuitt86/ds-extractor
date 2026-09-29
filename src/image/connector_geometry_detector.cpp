@@ -245,8 +245,7 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
         // contour being merely non-convex, hollow, or multi-vertex is not
         // sufficient because those properties occur throughout the wiring
         // diagram.
-        const bool body_evidence =
-            notch_evidence || (interior_void && non_convex);
+        const bool body_evidence = notch_evidence;
         if (!body_evidence) {
             continue;
         }

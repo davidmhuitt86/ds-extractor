@@ -32,7 +32,7 @@ struct ConnectorGeometryDetectorConfig {
     // Require measurable concavity rather than accepting generic non-convex
     // raster regions produced by wire crossings and merged symbols.
     double min_notch_depth = 2.0;
-    int min_notch_count = 1;
+    int min_notch_count = 2;
     double min_pass_through_continuity = 0.65;
     int pass_through_probe = 12;
     int pass_through_band = 2;

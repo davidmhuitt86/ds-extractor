@@ -179,6 +179,30 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
         const bool non_convex =
             polygon.size() >= 4 && !cv::isContourConvex(polygon);
 
+        // AP-DIAG-FIX-011: the TRX300 connector family has a characteristic
+        // notch/interlock. Generic non-convexity is insufficient because
+        // merged wire crossings and unrelated symbol geometry can also form
+        // non-convex contours. Convexity defects provide a geometry-local
+        // measure of actual inward notch depth without requiring pass-through
+        // continuity.
+        std::vector<int> hull_indices;
+        cv::convexHull(contour, hull_indices, false, false);
+        std::vector<cv::Vec4i> defects;
+        if (hull_indices.size() >= 4 && contour.size() >= 4) {
+            cv::convexityDefects(contour, hull_indices, defects);
+        }
+
+        int significant_notches = 0;
+        double deepest_notch = 0.0;
+        for (const auto& defect : defects) {
+            // OpenCV stores defect depth in fixed-point units (1/256 px).
+            const double depth = static_cast<double>(defect[3]) / 256.0;
+            if (depth >= config_.min_notch_depth) {
+                ++significant_notches;
+                deepest_notch = (std::max)(deepest_notch, depth);
+            }
+        }
+
         bool interior_void = false;
         cv::Mat local_mask = cv::Mat::zeros(bounds.size(), CV_8UC1);
         std::vector<cv::Point> shifted;
@@ -214,8 +238,15 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
         // is no longer a hard recognition gate. Terminal/interaction
         // classification is performed downstream from independent conductor
         // and component evidence.
+        const bool notch_evidence =
+            significant_notches >= config_.min_notch_count;
+
+        // Connector identity requires a characteristic body feature. A
+        // contour being merely non-convex, hollow, or multi-vertex is not
+        // sufficient because those properties occur throughout the wiring
+        // diagram.
         const bool body_evidence =
-            non_convex || interior_void || polygon.size() > 4;
+            notch_evidence || (interior_void && non_convex);
         if (!body_evidence) {
             continue;
         }
@@ -236,7 +267,7 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
                 0.99,
                 0.45 +
                 0.25 * continuity +
-                0.15 * (non_convex ? 1.0 : 0.0) +
+                0.15 * (notch_evidence ? 1.0 : 0.0) +
                 0.10 * (interior_void ? 1.0 : 0.0));
 
         bool duplicate = false;

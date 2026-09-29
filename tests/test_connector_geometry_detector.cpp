@@ -50,6 +50,19 @@ int main() {
     assert(!attached_result.regions.empty());
     assert(attached_result.regions.front().kind == ShapeKind::ConnectorBody);
 
+    // A generic non-convex body without the connector-family notch must not
+    // become a connector merely because it has multiple contour vertices.
+    cv::Mat unrelated = cv::Mat::zeros(120, 180, CV_8UC1);
+    const std::vector<cv::Point> unrelated_body{
+        {55, 45}, {115, 45}, {115, 75}, {90, 75},
+        {90, 65}, {80, 65}, {80, 75}, {55, 75}
+    };
+    cv::polylines(
+        unrelated, unrelated_body, true, cv::Scalar(255), 2);
+    const auto unrelated_result =
+        detector.detect(unrelated, "synthetic-unrelated", 0);
+    assert(unrelated_result.regions.empty());
+
     std::cout << "connector geometry detector tests passed\n";
     return 0;
 }

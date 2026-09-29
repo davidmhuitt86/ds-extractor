@@ -176,9 +176,6 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
             continue;
         }
 
-        const bool non_convex =
-            polygon.size() >= 4 && !cv::isContourConvex(polygon);
-
         // AP-DIAG-FIX-011: the TRX300 connector family has a characteristic
         // notch/interlock. Generic non-convexity is insufficient because
         // merged wire crossings and unrelated symbol geometry can also form

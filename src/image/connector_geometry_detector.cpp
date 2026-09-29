@@ -191,14 +191,52 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
 
         int significant_notches = 0;
         double deepest_notch = 0.0;
+        bool notch_left = false;
+        bool notch_right = false;
+        bool notch_top = false;
+        bool notch_bottom = false;
+
         for (const auto& defect : defects) {
             // OpenCV stores defect depth in fixed-point units (1/256 px).
             const double depth = static_cast<double>(defect[3]) / 256.0;
-            if (depth >= config_.min_notch_depth) {
-                ++significant_notches;
-                deepest_notch = (std::max)(deepest_notch, depth);
-            }
+            if (depth < config_.min_notch_depth)
+                continue;
+
+            ++significant_notches;
+            deepest_notch = (std::max)(deepest_notch, depth);
+
+            // A TRX300 connector body uses an interlocking/notched profile
+            // on opposing sides. Classify each significant defect by the
+            // location of its farthest contour point relative to the body.
+            // This rejects one-sided generic concavities that can generate
+            // multiple OpenCV convexity defects around a single indentation.
+            const cv::Point far_point = contour[defect[2]];
+            const double left_distance =
+                static_cast<double>(far_point.x - bounds.x);
+            const double right_distance =
+                static_cast<double>(bounds.x + bounds.width - far_point.x);
+            const double top_distance =
+                static_cast<double>(far_point.y - bounds.y);
+            const double bottom_distance =
+                static_cast<double>(bounds.y + bounds.height - far_point.y);
+
+            const double nearest = (std::min)(
+                (std::min)(left_distance, right_distance),
+                (std::min)(top_distance, bottom_distance));
+
+            if (nearest == left_distance)
+                notch_left = true;
+            else if (nearest == right_distance)
+                notch_right = true;
+            else if (nearest == top_distance)
+                notch_top = true;
+            else
+                notch_bottom = true;
         }
+
+        const bool opposing_notches =
+            (notch_left && notch_right) ||
+            (notch_top && notch_bottom);
 
         bool interior_void = false;
         cv::Mat local_mask = cv::Mat::zeros(bounds.size(), CV_8UC1);
@@ -236,12 +274,16 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
         // classification is performed downstream from independent conductor
         // and component evidence.
         const bool notch_evidence =
-            significant_notches >= config_.min_notch_count;
+            significant_notches >= config_.min_notch_count &&
+            opposing_notches;
 
-        // Connector identity requires a characteristic body feature. A
-        // contour being merely non-convex, hollow, or multi-vertex is not
-        // sufficient because those properties occur throughout the wiring
-        // diagram.
+        // Connector identity requires a characteristic body feature.
+        // The TRX300 family presents opposing interlocking/notched sides;
+        // a single-sided concavity is insufficient because ordinary symbols
+        // and merged wire geometry can produce multiple defects around one
+        // indentation. A contour being merely non-convex, hollow, or
+        // multi-vertex is not sufficient because those properties occur
+        // throughout the wiring diagram.
         const bool body_evidence = notch_evidence;
         if (!body_evidence) {
             continue;

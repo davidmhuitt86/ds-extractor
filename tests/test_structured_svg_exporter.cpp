@@ -2,6 +2,7 @@
 #include "eke_dx_wire/diagram/engineering_diagram_builder.hpp"
 
 #include <cassert>
+#include <iostream>
 #include <filesystem>
 #include <fstream>
 #include <iterator>
@@ -65,6 +66,8 @@ TopologyNode make_node(const std::string& id, TopologyNodeType type, double x = 
 int main() {
     EngineeringDiagramBuilder builder;
 
+    std::cerr << "[SVG-TEST-01] enter" << std::endl;
+
     // 1. Empty diagram renders a valid, well-formed SVG document with no
     // engineering content.
     {
@@ -78,6 +81,8 @@ int main() {
         assert(!contains(svg, "<image"));
     }
 
+    std::cerr << "[SVG-TEST-02] enter" << std::endl;
+
     // 2. Rendering is a pure function: identical input produces
     // byte-identical output (determinism requirement).
     {
@@ -88,6 +93,8 @@ int main() {
         const std::string b = StructuredSvgExporter::render(diagram, model);
         assert(a == b);
     }
+
+    std::cerr << "[SVG-TEST-03] enter" << std::endl;
 
     // 3. A component with no symbol-family resolution renders the
     // explicit unresolved placeholder, not a guessed glyph.
@@ -100,6 +107,8 @@ int main() {
         assert(contains(svg, "data-symbol-family-status=\"unresolved\""));
         assert(!contains(svg, "data-symbol-family=\""));
     }
+
+    std::cerr << "[SVG-TEST-04] enter" << std::endl;
 
     // 4. A Resolved symbol-family resolution renders the family glyph
     // and its metadata.
@@ -120,6 +129,8 @@ int main() {
         assert(contains(svg, "data-symbol-family-confidence=\"high\""));
     }
 
+    std::cerr << "[SVG-TEST-05] enter" << std::endl;
+
     // 5. A Conflicted symbol-family resolution renders the explicit
     // conflicted placeholder, never a chosen winning family.
     {
@@ -136,6 +147,8 @@ int main() {
         assert(contains(svg, "data-symbol-family-status=\"conflicted\""));
         assert(!contains(svg, "data-symbol-family=\"lamp\""));
     }
+
+    std::cerr << "[SVG-TEST-06] enter" << std::endl;
 
     // 6. Every SymbolFamily has a distinct renderer wired in (no silent
     // fallback for a resolved-but-unhandled family).
@@ -160,6 +173,8 @@ int main() {
         }
     }
 
+    std::cerr << "[SVG-TEST-07] enter" << std::endl;
+
     // 7. DiagramFurniture components are never rendered as circuit
     // components.
     {
@@ -169,6 +184,8 @@ int main() {
         const std::string svg = StructuredSvgExporter::render(diagram, model);
         assert(!contains(svg, "data-component-id=\"comp-1\""));
     }
+
+    std::cerr << "[SVG-TEST-08] enter" << std::endl;
 
     // 8. Component semantic label and canonical name are both preserved
     // as distinct attributes, never collapsed into one.
@@ -194,6 +211,8 @@ int main() {
         assert(contains(svg, "data-canonical-name=\"Horn\""));
     }
 
+    std::cerr << "[SVG-TEST-09] enter" << std::endl;
+
     // 9. A connector renders as its own distinct group with terminals.
     {
         WireModel model;
@@ -206,6 +225,8 @@ int main() {
         assert(contains(svg, "id=\"connector-conn-1\""));
         assert(contains(svg, "data-object-type=\"connector\""));
     }
+
+    std::cerr << "[SVG-TEST-10] enter" << std::endl;
 
     // 10. A resolved ConnectorTerminal renders its terminal name.
     {
@@ -227,6 +248,8 @@ int main() {
         assert(contains(svg, "data-status=\"resolved\""));
     }
 
+    std::cerr << "[SVG-TEST-11] enter" << std::endl;
+
     // 11. An unresolved ConnectorTerminal never fabricates a name.
     {
         WireModel model;
@@ -245,6 +268,8 @@ int main() {
         assert(!contains(svg, "data-terminal-name=\""));
     }
 
+    std::cerr << "[SVG-TEST-12] enter" << std::endl;
+
     // 12. A TerminalCandidate renders traceable to its endpoint and
     // component.
     {
@@ -262,6 +287,8 @@ int main() {
         assert(contains(svg, "data-endpoint-id=\"ep-a\""));
     }
 
+    std::cerr << "[SVG-TEST-13] enter" << std::endl;
+
     // 13. A wire renders as an endpoint-to-endpoint group, never split
     // into per-segment wires.
     {
@@ -275,6 +302,8 @@ int main() {
         assert(contains(svg, "data-end-endpoint=\"ep-b\""));
     }
 
+    std::cerr << "[SVG-TEST-14] enter" << std::endl;
+
     // 14. A wire's conductor segments render as real <line> geometry.
     {
         WireModel model;
@@ -287,6 +316,8 @@ int main() {
         assert(contains(svg, "<line"));
         assert(contains(svg, "data-conductor-segment-id=\"seg-1\""));
     }
+
+    std::cerr << "[SVG-TEST-15] enter" << std::endl;
 
     // 15. A wire with no resolved color renders the neutral fallback and
     // marks the status explicitly, never inventing a color.
@@ -304,6 +335,8 @@ int main() {
         assert(contains(svg, "data-wire-color-status=\"unresolved\""));
         assert(!contains(svg, "data-wire-color=\""));
     }
+
+    std::cerr << "[SVG-TEST-16] enter" << std::endl;
 
     // 16. A wire with Resolved color renders its raw color text and a
     // mapped display stroke.
@@ -323,6 +356,8 @@ int main() {
         assert(contains(svg, "data-wire-color-status=\"resolved\""));
     }
 
+    std::cerr << "[SVG-TEST-17] enter" << std::endl;
+
     // 17. A Resolved color that doesn't map to the known display table
     // still keeps its raw text; the renderer never drops it.
     {
@@ -339,6 +374,8 @@ int main() {
         const std::string svg = StructuredSvgExporter::render(diagram, model);
         assert(contains(svg, "data-wire-color=\"TARTAN\""));
     }
+
+    std::cerr << "[SVG-TEST-18] enter" << std::endl;
 
     // 18. A Conflicted wire color is represented explicitly (dashed),
     // never resolved to one winning value.
@@ -364,6 +401,8 @@ int main() {
         assert(contains(svg, "stroke-dasharray"));
     }
 
+    std::cerr << "[SVG-TEST-19] enter" << std::endl;
+
     // 19. A heavy-cable wire preserves that flag as metadata.
     {
         WireModel model;
@@ -375,6 +414,8 @@ int main() {
         const std::string svg = StructuredSvgExporter::render(diagram, model);
         assert(contains(svg, "data-heavy-cable=\"true\""));
     }
+
+    std::cerr << "[SVG-TEST-20] enter" << std::endl;
 
     // 20. A splice node renders as a filled junction marker, distinct
     // from a crossing.
@@ -388,6 +429,8 @@ int main() {
         assert(contains(svg, "fill=\"#111\""));
     }
 
+    std::cerr << "[SVG-TEST-21] enter" << std::endl;
+
     // 21. A crossing node renders as an unfilled marker and must not be
     // labeled a splice.
     {
@@ -399,6 +442,8 @@ int main() {
         assert(contains(svg, "data-object-type=\"crossing\""));
         assert(!contains(svg, "id=\"splice-n-cross\""));
     }
+
+    std::cerr << "[SVG-TEST-22] enter" << std::endl;
 
     // 22. A crossing never renders inside the splices group or vice
     // versa (structural separation between the two groups).
@@ -414,6 +459,8 @@ int main() {
         assert(splices_group != std::string::npos && crossings_group != std::string::npos);
     }
 
+    std::cerr << "[SVG-TEST-23] enter" << std::endl;
+
     // 23. A Ground-kind endpoint renders a ground glyph distinct from a
     // ChassisGround-family component.
     {
@@ -423,6 +470,8 @@ int main() {
         const std::string svg = StructuredSvgExporter::render(diagram, model);
         assert(contains(svg, "id=\"ground-endpoint-ep-gnd\""));
     }
+
+    std::cerr << "[SVG-TEST-24] enter" << std::endl;
 
     // 24. A resolved label renders its raw text.
     {
@@ -448,6 +497,8 @@ int main() {
         assert(contains(svg, "data-status=\"resolved\""));
     }
 
+    std::cerr << "[SVG-TEST-25] enter" << std::endl;
+
     // 25. An unresolved label with no recognized text renders a
     // placeholder, never invented text, and is not silently dropped.
     {
@@ -461,6 +512,8 @@ int main() {
         assert(contains(svg, "data-text-region-id=\"tr-1\""));
         assert(contains(svg, "data-status=\"unresolved\""));
     }
+
+    std::cerr << "[SVG-TEST-26] enter" << std::endl;
 
     // 26. An Unknown-kind label renders in the annotations group, not
     // the labels group.
@@ -478,6 +531,8 @@ int main() {
         assert(annotation_entry != std::string::npos && annotation_entry > annotations_group);
     }
 
+    std::cerr << "[SVG-TEST-27] enter" << std::endl;
+
     // 27. Electrical nets render as distinct metadata, never merged with
     // wire geometry.
     {
@@ -493,6 +548,8 @@ int main() {
         assert(contains(svg, "id=\"electrical-net-net-1\""));
         assert(contains(svg, "data-object-type=\"electrical-net\""));
     }
+
+    std::cerr << "[SVG-TEST-28] enter" << std::endl;
 
     // 28. Group hierarchy: all required top-level groups are present
     // under the engineering-diagram root, in a fixed order.
@@ -512,6 +569,8 @@ int main() {
         }
     }
 
+    std::cerr << "[SVG-TEST-29] enter" << std::endl;
+
     // 29. Metadata group carries object counts and coordinate-system
     // provenance.
     {
@@ -522,6 +581,8 @@ int main() {
         assert(contains(svg, "data-coordinate-system=\"source_page_pixels\""));
         assert(contains(svg, "data-component-count=\"1\""));
     }
+
+    std::cerr << "[SVG-TEST-30] enter" << std::endl;
 
     // 30. Every rendered element ID is unique (no duplicate rendering of
     // the same object).
@@ -539,6 +600,8 @@ int main() {
         assert(second == std::string::npos);
     }
 
+    std::cerr << "[SVG-TEST-31] enter" << std::endl;
+
     // 31. SVG root declares width/height/viewBox from the diagram's
     // image dimensions.
     {
@@ -551,6 +614,8 @@ int main() {
         assert(contains(svg, "height=\"600\""));
         assert(contains(svg, "viewBox=\"0 0 800 600\""));
     }
+
+    std::cerr << "[SVG-TEST-32] enter" << std::endl;
 
     // 32. Text content is XML-escaped (no raw '&', '<', '>' injected
     // into element bodies from source label text).
@@ -571,6 +636,8 @@ int main() {
         assert(!contains(svg, "A & B < C"));
     }
 
+    std::cerr << "[SVG-TEST-33] enter" << std::endl;
+
     // 33. No source-image or raster dependency: rendering never touches
     // OpenCV types, and a diagram/model with no image path still
     // renders successfully.
@@ -581,6 +648,8 @@ int main() {
         const std::string svg = StructuredSvgExporter::render(diagram, model);
         assert(!svg.empty());
     }
+
+    std::cerr << "[SVG-TEST-34] enter" << std::endl;
 
     // 34. export_svg() writes the same content render() returns.
     {
@@ -595,6 +664,8 @@ int main() {
         assert(written == rendered);
     std::filesystem::remove(path);
     }
+
+    std::cerr << "[SVG-TEST-35] enter" << std::endl;
 
     // 35. A full mixed scene (component + connector + wire + splice +
     // crossing + label + net) renders without error and every object
@@ -639,6 +710,8 @@ int main() {
         assert(contains(svg, "id=\"crossing-n-cross\""));
         assert(contains(svg, "id=\"electrical-net-net-1\""));
     }
+
+    std::cerr << "[SVG-TEST-36] enter" << std::endl;
 
     // 36. Rendering does not throw and produces non-empty, well-formed
     // output for a diagram carrying validation issues (dangling

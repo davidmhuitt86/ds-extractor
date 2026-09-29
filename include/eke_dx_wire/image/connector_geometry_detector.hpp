@@ -28,6 +28,11 @@ struct ConnectorGeometryDetectorConfig {
     double max_aspect_ratio = 5.0;
     double polygon_epsilon = 0.04;
     int max_polygon_vertices = 14;
+    // Connector bodies in the TRX300 family have a real notch/interlock.
+    // Require measurable concavity rather than accepting generic non-convex
+    // raster regions produced by wire crossings and merged symbols.
+    double min_notch_depth = 2.0;
+    int min_notch_count = 1;
     double min_pass_through_continuity = 0.65;
     int pass_through_probe = 12;
     int pass_through_band = 2;

@@ -63,6 +63,20 @@ int main() {
         detector.detect(unrelated, "synthetic-unrelated", 0);
     assert(unrelated_result.regions.empty());
 
+    // A single-sided indentation can generate two convexity defects in a
+    // rasterized stroke. It must still be rejected because it does not form
+    // the opposing-side connector profile.
+    cv::Mat one_sided = cv::Mat::zeros(120, 180, CV_8UC1);
+    const std::vector<cv::Point> one_sided_body{
+        {55, 45}, {115, 45}, {115, 58}, {105, 58},
+        {105, 65}, {115, 65}, {115, 78}, {55, 78}
+    };
+    cv::polylines(
+        one_sided, one_sided_body, true, cv::Scalar(255), 2);
+    const auto one_sided_result =
+        detector.detect(one_sided, "synthetic-one-sided", 0);
+    assert(one_sided_result.regions.empty());
+
     std::cout << "connector geometry detector tests passed\n";
     return 0;
 }

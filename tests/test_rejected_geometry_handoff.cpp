@@ -8,15 +8,26 @@
 // Before AP-DIAG-FIX-006: extraction_pipeline.cpp moved the local
 // rejected_geometry vector into model.rejected_geometry BEFORE passing it
 // (now moved-from, empirically empty on this build - AP-DIAG-AUDIT-005)
-// into TerminalLocationDetector::detect(). endpoint-candidate-
-// 9da9c73ab52013a3's sole ownership evidence is two RejectedGeometryEvidence
-// entries (its owning component has zero SymbolPrimitives), so it resolved
-// to geometric/unresolved instead of component_terminal.
+// into TerminalLocationDetector::detect(). The target endpoint's sole
+// ownership evidence is RejectedGeometryEvidence entries (its owning
+// component has zero SymbolPrimitives), so it resolved to
+// geometric/unresolved instead of component_terminal.
 //
 // This test runs the real, unmodified ExtractionPipeline against the real
 // canonical TRX300 sample and asserts the corrected result directly from
 // its output - it fails against the pre-fix ordering and passes after the
 // one-statement reorder.
+//
+// AP-DIAG-017: samples/trx300ODG.png was permanently re-cropped (removing
+// the switch matrix region so it no longer needs masking before every
+// extraction run). This is a deliberate re-baseline, not a guess:
+// endpoint-candidate-f116d72e55f48cc6 was located by building this exact
+// codebase, running the real ExtractionPipeline against the new cropped
+// image, and independently confirming it is still an endpoint whose
+// owning component (component-candidate-shape-region-c8c5b83bef6a9843)
+// owns zero SymbolPrimitives and is resolved exclusively via
+// RejectedGeometryEvidence - the same real-world code path this test
+// exists to guard.
 
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
 
@@ -41,15 +52,15 @@ int main() {
     // argument "samples/trx300ODG.png" for BOTH the file to load and the
     // source_id used to content-address every generated ID (stable_id
     // hashes source_id, not the resolved filesystem path). Reproducing
-    // "endpoint-candidate-9da9c73ab52013a3" verbatim requires the exact
-    // same source_id string, while still loading the image from this
-    // build's own DX_WIRE_SOURCE_DIR-based path so the test is not tied to
-    // the working directory ctest happens to run from.
+    // the target ID verbatim requires the exact same source_id string,
+    // while still loading the image from this build's own
+    // DX_WIRE_SOURCE_DIR-based path so the test is not tied to the working
+    // directory ctest happens to run from.
     ExtractionPipeline pipeline;
     const WireModel model =
         pipeline.run(image_path.string(), "samples/trx300ODG.png");
 
-    const std::string target_id = "endpoint-candidate-9da9c73ab52013a3";
+    const std::string target_id = "endpoint-candidate-f116d72e55f48cc6";
     const EndpointCandidate* target = nullptr;
     for (const auto& endpoint : model.endpoint_candidates) {
         if (endpoint.id == target_id) {
@@ -70,11 +81,11 @@ int main() {
     // owns zero SymbolPrimitives - see AP-DIAG-AUDIT-004/005).
     assert(!model.rejected_geometry.empty());
 
-    // 3-6. endpoint-candidate-9da9c73ab52013a3 is now correctly attributed.
+    // 3-6. The target endpoint is now correctly attributed.
     assert(target->kind == EndpointKind::ComponentTerminal);
     assert(target->confidence == ConfidenceClass::High);
     assert(target->component_id ==
-           "component-candidate-shape-region-845947b0afd7451a");
+           "component-candidate-shape-region-c8c5b83bef6a9843");
 
     // No fabricated SymbolPrimitive was introduced to make this pass - the
     // owning component's ownership evidence is exclusively the

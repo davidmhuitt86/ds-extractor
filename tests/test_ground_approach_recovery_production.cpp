@@ -7,14 +7,26 @@
 // AP-DIAG-AUDIT-006 established that MorphologyWireDetector's
 // fixed-orientation, fixed-minimum-length morphological openings could
 // not preserve the real, continuous approach-conductor ink immediately
-// above component-candidate-shape-region-5aa211846bb7891d (a diagonal
+// above component-candidate-shape-region-f68bcdb1d145b798 (a diagonal
 // jog into a short vertical run) or component-candidate-shape-region-
-// 6b6ccc2d59afe578 (an L-bend into a short vertical run), so neither
+// 8a5cc8ed3c845fb5 (an L-bend into a short vertical run), so neither
 // produced a resolved Ground endpoint. This test runs the real,
 // unmodified ExtractionPipeline against samples/trx300ODG.png and
 // asserts both are now resolved - it fails against the pre-fix pipeline
 // (4 of 6 resolved) and passes after GroundApproachConductorRecovery is
 // wired in.
+//
+// AP-DIAG-017: samples/trx300ODG.png was permanently re-cropped (removing
+// the switch matrix region so it no longer needs masking before every
+// extraction run). This is a deliberate re-baseline of the canonical
+// fixture, not a guess: every ID/coordinate/confidence below was obtained
+// by building this exact codebase and running the real, unmodified
+// ExtractionPipeline against the new cropped image, then independently
+// confirming (by temporarily removing GroundApproachConductorRecovery's
+// output from the pipeline and rerunning) that the same two ChassisGround
+// symbols - one diagonal-jog, one L-bend - still fail to resolve without
+// the recovery (4 of 6) and both resolve with it (6 of 6), preserving the
+// exact regression this test exists to guard.
 
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
 
@@ -59,12 +71,12 @@ int main() {
         pipeline.run(image_path.string(), "samples/trx300ODG.png");
 
     const std::set<std::string> genuine_chassis_ground = {
-        "component-candidate-shape-region-0edf5ce35037fec3",
-        "component-candidate-shape-region-1acbaeb7ac6ac87a",
-        "component-candidate-shape-region-a434a925670e9b65",
-        "component-candidate-shape-region-791276441805b2e0",
-        "component-candidate-shape-region-5aa211846bb7891d",
-        "component-candidate-shape-region-6b6ccc2d59afe578",
+        "component-candidate-shape-region-06fae9014799309a",
+        "component-candidate-shape-region-2ad28f222606eb5a",
+        "component-candidate-shape-region-4a14c6e2c81554a8",
+        "component-candidate-shape-region-82b98a38564b3503",
+        "component-candidate-shape-region-f68bcdb1d145b798",
+        "component-candidate-shape-region-8a5cc8ed3c845fb5",
     };
 
     int resolved_count = 0;
@@ -78,7 +90,7 @@ int main() {
     // CASE 1: diagonal-jog ground approach.
     {
         const std::string component_id =
-            "component-candidate-shape-region-5aa211846bb7891d";
+            "component-candidate-shape-region-f68bcdb1d145b798";
         const EndpointCandidate* ground = ground_endpoint_for(model, component_id);
         assert(ground != nullptr);
         assert(ground->confidence == ConfidenceClass::High);
@@ -86,12 +98,12 @@ int main() {
         // The recovered geometry is connected to the ground-symbol
         // approach: an accepted conductor segment with real (non-zero)
         // length terminates at the ground symbol's own anchor point
-        // (719, 547) - the recovered path, not a fabricated single point.
+        // (691, 472) - the recovered path, not a fabricated single point.
         bool found_recovery_evidence = false;
         for (const auto& segment : model.conductor_segments) {
             const bool touches_anchor =
-                (segment.geometry.a.x == 719.0 && segment.geometry.a.y == 547.0) ||
-                (segment.geometry.b.x == 719.0 && segment.geometry.b.y == 547.0);
+                (segment.geometry.a.x == 691.0 && segment.geometry.a.y == 472.0) ||
+                (segment.geometry.b.x == 691.0 && segment.geometry.b.y == 472.0);
             if (touches_anchor && segment.geometry.length() > 0.0) {
                 found_recovery_evidence = true;
                 break;
@@ -103,7 +115,7 @@ int main() {
     // CASE 2: short L-bend / vertical ground approach.
     {
         const std::string component_id =
-            "component-candidate-shape-region-6b6ccc2d59afe578";
+            "component-candidate-shape-region-8a5cc8ed3c845fb5";
         const EndpointCandidate* ground = ground_endpoint_for(model, component_id);
         assert(ground != nullptr);
         assert(ground->confidence == ConfidenceClass::High);
@@ -120,13 +132,13 @@ int main() {
         ConfidenceClass confidence;
     };
     const KnownGood known_good[] = {
-        {"component-candidate-shape-region-0edf5ce35037fec3", 585.5, 585,
+        {"component-candidate-shape-region-06fae9014799309a", 561.5, 510,
          ConfidenceClass::High},
-        {"component-candidate-shape-region-1acbaeb7ac6ac87a", 629.5, 585,
+        {"component-candidate-shape-region-2ad28f222606eb5a", 517.5, 510,
          ConfidenceClass::High},
-        {"component-candidate-shape-region-a434a925670e9b65", 935, 542,
+        {"component-candidate-shape-region-4a14c6e2c81554a8", 867, 467,
          ConfidenceClass::Medium},
-        {"component-candidate-shape-region-791276441805b2e0", 656, 546,
+        {"component-candidate-shape-region-82b98a38564b3503", 588, 471,
          ConfidenceClass::High},
     };
     for (const auto& expected : known_good) {

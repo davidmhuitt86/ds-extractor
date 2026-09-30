@@ -48,12 +48,21 @@ try {
         Fail "The release workflow is main-only. Current branch: $branch"
     }
 
-    # Release is a synchronization/validation action only. It never commits local changes.
-    # --ff-only is required here: a plain "git pull" silently creates a merge commit
-    # (i.e. it DOES commit) whenever local main has diverged from origin/main, which
-    # contradicts this script's own promise never to modify history. With --ff-only,
-    # any divergence makes git itself refuse and report the problem instead of quietly
-    # fabricating a merge commit.
+    # This workflow only ever produces disposable local file changes (extraction
+    # output, logs, review artifacts written by running the tool) - never source
+    # edits, and never local commits (extraction-review publishing pushes to the
+    # dedicated extraction-results branch, not main). Those disposable working-tree
+    # changes must never block an automatic release, so they are discarded here
+    # unconditionally before pulling.
+    Step "Discarding local working-tree changes"
+    Invoke-Checked "git" @("reset", "--hard", "HEAD")
+
+    # --ff-only is still required on the pull itself: a plain "git pull" silently
+    # creates a merge commit (i.e. it DOES commit) whenever local main has actual
+    # commits origin/main does not. That indicates something committed to main
+    # outside this workflow (exactly what an older, since-fixed version of
+    # dx-publish-review.ps1 used to do) and should stop the release and be
+    # investigated, not be silently merged away.
     Step "Pulling latest main"
     Invoke-Checked "git" @("pull", "--ff-only", "origin", "main")
 

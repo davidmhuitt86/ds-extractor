@@ -158,9 +158,17 @@ void findings(std::ostream& out, const CoverageReport& c) {
 void ExtractionAuditExporter::export_json(
     const WireModel& model, const fs::path& output_path) {
 
-    std::ofstream out(output_path);
+    // AP-DIAG-017A: write to a sibling temp file and rename over the real
+    // path only once the whole document has been written successfully -
+    // matching ReviewArtifactWriter::write's same temp-then-rename
+    // approach - so a failure partway through can never leave a
+    // truncated/corrupt extraction_audit.json in place of a previously
+    // valid one.
+    const fs::path tmp_path = output_path.string() + ".tmp";
+
+    std::ofstream out(tmp_path);
     if (!out)
-        throw std::runtime_error("Unable to create extraction audit: " + output_path.string());
+        throw std::runtime_error("Unable to create extraction audit: " + tmp_path.string());
 
     auto components = model.component_candidates;
     auto terminals = model.terminal_candidates;
@@ -373,6 +381,19 @@ void ExtractionAuditExporter::export_json(
         << "\"findings\":";
     findings(out,c);
     out << "}\n}\n";
+    out.close();
+
+    std::error_code error;
+    fs::rename(tmp_path, output_path, error);
+    if (error) {
+        // Cross-filesystem temp dirs can make rename() fail; fall back to
+        // copy+remove, still swapping in the fully-written file only once
+        // it is complete.
+        fs::copy_file(tmp_path, output_path, fs::copy_options::overwrite_existing, error);
+        if (error)
+            throw std::runtime_error("Unable to publish extraction audit: " + output_path.string());
+        fs::remove(tmp_path);
+    }
 }
 
 } // namespace eke::dx::wire

@@ -21,6 +21,29 @@ namespace fs = std::filesystem;
 namespace eke::dx::wire {
 namespace {
 
+// AP-DIAG-017A: review_manifest.json wrote model.source_id (and validation
+// warning codes) directly into a JSON string literal with no escaping.
+// source_id can be an absolute Windows path (backslashes, and potentially
+// quotes), which produces invalid JSON - breaking any consumer, including
+// the publication integrity check that compares this file against
+// extraction_audit.json (whose own exporter already escapes via its own
+// local esc() helper).
+std::string json_escape(const std::string& value) {
+    std::string result;
+    result.reserve(value.size());
+    for (const char ch : value) {
+        switch (ch) {
+        case '\\': result += "\\\\"; break;
+        case '"': result += "\\\""; break;
+        case '\n': result += "\\n"; break;
+        case '\r': result += "\\r"; break;
+        case '\t': result += "\\t"; break;
+        default: result += ch; break;
+        }
+    }
+    return result;
+}
+
 cv::Scalar kind_color(ComponentSymbolKind kind) {
     switch (kind) {
     case ComponentSymbolKind::ChassisGround:
@@ -435,7 +458,7 @@ void write_manifest(const WireModel& model, const fs::path& path) {
 
     out << "{" << '\n'
         << "  \"generated_at\": \"" << generation_timestamp() << "\"," << '\n'
-        << "  \"source_id\": \"" << model.source_id << "\"," << '\n'
+        << "  \"source_id\": \"" << json_escape(model.source_id) << "\"," << '\n'
         << "  \"page\": " << model.page << "," << '\n'
         << "  \"image_width\": " << model.image_width << "," << '\n'
         << "  \"image_height\": " << model.image_height << "," << '\n'
@@ -462,7 +485,7 @@ void write_manifest(const WireModel& model, const fs::path& path) {
 
     for (std::size_t i = 0; i < model.audit.validation_warning_summaries.size(); ++i) {
         const auto& summary = model.audit.validation_warning_summaries[i];
-        out << "    \"" << summary.code << "\": " << summary.count
+        out << "    \"" << json_escape(summary.code) << "\": " << summary.count
             << (i + 1 == model.audit.validation_warning_summaries.size() ? "\n" : ",\n");
     }
 
@@ -502,14 +525,29 @@ void ReviewArtifactWriter::write(
     const cv::Mat& normalized,
     const fs::path& output_root) {
 
+    // AP-DIAG-017A: write into a sibling temporary directory and only
+    // atomically replace the published extraction_review directory once
+    // every image and the manifest have been written successfully. Before
+    // this fix, remove_all() cleared the live directory up front and then
+    // wrote 15 images one at a time; any failure partway through (a render
+    // exception, a full disk, a locked file) left the live directory
+    // cleared but incomplete, while extraction_audit.json - written
+    // earlier in the same ExtractionArtifactWriter::write() call - stayed
+    // fully intact from that same run. That divergence is exactly what the
+    // publication integrity guard (tools/lib/dx-artifact-integrity.ps1)
+    // now detects and refuses to publish; this change additionally
+    // prevents the live artifact tree itself from ever being left in that
+    // half-written state to begin with.
     const fs::path review = output_root / "artifacts" / "extraction_review";
-    std::error_code error;
-    fs::remove_all(review, error);
-    if (error)
-        throw std::runtime_error("Unable to clear extraction review directory: " +
-                                 review.string());
+    const fs::path review_tmp = output_root / "artifacts" / "extraction_review.tmp";
 
-    fs::create_directories(review);
+    std::error_code error;
+    fs::remove_all(review_tmp, error);
+    if (error)
+        throw std::runtime_error("Unable to clear temporary extraction review directory: " +
+                                 review_tmp.string());
+
+    fs::create_directories(review_tmp);
 
     if (normalized.empty())
         throw std::runtime_error("Cannot create extraction review from empty image");
@@ -520,27 +558,36 @@ void ReviewArtifactWriter::write(
     else
         normalized.copyTo(source);
 
-    if (!cv::imwrite((review / "00_source.png").string(), source))
+    if (!cv::imwrite((review_tmp / "00_source.png").string(), source))
         throw std::runtime_error("Unable to write source review image");
 
-    write_image(normalized, model, review / "01_wires.png", render_wires);
-    write_image(normalized, model, review / "02_wire_colors.png", render_wire_colors);
-    write_image(normalized, model, review / "03_symbols.png",
+    write_image(normalized, model, review_tmp / "01_wires.png", render_wires);
+    write_image(normalized, model, review_tmp / "02_wire_colors.png", render_wire_colors);
+    write_image(normalized, model, review_tmp / "03_symbols.png",
                 [](cv::Mat& image, const WireModel& value) {
                     render_symbols(image, value, true);
                 });
-    write_image(normalized, model, review / "04_terminals.png", render_terminals);
-    write_image(normalized, model, review / "05_connectors.png", render_connectors);
-    write_image(normalized, model, review / "06_splices.png", render_splices);
-    write_image(normalized, model, review / "07_grounds.png", render_grounds);
-    write_image(normalized, model, review / "08_labels.png", render_labels);
-    write_image(normalized, model, review / "09_topology.png", render_topology);
-    write_image(normalized, model, review / "10_component_bounds.png", render_bounds);
-    write_image(normalized, model, review / "11_endpoint_debug.png", render_endpoints);
-    write_image(normalized, model, review / "12_recognition.png", render_recognition);
-    write_combined(normalized, model, review / "13_combined.png");
-    write_image(normalized, model, review / "14_symbol_geometry.png", render_symbol_geometry);
-    write_manifest(model, review / "review_manifest.json");
+    write_image(normalized, model, review_tmp / "04_terminals.png", render_terminals);
+    write_image(normalized, model, review_tmp / "05_connectors.png", render_connectors);
+    write_image(normalized, model, review_tmp / "06_splices.png", render_splices);
+    write_image(normalized, model, review_tmp / "07_grounds.png", render_grounds);
+    write_image(normalized, model, review_tmp / "08_labels.png", render_labels);
+    write_image(normalized, model, review_tmp / "09_topology.png", render_topology);
+    write_image(normalized, model, review_tmp / "10_component_bounds.png", render_bounds);
+    write_image(normalized, model, review_tmp / "11_endpoint_debug.png", render_endpoints);
+    write_image(normalized, model, review_tmp / "12_recognition.png", render_recognition);
+    write_combined(normalized, model, review_tmp / "13_combined.png");
+    write_image(normalized, model, review_tmp / "14_symbol_geometry.png", render_symbol_geometry);
+    write_manifest(model, review_tmp / "review_manifest.json");
+
+    // Every artifact is complete under review_tmp - swap it into place as
+    // the last step, so a failure anywhere above never touches the live
+    // directory at all.
+    fs::remove_all(review, error);
+    if (error)
+        throw std::runtime_error("Unable to clear extraction review directory: " +
+                                 review.string());
+    fs::rename(review_tmp, review);
 }
 
 } // namespace eke::dx::wire

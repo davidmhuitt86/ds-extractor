@@ -1,7 +1,10 @@
 # Publish the current extraction review artifacts to the dedicated extraction-results branch.
 # This publisher is launched automatically by the GUI after every successful extraction.
 # The main working tree is never switched, committed, or pushed.
-# extraction-results contains ONLY the current extraction artifacts needed for review:\n#   artifacts/extraction_review\n#   artifacts/audit/extraction_audit.json
+# extraction-results contains ONLY the current extraction artifacts needed
+# for review:
+#   artifacts/extraction_review
+#   artifacts/audit/extraction_audit.json
 
 [CmdletBinding()]
 param()
@@ -12,10 +15,20 @@ Set-StrictMode -Version Latest
 $repoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $repoRoot
 
+# AP-DIAG-017A: shared integrity check (Test-ExtractionArtifactIntegrity)
+# verifying the review tree and the structured audit came from the same
+# extraction run, before anything here is allowed to touch git.
+. (Join-Path $PSScriptRoot "lib/dx-artifact-integrity.ps1")
+
 $resultsBranch = "extraction-results"
-$reviewRelative = "artifacts\extraction_review"
+# Forward slashes throughout, not backslashes: these paths are also used
+# as git pathspecs (git treats backslash as an escape character in a
+# pathspec, not a separator, outside Windows), and forward slashes work
+# identically in Join-Path and Test-Path on both Windows PowerShell and
+# PowerShell 7+.
+$reviewRelative = "artifacts/extraction_review"
 $reviewPath = Join-Path $repoRoot $reviewRelative
-$auditRelative = "artifacts\audit\extraction_audit.json"
+$auditRelative = "artifacts/audit/extraction_audit.json"
 $auditPath = Join-Path $repoRoot $auditRelative
 $worktreePath = Join-Path ([System.IO.Path]::GetTempPath()) ("dx-extraction-results-" + [guid]::NewGuid().ToString("N"))
 $worktreeAdded = $false
@@ -55,6 +68,20 @@ try {
         Fail "Structured extraction audit does not exist: $auditPath"
     }
 
+    # AP-DIAG-017A integrity guard: the review tree and the structured audit
+    # must be internally complete and must agree with each other (same
+    # source identity, same population counts) before anything is staged,
+    # committed, or pushed. A mismatch means the two artifacts came from
+    # different runs (e.g. a partial local write from an interrupted
+    # extraction) and publication must fail outright - never reconcile or
+    # patch over it.
+    Write-Host "[DX-REVIEW] Verifying review/audit integrity"
+    $integrity = Test-ExtractionArtifactIntegrity -ReviewDir $reviewPath -AuditPath $auditPath
+    if (-not $integrity.Ok) {
+        Fail "Artifact integrity check failed: $($integrity.Reason)"
+    }
+    Write-Host "[DX-REVIEW] Integrity check passed: review and audit agree" -ForegroundColor Green
+
     Write-Host "[DX-REVIEW] Fetching $resultsBranch"
     Invoke-Checked "git" @("fetch", "origin", $resultsBranch)
 
@@ -78,7 +105,11 @@ try {
     New-Item -ItemType Directory -Path (Split-Path -Parent $auditDestination) -Force | Out-Null
 
     Write-Host "[DX-REVIEW] Replacing extraction results"
-    Copy-Item -LiteralPath (Join-Path $reviewPath "*") -Destination $destination -Recurse -Force
+    # -LiteralPath disables wildcard expansion entirely, so a trailing "*"
+    # with it is never reliably a directory-contents copy - use -Path,
+    # which expands wildcards consistently on both Windows PowerShell and
+    # PowerShell 7+.
+    Copy-Item -Path (Join-Path $reviewPath "*") -Destination $destination -Recurse -Force
     Copy-Item -LiteralPath $auditPath -Destination $auditDestination -Force
 
     Push-Location $worktreePath

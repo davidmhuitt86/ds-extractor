@@ -321,6 +321,11 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-review-artifact-writer PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-review-artifact-writer COMMAND dx-wire-test-review-artifact-writer)
 
+    add_executable(dx-wire-test-source-object-reconciliation tests/test_source_object_reconciliation.cpp)
+    target_compile_definitions(dx-wire-test-source-object-reconciliation PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_link_libraries(dx-wire-test-source-object-reconciliation PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-source-object-reconciliation COMMAND dx-wire-test-source-object-reconciliation)
+
     add_executable(dx-wire-test-recognition-input-exporter tests/test_recognition_input_exporter.cpp)
     target_compile_definitions(dx-wire-test-recognition-input-exporter PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     target_link_libraries(dx-wire-test-recognition-input-exporter PRIVATE eke_dx_wire)

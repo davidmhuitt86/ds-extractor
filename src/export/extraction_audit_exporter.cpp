@@ -96,6 +96,16 @@ const char* component_kind(ComponentCandidateKind v) {
     }
     return "unknown";
 }
+const char* terminal_candidate_kind(TerminalCandidateKind v) {
+    switch (v) {
+    case TerminalCandidateKind::ComponentBoundary: return "component_boundary";
+    case TerminalCandidateKind::ConnectorBoundary: return "connector_boundary";
+    case TerminalCandidateKind::GroundConnection: return "ground_connection";
+    case TerminalCandidateKind::Unknown: return "unknown";
+    }
+    return "unknown";
+}
+
 const char* connector_topology(ConnectorTopologyKind v) {
     switch (v) {
     case ConnectorTopologyKind::Inline: return "inline";

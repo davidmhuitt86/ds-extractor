@@ -77,6 +77,7 @@ add_library(eke_dx_wire
     src/image/component_candidate_classifier.cpp
     src/image/diagram_furniture_classifier.cpp
     src/export/symbol_renderer.cpp
+    src/export/extraction_audit_exporter.cpp
     src/export/structured_svg_exporter.cpp
     src/export/svg_structure_validator.cpp
     src/export/artifact_writer.cpp
@@ -290,6 +291,9 @@ if(DX_WIRE_BUILD_TESTS)
     add_test(NAME dx-wire-test-wire-model-validator COMMAND dx-wire-test-wire-model-validator)
 
     add_executable(dx-wire-test-extraction-audit tests/test_extraction_audit.cpp)
+    add_executable(dx-wire-test-extraction-audit-exporter tests/test_extraction_audit_exporter.cpp)
+    target_link_libraries(dx-wire-test-extraction-audit-exporter PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-extraction-audit-exporter COMMAND dx-wire-test-extraction-audit-exporter)
     add_executable(dx-wire-test-recognition-input-exporter tests/test_recognition_input_exporter.cpp)
     target_compile_definitions(dx-wire-test-recognition-input-exporter PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     target_link_libraries(dx-wire-test-recognition-input-exporter PRIVATE eke_dx_wire)

@@ -1,29 +1,23 @@
 // AP-DIAG-018 regression coverage for the source-to-object reconciliation
-// artifact (artifacts/audit/source_object_reconciliation.json). This is a
-// diagnostic/reporting artifact, not a new pipeline stage - this test
-// verifies the structural invariants the AP itself required, not any
-// classification judgment (which is a one-time human/model analysis, not
-// something a unit test can re-derive):
+// artifact. Diagnostic/reporting only; this test does not implement detector
+// behavior or reproduce human visual classification.
 //
-//   1. Every object_id referenced anywhere in the reconciliation artifact
-//      is a real stable ID present in the same-run extraction_audit.json.
-//   2. classification_counts for each population sum to that population's
-//      record count (no silently-dropped records).
-//   3. Every population's record count matches its declared summary total
-//      (no silently-omitted population).
-//   4. Deterministic serialization: constructing the same logical dataset
-//      twice and serializing both with sorted keys produces byte-identical
-//      JSON text - the principle the real artifact was generated under
-//      (Python's json.dumps(..., sort_keys=True), no generated_at-style
-//      field used for identity).
+// Invariants:
+//   1. Every referenced object_id and related_object_id resolves to a stable
+//      ID in the same-run extraction_audit.json.
+//   2. Machine-defined reconciliation populations exactly match the
+//      populations derivable from that same audit.
+//   3. No duplicate reconciliation IDs; classification counts and summary
+//      totals agree.
+//   4. Actual artifact records are in stable object_id order.
+//   5. Visual sample IDs are unique and resolve to known objects.
+//   6. The 27 unresolved-Wire subset is structurally validated without
+//      pretending the test can reproduce human visual judgment.
 //
-// This test is skipped (not failed) when the two artifact files are not
-// present, since they are diagnostic outputs checked in by AP-DIAG-018
-// rather than produced by any build step.
+// The test is skipped when diagnostic artifacts are absent because they are
+// checked-in AP outputs rather than build products.
 
 #include <opencv2/core.hpp>
-
-#include <algorithm>
 #include <cassert>
 #include <filesystem>
 #include <fstream>
@@ -32,12 +26,10 @@
 #include <set>
 #include <sstream>
 #include <string>
-#include <vector>
 
 namespace fs = std::filesystem;
 
 namespace {
-
 std::string slurp(const fs::path& path) {
     std::ifstream in(path);
     std::stringstream ss;
@@ -48,12 +40,10 @@ std::string slurp(const fs::path& path) {
 std::set<std::string> collect_stable_ids(const cv::FileNode& objects) {
     std::set<std::string> ids;
     for (const auto& collection : objects) {
-        if (!collection.isSeq())
-            continue;
+        if (!collection.isSeq()) continue;
         for (const auto& item : collection) {
             const cv::FileNode id_node = item["id"];
-            if (!id_node.empty())
-                ids.insert((std::string)id_node);
+            if (!id_node.empty()) ids.insert((std::string)id_node);
         }
     }
     return ids;
@@ -80,8 +70,7 @@ const char* kSummaryKeys[] = {
     "connectors_total",
     "geometric_endpoint_warnings_total",
 };
-
-} // namespace
+}
 
 int main() {
     const fs::path root = fs::path(DX_WIRE_SOURCE_DIR);
@@ -103,28 +92,88 @@ int main() {
         slurp(reconciliation_path), cv::FileStorage::READ | cv::FileStorage::MEMORY | cv::FileStorage::FORMAT_JSON);
     assert(rec_fs.isOpened());
 
-    // 1 & 2: every referenced object_id (and related_object_ids) is a known
-    // stable ID, and classification_counts sums match record counts.
+    std::map<std::string, std::set<std::string>> expected;
+    const cv::FileNode objects = audit_fs["objects"];
+    std::set<std::string> all_endpoint_ids, wire_endpoint_ids, owned_edge_ids, owned_segment_ids;
+    std::set<std::string> components_with_terminal_evidence, net_endpoint_ids;
+    std::set<std::string> geometric_warning_wire_ids, all_wire_ids;
+    std::map<std::string, std::string> endpoint_kind;
+
+    for (const auto& item : objects["endpoint_candidates"]) {
+        const std::string id = (std::string)item["id"];
+        all_endpoint_ids.insert(id);
+        endpoint_kind[id] = (std::string)item["kind"];
+    }
+
+    for (const auto& item : objects["wires"]) {
+        const std::string id = (std::string)item["id"];
+        all_wire_ids.insert(id);
+        const std::string a = (std::string)item["start_endpoint"];
+        const std::string b = (std::string)item["end_endpoint"];
+        wire_endpoint_ids.insert(a);
+        wire_endpoint_ids.insert(b);
+        if (endpoint_kind[a] == "geometric" && endpoint_kind[b] == "geometric")
+            geometric_warning_wire_ids.insert(id);
+        for (const auto& x : item["topology_edges"])
+            owned_edge_ids.insert((std::string)x);
+        for (const auto& x : item["conductor_segments"])
+            owned_segment_ids.insert((std::string)x);
+    }
+
+    for (const auto& id : all_endpoint_ids)
+        if (!wire_endpoint_ids.count(id)) expected["endpoint_reconciliation"].insert(id);
+
+    for (const auto& item : objects["topology_edges"]) {
+        const std::string id = (std::string)item["id"];
+        if (!owned_edge_ids.count(id))
+            expected["topology_edge_reconciliation"].insert(id);
+    }
+
+    for (const auto& item : objects["conductor_segments"]) {
+        const std::string id = (std::string)item["id"];
+        if (!owned_segment_ids.count(id))
+            expected["conductor_segment_reconciliation"].insert(id);
+    }
+
+    std::set<std::string> component_ids;
+    for (const auto& item : objects["components"])
+        component_ids.insert((std::string)item["id"]);
+    for (const auto& item : objects["terminal_candidates"])
+        components_with_terminal_evidence.insert((std::string)item["component_candidate_id"]);
+    for (const auto& id : component_ids)
+        if (!components_with_terminal_evidence.count(id))
+            expected["component_reconciliation"].insert(id);
+
+    for (const auto& net : objects["electrical_nets"])
+        for (const auto& x : net["endpoint_ids"])
+            net_endpoint_ids.insert((std::string)x);
+    for (const auto& id : all_endpoint_ids)
+        if (!net_endpoint_ids.count(id))
+            expected["net_endpoint_reconciliation"].insert(id);
+
+    for (const auto& item : objects["connectors"])
+        expected["connector_reconciliation"].insert((std::string)item["id"]);
+    expected["geometric_endpoint_warning_reconciliation"] = geometric_warning_wire_ids;
+
     for (const char* group : kGroups) {
         const cv::FileNode records = rec_fs[group];
         assert(records.isSeq());
-
+        std::set<std::string> actual_ids;
         std::map<std::string, int> tally;
+        std::string previous_id;
+
         for (const auto& record : records) {
             const std::string object_id = (std::string)record["object_id"];
             assert(known_ids.count(object_id) > 0);
-
-            const cv::FileNode related = record["related_object_ids"];
-            if (related.isSeq()) {
-                for (const auto& rel : related) {
-                    const std::string rel_id = (std::string)rel;
-                    assert(known_ids.count(rel_id) > 0);
-                }
-            }
-
-            const std::string classification = (std::string)record["classification"];
-            ++tally[classification];
+            assert(actual_ids.insert(object_id).second);
+            if (!previous_id.empty()) assert(previous_id < object_id);
+            previous_id = object_id;
+            for (const auto& rel : record["related_object_ids"])
+                assert(known_ids.count((std::string)rel) > 0);
+            ++tally[(std::string)record["classification"]];
         }
+
+        assert(actual_ids == expected[group]);
 
         const cv::FileNode counts = rec_fs["classification_counts"][group];
         assert(counts.isMap());
@@ -138,45 +187,32 @@ int main() {
         assert(declared_total == static_cast<int>(records.size()));
     }
 
-    // 3: population record counts match the declared summary totals.
-    const cv::FileNode summary = rec_fs["summary"];
-    for (std::size_t i = 0; i < sizeof(kGroups) / sizeof(kGroups[0]); ++i) {
-        const int declared = (int)summary[kSummaryKeys[i]];
-        const int actual = static_cast<int>(rec_fs[kGroups[i]].size());
-        assert(declared == actual);
+    const cv::FileNode unresolved = rec_fs["wire_reconciliation"];
+    assert(unresolved.size() == 27);
+    for (const auto& record : unresolved) {
+        const std::string id = (std::string)record["object_id"];
+        assert(all_wire_ids.count(id) > 0);
+        for (const auto& w : objects["wires"]) {
+            if ((std::string)w["id"] == id) {
+                assert(endpoint_kind[(std::string)w["start_endpoint"]] == "geometric");
+                assert(endpoint_kind[(std::string)w["end_endpoint"]] == "geometric");
+                break;
+            }
+        }
     }
 
-    // 4: deterministic serialization of the same logical dataset.
-    struct Record {
-        std::string object_id;
-        std::string classification;
-        std::string confidence;
-    };
-    const std::vector<Record> sample = {
-        {"endpoint-candidate-b", "WIRE_INTERRUPTION", "MEDIUM"},
-        {"endpoint-candidate-a", "COMPONENT_TERMINAL", "HIGH"},
-    };
+    const cv::FileNode summary = rec_fs["summary"];
+    for (std::size_t i = 0; i < sizeof(kGroups) / sizeof(kGroups[0]); ++i)
+        assert((int)summary[kSummaryKeys[i]] == static_cast<int>(rec_fs[kGroups[i]].size()));
 
-    auto serialize = [](std::vector<Record> records) {
-        std::sort(records.begin(), records.end(),
-                   [](const Record& a, const Record& b) { return a.object_id < b.object_id; });
-        std::ostringstream out;
-        out << "[";
-        for (std::size_t i = 0; i < records.size(); ++i) {
-            if (i)
-                out << ",";
-            out << "{\"object_id\":\"" << records[i].object_id
-                << "\",\"classification\":\"" << records[i].classification
-                << "\",\"confidence\":\"" << records[i].confidence << "\"}";
-        }
-        out << "]";
-        return out.str();
-    };
-
-    const std::string first = serialize(sample);
-    const std::string second = serialize(sample);
-    assert(first == second);
-    assert(first.find("endpoint-candidate-a") < first.find("endpoint-candidate-b"));
+    const cv::FileNode samples = rec_fs["evidence"]["source_visual_sample_object_ids"];
+    std::set<std::string> sample_ids;
+    for (const auto& item : samples) {
+        const std::string id = (std::string)item;
+        assert(sample_ids.insert(id).second);
+        assert(known_ids.count(id) > 0);
+    }
+    assert(sample_ids.size() == 19);
 
     std::cout << "source object reconciliation invariants passed\n";
     return 0;

@@ -1,0 +1,1379 @@
+{
+  "circular_symbol_reconciliation": [
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-02445f041ac03529",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 485,
+      "y": 249
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-026ddcef0511ad1d",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 516,
+      "y": 209
+    },
+    {
+      "classification": "REAL_COMPONENT_SYMBOL",
+      "confidence": "HIGH",
+      "evidence_detail": "Source-visually confirmed standalone circular symbol (e.g. indicator lamp) with its own lead line and base bar - structurally unlike the switch-matrix grid-gap candidates: not bounded by 4 crossing lines, has real terminal evidence.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-05f79b9b956bbf7a",
+      "related_object_ids": [],
+      "root_cause_category": "detector_correct",
+      "x": 511,
+      "y": 448
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-11226a4bc29f063c",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 420,
+      "y": 259
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-1a77da76ac3a3d5f",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 526,
+      "y": 304
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-2717615cbdd65041",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 507,
+      "y": 209
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-274d8046861953cc",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 806,
+      "y": 355
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-2f3af985953d9d45",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 532,
+      "y": 448
+    },
+    {
+      "classification": "REAL_COMPONENT_SYMBOL",
+      "confidence": "HIGH",
+      "evidence_detail": "Source-visually confirmed standalone circular symbol (e.g. indicator lamp) with its own lead line and base bar - structurally unlike the switch-matrix grid-gap candidates: not bounded by 4 crossing lines, has real terminal evidence.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-5864547d7d704ac3",
+      "related_object_ids": [],
+      "root_cause_category": "detector_correct",
+      "x": 357,
+      "y": 462
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-5db82f3f924944c2",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 806,
+      "y": 434
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-66542cc643bdc574",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 477,
+      "y": 304
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-9155d5cc765de4f2",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 561,
+      "y": 468
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-a108a12abe57bb1b",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 421,
+      "y": 249
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-a3adb49e037b3f01",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 181,
+      "y": 329
+    },
+    {
+      "classification": "REAL_COMPONENT_SYMBOL",
+      "confidence": "HIGH",
+      "evidence_detail": "Source-visually confirmed standalone circular symbol (e.g. indicator lamp) with its own lead line and base bar - structurally unlike the switch-matrix grid-gap candidates: not bounded by 4 crossing lines, has real terminal evidence.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-a70e3ecba418cc1a",
+      "related_object_ids": [],
+      "root_cause_category": "detector_correct",
+      "x": 761,
+      "y": 361
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-a964a9eff44fe3d8",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 843,
+      "y": 434
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-abcf7815c852cf04",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 466,
+      "y": 190
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-b46aef77f482532d",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 357,
+      "y": 69
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-bbf83caa39a83a48",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 618,
+      "y": 249
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-c0294dea56e42d9a",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 517,
+      "y": 189
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-c4eb14bc7d7b92b6",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 516,
+      "y": 199
+    },
+    {
+      "classification": "REAL_COMPONENT_SYMBOL",
+      "confidence": "HIGH",
+      "evidence_detail": "Source-visually confirmed standalone circular symbol (e.g. indicator lamp) with its own lead line and base bar - structurally unlike the switch-matrix grid-gap candidates: not bounded by 4 crossing lines, has real terminal evidence.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-c8c5b83bef6a9843",
+      "related_object_ids": [],
+      "root_cause_category": "detector_correct",
+      "x": 77,
+      "y": 83
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-ca944f1583a59d1b",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 712,
+      "y": 434
+    },
+    {
+      "classification": "REAL_COMPONENT_SYMBOL",
+      "confidence": "HIGH",
+      "evidence_detail": "Source-visually confirmed standalone circular symbol (e.g. indicator lamp) with its own lead line and base bar - structurally unlike the switch-matrix grid-gap candidates: not bounded by 4 crossing lines, has real terminal evidence.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-d2311c8e9d9e2708",
+      "related_object_ids": [],
+      "root_cause_category": "detector_correct",
+      "x": 90,
+      "y": 98
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-e44323cf6cb45e2a",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 344,
+      "y": 69
+    },
+    {
+      "classification": "JUNCTION_GRID_GAP_FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "AP-DIAG-019 CORRECTION to AP-DIAG-018's 'filled junction dot' characterization: direct re-inspection at this exact bounding box shows blank negative space enclosed by 4 crossing switch-matrix grid lines, not a filled dot (a nearby dot sometimes exists at an adjacent intersection but is not within this box). Measured via the real detect_circles() pipeline on source_normalized.png: interior_density is low (0.00-0.28, under the 0.30 circle_max_interior_ink_density threshold, i.e. genuinely hollow at the center) and bounded_by_crossing_lines() returns false (weakest_side well under the 0.5 min_continuity threshold) for every one of the 21 candidates - the anti-false-positive check that exists specifically for this pattern does not fire because circle_crossing_probe_distance=25px overshoots the switch matrix's tight grid spacing (candidate boxes are 7-22px), landing the continuity probe on a different part of the grid rather than a continuation of the same line.",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "component-candidate-shape-region-f28bb4a7b0a62256",
+      "related_object_ids": [],
+      "root_cause_category": "common_bounded_by_crossing_lines_gap",
+      "x": 411,
+      "y": 346
+    }
+  ],
+  "classification_counts": {
+    "circular_symbol_reconciliation": {
+      "JUNCTION_GRID_GAP_FALSE_POSITIVE": 21,
+      "REAL_COMPONENT_SYMBOL": 5
+    },
+    "connector_reconciliation": {
+      "FALSE_POSITIVE": 5,
+      "REAL_CONNECTOR": 2
+    },
+    "net_resolution_gap_reconciliation": {
+      "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED": 62
+    }
+  },
+  "connector_reconciliation": [
+    {
+      "classification": "FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "Opposing convexity-defect notches measured on the TOP/BOTTOM axis (notches=3, sides=TB) - not the LEFT/RIGHT axis both real connectors share. Source-visually confirmed (AP-DIAG-018) as a diode symbol (rectangle+triangle), whose apex/rectangle junction produces a top/bottom notch pair ConnectorGeometryDetector's opposing_notches test does not distinguish from a real connector body. detector_topology=inline, detector_confidence=high, bbox=(369,81,28,11).",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "connector-08bf96db0b914922",
+      "related_object_ids": [
+        "connector-terminal-b21b4561f5c5a931"
+      ],
+      "root_cause_category": "common_notch_axis_defect",
+      "x": 369,
+      "y": 81
+    },
+    {
+      "classification": "FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "Opposing convexity-defect notches on the TOP/BOTTOM axis (notches=2, sides=TB). Source-visually confirmed (AP-DIAG-018) as a single wire-color-code character on wire ink, same mechanism as connector-fdd33a2a7f942823. detector_topology=component_attached, detector_confidence=medium, bbox=(365,345,46,10).",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "connector-0aa656ccf7f56e0e",
+      "related_object_ids": [
+        "connector-terminal-d91fdaeeaf4f6419"
+      ],
+      "root_cause_category": "common_notch_axis_defect",
+      "x": 365,
+      "y": 345
+    },
+    {
+      "classification": "REAL_CONNECTOR",
+      "confidence": "HIGH",
+      "evidence_detail": "Opposing convexity-defect notches on the LEFT/RIGHT axis (notches=3, sides=LR). Source-visually confirmed (AP-DIAG-018): genuine '[MINI]' connector body. detector_topology=inline, detector_confidence=high, bbox=(355,352,17,26).",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "connector-3bb50861590cea40",
+      "related_object_ids": [],
+      "root_cause_category": "detector_correct",
+      "x": 355,
+      "y": 352
+    },
+    {
+      "classification": "FALSE_POSITIVE",
+      "confidence": "MEDIUM",
+      "evidence_detail": "Opposing convexity-defect notches on the TOP/BOTTOM axis (notches=3, sides=TB) - same axis signature as the other 4 false positives, though the visual read (dense switch-matrix staircase routing) is lower confidence than the other cases (AP-DIAG-018 rated this one LOW). detector_topology=component_attached, detector_confidence=medium, bbox=(420,304,57,51).",
+      "evidence_type": "CROSS_LAYER",
+      "object_id": "connector-713147ddb5e260d6",
+      "related_object_ids": [
+        "connector-terminal-5aee40d4e2242546",
+        "connector-terminal-9597df1b081664b1"
+      ],
+      "root_cause_category": "common_notch_axis_defect",
+      "x": 420,
+      "y": 304
+    },
+    {
+      "classification": "FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "Opposing convexity-defect notches on the TOP/BOTTOM axis (notches=2, sides=TB). Source-visually confirmed (AP-DIAG-018) as a single wire-color-code character on wire ink, same mechanism as connector-fdd33a2a7f942823. detector_topology=component_attached, detector_confidence=low, bbox=(371,259,49,10).",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "connector-7a793f0ead4a15ca",
+      "related_object_ids": [],
+      "root_cause_category": "common_notch_axis_defect",
+      "x": 371,
+      "y": 259
+    },
+    {
+      "classification": "REAL_CONNECTOR",
+      "confidence": "HIGH",
+      "evidence_detail": "Opposing convexity-defect notches measured on the LEFT/RIGHT axis (notches=2, sides=LR) - matches the real TRX300 connector-body profile. Source-visually confirmed (AP-DIAG-018): genuine '[MINI]' connector body. detector_topology=inline, detector_confidence=medium, bbox=(600,289,18,63).",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "connector-a228885f25dd1f6b",
+      "related_object_ids": [
+        "connector-terminal-9ad4dc8cb7f600af"
+      ],
+      "root_cause_category": "detector_correct",
+      "x": 600,
+      "y": 289
+    },
+    {
+      "classification": "FALSE_POSITIVE",
+      "confidence": "HIGH",
+      "evidence_detail": "Opposing convexity-defect notches on the TOP/BOTTOM axis (notches=2, sides=TB). Source-visually confirmed (AP-DIAG-018) as the wire-color text label 'G/R' sitting on wire ink; text glyph strokes above/below the wire's own horizontal baseline produce a top/bottom notch pair. No TextRegionDetector region overlaps this box (recognition_input.json) - this label is below that detector's own scale, so a downstream text-region exclusion check would not have caught it either. detector_topology=unknown, detector_confidence=low, bbox=(371,249,49,10).",
+      "evidence_type": "SOURCE_VISUAL",
+      "object_id": "connector-fdd33a2a7f942823",
+      "related_object_ids": [
+        "connector-terminal-2c5884f7e1c33b25"
+      ],
+      "root_cause_category": "common_notch_axis_defect",
+      "x": 371,
+      "y": 249
+    }
+  ],
+  "evidence": {
+    "methodology": "Part A and Part B were established by direct execution of standalone C++ programs reproducing the exact production algorithms (ConnectorGeometryDetector's contour/convexity-defect pipeline; ShapeDetector's detect_circles, including bounded_by_crossing_lines) against the same-run normalized source image (artifacts/recognition/source_normalized.png), not sampling or visual estimation alone. Part C was established by direct reading of src/topology/distribution_decomposer.cpp's net-construction control flow, cross-referenced against the same-run extraction_audit.json's wires/endpoints/nets data. No detector or extraction source file was modified to perform this investigation - only standalone, uncommitted scratch programs that duplicate read-only logic for measurement.",
+    "source_visual_corrections": [
+      "AP-DIAG-018 characterized the 21 DIAGRAM_SYMBOL candidates as 'filled junction dots'. Direct re-inspection at the EXACT bounding boxes (not a wider surrounding crop) shows most are blank grid-gap space; a real dot sometimes sits nearby but outside the candidate's own box. The corrected mechanism is documented in circular_symbol_reconciliation; AP-DIAG-018's functional conclusion (not real components, should not have been promoted) is unchanged."
+    ]
+  },
+  "net_resolution_gap_reconciliation": [
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-9768d9abef75b6f2) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-036df7e812954879",
+      "related_object_ids": [
+        "normalized-conductor-segment-8d565d97850ef386",
+        "topology-edge-2d64de6736d8e87a",
+        "wire-9768d9abef75b6f2"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 869,
+      "y": 416.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-b5d0ece31ab9d847) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-0797040784c82bcc",
+      "related_object_ids": [
+        "normalized-conductor-segment-c55b0750a6a6779d",
+        "topology-edge-f001a0b3d172f03e",
+        "wire-b5d0ece31ab9d847"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 524,
+      "y": 433
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-0db033162c44ab92) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-0cead2d55459f166",
+      "related_object_ids": [
+        "normalized-conductor-segment-c47f1459774756c6",
+        "topology-edge-a38a1803af52d2c7",
+        "wire-0db033162c44ab92"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 643,
+      "y": 71.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-47cbef0938c6abae) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-0de51f6b18a43675",
+      "related_object_ids": [
+        "normalized-conductor-segment-ba98f96bf97e4d86",
+        "topology-edge-2570e82e34ad777b",
+        "wire-47cbef0938c6abae"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 812.5,
+      "y": 341
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-052b8783d6d5f25a) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-0fb6169cd50c0e46",
+      "related_object_ids": [
+        "normalized-conductor-segment-9aef7b0aeefaa70f",
+        "topology-edge-665c900c47b013bc",
+        "wire-052b8783d6d5f25a"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 817.5,
+      "y": 389
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-e5ac55edac408a5d) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-1109c5b0074b6dae",
+      "related_object_ids": [
+        "normalized-conductor-segment-50176d1256cb6b63",
+        "topology-edge-55121631a7a9f104",
+        "wire-e5ac55edac408a5d"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 408,
+      "y": 494
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-fa8c23f2f714c6e4) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-1185575382418c34",
+      "related_object_ids": [
+        "normalized-conductor-segment-fb2f2fc4e0efc3ed",
+        "topology-edge-01e87c217bc82c49",
+        "wire-fa8c23f2f714c6e4"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 712,
+      "y": 415.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-2341d69446f289de) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-125fbbdcd3107fb8",
+      "related_object_ids": [
+        "normalized-conductor-segment-62ca2666afb9a9f0",
+        "normalized-conductor-segment-b8754ad60b2f27f5",
+        "topology-edge-75a14f828fdbcd4e",
+        "topology-edge-dfefebd1604944d1",
+        "wire-2341d69446f289de"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 617,
+      "y": 37
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-7756fd993cb3a920) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-167ba8d923021ca8",
+      "related_object_ids": [
+        "normalized-conductor-segment-66ec853581824801",
+        "topology-edge-e07bf6ade2f61d3c",
+        "wire-7756fd993cb3a920"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 436,
+      "y": 44
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-6352c2500ffa1edf) is NOT one of the 27 fully-unresolved wires - its endpoint(s) ARE semantically resolved (kind=geometric, component_id=none). It still receives no net because DistributionDecomposer::decompose's connected topology component has exactly 2 semantic endpoints and no Ground/ExternalConnection anchor - the same explicit skip condition, applied here to a properly-resolved component terminal rather than an unresolved geometric endpoint. This is the project's documented, intentional scope for net construction (an ordinary two-terminal wire 'is still an ordinary endpoint-to-endpoint wire' per the code's own comment), not an implementation defect.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-1944d9a5ed4beb73",
+      "related_object_ids": [
+        "normalized-conductor-segment-ba6b15dd90bb495d",
+        "topology-edge-cfdce5279e51f003",
+        "wire-6352c2500ffa1edf"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip",
+      "x": 381,
+      "y": 86
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-f56a78ddcb321819) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-19a4ce345d08de45",
+      "related_object_ids": [
+        "normalized-conductor-segment-cec273c045a31cd1",
+        "topology-edge-b4989d63123d4807",
+        "wire-f56a78ddcb321819"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 800,
+      "y": 322
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-054e53a69a62ad22) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-1f7643f98eb2a86b",
+      "related_object_ids": [
+        "normalized-conductor-segment-fd27053bb812214a",
+        "topology-edge-cdf217b6b84a7acd",
+        "wire-054e53a69a62ad22"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 599,
+      "y": 379
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-054e53a69a62ad22) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-21a5ab7dc3bc7987",
+      "related_object_ids": [
+        "normalized-conductor-segment-fd27053bb812214a",
+        "topology-edge-cdf217b6b84a7acd",
+        "wire-054e53a69a62ad22"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 599,
+      "y": 407
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-9f5865edd512cd19) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-2488fd6e208d9e7f",
+      "related_object_ids": [
+        "normalized-conductor-segment-4a3001575c47aabb",
+        "topology-edge-fc0f0a70af9402ad",
+        "wire-9f5865edd512cd19"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 794.5,
+      "y": 388
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-4597b5731135bc84) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-258d563987b27473",
+      "related_object_ids": [
+        "normalized-conductor-segment-e70f860b9b872f46",
+        "topology-edge-05028e49015e8dce",
+        "wire-4597b5731135bc84"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 65.5,
+      "y": 82
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-052b8783d6d5f25a) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-2ca9067363cd76f9",
+      "related_object_ids": [
+        "normalized-conductor-segment-9aef7b0aeefaa70f",
+        "topology-edge-665c900c47b013bc",
+        "wire-052b8783d6d5f25a"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 817.5,
+      "y": 360
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-320489997d48f79c) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-2f51b95e017b1c84",
+      "related_object_ids": [
+        "normalized-conductor-segment-83b5283a1996564e",
+        "topology-edge-f7399415dd11657f",
+        "wire-320489997d48f79c"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 538.5,
+      "y": 514
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-2af8c908ce7a4838) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-35584bae58f4573a",
+      "related_object_ids": [
+        "normalized-conductor-segment-ff465f7100a5a2eb",
+        "topology-edge-ff2f4a195041d5f6",
+        "wire-2af8c908ce7a4838"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 668,
+      "y": 383
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-2e36e68fc573a50d) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-35d43b30e40cc64e",
+      "related_object_ids": [
+        "normalized-conductor-segment-9baaad93934e5eb8",
+        "topology-edge-0b0d839c9564301f",
+        "wire-2e36e68fc573a50d"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 782,
+      "y": 406.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-5827b8e84dd6f843) is NOT one of the 27 fully-unresolved wires - its endpoint(s) ARE semantically resolved (kind=component_terminal, component_id=component-candidate-shape-region-a70e3ecba418cc1a). It still receives no net because DistributionDecomposer::decompose's connected topology component has exactly 2 semantic endpoints and no Ground/ExternalConnection anchor - the same explicit skip condition, applied here to a properly-resolved component terminal rather than an unresolved geometric endpoint. This is the project's documented, intentional scope for net construction (an ordinary two-terminal wire 'is still an ordinary endpoint-to-endpoint wire' per the code's own comment), not an implementation defect.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-39fee89f583d6099",
+      "related_object_ids": [
+        "normalized-conductor-segment-4ac8b22b47438938",
+        "topology-edge-804f1b24db381d4e",
+        "wire-5827b8e84dd6f843"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip",
+      "x": 780.5,
+      "y": 361
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-5827b8e84dd6f843) is NOT one of the 27 fully-unresolved wires - its endpoint(s) ARE semantically resolved (kind=component_terminal, component_id=component-candidate-shape-region-a70e3ecba418cc1a). It still receives no net because DistributionDecomposer::decompose's connected topology component has exactly 2 semantic endpoints and no Ground/ExternalConnection anchor - the same explicit skip condition, applied here to a properly-resolved component terminal rather than an unresolved geometric endpoint. This is the project's documented, intentional scope for net construction (an ordinary two-terminal wire 'is still an ordinary endpoint-to-endpoint wire' per the code's own comment), not an implementation defect.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-3c62726dd74b3dea",
+      "related_object_ids": [
+        "normalized-conductor-segment-4ac8b22b47438938",
+        "topology-edge-804f1b24db381d4e",
+        "wire-5827b8e84dd6f843"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip",
+      "x": 780.5,
+      "y": 385
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-0db033162c44ab92) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-3e3d14a051a73616",
+      "related_object_ids": [
+        "normalized-conductor-segment-c47f1459774756c6",
+        "topology-edge-a38a1803af52d2c7",
+        "wire-0db033162c44ab92"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 612,
+      "y": 71.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-441f31e55a0a2296) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-411fd0d6da0803ce",
+      "related_object_ids": [
+        "normalized-conductor-segment-5a6f228f1bcdca6c",
+        "topology-edge-e0a07dbb238b8da4",
+        "wire-441f31e55a0a2296"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 499,
+      "y": 398
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-84292d1a3d23acdb) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-464b43f205e86826",
+      "related_object_ids": [
+        "normalized-conductor-segment-23739e9d1d60cf6b",
+        "topology-edge-8e3bb235082c5aae",
+        "wire-84292d1a3d23acdb"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 49,
+      "y": 83
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-2e36e68fc573a50d) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-4d1d661f05be0a3d",
+      "related_object_ids": [
+        "normalized-conductor-segment-9baaad93934e5eb8",
+        "topology-edge-0b0d839c9564301f",
+        "wire-2e36e68fc573a50d"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 814,
+      "y": 406.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-4597b5731135bc84) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-4d2fbc532946b77e",
+      "related_object_ids": [
+        "normalized-conductor-segment-e70f860b9b872f46",
+        "topology-edge-05028e49015e8dce",
+        "wire-4597b5731135bc84"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 65.5,
+      "y": 107
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-6c7f38c0da892917) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-5d00d32045558ec0",
+      "related_object_ids": [
+        "normalized-conductor-segment-67a447be9fbff0cf",
+        "topology-edge-639f2bd23600af51",
+        "wire-6c7f38c0da892917"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 795,
+      "y": 306
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-9f01b6f4dfbd9fe5) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-68baae4ad055eb62",
+      "related_object_ids": [
+        "normalized-conductor-segment-d6a304cf24e9d09b",
+        "topology-edge-6d130cc542eb2efa",
+        "wire-9f01b6f4dfbd9fe5"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 786,
+      "y": 415.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-2498c8429f52632b) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-6d87f46cb12033bf",
+      "related_object_ids": [
+        "normalized-conductor-segment-15c51f4ed07ab801",
+        "topology-edge-b853f3e1caa320dd",
+        "wire-2498c8429f52632b"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 269,
+      "y": 105.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-cfc64ea3416a9ae7) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-7b0f0a234bb88979",
+      "related_object_ids": [
+        "normalized-conductor-segment-62ae8498f0ec4a01",
+        "topology-edge-84f013ff683b1f2b",
+        "wire-cfc64ea3416a9ae7"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 676,
+      "y": 366
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-9f01b6f4dfbd9fe5) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-836fe5dea30df6f7",
+      "related_object_ids": [
+        "normalized-conductor-segment-d6a304cf24e9d09b",
+        "topology-edge-6d130cc542eb2efa",
+        "wire-9f01b6f4dfbd9fe5"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 811,
+      "y": 415.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-35c671716c17b94e) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-8cf1a436897f0727",
+      "related_object_ids": [
+        "normalized-conductor-segment-5378f95af8eb2d0e",
+        "normalized-conductor-segment-98b6cc3b3215d66f",
+        "normalized-conductor-segment-e0b94e746a257a8b",
+        "topology-edge-4b3930409d5623bc",
+        "topology-edge-576470f9372f0ef2",
+        "topology-edge-bb78bb6038c03d57",
+        "wire-35c671716c17b94e"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 639.5,
+      "y": 461
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-758cffb26370301a) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-97fab9a091621332",
+      "related_object_ids": [
+        "normalized-conductor-segment-089f9a9c20a08469",
+        "normalized-conductor-segment-cca53ea9c9141eac",
+        "topology-edge-af004d5e64445af2",
+        "topology-edge-b7b19e6ecdf1e517",
+        "wire-758cffb26370301a"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 323,
+      "y": 96
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-320489997d48f79c) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-99cd3738518e8139",
+      "related_object_ids": [
+        "normalized-conductor-segment-83b5283a1996564e",
+        "topology-edge-f7399415dd11657f",
+        "wire-320489997d48f79c"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 538.5,
+      "y": 482
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-47cbef0938c6abae) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-9b4aff02839d27a5",
+      "related_object_ids": [
+        "normalized-conductor-segment-ba98f96bf97e4d86",
+        "topology-edge-2570e82e34ad777b",
+        "wire-47cbef0938c6abae"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 812.5,
+      "y": 367
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-5dd937e7b468bdbc) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-a43821ab25d7ad6a",
+      "related_object_ids": [
+        "normalized-conductor-segment-7d83b3c11aa277db",
+        "topology-edge-5c72e2f502a6962f",
+        "wire-5dd937e7b468bdbc"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 592,
+      "y": 368.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-35c671716c17b94e) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-a5016c3d3160b4aa",
+      "related_object_ids": [
+        "normalized-conductor-segment-5378f95af8eb2d0e",
+        "normalized-conductor-segment-98b6cc3b3215d66f",
+        "normalized-conductor-segment-e0b94e746a257a8b",
+        "topology-edge-4b3930409d5623bc",
+        "topology-edge-576470f9372f0ef2",
+        "topology-edge-bb78bb6038c03d57",
+        "wire-35c671716c17b94e"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 608.5,
+      "y": 382
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-5dd937e7b468bdbc) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-a9a40fb26527b43a",
+      "related_object_ids": [
+        "normalized-conductor-segment-7d83b3c11aa277db",
+        "topology-edge-5c72e2f502a6962f",
+        "wire-5dd937e7b468bdbc"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 627,
+      "y": 368.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-9f5865edd512cd19) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-ab6f41a19fc76cbf",
+      "related_object_ids": [
+        "normalized-conductor-segment-4a3001575c47aabb",
+        "topology-edge-fc0f0a70af9402ad",
+        "wire-9f5865edd512cd19"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 794.5,
+      "y": 361
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-649c42e2d82c827c) is NOT one of the 27 fully-unresolved wires - its endpoint(s) ARE semantically resolved (kind=component_terminal, component_id=component-candidate-shape-region-a70e3ecba418cc1a). It still receives no net because DistributionDecomposer::decompose's connected topology component has exactly 2 semantic endpoints and no Ground/ExternalConnection anchor - the same explicit skip condition, applied here to a properly-resolved component terminal rather than an unresolved geometric endpoint. This is the project's documented, intentional scope for net construction (an ordinary two-terminal wire 'is still an ordinary endpoint-to-endpoint wire' per the code's own comment), not an implementation defect.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-aba820e3093df1ae",
+      "related_object_ids": [
+        "normalized-conductor-segment-d0aed54060bf2bab",
+        "topology-edge-92befa43b3a9f624",
+        "wire-649c42e2d82c827c"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip",
+      "x": 761.5,
+      "y": 360
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-6c7f38c0da892917) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-aebd7a19f1e1f958",
+      "related_object_ids": [
+        "normalized-conductor-segment-67a447be9fbff0cf",
+        "topology-edge-639f2bd23600af51",
+        "wire-6c7f38c0da892917"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 819,
+      "y": 306
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-2341d69446f289de) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-b4825c95f05d14e0",
+      "related_object_ids": [
+        "normalized-conductor-segment-62ca2666afb9a9f0",
+        "normalized-conductor-segment-b8754ad60b2f27f5",
+        "topology-edge-75a14f828fdbcd4e",
+        "topology-edge-dfefebd1604944d1",
+        "wire-2341d69446f289de"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 672,
+      "y": 33
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-7756fd993cb3a920) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-b58df9c4691c8b2a",
+      "related_object_ids": [
+        "normalized-conductor-segment-66ec853581824801",
+        "topology-edge-e07bf6ade2f61d3c",
+        "wire-7756fd993cb3a920"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 462,
+      "y": 44
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-269675807cc29475) is NOT one of the 27 fully-unresolved wires - its endpoint(s) ARE semantically resolved (kind=geometric, component_id=none). It still receives no net because DistributionDecomposer::decompose's connected topology component has exactly 2 semantic endpoints and no Ground/ExternalConnection anchor - the same explicit skip condition, applied here to a properly-resolved component terminal rather than an unresolved geometric endpoint. This is the project's documented, intentional scope for net construction (an ordinary two-terminal wire 'is still an ordinary endpoint-to-endpoint wire' per the code's own comment), not an implementation defect.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-b976b24408ca0816",
+      "related_object_ids": [
+        "normalized-conductor-segment-98fe87070800a3e2",
+        "topology-edge-6bbaa807141d4b2f",
+        "wire-269675807cc29475"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip",
+      "x": 105.5,
+      "y": 82
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-2af8c908ce7a4838) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-c50f77f0a78af228",
+      "related_object_ids": [
+        "normalized-conductor-segment-ff465f7100a5a2eb",
+        "topology-edge-ff2f4a195041d5f6",
+        "wire-2af8c908ce7a4838"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 668,
+      "y": 443
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-649c42e2d82c827c) is NOT one of the 27 fully-unresolved wires - its endpoint(s) ARE semantically resolved (kind=component_terminal, component_id=component-candidate-shape-region-a70e3ecba418cc1a). It still receives no net because DistributionDecomposer::decompose's connected topology component has exactly 2 semantic endpoints and no Ground/ExternalConnection anchor - the same explicit skip condition, applied here to a properly-resolved component terminal rather than an unresolved geometric endpoint. This is the project's documented, intentional scope for net construction (an ordinary two-terminal wire 'is still an ordinary endpoint-to-endpoint wire' per the code's own comment), not an implementation defect.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-c5e079cfe4e74b69",
+      "related_object_ids": [
+        "normalized-conductor-segment-d0aed54060bf2bab",
+        "topology-edge-92befa43b3a9f624",
+        "wire-649c42e2d82c827c"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip",
+      "x": 761.5,
+      "y": 385
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-22713392e71d84f9) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-c8ae8e3afed2b95c",
+      "related_object_ids": [
+        "normalized-conductor-segment-fcd368e8540dcafc",
+        "topology-edge-f47a9d2e692cf2b9",
+        "wire-22713392e71d84f9"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 508,
+      "y": 66.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-cfc64ea3416a9ae7) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-cbb1ad309276f7dc",
+      "related_object_ids": [
+        "normalized-conductor-segment-62ae8498f0ec4a01",
+        "topology-edge-84f013ff683b1f2b",
+        "wire-cfc64ea3416a9ae7"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 642,
+      "y": 366
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-e5ac55edac408a5d) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-cfc6ca48fc5e46c4",
+      "related_object_ids": [
+        "normalized-conductor-segment-50176d1256cb6b63",
+        "topology-edge-55121631a7a9f104",
+        "wire-e5ac55edac408a5d"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 454,
+      "y": 494
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-6352c2500ffa1edf) is NOT one of the 27 fully-unresolved wires - its endpoint(s) ARE semantically resolved (kind=geometric, component_id=none). It still receives no net because DistributionDecomposer::decompose's connected topology component has exactly 2 semantic endpoints and no Ground/ExternalConnection anchor - the same explicit skip condition, applied here to a properly-resolved component terminal rather than an unresolved geometric endpoint. This is the project's documented, intentional scope for net construction (an ordinary two-terminal wire 'is still an ordinary endpoint-to-endpoint wire' per the code's own comment), not an implementation defect.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-d65b180ef558ca71",
+      "related_object_ids": [
+        "normalized-conductor-segment-ba6b15dd90bb495d",
+        "topology-edge-cfdce5279e51f003",
+        "wire-6352c2500ffa1edf"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip",
+      "x": 346,
+      "y": 86
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-fa8c23f2f714c6e4) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-d66e06a6b6166398",
+      "related_object_ids": [
+        "normalized-conductor-segment-fb2f2fc4e0efc3ed",
+        "topology-edge-01e87c217bc82c49",
+        "wire-fa8c23f2f714c6e4"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 757,
+      "y": 415.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-758cffb26370301a) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-d86700ee44db51dd",
+      "related_object_ids": [
+        "normalized-conductor-segment-089f9a9c20a08469",
+        "normalized-conductor-segment-cca53ea9c9141eac",
+        "topology-edge-af004d5e64445af2",
+        "topology-edge-b7b19e6ecdf1e517",
+        "wire-758cffb26370301a"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 373,
+      "y": 124
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-269675807cc29475) is NOT one of the 27 fully-unresolved wires - its endpoint(s) ARE semantically resolved (kind=component_terminal, component_id=component-candidate-shape-region-d2311c8e9d9e2708). It still receives no net because DistributionDecomposer::decompose's connected topology component has exactly 2 semantic endpoints and no Ground/ExternalConnection anchor - the same explicit skip condition, applied here to a properly-resolved component terminal rather than an unresolved geometric endpoint. This is the project's documented, intentional scope for net construction (an ordinary two-terminal wire 'is still an ordinary endpoint-to-endpoint wire' per the code's own comment), not an implementation defect.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-da9dc3aa39d96a49",
+      "related_object_ids": [
+        "normalized-conductor-segment-98fe87070800a3e2",
+        "topology-edge-6bbaa807141d4b2f",
+        "wire-269675807cc29475"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip",
+      "x": 105.5,
+      "y": 107
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-529282aebc82760d) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-dcd428f67808cabc",
+      "related_object_ids": [
+        "normalized-conductor-segment-a2a73d297e8c9315",
+        "topology-edge-e72424f50211411e",
+        "wire-529282aebc82760d"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 658,
+      "y": 382
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-b5d0ece31ab9d847) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-e097bbf87656a6f9",
+      "related_object_ids": [
+        "normalized-conductor-segment-c55b0750a6a6779d",
+        "topology-edge-f001a0b3d172f03e",
+        "wire-b5d0ece31ab9d847"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 561,
+      "y": 433
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-84292d1a3d23acdb) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-ef26a843e06f66d7",
+      "related_object_ids": [
+        "normalized-conductor-segment-23739e9d1d60cf6b",
+        "topology-edge-8e3bb235082c5aae",
+        "wire-84292d1a3d23acdb"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 49,
+      "y": 107
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-2498c8429f52632b) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-f087a2c7402236ee",
+      "related_object_ids": [
+        "normalized-conductor-segment-15c51f4ed07ab801",
+        "topology-edge-b853f3e1caa320dd",
+        "wire-2498c8429f52632b"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 233,
+      "y": 105.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-529282aebc82760d) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-f493702ea1b04fd7",
+      "related_object_ids": [
+        "normalized-conductor-segment-a2a73d297e8c9315",
+        "topology-edge-e72424f50211411e",
+        "wire-529282aebc82760d"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 658,
+      "y": 431
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-f56a78ddcb321819) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-f4aa42986aa5335f",
+      "related_object_ids": [
+        "normalized-conductor-segment-cec273c045a31cd1",
+        "topology-edge-b4989d63123d4807",
+        "wire-f56a78ddcb321819"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 800,
+      "y": 370
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-441f31e55a0a2296) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-f98e866be869b872",
+      "related_object_ids": [
+        "normalized-conductor-segment-5a6f228f1bcdca6c",
+        "topology-edge-e0a07dbb238b8da4",
+        "wire-441f31e55a0a2296"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 534,
+      "y": 398
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-9768d9abef75b6f2) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-fbbae78814a854cd",
+      "related_object_ids": [
+        "normalized-conductor-segment-8d565d97850ef386",
+        "topology-edge-2d64de6736d8e87a",
+        "wire-9768d9abef75b6f2"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 843,
+      "y": 416.5
+    },
+    {
+      "classification": "NO_NET_BY_DESIGN_TWO_TERMINAL_UNANCHORED",
+      "confidence": "HIGH",
+      "evidence_detail": "Endpoint's sole wire (wire-22713392e71d84f9) is one of the 27 fully-unresolved wires (category 6): both its endpoints are kind=geometric with zero WireSemanticResolution evidence on any field. DistributionDecomposer::decompose (src/topology/distribution_decomposer.cpp) explicitly skips net construction for any connected topology component with exactly 2 semantic endpoints and no Ground/ExternalConnection anchor ('if (anchors.empty() && component_endpoints.size() == 2) continue;') - this wire structurally can never receive a net regardless of its endpoints' semantic status. This is NOT independent of category 6/7: it is the same underlying object.",
+      "evidence_type": "STRUCTURED_TOPOLOGY",
+      "object_id": "endpoint-candidate-fbeee97543add097",
+      "related_object_ids": [
+        "normalized-conductor-segment-fcd368e8540dcafc",
+        "topology-edge-f47a9d2e692cf2b9",
+        "wire-22713392e71d84f9"
+      ],
+      "root_cause_category": "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics",
+      "x": 452,
+      "y": 66.5
+    }
+  ],
+  "population_counts": {
+    "circular_symbol_candidates": 26,
+    "connector_candidates": 7,
+    "net_resolution_gap_endpoints": 62
+  },
+  "root_cause_counts": {
+    "circular_symbol_reconciliation": {
+      "common_bounded_by_crossing_lines_gap": 21,
+      "detector_correct": 5
+    },
+    "connector_reconciliation": {
+      "common_notch_axis_defect": 5,
+      "detector_correct": 2
+    },
+    "net_resolution_gap_reconciliation": {
+      "common_two_terminal_no_anchor_net_skip": 8,
+      "common_two_terminal_no_anchor_net_skip_plus_unresolved_semantics": 54
+    }
+  },
+  "run_identity": {
+    "extraction_results_commit": "a111cdd27b855fc9a3c6d2d28a7a4d0ab05c77cf",
+    "kind": "correlated_failure_root_cause_investigation",
+    "main_commit_basis": "02c1bd1cfbc93c11f3d477b1fe166f1eb9583de5"
+  },
+  "schema_version": 1,
+  "source_identity": {
+    "image_height": 549,
+    "image_width": 898,
+    "page": 0,
+    "source_id": "samples/trx300ODG.png"
+  },
+  "undetermined_objects": []
+}

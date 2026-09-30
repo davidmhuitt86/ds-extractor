@@ -326,6 +326,11 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-source-object-reconciliation PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-source-object-reconciliation COMMAND dx-wire-test-source-object-reconciliation)
 
+    add_executable(dx-wire-test-correlated-failure-investigation tests/test_correlated_failure_investigation.cpp)
+    target_compile_definitions(dx-wire-test-correlated-failure-investigation PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_link_libraries(dx-wire-test-correlated-failure-investigation PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-correlated-failure-investigation COMMAND dx-wire-test-correlated-failure-investigation)
+
     add_executable(dx-wire-test-recognition-input-exporter tests/test_recognition_input_exporter.cpp)
     target_compile_definitions(dx-wire-test-recognition-input-exporter PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
     target_link_libraries(dx-wire-test-recognition-input-exporter PRIVATE eke_dx_wire)

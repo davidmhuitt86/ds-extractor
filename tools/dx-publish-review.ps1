@@ -20,8 +20,17 @@ $auditPath = Join-Path $repoRoot $auditRelative
 $worktreePath = Join-Path ([System.IO.Path]::GetTempPath()) ("dx-extraction-results-" + [guid]::NewGuid().ToString("N"))
 $worktreeAdded = $false
 
+# The GUI launches this script in a window with no -NoExit, so on any exit
+# (success or failure) the window closes immediately and nothing printed to
+# it is readable. A transcript is kept here so a failure can always be
+# diagnosed afterward instead of only flashing past on screen.
+$logPath = Join-Path ([System.IO.Path]::GetTempPath()) "dx-publish-review.log"
+Start-Transcript -Path $logPath -Append | Out-Null
+
 function Fail([string]$Message) {
     Write-Host "[DX-REVIEW] FAILED: $Message" -ForegroundColor Red
+    Write-Host "[DX-REVIEW] Full log: $logPath" -ForegroundColor Yellow
+    Read-Host "Press Enter to close"
     exit 1
 }
 
@@ -113,4 +122,5 @@ finally {
             Write-Host "[DX-REVIEW] WARNING: temporary worktree cleanup failed: $worktreePath" -ForegroundColor Yellow
         }
     }
+    Stop-Transcript | Out-Null
 }

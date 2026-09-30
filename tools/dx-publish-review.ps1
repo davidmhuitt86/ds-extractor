@@ -90,7 +90,14 @@ try {
 
         & git diff --cached --quiet -- $reviewRelative $auditRelative
         if ($LASTEXITCODE -eq 0) {
+            # No diff is a legitimate, expected outcome (e.g. a code change that
+            # doesn't alter extraction output) - not a failure. But without any
+            # pause, this looks identical to the window closing before reaching
+            # any output at all (a genuine silent failure). A short visible
+            # delay makes the two distinguishable without requiring a keypress
+            # on every single extraction.
             Write-Host "[DX-REVIEW] No extraction-result changes to publish." -ForegroundColor Yellow
+            Start-Sleep -Seconds 3
             return
         }
 
@@ -106,6 +113,7 @@ try {
         $sha = (git rev-parse HEAD).Trim()
         Write-Host "[DX-REVIEW] Published extraction results: $sha" -ForegroundColor Green
         Write-Host "[DX-REVIEW] Main was not modified."
+        Start-Sleep -Seconds 3
     }
     finally {
         Pop-Location

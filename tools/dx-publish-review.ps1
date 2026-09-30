@@ -1,7 +1,7 @@
 # Publish the current extraction review artifacts to the dedicated extraction-results branch.
 # This publisher is launched automatically by the GUI after every successful extraction.
 # The main working tree is never switched, committed, or pushed.
-# extraction-results contains ONLY the current artifacts/extraction_review tree.
+# extraction-results contains ONLY the current extraction artifacts needed for review:\n#   artifacts/extraction_review\n#   artifacts/audit/extraction_audit.json
 
 [CmdletBinding()]
 param()
@@ -15,6 +15,8 @@ Set-Location $repoRoot
 $resultsBranch = "extraction-results"
 $reviewRelative = "artifacts\extraction_review"
 $reviewPath = Join-Path $repoRoot $reviewRelative
+$auditRelative = "artifacts\audit\extraction_audit.json"
+$auditPath = Join-Path $repoRoot $auditRelative
 $worktreePath = Join-Path ([System.IO.Path]::GetTempPath()) ("dx-extraction-results-" + [guid]::NewGuid().ToString("N"))
 $worktreeAdded = $false
 
@@ -40,6 +42,10 @@ try {
         Fail "Review directory does not exist: $reviewPath"
     }
 
+    if (-not (Test-Path $auditPath -PathType Leaf)) {
+        Fail "Structured extraction audit does not exist: $auditPath"
+    }
+
     Write-Host "[DX-REVIEW] Fetching $resultsBranch"
     Invoke-Checked "git" @("fetch", "origin", $resultsBranch)
 
@@ -53,23 +59,26 @@ try {
     }
     $worktreeAdded = $true
 
-    $destination = Join-Path $worktreePath $reviewRelative
+    ${destination} = Join-Path $worktreePath $reviewRelative
+    $auditDestination = Join-Path $worktreePath $auditRelative
     if (Test-Path $destination) {
         Remove-Item -LiteralPath $destination -Recurse -Force
     }
     New-Item -ItemType Directory -Path $destination -Force | Out-Null
+    New-Item -ItemType Directory -Path (Split-Path -Parent $auditDestination) -Force | Out-Null
 
     Write-Host "[DX-REVIEW] Replacing extraction results"
     Copy-Item -LiteralPath (Join-Path $reviewPath "*") -Destination $destination -Recurse -Force
+    Copy-Item -LiteralPath $auditPath -Destination $auditDestination -Force
 
     Push-Location $worktreePath
     try {
-        & git add -A -- $reviewRelative
+        & git add -A -- $reviewRelative $auditRelative
         if ($LASTEXITCODE -ne 0) {
             throw "git add failed."
         }
 
-        & git diff --cached --quiet
+        & git diff --cached --quiet -- $reviewRelative $auditRelative
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[DX-REVIEW] No extraction-result changes to publish." -ForegroundColor Yellow
             return

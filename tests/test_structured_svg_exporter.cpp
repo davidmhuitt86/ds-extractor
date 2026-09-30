@@ -662,7 +662,15 @@ int main() {
         std::ifstream in(path);
         const std::string written((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
         assert(written == rendered);
-    std::filesystem::remove(path);
+        // The ifstream must be explicitly closed before removing the file:
+        // POSIX allows unlinking a file with an open handle, but Windows
+        // does not (a still-open handle causes std::filesystem::remove to
+        // throw filesystem_error, which - uncaught here - calls
+        // std::terminate()/abort() with no printed message, observed as
+        // Windows exit code 0xC0000409 immediately after this test's own
+        // checkpoint with no assertion text).
+        in.close();
+        std::filesystem::remove(path);
     }
 
     std::cerr << "[SVG-TEST-35] enter" << std::endl;

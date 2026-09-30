@@ -1,0 +1,139 @@
+{
+  "ap_id": "AP-DIAG-020",
+  "baseline_commit": "133357e",
+  "baseline_connector_population": {
+    "candidates": [
+      {
+        "classification": "REAL_CONNECTOR",
+        "notch_axis": "left_right",
+        "object_id": "connector-a228885f25dd1f6b"
+      },
+      {
+        "classification": "REAL_CONNECTOR",
+        "notch_axis": "left_right",
+        "object_id": "connector-3bb50861590cea40"
+      },
+      {
+        "classification": "FALSE_POSITIVE",
+        "notch_axis": "top_bottom",
+        "object_id": "connector-08bf96db0b914922"
+      },
+      {
+        "classification": "FALSE_POSITIVE",
+        "notch_axis": "top_bottom",
+        "object_id": "connector-fdd33a2a7f942823"
+      },
+      {
+        "classification": "FALSE_POSITIVE",
+        "notch_axis": "top_bottom",
+        "object_id": "connector-7a793f0ead4a15ca"
+      },
+      {
+        "classification": "FALSE_POSITIVE",
+        "notch_axis": "top_bottom",
+        "object_id": "connector-0aa656ccf7f56e0e"
+      },
+      {
+        "classification": "FALSE_POSITIVE",
+        "notch_axis": "top_bottom",
+        "object_id": "connector-713147ddb5e260d6"
+      }
+    ],
+    "total": 7
+  },
+  "extraction_comparison": {
+    "components": {
+      "after": 34,
+      "before": 34
+    },
+    "conductor_segments": {
+      "after": 230,
+      "before": 230
+    },
+    "connector_candidates": {
+      "after": 2,
+      "before": 7
+    },
+    "connector_terminals": {
+      "after": 1,
+      "before": 6
+    },
+    "electrical_nets": {
+      "after": 12,
+      "before": 12
+    },
+    "endpoint_candidates": {
+      "after": 191,
+      "before": 191
+    },
+    "false_positive_connectors": {
+      "after": 0,
+      "before": 5
+    },
+    "genuine_connectors": {
+      "after": 2,
+      "before": 2
+    },
+    "terminal_candidates": {
+      "after": 18,
+      "before": 18
+    },
+    "topology_edges": {
+      "after": 643,
+      "before": 643
+    },
+    "topology_nodes": {
+      "after": 533,
+      "before": 533
+    },
+    "validation_errors": {
+      "after": 0,
+      "before": 0
+    },
+    "validation_warnings": {
+      "after": 34,
+      "before": 34
+    },
+    "wires": {
+      "after": 37,
+      "before": 37
+    }
+  },
+  "implementation_commit": "self (the commit that adds this file - see git log / final AP-DIAG-020 report for exact SHA)",
+  "post_fix_connector_population": {
+    "candidates": [
+      {
+        "classification": "REAL_CONNECTOR",
+        "notch_axis": "left_right",
+        "object_id": "connector-a228885f25dd1f6b"
+      },
+      {
+        "classification": "REAL_CONNECTOR",
+        "notch_axis": "left_right",
+        "object_id": "connector-3bb50861590cea40"
+      }
+    ],
+    "total": 2
+  },
+  "schema_version": 1,
+  "source_identity": {
+    "image_height": 549,
+    "image_width": 898,
+    "page": 0,
+    "source_id": "samples/trx300ODG.png"
+  },
+  "test_results": {
+    "causality_verification": "Both new fixtures were independently confirmed, before restoring the fix, to be ACCEPTED (regions non-empty) under the unmodified AP-DIAG-019-baseline connector_geometry_detector.cpp, and are REJECTED (regions empty) only after the fix - proving the rejection is specifically caused by the notch-axis discriminator and not by area/fill/aspect/size filters, which are identical to the already-accepted left/right fixture.",
+    "ctest_failed": 0,
+    "ctest_passed": 66,
+    "ctest_total": 66,
+    "new_tests_added": [
+      "dx-wire-test-connector-geometry-detector (2 new fixtures: top_bottom, stub)"
+    ]
+  },
+  "title": "Connector notch-axis discriminator fix",
+  "unrelated_populations_not_targeted": {
+    "observed_side_effects": "none beyond connector_candidates and connector_terminals (both directly downstream of ConnectorGeometryDetector's output)",
+    "statement": "AP-DIAG-020 is scoped strictly to ConnectorGeometryDetector::opposing_notches. It does not attempt to fix, and observed no change in: the 21 circular-symbol/junction-dot false positives (AP-DIAG-019 Part B), the 25px bounded_by_crossing_lines probe-distance issue, the 62 independent net-resolution-gap endpoints (AP-DIAG-019 Part C), the 54-endpoint upstream semantic-resolution question, or the 27 unresolved-wire population. All of these remain exactly as measured in AP-DIAG-019; none were targeted or incidentally affected by this fix."
+  }
+}

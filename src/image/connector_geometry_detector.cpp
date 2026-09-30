@@ -193,8 +193,6 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
         double deepest_notch = 0.0;
         bool notch_left = false;
         bool notch_right = false;
-        bool notch_top = false;
-        bool notch_bottom = false;
 
         for (const auto& defect : defects) {
             // OpenCV stores defect depth in fixed-point units (1/256 px).
@@ -224,19 +222,30 @@ ConnectorGeometryDetectionArtifacts ConnectorGeometryDetector::detect(
                 (std::min)(left_distance, right_distance),
                 (std::min)(top_distance, bottom_distance));
 
+            // AP-DIAG-020: only a defect whose nearest side is left or
+            // right is evidence toward the TRX300 connector family's
+            // actual notch/interlock axis (AP-DIAG-019: 7/7, zero
+            // exceptions). A defect nearest the top or bottom is still
+            // excluded from notch_left/notch_right here rather than
+            // mis-attributed to whichever of left/right happens to be
+            // closer - it is simply not opposing-notch evidence.
             if (nearest == left_distance)
                 notch_left = true;
             else if (nearest == right_distance)
                 notch_right = true;
-            else if (nearest == top_distance)
-                notch_top = true;
-            else
-                notch_bottom = true;
         }
 
-        const bool opposing_notches =
-            (notch_left && notch_right) ||
-            (notch_top && notch_bottom);
+        // AP-DIAG-020: AP-DIAG-019 measured this directly against the real
+        // TRX300 source (7/7 connector candidates, zero exceptions): both
+        // genuine connector bodies show their opposing notch pair
+        // exclusively on the left/right axis, while every false positive
+        // (wire-color text glyphs and a diode symbol sitting on a
+        // horizontal wire, plus one lower-confidence case) shows its
+        // opposing pair exclusively on the top/bottom axis - ink that
+        // happens to bulge above/below a horizontal baseline, not the
+        // TRX300 connector family's actual notch/interlock profile. The
+        // top/bottom axis is therefore not accepted as equivalent evidence.
+        const bool opposing_notches = notch_left && notch_right;
 
         bool interior_void = false;
         cv::Mat local_mask = cv::Mat::zeros(bounds.size(), CV_8UC1);

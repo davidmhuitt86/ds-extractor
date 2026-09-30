@@ -95,6 +95,46 @@ int main() {
         detector.detect(one_sided, "synthetic-one-sided", 0);
     assert(one_sided_result.regions.empty());
 
+    // AP-DIAG-020: a body whose opposing notch pair sits on the top/bottom
+    // axis must be rejected even though it satisfies the exact same
+    // generic opposing-notch predicate (two significant convexity defects,
+    // opposing sides) as the accepted left/right body above - this is the
+    // literal transpose (x and y swapped) of that same accepted body, so
+    // every other geometric property (area, notch depth, notch count,
+    // fill ratio) is unchanged; only the axis differs. AP-DIAG-019
+    // established this is exactly the axis real TRX300 false positives
+    // (wire-color text labels, a diode symbol) share, as opposed to the
+    // left/right axis both real TRX300 connectors share.
+    cv::Mat top_bottom(120, 180, CV_8UC1, cv::Scalar(255));
+    const std::vector<cv::Point> top_bottom_body{
+        {45, 60}, {45, 115}, {58, 115}, {58, 105},
+        {65, 105}, {65, 115}, {78, 115}, {78, 60},
+        {65, 60}, {65, 70}, {58, 70}, {58, 60}
+    };
+    cv::polylines(
+        top_bottom, top_bottom_body, true, cv::Scalar(0), 2);
+    const auto top_bottom_result =
+        detector.detect(top_bottom, "synthetic-top-bottom", 0);
+    assert(top_bottom_result.regions.empty());
+
+    // A second, structurally distinct top/bottom-notch silhouette: a
+    // horizontal bar with a short tick/stub protruding above and another
+    // below (the base of each stub forms a concave corner nearest the
+    // bounding box's top or bottom edge respectively) - representative of
+    // the general class of incidental ink (glyph strokes, a symbol's
+    // apex) that bulges above/below a horizontal wire rather than forming
+    // the TRX300 connector family's actual left/right interlock. Must
+    // also be rejected.
+    cv::Mat stub(120, 180, CV_8UC1, cv::Scalar(255));
+    const std::vector<cv::Point> stub_body{
+        {50, 58}, {85, 58}, {85, 45}, {95, 45},
+        {95, 58}, {130, 58}, {130, 68}, {95, 68},
+        {95, 81}, {85, 81}, {85, 68}, {50, 68}
+    };
+    cv::polylines(stub, stub_body, true, cv::Scalar(0), 2);
+    const auto stub_result = detector.detect(stub, "synthetic-stub", 0);
+    assert(stub_result.regions.empty());
+
     std::cout << "connector geometry detector tests passed\n";
     return 0;
 }

@@ -277,7 +277,7 @@
         "topology-edge-166778e5e84f5a51"
       ],
       "x": 339.5,
-      "y": 170.0
+      "y": 170
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -290,7 +290,7 @@
         "topology-edge-d891856a6dac0167",
         "topology-edge-fdd0612f13de3b63"
       ],
-      "x": 208.0,
+      "x": 208,
       "y": 268.5
     },
     {
@@ -302,8 +302,8 @@
       "related_object_ids": [
         "topology-edge-6ddea86b053749c3"
       ],
-      "x": 117.0,
-      "y": 338.0
+      "x": 117,
+      "y": 338
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -320,7 +320,7 @@
         "topology-edge-f661aa948fff4b4b"
       ],
       "x": 167.5,
-      "y": 216.0
+      "y": 216
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -335,7 +335,7 @@
         "topology-edge-eb726a6a28d524e4"
       ],
       "x": 506.5,
-      "y": 135.0
+      "y": 135
     },
     {
       "classification": "UNDETERMINED",
@@ -358,8 +358,8 @@
       "related_object_ids": [
         "topology-edge-7e8e0e7c27543a0e"
       ],
-      "x": 480.0,
-      "y": 434.0
+      "x": 480,
+      "y": 434
     },
     {
       "classification": "UNDETERMINED",
@@ -370,8 +370,8 @@
       "related_object_ids": [
         "topology-edge-96b48923d1858547"
       ],
-      "x": 270.0,
-      "y": 399.0
+      "x": 270,
+      "y": 399
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -407,8 +407,8 @@
       "related_object_ids": [
         "topology-edge-3d47b23445325971"
       ],
-      "x": 314.0,
-      "y": 64.0
+      "x": 314,
+      "y": 64
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -419,8 +419,8 @@
       "related_object_ids": [
         "topology-edge-3ac57e2a7aedf896"
       ],
-      "x": 634.0,
-      "y": 406.0
+      "x": 634,
+      "y": 406
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -433,7 +433,7 @@
         "topology-edge-9b4554b529980527"
       ],
       "x": 81.5,
-      "y": 188.0
+      "y": 188
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -446,8 +446,8 @@
         "topology-edge-52b40599f60e7de8",
         "topology-edge-fc84977ab94507b7"
       ],
-      "x": 800.0,
-      "y": 276.0
+      "x": 800,
+      "y": 276
     },
     {
       "classification": "UNDETERMINED",
@@ -458,7 +458,7 @@
       "related_object_ids": [
         "topology-edge-5131a9fda6d79d11"
       ],
-      "x": 539.0,
+      "x": 539,
       "y": 66.5
     },
     {
@@ -471,7 +471,7 @@
         "topology-edge-21bb790b4f52b407"
       ],
       "x": 116.5,
-      "y": 329.0
+      "y": 329
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -484,7 +484,7 @@
         "topology-edge-f0ebce15091b90ed"
       ],
       "x": 775.5,
-      "y": 415.0
+      "y": 415
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -508,7 +508,7 @@
       "related_object_ids": [
         "topology-edge-305d80b61a4371fe"
       ],
-      "x": 805.0,
+      "x": 805,
       "y": 373.5
     },
     {
@@ -521,7 +521,7 @@
         "topology-edge-6ea1756f125e9230"
       ],
       "x": 364.5,
-      "y": 438.0
+      "y": 438
     },
     {
       "classification": "UNDETERMINED",
@@ -533,7 +533,7 @@
         "topology-edge-2b4cd5b7a2a38242"
       ],
       "x": 358.5,
-      "y": 285.0
+      "y": 285
     },
     {
       "classification": "UNDETERMINED",
@@ -545,7 +545,7 @@
         "topology-edge-7fc2cd7758bdf5d3"
       ],
       "x": 118.5,
-      "y": 120.0
+      "y": 120
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -564,7 +564,7 @@
         "topology-edge-b950f4c832bf0a1b"
       ],
       "x": 492.5,
-      "y": 337.0
+      "y": 337
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -577,8 +577,8 @@
         "topology-edge-7faf014eed71f1ef",
         "topology-edge-e1164d7b180b5e78"
       ],
-      "x": 190.0,
-      "y": 404.0
+      "x": 190,
+      "y": 404
     },
     {
       "classification": "UNDETERMINED",
@@ -589,7 +589,7 @@
       "related_object_ids": [
         "topology-edge-143ec790152104a2"
       ],
-      "x": 36.0,
+      "x": 36,
       "y": 75.5
     },
     {
@@ -654,7 +654,7 @@
       "related_object_ids": [
         "topology-edge-08a8b60b1f83852e"
       ],
-      "x": 807.0,
+      "x": 807,
       "y": 374.5
     },
     {
@@ -679,7 +679,7 @@
         "topology-edge-0f9a6dbcbfba2417",
         "topology-edge-f7161af572ef9789"
       ],
-      "x": 371.0,
+      "x": 371,
       "y": 364.5
     },
     {
@@ -705,7 +705,7 @@
         "topology-edge-6675a16807721352",
         "topology-edge-9b2fb48ee6192a39"
       ],
-      "x": 800.0,
+      "x": 800,
       "y": 266.5
     },
     {
@@ -717,7 +717,7 @@
       "related_object_ids": [
         "topology-edge-6a90900db9c4526c"
       ],
-      "x": 63.0,
+      "x": 63,
       "y": 490.5
     },
     {
@@ -729,7 +729,7 @@
       "related_object_ids": [
         "topology-edge-587b68b0e45d63d4"
       ],
-      "x": 795.0,
+      "x": 795,
       "y": 453.5
     },
     {
@@ -745,8 +745,8 @@
         "topology-edge-92346a837135b699",
         "topology-edge-f90c771940a8e542"
       ],
-      "x": 82.0,
-      "y": 481.0
+      "x": 82,
+      "y": 481
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -759,7 +759,7 @@
         "topology-edge-f8b2b708918f8647"
       ],
       "x": 238.5,
-      "y": 152.0
+      "y": 152
     },
     {
       "classification": "UNDETERMINED",
@@ -770,7 +770,7 @@
       "related_object_ids": [
         "topology-edge-32f753c4a6e42aa3"
       ],
-      "x": 747.0,
+      "x": 747,
       "y": 453.5
     },
     {
@@ -784,7 +784,7 @@
         "topology-edge-a3c1b0877faca5e9"
       ],
       "x": 275.5,
-      "y": 337.0
+      "y": 337
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -799,8 +799,8 @@
         "topology-edge-e4793b443279bd67",
         "topology-edge-e603411c3226b374"
       ],
-      "x": 420.0,
-      "y": 360.0
+      "x": 420,
+      "y": 360
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -812,7 +812,7 @@
         "topology-edge-a4ec69fb09baf7c8",
         "topology-edge-eddecacb2cba2660"
       ],
-      "x": 649.0,
+      "x": 649,
       "y": 412.5
     },
     {
@@ -828,7 +828,7 @@
         "topology-edge-75b2df4385edc6a4",
         "topology-edge-d689798cd66b7b7c"
       ],
-      "x": 534.0,
+      "x": 534,
       "y": 145.5
     },
     {
@@ -856,8 +856,8 @@
       "related_object_ids": [
         "topology-edge-80b2d2746b1a298c"
       ],
-      "x": 118.0,
-      "y": 481.0
+      "x": 118,
+      "y": 481
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -875,7 +875,7 @@
         "topology-edge-adf960179b9da67f",
         "topology-edge-d2567d2f875ad86a"
       ],
-      "x": 466.0,
+      "x": 466,
       "y": 150.5
     },
     {
@@ -889,7 +889,7 @@
         "topology-edge-5312aa6234ca1f72",
         "topology-edge-e62b4fec1f865975"
       ],
-      "x": 411.0,
+      "x": 411,
       "y": 354.5
     },
     {
@@ -905,8 +905,8 @@
         "topology-edge-c4bcdfc3b898420c",
         "topology-edge-fcdff35c0ec95158"
       ],
-      "x": 81.0,
-      "y": 329.0
+      "x": 81,
+      "y": 329
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -937,8 +937,8 @@
         "topology-edge-9a4d374d7414ee4a",
         "topology-edge-cd642a0abbf4ff0e"
       ],
-      "x": 668.0,
-      "y": 202.0
+      "x": 668,
+      "y": 202
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -955,8 +955,8 @@
         "topology-edge-cda6df02f444d06c",
         "topology-edge-d92bc60acaf01ff1"
       ],
-      "x": 420.0,
-      "y": 230.0
+      "x": 420,
+      "y": 230
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -980,7 +980,7 @@
         "topology-edge-f257a72d7826cccc"
       ],
       "x": 401.5,
-      "y": 154.0
+      "y": 154
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1012,8 +1012,8 @@
         "topology-edge-ca9433caff4e7e84",
         "topology-edge-f24a2ca1acfe85a4"
       ],
-      "x": 516.0,
-      "y": 286.0
+      "x": 516,
+      "y": 286
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1028,7 +1028,7 @@
         "topology-edge-7f82f11a7b781e44"
       ],
       "x": 468.5,
-      "y": 361.0
+      "y": 361
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1041,7 +1041,7 @@
         "topology-edge-ecda82e4eb89d9e1",
         "topology-edge-f8c38df0c5bf3d89"
       ],
-      "x": 659.0,
+      "x": 659,
       "y": 348.5
     },
     {
@@ -1054,7 +1054,7 @@
         "topology-edge-5c84509903b28c3e",
         "topology-edge-e805ace7b2a02b96"
       ],
-      "x": 181.0,
+      "x": 181,
       "y": 404.5
     },
     {
@@ -1080,7 +1080,7 @@
       "related_object_ids": [
         "topology-edge-4be39fc61f445f68"
       ],
-      "x": 245.0,
+      "x": 245,
       "y": 471.5
     },
     {
@@ -1092,8 +1092,8 @@
       "related_object_ids": [
         "topology-edge-17c44c62c543413e"
       ],
-      "x": 413.0,
-      "y": 409.0
+      "x": 413,
+      "y": 409
     },
     {
       "classification": "UNDETERMINED",
@@ -1105,7 +1105,7 @@
         "topology-edge-060ad7f77fa0949b"
       ],
       "x": 298.5,
-      "y": 199.0
+      "y": 199
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1130,8 +1130,8 @@
         "topology-edge-95f338b25fe6b472",
         "topology-edge-b65c443076ed31ab"
       ],
-      "x": 171.0,
-      "y": 106.0
+      "x": 171,
+      "y": 106
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1145,8 +1145,8 @@
         "topology-edge-8feda9c39d7c157e",
         "topology-edge-9566187e91b3fc90"
       ],
-      "x": 181.0,
-      "y": 338.0
+      "x": 181,
+      "y": 338
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1183,7 +1183,7 @@
         "topology-edge-dd557e16110816cb"
       ],
       "x": 485.5,
-      "y": 131.0
+      "y": 131
     },
     {
       "classification": "UNDETERMINED",
@@ -1195,7 +1195,7 @@
         "topology-edge-ce6fafa171ebad02"
       ],
       "x": 407.5,
-      "y": 280.0
+      "y": 280
     },
     {
       "classification": "UNDETERMINED",
@@ -1206,8 +1206,8 @@
       "related_object_ids": [
         "topology-edge-d5655b0515070ea3"
       ],
-      "x": 261.0,
-      "y": 52.0
+      "x": 261,
+      "y": 52
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1218,8 +1218,8 @@
       "related_object_ids": [
         "topology-edge-c40ab7ecf2ad1e2c"
       ],
-      "x": 60.0,
-      "y": 467.0
+      "x": 60,
+      "y": 467
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1232,7 +1232,7 @@
         "topology-edge-999c252f7f0f94a5",
         "topology-edge-a2537cf9dddb6563"
       ],
-      "x": 347.0,
+      "x": 347,
       "y": 364.5
     },
     {
@@ -1252,7 +1252,7 @@
         "topology-edge-d57db50d73b5bd21"
       ],
       "x": 543.5,
-      "y": 176.0
+      "y": 176
     },
     {
       "classification": "UNDETERMINED",
@@ -1263,7 +1263,7 @@
       "related_object_ids": [
         "topology-edge-c7a9ef41235ae4d8"
       ],
-      "x": 374.0,
+      "x": 374,
       "y": 63.5
     },
     {
@@ -1277,7 +1277,7 @@
         "topology-edge-91c91cbb65bbda4f",
         "topology-edge-d73028e6534359c5"
       ],
-      "x": 534.0,
+      "x": 534,
       "y": 301.5
     },
     {
@@ -1292,7 +1292,7 @@
         "topology-edge-dc49d893a719567b"
       ],
       "x": 280.5,
-      "y": 455.0
+      "y": 455
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1310,7 +1310,7 @@
         "topology-edge-f6b0da90a9d9f303"
       ],
       "x": 370.5,
-      "y": 189.0
+      "y": 189
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1322,7 +1322,7 @@
         "topology-edge-68c74904a4ddea6d",
         "topology-edge-c5d5f2c310a4782a"
       ],
-      "x": 85.0,
+      "x": 85,
       "y": 53.5
     },
     {
@@ -1335,7 +1335,7 @@
         "topology-edge-b232f083a12588c0",
         "topology-edge-e7ba889e6d9a60b7"
       ],
-      "x": 766.0,
+      "x": 766,
       "y": 424.5
     },
     {
@@ -1347,7 +1347,7 @@
       "related_object_ids": [
         "topology-edge-c62c7d6f7e4c95d0"
       ],
-      "x": 118.0,
+      "x": 118,
       "y": 193.5
     },
     {
@@ -1361,7 +1361,7 @@
         "topology-edge-959fae987dceeba4"
       ],
       "x": 627.5,
-      "y": 87.0
+      "y": 87
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1399,8 +1399,8 @@
         "topology-edge-d03464f69bbc38f6",
         "topology-edge-f1e67b835bc28a6a"
       ],
-      "x": 599.0,
-      "y": 275.0
+      "x": 599,
+      "y": 275
     },
     {
       "classification": "UNDETERMINED",
@@ -1435,8 +1435,8 @@
       "related_object_ids": [
         "topology-edge-98ac9762800c86fb"
       ],
-      "x": 553.0,
-      "y": 51.0
+      "x": 553,
+      "y": 51
     },
     {
       "classification": "UNDETERMINED",
@@ -1460,8 +1460,8 @@
         "topology-edge-0740deedad365ac1",
         "topology-edge-a3307f4a44a42895"
       ],
-      "x": 308.0,
-      "y": 364.0
+      "x": 308,
+      "y": 364
     },
     {
       "classification": "UNDETERMINED",
@@ -1472,8 +1472,8 @@
       "related_object_ids": [
         "topology-edge-427523034db5ee65"
       ],
-      "x": 162.0,
-      "y": 481.0
+      "x": 162,
+      "y": 481
     },
     {
       "classification": "UNDETERMINED",
@@ -1485,7 +1485,7 @@
         "topology-edge-c590f8a5979a5edb"
       ],
       "x": 643.5,
-      "y": 15.0
+      "y": 15
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1503,7 +1503,7 @@
         "topology-edge-ae1fff6c671c393c",
         "topology-edge-f4cd3dda52045c29"
       ],
-      "x": 484.0,
+      "x": 484,
       "y": 329.5
     },
     {
@@ -1524,7 +1524,7 @@
         "topology-edge-fc15a24cccae815d",
         "topology-edge-ff9c86ad2f7d15ff"
       ],
-      "x": 467.0,
+      "x": 467,
       "y": 363.5
     },
     {
@@ -1538,7 +1538,7 @@
         "topology-edge-f281166612e57914"
       ],
       "x": 247.5,
-      "y": 147.0
+      "y": 147
     },
     {
       "classification": "UNDETERMINED",
@@ -1549,7 +1549,7 @@
       "related_object_ids": [
         "topology-edge-7907234d38795525"
       ],
-      "x": 156.0,
+      "x": 156,
       "y": 471.5
     },
     {
@@ -1569,8 +1569,8 @@
         "topology-edge-e79d1e6d4889bee2",
         "topology-edge-edb3fe6e97213ffb"
       ],
-      "x": 611.0,
-      "y": 208.0
+      "x": 611,
+      "y": 208
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1590,7 +1590,7 @@
         "topology-edge-bc97c35c36c561ca"
       ],
       "x": 649.5,
-      "y": 207.0
+      "y": 207
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1605,8 +1605,8 @@
         "topology-edge-d59f20c7a8f3d17c",
         "topology-edge-e125c0e56d8170a6"
       ],
-      "x": 439.0,
-      "y": 268.0
+      "x": 439,
+      "y": 268
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1618,7 +1618,7 @@
         "topology-edge-17c50c209eee2cf3",
         "topology-edge-60a72531558ea806"
       ],
-      "x": 313.0,
+      "x": 313,
       "y": 373.5
     },
     {
@@ -1632,7 +1632,7 @@
         "topology-edge-c68eaa21624d0c71"
       ],
       "x": 299.5,
-      "y": 345.0
+      "y": 345
     },
     {
       "classification": "UNDETERMINED",
@@ -1655,8 +1655,8 @@
       "related_object_ids": [
         "topology-edge-4441359d5783bea4"
       ],
-      "x": 329.0,
-      "y": 180.0
+      "x": 329,
+      "y": 180
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1675,7 +1675,7 @@
         "topology-edge-b6cb4c57737acace",
         "topology-edge-e64a4e5f0141d844"
       ],
-      "x": 388.0,
+      "x": 388,
       "y": 219.5
     },
     {
@@ -1688,7 +1688,7 @@
         "topology-edge-11de74fdd62dcf29",
         "topology-edge-891d48e78e404a15"
       ],
-      "x": 62.0,
+      "x": 62,
       "y": 213.5
     },
     {
@@ -1701,7 +1701,7 @@
         "topology-edge-51b5e79e36ca5ec6",
         "topology-edge-afb5a9d215a4c784"
       ],
-      "x": 372.0,
+      "x": 372,
       "y": 146.5
     },
     {
@@ -1716,7 +1716,7 @@
         "topology-edge-d21e35395605cee0"
       ],
       "x": 410.5,
-      "y": 345.0
+      "y": 345
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1730,7 +1730,7 @@
         "topology-edge-fabf29bfbc60e0f9"
       ],
       "x": 813.5,
-      "y": 209.0
+      "y": 209
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1750,7 +1750,7 @@
         "topology-edge-e7a6591c6c19801f",
         "topology-edge-ed594932ff31f9ee"
       ],
-      "x": 591.0,
+      "x": 591,
       "y": 198.5
     },
     {
@@ -1780,7 +1780,7 @@
         "topology-edge-f7e5e97d70314577"
       ],
       "x": 634.5,
-      "y": 276.0
+      "y": 276
     },
     {
       "classification": "UNDETERMINED",
@@ -1791,7 +1791,7 @@
       "related_object_ids": [
         "topology-edge-51f686b7bee09522"
       ],
-      "x": 344.0,
+      "x": 344,
       "y": 46.5
     },
     {
@@ -1804,7 +1804,7 @@
         "topology-edge-ffaf0fdc59d46563"
       ],
       "x": 479.5,
-      "y": 468.0
+      "y": 468
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1817,7 +1817,7 @@
         "topology-edge-d02ea0a143120f23"
       ],
       "x": 308.5,
-      "y": 433.0
+      "y": 433
     },
     {
       "classification": "UNDETERMINED",
@@ -1828,7 +1828,7 @@
       "related_object_ids": [
         "topology-edge-78d3a794132540d4"
       ],
-      "x": 443.0,
+      "x": 443,
       "y": 101.5
     },
     {
@@ -1852,7 +1852,7 @@
       "related_object_ids": [
         "topology-edge-fb44fbda50f8e2d1"
       ],
-      "x": 454.0,
+      "x": 454,
       "y": 91.5
     },
     {
@@ -1865,7 +1865,7 @@
         "topology-edge-0db3d3cb5210671e"
       ],
       "x": 364.5,
-      "y": 402.0
+      "y": 402
     },
     {
       "classification": "UNDETERMINED",
@@ -1876,8 +1876,8 @@
       "related_object_ids": [
         "topology-edge-c74fb4b41937d6d9"
       ],
-      "x": 53.0,
-      "y": 196.0
+      "x": 53,
+      "y": 196
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1888,8 +1888,8 @@
       "related_object_ids": [
         "topology-edge-d76e5338308f0eee"
       ],
-      "x": 68.0,
-      "y": 472.0
+      "x": 68,
+      "y": 472
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1939,7 +1939,7 @@
         "topology-edge-d5df061b13782e7c"
       ],
       "x": 581.5,
-      "y": 249.0
+      "y": 249
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -1950,7 +1950,7 @@
       "related_object_ids": [
         "topology-edge-d996e95d7411d61c"
       ],
-      "x": 101.0,
+      "x": 101,
       "y": 189.5
     },
     {
@@ -1974,7 +1974,7 @@
         "topology-edge-eeac71dd8a3399f8"
       ],
       "x": 476.5,
-      "y": 288.0
+      "y": 288
     },
     {
       "classification": "UNDETERMINED",
@@ -1986,7 +1986,7 @@
         "topology-edge-f90cbbdecc847b19"
       ],
       "x": 354.5,
-      "y": 394.0
+      "y": 394
     },
     {
       "classification": "UNDETERMINED",
@@ -2011,7 +2011,7 @@
         "topology-edge-93b7bed2dac2c29c",
         "topology-edge-e18ad94b185d4a8b"
       ],
-      "x": 771.0,
+      "x": 771,
       "y": 437.5
     },
     {
@@ -2046,7 +2046,7 @@
         "topology-edge-f686cd9cea47a43f"
       ],
       "x": 462.5,
-      "y": 373.0
+      "y": 373
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2059,7 +2059,7 @@
         "topology-edge-7540480bd5c326c0",
         "topology-edge-81df697208e4455f"
       ],
-      "x": 801.0,
+      "x": 801,
       "y": 231.5
     },
     {
@@ -2076,7 +2076,7 @@
         "topology-edge-a380268af4b34e83",
         "topology-edge-ed2e1e0ba8cd6402"
       ],
-      "x": 194.0,
+      "x": 194,
       "y": 259.5
     },
     {
@@ -2115,7 +2115,7 @@
         "topology-edge-84b052a7a21bd7bb"
       ],
       "x": 840.5,
-      "y": 280.0
+      "y": 280
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2128,8 +2128,8 @@
         "topology-edge-9b1fd1300ee3f17d",
         "topology-edge-c45838e543bc189b"
       ],
-      "x": 776.0,
-      "y": 295.0
+      "x": 776,
+      "y": 295
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2141,8 +2141,8 @@
         "topology-edge-4e68d132e606f1aa",
         "topology-edge-61f1f79274eb34a5"
       ],
-      "x": 516.0,
-      "y": 415.0
+      "x": 516,
+      "y": 415
     },
     {
       "classification": "UNDETERMINED",
@@ -2166,7 +2166,7 @@
         "topology-edge-62734a6c321f2369"
       ],
       "x": 317.5,
-      "y": 209.0
+      "y": 209
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2178,7 +2178,7 @@
         "topology-edge-217cb8df031c6ec0",
         "topology-edge-7ec41b4742e17c14"
       ],
-      "x": 85.0,
+      "x": 85,
       "y": 50.5
     },
     {
@@ -2190,7 +2190,7 @@
       "related_object_ids": [
         "topology-edge-a6a4b56eba3d2090"
       ],
-      "x": 158.0,
+      "x": 158,
       "y": 176.5
     },
     {
@@ -2204,7 +2204,7 @@
         "topology-edge-39640b4ac0cce1f0"
       ],
       "x": 335.5,
-      "y": 318.0
+      "y": 318
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2227,8 +2227,8 @@
         "topology-edge-df63519220277515",
         "topology-edge-f5ab72031c9ff46b"
       ],
-      "x": 525.0,
-      "y": 258.0
+      "x": 525,
+      "y": 258
     },
     {
       "classification": "UNDETERMINED",
@@ -2240,7 +2240,7 @@
         "topology-edge-1236c027596c8640"
       ],
       "x": 315.5,
-      "y": 472.0
+      "y": 472
     },
     {
       "classification": "UNDETERMINED",
@@ -2252,7 +2252,7 @@
         "topology-edge-66398bc23fa67ae2"
       ],
       "x": 766.5,
-      "y": 324.0
+      "y": 324
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2268,8 +2268,8 @@
         "topology-edge-897c7b7499ffaceb",
         "topology-edge-c8ba4ebb947ebbf0"
       ],
-      "x": 660.0,
-      "y": 288.0
+      "x": 660,
+      "y": 288
     },
     {
       "classification": "UNDETERMINED",
@@ -2280,8 +2280,8 @@
       "related_object_ids": [
         "topology-edge-3ee3dccd89c31771"
       ],
-      "x": 177.0,
-      "y": 174.0
+      "x": 177,
+      "y": 174
     },
     {
       "classification": "UNDETERMINED",
@@ -2293,7 +2293,7 @@
         "topology-edge-300404b2e7fab639"
       ],
       "x": 771.5,
-      "y": 469.0
+      "y": 469
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2336,7 +2336,7 @@
         "topology-edge-fa42dc4dcb6a7ff4",
         "topology-edge-fff21fb49a272255"
       ],
-      "x": 430.0,
+      "x": 430,
       "y": 227.5
     },
     {
@@ -2349,7 +2349,7 @@
         "topology-edge-d2fb10df91850f1c"
       ],
       "x": 168.5,
-      "y": 404.0
+      "y": 404
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2360,7 +2360,7 @@
       "related_object_ids": [
         "topology-edge-ac25f6f2d81ae8a2"
       ],
-      "x": 359.0,
+      "x": 359,
       "y": 351.5
     },
     {
@@ -2377,7 +2377,7 @@
         "topology-edge-ce97bf4f7a3c1f1d"
       ],
       "x": 410.5,
-      "y": 361.0
+      "y": 361
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2390,7 +2390,7 @@
         "topology-edge-ce45b4417ff871af"
       ],
       "x": 543.5,
-      "y": 319.0
+      "y": 319
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2401,7 +2401,7 @@
       "related_object_ids": [
         "topology-edge-f43e2b69858b8d97"
       ],
-      "x": 67.0,
+      "x": 67,
       "y": 338.5
     },
     {
@@ -2429,7 +2429,7 @@
         "topology-edge-e93ac64bc494d65f"
       ],
       "x": 196.5,
-      "y": 281.0
+      "y": 281
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2442,8 +2442,8 @@
         "topology-edge-79b56c3c1f21688b",
         "topology-edge-80c64b279f5a476f"
       ],
-      "x": 177.0,
-      "y": 329.0
+      "x": 177,
+      "y": 329
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2455,7 +2455,7 @@
         "topology-edge-1f7ac530872a671e",
         "topology-edge-ec639f677980a2b8"
       ],
-      "x": 207.0,
+      "x": 207,
       "y": 155.5
     },
     {
@@ -2468,7 +2468,7 @@
         "topology-edge-9f2f7ede743e8f11"
       ],
       "x": 471.5,
-      "y": 465.0
+      "y": 465
     },
     {
       "classification": "UNDETERMINED",
@@ -2480,7 +2480,7 @@
         "topology-edge-8887f8403121b116"
       ],
       "x": 295.5,
-      "y": 71.0
+      "y": 71
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2497,8 +2497,8 @@
         "topology-edge-d73536f0950aed3e",
         "topology-edge-d90fb8bc3555b4e4"
       ],
-      "x": 519.0,
-      "y": 111.0
+      "x": 519,
+      "y": 111
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2518,8 +2518,8 @@
         "topology-edge-c11dbc87bbd04e1f",
         "topology-edge-f80f3e1e2e4dca4f"
       ],
-      "x": 539.0,
-      "y": 313.0
+      "x": 539,
+      "y": 313
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2537,8 +2537,8 @@
         "topology-edge-f85db5db85fe065e",
         "topology-edge-fe0af6a5c37ad321"
       ],
-      "x": 618.0,
-      "y": 242.0
+      "x": 618,
+      "y": 242
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2556,7 +2556,7 @@
         "topology-edge-f047d5bb7a9ba23e"
       ],
       "x": 630.5,
-      "y": 266.0
+      "y": 266
     },
     {
       "classification": "UNDETERMINED",
@@ -2580,7 +2580,7 @@
         "topology-edge-11157b56a93921b3"
       ],
       "x": 343.5,
-      "y": 81.0
+      "y": 81
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2599,8 +2599,8 @@
         "topology-edge-ea5dd69202648654",
         "topology-edge-fb9c11d145991fc0"
       ],
-      "x": 644.0,
-      "y": 170.0
+      "x": 644,
+      "y": 170
     },
     {
       "classification": "UNDETERMINED",
@@ -2612,7 +2612,7 @@
         "topology-edge-6fa5609ccc3ab127"
       ],
       "x": 166.5,
-      "y": 490.0
+      "y": 490
     },
     {
       "classification": "UNDETERMINED",
@@ -2623,8 +2623,8 @@
       "related_object_ids": [
         "topology-edge-1c84d940eff49c9b"
       ],
-      "x": 539.0,
-      "y": 36.0
+      "x": 539,
+      "y": 36
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2640,8 +2640,8 @@
         "topology-edge-9eee2d84005819e6",
         "topology-edge-c3e1db04a7363cf8"
       ],
-      "x": 637.0,
-      "y": 177.0
+      "x": 637,
+      "y": 177
     },
     {
       "classification": "UNDETERMINED",
@@ -2653,7 +2653,7 @@
         "topology-edge-d7232b54859406c4"
       ],
       "x": 420.5,
-      "y": 415.0
+      "y": 415
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2664,7 +2664,7 @@
       "related_object_ids": [
         "topology-edge-2ad9e870c1cc81eb"
       ],
-      "x": 59.0,
+      "x": 59,
       "y": 495.5
     },
     {
@@ -2676,7 +2676,7 @@
       "related_object_ids": [
         "topology-edge-58960297d72d5c23"
       ],
-      "x": 280.0,
+      "x": 280,
       "y": 403.5
     },
     {
@@ -2710,8 +2710,8 @@
         "topology-edge-d0f93736e1ce2935",
         "topology-edge-ec47956ead0b4c60"
       ],
-      "x": 659.0,
-      "y": 207.0
+      "x": 659,
+      "y": 207
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2723,7 +2723,7 @@
         "topology-edge-0349564119e900ab"
       ],
       "x": 66.5,
-      "y": 343.0
+      "y": 343
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2738,8 +2738,8 @@
         "topology-edge-d98192f52beaf50f",
         "topology-edge-ff47cafaf31caf4b"
       ],
-      "x": 406.0,
-      "y": 139.0
+      "x": 406,
+      "y": 139
     },
     {
       "classification": "UNDETERMINED",
@@ -2762,7 +2762,7 @@
       "related_object_ids": [
         "topology-edge-51864acfd3fe7dfb"
       ],
-      "x": 359.0,
+      "x": 359,
       "y": 377.5
     },
     {
@@ -2787,8 +2787,8 @@
         "topology-edge-7e2c711b0a694e6a",
         "topology-edge-8f3e800427b4f95a"
       ],
-      "x": 331.0,
-      "y": 328.0
+      "x": 331,
+      "y": 328
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2799,8 +2799,8 @@
       "related_object_ids": [
         "topology-edge-ac1ae234c9dfd70d"
       ],
-      "x": 443.0,
-      "y": 68.0
+      "x": 443,
+      "y": 68
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2811,8 +2811,8 @@
       "related_object_ids": [
         "topology-edge-3330cf74bb938f95"
       ],
-      "x": 59.0,
-      "y": 315.0
+      "x": 59,
+      "y": 315
     },
     {
       "classification": "UNDETERMINED",
@@ -2824,7 +2824,7 @@
         "topology-edge-165cb741e5e44a4b"
       ],
       "x": 357.5,
-      "y": 430.0
+      "y": 430
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2835,8 +2835,8 @@
       "related_object_ids": [
         "topology-edge-0e36408039f40a60"
       ],
-      "x": 118.0,
-      "y": 490.0
+      "x": 118,
+      "y": 490
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2848,7 +2848,7 @@
         "topology-edge-b98607d9386a278e"
       ],
       "x": 608.5,
-      "y": 332.0
+      "y": 332
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2874,7 +2874,7 @@
         "topology-edge-0e70e141e15ef0cb",
         "topology-edge-7682b3d7ad162688"
       ],
-      "x": 198.0,
+      "x": 198,
       "y": 160.5
     },
     {
@@ -2886,7 +2886,7 @@
       "related_object_ids": [
         "topology-edge-1e310a04a323c0e7"
       ],
-      "x": 526.0,
+      "x": 526,
       "y": 51.5
     },
     {
@@ -2903,8 +2903,8 @@
         "topology-edge-9ded6b4078636d22",
         "topology-edge-ba4c465e46a0c65c"
       ],
-      "x": 321.0,
-      "y": 236.0
+      "x": 321,
+      "y": 236
     },
     {
       "classification": "UNDETERMINED",
@@ -2928,8 +2928,8 @@
         "topology-edge-980630586233329c",
         "topology-edge-af1aa1e89b903f5f"
       ],
-      "x": 157.0,
-      "y": 319.0
+      "x": 157,
+      "y": 319
     },
     {
       "classification": "SHARED_BRANCH_GEOMETRY",
@@ -2942,7 +2942,7 @@
         "topology-edge-c865c391392dbfb7"
       ],
       "x": 448.5,
-      "y": 55.0
+      "y": 55
     }
   ],
   "connector_reconciliation": [
@@ -4818,10 +4818,13 @@
       "endpoint-candidate-f116d72e55f48cc6",
       "endpoint-candidate-f5bc21218ece9993",
       "wire-054e53a69a62ad22",
-      "wire-054e53a69a62ad22",
       "wire-0db033162c44ab92",
       "wire-2498c8429f52632b"
-    ]
+    ],
+    "source_visual_sample_count": 19,
+    "source_confirmed_unique_object_count": 16,
+    "population_record_total": 1146,
+    "integrity_correction": "AP-DIAG-018A: corrected the population aggregate to 1,146 records, removed a duplicate visual-sample ID, and recorded the 16 distinct source-confirmed objects."
   },
   "geometric_endpoint_warning_reconciliation": [
     {
@@ -4847,8 +4850,8 @@
         "endpoint-candidate-1f7643f98eb2a86b",
         "endpoint-candidate-21a5ab7dc3bc7987"
       ],
-      "x": 599.0,
-      "y": 393.0
+      "x": 599,
+      "y": 393
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -4873,7 +4876,7 @@
         "endpoint-candidate-c8ae8e3afed2b95c",
         "endpoint-candidate-fbeee97543add097"
       ],
-      "x": 480.0,
+      "x": 480,
       "y": 66.5
     },
     {
@@ -4887,7 +4890,7 @@
         "endpoint-candidate-b4825c95f05d14e0"
       ],
       "x": 644.5,
-      "y": 35.0
+      "y": 35
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -4899,7 +4902,7 @@
         "endpoint-candidate-6d87f46cb12033bf",
         "endpoint-candidate-f087a2c7402236ee"
       ],
-      "x": 251.0,
+      "x": 251,
       "y": 105.5
     },
     {
@@ -4912,8 +4915,8 @@
         "endpoint-candidate-35584bae58f4573a",
         "endpoint-candidate-c50f77f0a78af228"
       ],
-      "x": 668.0,
-      "y": 413.0
+      "x": 668,
+      "y": 413
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -4925,7 +4928,7 @@
         "endpoint-candidate-35d43b30e40cc64e",
         "endpoint-candidate-4d1d661f05be0a3d"
       ],
-      "x": 798.0,
+      "x": 798,
       "y": 406.5
     },
     {
@@ -4939,7 +4942,7 @@
         "endpoint-candidate-99cd3738518e8139"
       ],
       "x": 538.5,
-      "y": 498.0
+      "y": 498
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -4951,7 +4954,7 @@
         "endpoint-candidate-8cf1a436897f0727",
         "endpoint-candidate-a5016c3d3160b4aa"
       ],
-      "x": 624.0,
+      "x": 624,
       "y": 421.5
     },
     {
@@ -4965,7 +4968,7 @@
         "endpoint-candidate-f98e866be869b872"
       ],
       "x": 516.5,
-      "y": 398.0
+      "y": 398
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -4991,7 +4994,7 @@
         "endpoint-candidate-9b4aff02839d27a5"
       ],
       "x": 812.5,
-      "y": 354.0
+      "y": 354
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5003,7 +5006,7 @@
         "endpoint-candidate-dcd428f67808cabc",
         "endpoint-candidate-f493702ea1b04fd7"
       ],
-      "x": 658.0,
+      "x": 658,
       "y": 406.5
     },
     {
@@ -5030,7 +5033,7 @@
         "endpoint-candidate-d65b180ef558ca71"
       ],
       "x": 363.5,
-      "y": 86.0
+      "y": 86
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5042,8 +5045,8 @@
         "endpoint-candidate-5d00d32045558ec0",
         "endpoint-candidate-aebd7a19f1e1f958"
       ],
-      "x": 807.0,
-      "y": 306.0
+      "x": 807,
+      "y": 306
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5055,8 +5058,8 @@
         "endpoint-candidate-97fab9a091621332",
         "endpoint-candidate-d86700ee44db51dd"
       ],
-      "x": 348.0,
-      "y": 110.0
+      "x": 348,
+      "y": 110
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5068,8 +5071,8 @@
         "endpoint-candidate-167ba8d923021ca8",
         "endpoint-candidate-b58df9c4691c8b2a"
       ],
-      "x": 449.0,
-      "y": 44.0
+      "x": 449,
+      "y": 44
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5081,8 +5084,8 @@
         "endpoint-candidate-464b43f205e86826",
         "endpoint-candidate-ef26a843e06f66d7"
       ],
-      "x": 49.0,
-      "y": 95.0
+      "x": 49,
+      "y": 95
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5094,7 +5097,7 @@
         "endpoint-candidate-036df7e812954879",
         "endpoint-candidate-fbbae78814a854cd"
       ],
-      "x": 856.0,
+      "x": 856,
       "y": 416.5
     },
     {
@@ -5134,7 +5137,7 @@
         "endpoint-candidate-e097bbf87656a6f9"
       ],
       "x": 542.5,
-      "y": 433.0
+      "y": 433
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5146,8 +5149,8 @@
         "endpoint-candidate-7b0f0a234bb88979",
         "endpoint-candidate-cbb1ad309276f7dc"
       ],
-      "x": 659.0,
-      "y": 366.0
+      "x": 659,
+      "y": 366
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5159,8 +5162,8 @@
         "endpoint-candidate-1109c5b0074b6dae",
         "endpoint-candidate-cfc6ca48fc5e46c4"
       ],
-      "x": 431.0,
-      "y": 494.0
+      "x": 431,
+      "y": 494
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -5172,8 +5175,8 @@
         "endpoint-candidate-19a4ce345d08de45",
         "endpoint-candidate-f4aa42986aa5335f"
       ],
-      "x": 800.0,
-      "y": 346.0
+      "x": 800,
+      "y": 346
     },
     {
       "classification": "endpoints whose semantic terminal was not recognized",
@@ -6849,7 +6852,7 @@
     "extraction_results_commit": "a111cdd27b855fc9a3c6d2d28a7a4d0ab05c77cf",
     "kind": "source_to_object_visual_reconciliation"
   },
-  "schema_version": 1,
+  "schema_version": 2,
   "source_identity": {
     "image_height": 549,
     "image_width": 898,
@@ -16071,8 +16074,8 @@
         "normalized-conductor-segment-fd27053bb812214a",
         "topology-edge-cdf217b6b84a7acd"
       ],
-      "x": 599.0,
-      "y": 393.0
+      "x": 599,
+      "y": 393
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16101,7 +16104,7 @@
         "normalized-conductor-segment-fcd368e8540dcafc",
         "topology-edge-f47a9d2e692cf2b9"
       ],
-      "x": 480.0,
+      "x": 480,
       "y": 66.5
     },
     {
@@ -16119,7 +16122,7 @@
         "topology-edge-dfefebd1604944d1"
       ],
       "x": 644.5,
-      "y": 35.0
+      "y": 35
     },
     {
       "classification": "SOURCE_CONFIRMED",
@@ -16133,7 +16136,7 @@
         "normalized-conductor-segment-15c51f4ed07ab801",
         "topology-edge-b853f3e1caa320dd"
       ],
-      "x": 251.0,
+      "x": 251,
       "y": 105.5
     },
     {
@@ -16148,8 +16151,8 @@
         "normalized-conductor-segment-ff465f7100a5a2eb",
         "topology-edge-ff2f4a195041d5f6"
       ],
-      "x": 668.0,
-      "y": 413.0
+      "x": 668,
+      "y": 413
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16163,7 +16166,7 @@
         "normalized-conductor-segment-9baaad93934e5eb8",
         "topology-edge-0b0d839c9564301f"
       ],
-      "x": 798.0,
+      "x": 798,
       "y": 406.5
     },
     {
@@ -16179,7 +16182,7 @@
         "topology-edge-f7399415dd11657f"
       ],
       "x": 538.5,
-      "y": 498.0
+      "y": 498
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16197,7 +16200,7 @@
         "topology-edge-576470f9372f0ef2",
         "topology-edge-bb78bb6038c03d57"
       ],
-      "x": 624.0,
+      "x": 624,
       "y": 421.5
     },
     {
@@ -16213,7 +16216,7 @@
         "topology-edge-e0a07dbb238b8da4"
       ],
       "x": 516.5,
-      "y": 398.0
+      "y": 398
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16243,7 +16246,7 @@
         "topology-edge-2570e82e34ad777b"
       ],
       "x": 812.5,
-      "y": 354.0
+      "y": 354
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16257,7 +16260,7 @@
         "normalized-conductor-segment-a2a73d297e8c9315",
         "topology-edge-e72424f50211411e"
       ],
-      "x": 658.0,
+      "x": 658,
       "y": 406.5
     },
     {
@@ -16287,8 +16290,8 @@
         "normalized-conductor-segment-67a447be9fbff0cf",
         "topology-edge-639f2bd23600af51"
       ],
-      "x": 807.0,
-      "y": 306.0
+      "x": 807,
+      "y": 306
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16304,8 +16307,8 @@
         "topology-edge-af004d5e64445af2",
         "topology-edge-b7b19e6ecdf1e517"
       ],
-      "x": 348.0,
-      "y": 110.0
+      "x": 348,
+      "y": 110
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16319,8 +16322,8 @@
         "normalized-conductor-segment-66ec853581824801",
         "topology-edge-e07bf6ade2f61d3c"
       ],
-      "x": 449.0,
-      "y": 44.0
+      "x": 449,
+      "y": 44
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16334,8 +16337,8 @@
         "normalized-conductor-segment-23739e9d1d60cf6b",
         "topology-edge-8e3bb235082c5aae"
       ],
-      "x": 49.0,
-      "y": 95.0
+      "x": 49,
+      "y": 95
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16349,7 +16352,7 @@
         "normalized-conductor-segment-8d565d97850ef386",
         "topology-edge-2d64de6736d8e87a"
       ],
-      "x": 856.0,
+      "x": 856,
       "y": 416.5
     },
     {
@@ -16395,7 +16398,7 @@
         "topology-edge-f001a0b3d172f03e"
       ],
       "x": 542.5,
-      "y": 433.0
+      "y": 433
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16409,8 +16412,8 @@
         "normalized-conductor-segment-62ae8498f0ec4a01",
         "topology-edge-84f013ff683b1f2b"
       ],
-      "x": 659.0,
-      "y": 366.0
+      "x": 659,
+      "y": 366
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16424,8 +16427,8 @@
         "normalized-conductor-segment-50176d1256cb6b63",
         "topology-edge-55121631a7a9f104"
       ],
-      "x": 431.0,
-      "y": 494.0
+      "x": 431,
+      "y": 494
     },
     {
       "classification": "PARTIALLY_CONFIRMED",
@@ -16439,8 +16442,8 @@
         "normalized-conductor-segment-cec273c045a31cd1",
         "topology-edge-b4989d63123d4807"
       ],
-      "x": 800.0,
-      "y": 346.0
+      "x": 800,
+      "y": 346
     },
     {
       "classification": "PARTIALLY_CONFIRMED",

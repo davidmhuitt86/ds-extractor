@@ -13,7 +13,29 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 option(DX_WIRE_BUILD_TESTS "Build unit tests" ON)
 option(DX_WIRE_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 
+# Pinned to the OpenCV 5.0.x series, not just "any major version 5", so
+# every build targets the same, officially-distributed release rather than
+# silently drifting onto whatever minor/pre-release version happens to be
+# installed locally (5.0.0 is this project's real target, e.g. the Windows
+# build's C:/opencv/build install; a development snapshot like 5.1.0-dev is
+# not something anyone should build against by accident).
+#
+# Note: this pin does NOT explain dx-wire-test-rejected-geometry-handoff and
+# dx-wire-test-ground-approach-recovery-production failing on Windows/OpenCV
+# 5.0.0 while passing here on Linux/OpenCV 5.1.0-dev. A direct comparison of
+# cv::findContours + cv::contourArea + cv::boundingRect on the identical
+# canonical TRX300 normalized image showed byte-for-byte identical output
+# (all 530 contours, same bounding boxes and areas) between OpenCV 5.0.0
+# (via opencv-python-headless) and 5.1.0-dev (this sandbox's build). The
+# root cause of those two failures is therefore still open and must not be
+# assumed to be OpenCV-version-related without further evidence.
 find_package(OpenCV 5 REQUIRED COMPONENTS core imgproc imgcodecs highgui)
+if(NOT (OpenCV_VERSION_MAJOR EQUAL 5 AND OpenCV_VERSION_MINOR EQUAL 0))
+    message(FATAL_ERROR
+        "EKE_DX_WIRE requires OpenCV 5.0.x exactly (found ${OpenCV_VERSION}). "
+        "This pins the project to one officially-distributed release; see "
+        "the comment above this check for what it does and does not explain.")
+endif()
 find_package(CURL REQUIRED)
 
 add_library(eke_dx_wire

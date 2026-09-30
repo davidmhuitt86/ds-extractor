@@ -216,7 +216,7 @@ void ExtractionAuditExporter::export_json(
         const auto& v=terminals[i]; if(i) out<<",";
         out<<"{\"id\":\""<<esc(v.id)<<"\",\"endpoint_id\":\""<<esc(v.endpoint_id)
            <<"\",\"component_candidate_id\":\""<<esc(v.component_candidate_id)
-           <<"\",\"kind\":"<<static_cast<int>(v.kind)
+           <<"\",\"kind\":"<<terminal_candidate_kind(v.kind)
            <<",\"x\":"<<v.position.x<<",\"y\":"<<v.position.y
            <<",\"confidence\":\""<<conf(v.confidence)<<"\"}";
     }

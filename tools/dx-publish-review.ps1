@@ -83,7 +83,7 @@ try {
 
     Push-Location $worktreePath
     try {
-        & git add -A -- $reviewRelative $auditRelative
+        & git add -A -f -- $reviewRelative $auditRelative
         if ($LASTEXITCODE -ne 0) {
             throw "git add failed."
         }

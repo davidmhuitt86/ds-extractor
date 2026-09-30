@@ -48,8 +48,14 @@ try {
         Fail "The release workflow is main-only. Current branch: $branch"
     }
 
-    # Release is a synchronization/validation action only. It never commits local changes.\n    # Pull is intentionally attempted directly so the release button does not ask the\n    # developer to commit. If Git cannot safely pull because of local source changes,\n    # Git itself will report the conflict and the release stops without modifying history.\n\n    Step "Pulling latest main"
-    Invoke-Checked "git" @("pull", "origin", "main")
+    # Release is a synchronization/validation action only. It never commits local changes.
+    # --ff-only is required here: a plain "git pull" silently creates a merge commit
+    # (i.e. it DOES commit) whenever local main has diverged from origin/main, which
+    # contradicts this script's own promise never to modify history. With --ff-only,
+    # any divergence makes git itself refuse and report the problem instead of quietly
+    # fabricating a merge commit.
+    Step "Pulling latest main"
+    Invoke-Checked "git" @("pull", "--ff-only", "origin", "main")
 
     Step "Configuring Release build"
     Invoke-Checked "cmake" @("-S", ".", "-B", "build")

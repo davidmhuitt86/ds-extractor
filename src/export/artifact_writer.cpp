@@ -3,6 +3,7 @@
 #include "eke_dx_wire/core/coverage_diagnostics.hpp"
 #include "eke_dx_wire/diagram/engineering_diagram_builder.hpp"
 #include "eke_dx_wire/export/engineering_diagram_exporter.hpp"
+#include "eke_dx_wire/export/extraction_audit_exporter.hpp"
 #include "eke_dx_wire/export/recognition_input_exporter.hpp"
 #include "eke_dx_wire/export/structured_svg_exporter.hpp"
 #include "eke_dx_wire/export/topology_exporter.hpp"
@@ -370,7 +371,9 @@ void ExtractionArtifactWriter::write(
         model,
         (output_root / "artifacts" / "topology" / "topology.json").string());
 
-    write_audit(
+    // AP-DIAG-015: publish the deterministic, object-addressable audit
+    // from the completed WireModel. No extraction stage is re-run here.
+    ExtractionAuditExporter::export_json(
         model,
         output_root / "artifacts" / "audit" / "extraction_audit.json");
 

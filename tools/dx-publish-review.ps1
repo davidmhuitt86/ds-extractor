@@ -58,7 +58,8 @@ try {
     Write-Host "[DX-REVIEW] Fetching $resultsBranch"
     Invoke-Checked "git" @("fetch", "origin", $resultsBranch)
 
-    if (git show-ref --verify --quiet ("refs/heads/" + $resultsBranch)) {
+    git show-ref --verify --quiet ("refs/heads/" + $resultsBranch)
+    if ($LASTEXITCODE -eq 0) {
         Write-Host "[DX-REVIEW] Creating temporary worktree from local $resultsBranch"
         Invoke-Checked "git" @("worktree", "add", $worktreePath, $resultsBranch)
     }

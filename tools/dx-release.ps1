@@ -54,8 +54,8 @@ try {
     Step "Configuring Release build"
     Invoke-Checked "cmake" @("-S", ".", "-B", "build")
 
-    Step "Building Release"
-    Invoke-Checked "cmake" @("--build", "build", "--config", "Release", "--parallel", "1")
+    Step "Building Release (clean-first)"
+    Invoke-Checked "cmake" @("--build", "build", "--config", "Release", "--clean-first", "--parallel", "1")
 
     Step "Running Release tests"
     Invoke-Checked "ctest" @("--test-dir", "build", "-C", "Release", "--output-on-failure")

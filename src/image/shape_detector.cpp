@@ -462,7 +462,16 @@ bool bounded_by_crossing_lines(
     const cv::Rect& bounds,
     const ShapeDetectorConfig& config) {
 
-    const int far = config.circle_crossing_probe_distance;
+    // AP-DIAG-023: the fixed maximum probe distance is too large for
+    // tightly-spaced switch-matrix cells. Keep the configured distance as
+    // the ceiling, but never probe farther than the candidate's own
+    // largest dimension. This preserves the existing four-sided continuity
+    // test while keeping the probe inside the local grid scale.
+    const int far = (std::max)(
+        1,
+        (std::min)(
+            config.circle_crossing_probe_distance,
+            (std::max)(bounds.width, bounds.height)));
     const int thickness = config.circle_crossing_probe_thickness;
 
     const double top = (std::min)(

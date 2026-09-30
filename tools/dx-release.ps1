@@ -54,11 +54,18 @@ try {
     Step "Configuring Release build"
     Invoke-Checked "cmake" @("-S", ".", "-B", "build")
 
-    Step "Building Release"
-    Invoke-Checked "cmake" @("--build", "build", "--config", "Release", "--parallel", "1")
+    Step "Building Release (clean-first)"
+    Invoke-Checked "cmake" @("--build", "build", "--config", "Release", "--clean-first", "--parallel", "1")
 
     Step "Running Release tests"
-    Invoke-Checked "ctest" @("--test-dir", "build", "-C", "Release", "--output-on-failure")
+    & ctest --test-dir build -C Release --output-on-failure
+    if ($LASTEXITCODE -ne 0) {
+        $testExitCode = $LASTEXITCODE
+        Write-Host ""
+        Write-Host "[DX-RELEASE] Re-running failed tests verbosely for diagnostics" -ForegroundColor Yellow
+        & ctest --test-dir build -C Release --rerun-failed --output-on-failure -VV
+        throw ("Release test suite failed with exit code {0}." -f $testExitCode)
+    }
 
     $guiPath = Join-Path $repoRoot "build\Release\dx-extractor-gui.exe"
     if (-not (Test-Path $guiPath)) {

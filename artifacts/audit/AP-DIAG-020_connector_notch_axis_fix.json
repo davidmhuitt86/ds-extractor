@@ -99,7 +99,7 @@
       "before": 37
     }
   },
-  "implementation_commit": "self (the commit that adds this file - see git log / final AP-DIAG-020 report for exact SHA)",
+  "implementation_commit": "72feb34b91d45b956d7a5bf38d38ada664de79df",
   "post_fix_connector_population": {
     "candidates": [
       {

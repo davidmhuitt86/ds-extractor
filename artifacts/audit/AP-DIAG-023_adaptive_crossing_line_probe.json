@@ -1,0 +1,44 @@
+{
+  "ap_id": "AP-DIAG-023",
+  "schema_version": 1,
+  "baseline_commit": "72feb34b91d45b956d7a5bf38d38ada664de79df",
+  "implementation_commit": "dd5dc209d35786d6d36ffe54745ec9726f771c21",
+  "source_identity": {
+    "source_id": "samples/trx300ODG.png",
+    "page": 0,
+    "image_width": 898,
+    "image_height": 549
+  },
+  "root_cause": {
+    "category": "adaptive_probe_scale_mismatch",
+    "evidence_source": "AP-DIAG-019 direct execution",
+    "baseline_probe_distance_px": 25,
+    "false_positive_candidate_dimension_range_px": "7-22",
+    "weakest_side_continuity_range": "0.00-0.44",
+    "required_continuity": 0.5
+  },
+  "implementation": {
+    "production_file": "src/image/shape_detector.cpp",
+    "actual_probe_distance": "max(1, min(config.circle_crossing_probe_distance, max(bounds.width, bounds.height)))",
+    "configured_probe_ceiling_px": 25,
+    "continuity_logic_changed": false,
+    "continuity_threshold_changed": false
+  },
+  "regression": {
+    "test_file": "tests/test_shape_detector.cpp",
+    "fixture": "tight-grid-crossing",
+    "candidate_cell_dimension_px": 10,
+    "local_line_extension_px": 12,
+    "expected_circle_classification": "rejected"
+  },
+  "validation": {
+    "release_build": "PENDING_LOCAL_EXECUTION",
+    "ctest": "PENDING_LOCAL_EXECUTION",
+    "trx300_extraction": "PENDING_LOCAL_EXECUTION",
+    "extraction_comparison": "PENDING_LOCAL_EXECUTION"
+  },
+  "scope": {
+    "detector_behavior_targeted": "bounded_by_crossing_lines probe distance only",
+    "unrelated_behavior_modified": false
+  }
+}

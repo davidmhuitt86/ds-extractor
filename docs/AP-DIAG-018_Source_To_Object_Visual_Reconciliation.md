@@ -33,7 +33,7 @@ conclusive). **No object was assigned HIGH confidence from detector
 confidence or structural inference alone** — HIGH requires an actual
 inspected crop.
 
-This is an honest limitation: with ~1,100 objects across 8 populations,
+This is an honest limitation: with 1,146 records across 8 populations,
 full individual visual inspection of every object was not performed. Where
 a population's classification rests on a small visual sample extrapolated
 by structural analogy, the report says so explicitly rather than
@@ -382,6 +382,10 @@ against other review layers) in this AP:
 - `connector-08bf96db0b914922`, `connector-fdd33a2a7f942823`,
   `connector-7a793f0ead4a15ca`, `connector-0aa656ccf7f56e0e` — false-positive
   connectors (diode / text-label ink).
+
+## Artifact Integrity Correction
+
+AP-DIAG-018A corrected the aggregate population count to **1,146 records**, deduplicated the visual sample list to **19 unique object IDs**, and recorded **16 distinct source-confirmed object IDs**. The regression test now derives exact machine-defined populations from the same-run extraction audit, rejects duplicate IDs, and requires stable `object_id` ordering.
 
 ## Undetermined Findings
 

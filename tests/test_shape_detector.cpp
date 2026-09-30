@@ -137,6 +137,27 @@ int main() {
         assert(!circle_near(crossing_result, 147, 96, 10));
     }
 
+    // AP-DIAG-023 regression: the crossing-line guard must remain
+    // effective when the enclosed grid cell is tighter than the historical
+    // 25px probe distance. The crossing lines extend only 12px beyond a
+    // 10px cell, so the old fixed 25px probe reaches beyond the local grid
+    // geometry and cannot establish four-sided continuation. The adaptive
+    // probe is capped at the candidate's 10px maximum dimension and must
+    // reject the same false circle.
+    {
+        cv::Mat image(180, 180, CV_8UC1, cv::Scalar(255));
+
+        cv::line(image, {75, 68}, {75, 100}, cv::Scalar(0), 2);
+        cv::line(image, {85, 68}, {85, 100}, cv::Scalar(0), 2);
+        cv::line(image, {65, 80}, {97, 80}, cv::Scalar(0), 2);
+        cv::line(image, {65, 90}, {97, 90}, cv::Scalar(0), 2);
+
+        const auto tight_grid_result =
+            ShapeDetector().detect(image, "fixture", 0);
+
+        assert(!circle_near(tight_grid_result, 80, 85, 8));
+    }
+
     // Legitimate circle with a conductor lead touching its edge (the
     // realistic case: a wire attaching to a terminal, not passing
     // through and out the far side) must still be detected. Only one of

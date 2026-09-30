@@ -22,7 +22,7 @@ Generic properties are no longer sufficient:
 - interior void alone — insufficient;
 - polygon vertex count alone — insufficient.
 
-The detector now computes OpenCV convexity defects and requires at least one defect whose depth is at least 2.0 pixels by default.
+The detector now computes OpenCV convexity defects and requires at least two distinct defects whose depth is at least 2.0 pixels by default. This rejects generic single-concavity bodies while preserving the two-sided notched/interlocking connector geometry represented by the TRX300 family test fixture.
 
 This remains an image-geometry criterion only. It does not infer connector pin identity, electrical continuity, mating, Wire identity, or ElectricalNet membership.
 
@@ -30,7 +30,7 @@ This remains an image-geometry criterion only. It does not infer connector pin i
 
 A ConnectorCandidate now requires both:
 
-1. characteristic connector-notch geometry;
+1. characteristic connector-notch geometry (at least two significant notch defects);
 2. at least two independent ConductorSegment observations.
 
 The second condition remains in AP-DIAG-FIX-010.

@@ -214,7 +214,20 @@ void ExtractionAuditExporter::export_json(
         out<<"{\"id\":\""<<esc(v.id)<<"\",\"kind\":\""<<component_kind(v.kind)
            <<"\",\"confidence\":\""<<conf(v.confidence)<<"\",\"x\":"<<v.bounds.x
            <<",\"y\":"<<v.bounds.y<<",\"width\":"<<v.bounds.width
-           <<",\"height\":"<<v.bounds.height<<",\"semantic_labels\":";
+           <<",\"height\":"<<v.bounds.height
+           <<",\"circle_probe_evidence\":"<<(v.circle_probe_evidence ? "true" : "false")
+           <<",\"circle_probe_distance\":"<<v.circle_probe_distance
+           <<",\"circle_probe_top\":"<<v.circle_probe_top
+           <<",\"circle_probe_bottom\":"<<v.circle_probe_bottom
+           <<",\"circle_probe_left\":"<<v.circle_probe_left
+           <<",\"circle_probe_right\":"<<v.circle_probe_right
+           <<",\"circle_probe_weakest_side\":"<<v.circle_probe_weakest_side
+           <<",\"circle_circularity\":"<<v.circle_circularity
+           <<",\"circle_aspect_ratio\":"<<v.circle_aspect_ratio
+           <<",\"circle_radius\":"<<v.circle_radius
+           <<",\"circle_edge_support\":"<<v.circle_edge_support
+           <<",\"circle_interior_density\":"<<v.circle_interior_density
+           <<",\"semantic_labels\":";
         strings(out,v.semantic_labels); out<<"}";
     }
     out << "],\n";

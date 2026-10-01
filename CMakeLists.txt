@@ -97,6 +97,7 @@ add_library(eke_dx_wire
     src/diagram/engineering_diagram_builder.cpp
     src/export/engineering_diagram_exporter.cpp
     src/image/component_candidate_classifier.cpp
+    src/image/circle_context_classifier.cpp
     src/image/diagram_furniture_classifier.cpp
     src/export/symbol_renderer.cpp
     src/export/extraction_audit_exporter.cpp
@@ -303,6 +304,10 @@ if(DX_WIRE_BUILD_TESTS)
     add_executable(dx-wire-test-shape-detector tests/test_shape_detector.cpp)
     target_link_libraries(dx-wire-test-shape-detector PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-shape-detector COMMAND dx-wire-test-shape-detector)
+
+    add_executable(dx-wire-test-circle-context-classifier tests/test_circle_context_classifier.cpp)
+    target_link_libraries(dx-wire-test-circle-context-classifier PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-circle-context-classifier COMMAND dx-wire-test-circle-context-classifier)
 
     add_executable(dx-wire-test-text-region-detector tests/test_text_region_detector.cpp)
     target_link_libraries(dx-wire-test-text-region-detector PRIVATE eke_dx_wire)

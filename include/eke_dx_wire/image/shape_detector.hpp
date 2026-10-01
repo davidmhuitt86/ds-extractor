@@ -27,6 +27,21 @@ struct ShapeRegion {
     ShapeRole role = ShapeRole::Primitive;
     BoundingBox bounds {};
     double confidence = 0.0;
+
+    // AP-DIAG-024: additive forensic evidence only. These measurements are
+    // populated for Circle regions and do not participate in classification.
+    bool circle_probe_evidence = false;
+    int circle_probe_distance = 0;
+    double circle_probe_top = 0.0;
+    double circle_probe_bottom = 0.0;
+    double circle_probe_left = 0.0;
+    double circle_probe_right = 0.0;
+    double circle_probe_weakest_side = 0.0;
+    double circle_circularity = 0.0;
+    double circle_aspect_ratio = 0.0;
+    double circle_radius = 0.0;
+    double circle_edge_support = 0.0;
+    double circle_interior_density = 0.0;
 };
 
 struct ShapeDetectionArtifacts {

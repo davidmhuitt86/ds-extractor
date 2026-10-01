@@ -457,7 +457,16 @@ double col_line_continuity(
 // as the shape's own boundary-adjacent evidence is being consulted here
 // (the same normalized image the rest of this function already uses) -
 // nothing from a later pipeline stage is required.
-bool bounded_by_crossing_lines(
+struct CrossingLineProbeEvidence {
+    int distance = 0;
+    double top = 0.0;
+    double bottom = 0.0;
+    double left = 0.0;
+    double right = 0.0;
+    double weakest_side = 0.0;
+};
+
+CrossingLineProbeEvidence measure_crossing_line_probe(
     const cv::Mat& binary,
     const cv::Rect& bounds,
     const ShapeDetectorConfig& config) {
@@ -490,7 +499,8 @@ bool bounded_by_crossing_lines(
     const double weakest_side =
         (std::min)((std::min)(top, bottom), (std::min)(left, right));
 
-    return weakest_side >= config.circle_crossing_min_line_continuity;
+    return CrossingLineProbeEvidence{
+        far, top, bottom, left, right, weakest_side};
 }
 
 void detect_circles(
@@ -555,7 +565,10 @@ void detect_circles(
         if (edge_support < config.circle_min_edge_support)
             continue;
 
-        if (bounded_by_crossing_lines(binary, bounds, config))
+        const CrossingLineProbeEvidence probe =
+            measure_crossing_line_probe(binary, bounds, config);
+
+        if (probe.weakest_side >= config.circle_crossing_min_line_continuity)
             continue;
 
         const int inset = (std::max)(2, r / 3);
@@ -569,6 +582,23 @@ void detect_circles(
         if (interior_density >
             config.circle_max_interior_ink_density)
             continue;
+
+        // AP-DIAG-024: retain the measurements used by the existing circle
+        // classifier as additive forensic evidence. No classification
+        // decision is changed by these assignments.
+        ShapeRegion forensic_region;
+        forensic_region.circle_probe_evidence = true;
+        forensic_region.circle_probe_distance = probe.distance;
+        forensic_region.circle_probe_top = probe.top;
+        forensic_region.circle_probe_bottom = probe.bottom;
+        forensic_region.circle_probe_left = probe.left;
+        forensic_region.circle_probe_right = probe.right;
+        forensic_region.circle_probe_weakest_side = probe.weakest_side;
+        forensic_region.circle_circularity = circularity;
+        forensic_region.circle_aspect_ratio = aspect;
+        forensic_region.circle_radius = radius;
+        forensic_region.circle_edge_support = edge_support;
+        forensic_region.circle_interior_density = interior_density;
 
         const cv::Rect image_rect(
             0, 0, normalized.cols, normalized.rows);
@@ -592,7 +622,8 @@ void detect_circles(
             clipped,
             confidence,
             source_id,
-            page);
+            page,
+            forensic_region);
     }
 }
 

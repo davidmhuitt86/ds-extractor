@@ -306,6 +306,24 @@ struct ComponentCandidate {
     double circle_edge_support = 0.0;
     double circle_interior_density = 0.0;
 
+    // AP-DIAG-024B: additive local-context evidence propagated from
+    // ShapeDetector. These fields are observational only.
+    double circle_probe_corner_top_left = 0.0;
+    double circle_probe_corner_top_right = 0.0;
+    double circle_probe_corner_bottom_left = 0.0;
+    double circle_probe_corner_bottom_right = 0.0;
+    int circle_probe_run_top_left = 0;
+    int circle_probe_run_top_right = 0;
+    int circle_probe_run_bottom_left = 0;
+    int circle_probe_run_bottom_right = 0;
+    int circle_probe_run_left_top = 0;
+    int circle_probe_run_left_bottom = 0;
+    int circle_probe_run_right_top = 0;
+    int circle_probe_run_right_bottom = 0;
+    double circle_local_density_3x3 = 0.0;
+    double circle_local_density_7x7 = 0.0;
+    double circle_local_ring_density = 0.0;
+
     // Resolved human-readable labels are semantic enrichment. They do not
     // establish geometry, topology, or component identity by themselves.
     std::vector<std::string> semantic_labels;

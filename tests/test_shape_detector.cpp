@@ -254,6 +254,51 @@ int main() {
         assert(forensic_circle->circle_probe_run_right_top >= 0);
         assert(forensic_circle->circle_probe_run_right_bottom >= 0);
         assert(forensic_circle->circle_probe_long_run_count >= 0);
+
+        // AP-DIAG-027: verify the four AP-DIAG-025/026 structural fields
+        // survive the ShapeDetector::add_region() transfer boundary. The
+        // detector computes these values in CrossingLineProbeEvidence;
+        // this regression proves the accepted ShapeRegion exposes the same
+        // derived values rather than silently reverting to their defaults.
+        const int max_run = (std::max)({
+            forensic_circle->circle_probe_run_top_left,
+            forensic_circle->circle_probe_run_top_right,
+            forensic_circle->circle_probe_run_bottom_left,
+            forensic_circle->circle_probe_run_bottom_right,
+            forensic_circle->circle_probe_run_left_top,
+            forensic_circle->circle_probe_run_left_bottom,
+            forensic_circle->circle_probe_run_right_top,
+            forensic_circle->circle_probe_run_right_bottom});
+        const int threshold = (std::max)(
+            1,
+            static_cast<int>(std::ceil(
+                0.75 * forensic_circle->circle_probe_distance)));
+        int expected_long_run_count = 0;
+        const int runs[] = {
+            forensic_circle->circle_probe_run_top_left,
+            forensic_circle->circle_probe_run_top_right,
+            forensic_circle->circle_probe_run_bottom_left,
+            forensic_circle->circle_probe_run_bottom_right,
+            forensic_circle->circle_probe_run_left_top,
+            forensic_circle->circle_probe_run_left_bottom,
+            forensic_circle->circle_probe_run_right_top,
+            forensic_circle->circle_probe_run_right_bottom};
+        for (const int run : runs) {
+            if (run >= threshold)
+                ++expected_long_run_count;
+        }
+
+        const double expected_max_run_fraction =
+            static_cast<double>(max_run) /
+            forensic_circle->circle_probe_distance;
+
+        assert(forensic_circle->circle_probe_long_run_count ==
+               expected_long_run_count);
+        assert(std::abs(
+            forensic_circle->circle_probe_max_run_fraction -
+            expected_max_run_fraction) < 1.0e-12);
+        assert(forensic_circle->circle_local_horizontal_line_density >= 0.0);
+        assert(forensic_circle->circle_local_vertical_line_density >= 0.0);
     }
 
     // Determinism: running the crossing-detection path twice against the

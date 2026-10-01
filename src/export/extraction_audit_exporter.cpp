@@ -242,6 +242,10 @@ void ExtractionAuditExporter::export_json(
            <<",\"circle_local_density_3x3\":"<<v.circle_local_density_3x3
            <<",\"circle_local_density_7x7\":"<<v.circle_local_density_7x7
            <<",\"circle_local_ring_density\":"<<v.circle_local_ring_density
+           <<",\"circle_probe_long_run_count\":"<<v.circle_probe_long_run_count
+           <<",\"circle_probe_max_run_fraction\":"<<v.circle_probe_max_run_fraction
+           <<",\"circle_local_horizontal_line_density\":"<<v.circle_local_horizontal_line_density
+           <<",\"circle_local_vertical_line_density\":"<<v.circle_local_vertical_line_density
            <<",\"semantic_labels\":";
         strings(out,v.semantic_labels); out<<"}";
     }

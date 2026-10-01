@@ -43,9 +43,11 @@ struct PhysicalWireIdentityArtifacts {
  *      Splice/Junction/Crossing node itself is never treated as a Wire
  *      boundary (AP-WIRE-029's critical invariant), and no branch
  *      pairing is ever picked by convenience. Both endpoints of an
- *      extended Wire must additionally carry a Resolved AP-WIRE-030
- *      ConductorBoundaryResolution - a bare geometric conductor end is
- *      never treated as a new Wire boundary by this second pass.
+ *      extended Wire must already exist as EndpointCandidates; AP-WIRE-030
+ *      boundary resolution is optional physical-identity evidence, not a
+ *      prerequisite for pairing an existing endpoint. Pass 2 never creates
+ *      a new Wire boundary from a bare topology node - it only connects
+ *      already-established degree-1 endpoints.
  *
  * If, after this second pass, more than one independently-walked
  * candidate pairing claims the same endpoint as its far side (a genuine

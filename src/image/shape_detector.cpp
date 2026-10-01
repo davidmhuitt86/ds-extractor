@@ -516,23 +516,51 @@ struct CrossingLineProbeEvidence {
     double local_vertical_line_density = 0.0;
 };
 
-int outward_run_horizontal(const cv::Mat& binary, int y, int start_x, int direction, int max_run) {
-    if (y < 0 || y >= binary.rows || direction == 0 || max_run <= 0) return 0;
+// AP-DIAG-026: forensic runs use the same thickness-aware raster
+// semantics as the production crossing-line probe. An exact one-pixel
+// sampler can report zero for a valid 2-4px conductor when anti-aliasing or
+// normalization shifts the centerline by a pixel or two.
+int outward_run_horizontal(
+    const cv::Mat& binary, int y, int start_x, int direction,
+    int max_run, int half_thickness) {
+    if (direction == 0 || max_run <= 0 || half_thickness < 0) return 0;
     int run = 0;
     for (int i = 0; i < max_run; ++i) {
         const int x = start_x + direction * i;
-        if (x < 0 || x >= binary.cols || binary.at<std::uint8_t>(y, x) == 0) break;
+        if (x < 0 || x >= binary.cols) break;
+        bool supported = false;
+        for (int t = -half_thickness; t <= half_thickness; ++t) {
+            const int yy = y + t;
+            if (yy >= 0 && yy < binary.rows &&
+                binary.at<std::uint8_t>(yy, x) != 0) {
+                supported = true;
+                break;
+            }
+        }
+        if (!supported) break;
         ++run;
     }
     return run;
 }
 
-int outward_run_vertical(const cv::Mat& binary, int x, int start_y, int direction, int max_run) {
-    if (x < 0 || x >= binary.cols || direction == 0 || max_run <= 0) return 0;
+int outward_run_vertical(
+    const cv::Mat& binary, int x, int start_y, int direction,
+    int max_run, int half_thickness) {
+    if (direction == 0 || max_run <= 0 || half_thickness < 0) return 0;
     int run = 0;
     for (int i = 0; i < max_run; ++i) {
         const int y = start_y + direction * i;
-        if (y < 0 || y >= binary.rows || binary.at<std::uint8_t>(y, x) == 0) break;
+        if (y < 0 || y >= binary.rows) break;
+        bool supported = false;
+        for (int t = -half_thickness; t <= half_thickness; ++t) {
+            const int xx = x + t;
+            if (xx >= 0 && xx < binary.cols &&
+                binary.at<std::uint8_t>(y, xx) != 0) {
+                supported = true;
+                break;
+            }
+        }
+        if (!supported) break;
         ++run;
     }
     return run;
@@ -547,7 +575,7 @@ double corner_patch_density(const cv::Mat& binary, int x, int y, int radius, int
 double local_line_density(
     const cv::Mat& binary,
     const cv::Rect& bounds,
-    int kernel_length,
+    int half_thickness,
     bool horizontal) {
 
     const cv::Rect outer(
@@ -557,15 +585,38 @@ double local_line_density(
     if (clipped.empty())
         return 0.0;
 
-    const cv::Mat local = binary(clipped);
-    const cv::Mat kernel = cv::getStructuringElement(
-        cv::MORPH_RECT,
-        horizontal ? cv::Size(kernel_length, 1)
-                   : cv::Size(1, kernel_length));
-    cv::Mat opened;
-    cv::morphologyEx(local, opened, cv::MORPH_OPEN, kernel);
-    return static_cast<double>(cv::countNonZero(opened)) /
-           static_cast<double>(clipped.area());
+    // AP-DIAG-026: avoid morphological opening here. Thin normalized
+    // conductors can be erased by a kernel wider than their surviving
+    // raster stroke. Instead measure local raster support using the same
+    // thickness-aware semantics as the production line-continuity probe.
+    int supported = 0;
+    const int total = clipped.area();
+
+    for (int y = clipped.y; y < clipped.y + clipped.height; ++y) {
+        for (int x = clipped.x; x < clipped.x + clipped.width; ++x) {
+            bool found = false;
+            if (horizontal) {
+                for (int t = -half_thickness; t <= half_thickness && !found; ++t) {
+                    const int yy = y + t;
+                    if (yy >= 0 && yy < binary.rows &&
+                        binary.at<std::uint8_t>(yy, x) != 0)
+                        found = true;
+                }
+            } else {
+                for (int t = -half_thickness; t <= half_thickness && !found; ++t) {
+                    const int xx = x + t;
+                    if (xx >= 0 && xx < binary.cols &&
+                        binary.at<std::uint8_t>(y, xx) != 0)
+                        found = true;
+                }
+            }
+            if (found) ++supported;
+        }
+    }
+
+    return total > 0
+        ? static_cast<double>(supported) / static_cast<double>(total)
+        : 0.0;
 }
 
 CrossingLineProbeEvidence measure_crossing_line_probe(
@@ -597,21 +648,21 @@ CrossingLineProbeEvidence measure_crossing_line_probe(
     const cv::Rect outer7(bounds.x - 7, bounds.y - 7, bounds.width + 14, bounds.height + 14);
 
     const int run_top_left =
-        outward_run_horizontal(binary, bounds.y, bounds.x - 1, -1, far);
+        outward_run_horizontal(binary, bounds.y, bounds.x - 1, -1, far, thickness);
     const int run_top_right =
-        outward_run_horizontal(binary, bounds.y, bounds.x + bounds.width, 1, far);
+        outward_run_horizontal(binary, bounds.y, bounds.x + bounds.width, 1, far, thickness);
     const int run_bottom_left =
-        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x - 1, -1, far);
+        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x - 1, -1, far, thickness);
     const int run_bottom_right =
-        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x + bounds.width, 1, far);
+        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x + bounds.width, 1, far, thickness);
     const int run_left_top =
-        outward_run_vertical(binary, bounds.x, bounds.y - 1, -1, far);
+        outward_run_vertical(binary, bounds.x, bounds.y - 1, -1, far, thickness);
     const int run_left_bottom =
-        outward_run_vertical(binary, bounds.x, bounds.y + bounds.height, 1, far);
+        outward_run_vertical(binary, bounds.x, bounds.y + bounds.height, 1, far, thickness);
     const int run_right_top =
-        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y - 1, -1, far);
+        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y - 1, -1, far, thickness);
     const int run_right_bottom =
-        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y + bounds.height, 1, far);
+        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y + bounds.height, 1, far, thickness);
 
     const std::array<int, 8> runs = {
         run_top_left, run_top_right, run_bottom_left, run_bottom_right,

@@ -6,6 +6,7 @@
 #include <opencv2/geometry/2d.hpp>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 #include <sstream>
@@ -509,6 +510,10 @@ struct CrossingLineProbeEvidence {
     double local_density_3x3 = 0.0;
     double local_density_7x7 = 0.0;
     double local_ring_density = 0.0;
+    int long_run_count = 0;
+    double max_run_fraction = 0.0;
+    double local_horizontal_line_density = 0.0;
+    double local_vertical_line_density = 0.0;
 };
 
 int outward_run_horizontal(const cv::Mat& binary, int y, int start_x, int direction, int max_run) {
@@ -533,8 +538,34 @@ int outward_run_vertical(const cv::Mat& binary, int x, int start_y, int directio
     return run;
 }
 
-double corner_patch_density(const cv::Mat& binary, int x, int y, int radius) {
-    return region_density(binary, cv::Rect(x - radius, y - radius, radius, radius));
+double corner_patch_density(const cv::Mat& binary, int x, int y, int radius, int dx, int dy) {
+    const int x0 = dx < 0 ? x - radius : x;
+    const int y0 = dy < 0 ? y - radius : y;
+    return region_density(binary, cv::Rect(x0, y0, radius, radius));
+}
+
+double local_line_density(
+    const cv::Mat& binary,
+    const cv::Rect& bounds,
+    int kernel_length,
+    bool horizontal) {
+
+    const cv::Rect outer(
+        bounds.x - 7, bounds.y - 7,
+        bounds.width + 14, bounds.height + 14);
+    const cv::Rect clipped = outer & cv::Rect(0, 0, binary.cols, binary.rows);
+    if (clipped.empty())
+        return 0.0;
+
+    const cv::Mat local = binary(clipped);
+    const cv::Mat kernel = cv::getStructuringElement(
+        cv::MORPH_RECT,
+        horizontal ? cv::Size(kernel_length, 1)
+                   : cv::Size(1, kernel_length));
+    cv::Mat opened;
+    cv::morphologyEx(local, opened, cv::MORPH_OPEN, kernel);
+    return static_cast<double>(cv::countNonZero(opened)) /
+           static_cast<double>(clipped.area());
 }
 
 CrossingLineProbeEvidence measure_crossing_line_probe(
@@ -565,23 +596,51 @@ CrossingLineProbeEvidence measure_crossing_line_probe(
     const cv::Rect outer3(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
     const cv::Rect outer7(bounds.x - 7, bounds.y - 7, bounds.width + 14, bounds.height + 14);
 
+    const int run_top_left =
+        outward_run_horizontal(binary, bounds.y, bounds.x - 1, -1, far);
+    const int run_top_right =
+        outward_run_horizontal(binary, bounds.y, bounds.x + bounds.width, 1, far);
+    const int run_bottom_left =
+        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x - 1, -1, far);
+    const int run_bottom_right =
+        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x + bounds.width, 1, far);
+    const int run_left_top =
+        outward_run_vertical(binary, bounds.x, bounds.y - 1, -1, far);
+    const int run_left_bottom =
+        outward_run_vertical(binary, bounds.x, bounds.y + bounds.height, 1, far);
+    const int run_right_top =
+        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y - 1, -1, far);
+    const int run_right_bottom =
+        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y + bounds.height, 1, far);
+
+    const std::array<int, 8> runs = {
+        run_top_left, run_top_right, run_bottom_left, run_bottom_right,
+        run_left_top, run_left_bottom, run_right_top, run_right_bottom};
+    const int long_run_threshold =
+        (std::max)(1, static_cast<int>(std::ceil(0.75 * far)));
+    int long_run_count = 0;
+    int max_run = 0;
+    for (const int run : runs) {
+        if (run >= long_run_threshold)
+            ++long_run_count;
+        max_run = (std::max)(max_run, run);
+    }
+
     return CrossingLineProbeEvidence{
         far, top, bottom, left, right, weakest_side,
-        corner_patch_density(binary, bounds.x, bounds.y, 3),
-        corner_patch_density(binary, bounds.x + bounds.width, bounds.y, 3),
-        corner_patch_density(binary, bounds.x, bounds.y + bounds.height, 3),
-        corner_patch_density(binary, bounds.x + bounds.width, bounds.y + bounds.height, 3),
-        outward_run_horizontal(binary, bounds.y, bounds.x - 1, -1, far),
-        outward_run_horizontal(binary, bounds.y, bounds.x + bounds.width, 1, far),
-        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x - 1, -1, far),
-        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x + bounds.width, 1, far),
-        outward_run_vertical(binary, bounds.x, bounds.y - 1, -1, far),
-        outward_run_vertical(binary, bounds.x, bounds.y + bounds.height, 1, far),
-        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y - 1, -1, far),
-        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y + bounds.height, 1, far),
+        corner_patch_density(binary, bounds.x, bounds.y, 3, -1, -1),
+        corner_patch_density(binary, bounds.x + bounds.width, bounds.y, 3, 1, -1),
+        corner_patch_density(binary, bounds.x, bounds.y + bounds.height, 3, -1, 1),
+        corner_patch_density(binary, bounds.x + bounds.width, bounds.y + bounds.height, 3, 1, 1),
+        run_top_left, run_top_right, run_bottom_left, run_bottom_right,
+        run_left_top, run_left_bottom, run_right_top, run_right_bottom,
         ring_density(binary, outer3, 3),
         ring_density(binary, outer7, 7),
-        ring_density(binary, outer7, 3)};
+        ring_density(binary, outer7, 3),
+        long_run_count,
+        static_cast<double>(max_run) / far,
+        local_line_density(binary, bounds, 5, true),
+        local_line_density(binary, bounds, 5, false)};
 }
 
 void detect_circles(
@@ -695,6 +754,10 @@ void detect_circles(
         forensic_region.circle_local_density_3x3 = probe.local_density_3x3;
         forensic_region.circle_local_density_7x7 = probe.local_density_7x7;
         forensic_region.circle_local_ring_density = probe.local_ring_density;
+        forensic_region.circle_probe_long_run_count = probe.long_run_count;
+        forensic_region.circle_probe_max_run_fraction = probe.max_run_fraction;
+        forensic_region.circle_local_horizontal_line_density = probe.local_horizontal_line_density;
+        forensic_region.circle_local_vertical_line_density = probe.local_vertical_line_density;
 
         const cv::Rect image_rect(
             0, 0, normalized.cols, normalized.rows);

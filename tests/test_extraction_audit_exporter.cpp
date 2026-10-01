@@ -45,6 +45,9 @@ int main() {
     assert(first == second);
     assert(first.find("\"schema_version\": 2") != std::string::npos);
     assert(first.find("\"components\"") != std::string::npos);
+    assert(first.find("\"circle_probe_evidence\"") != std::string::npos);
+    assert(first.find("\"circle_probe_distance\"") != std::string::npos);
+    assert(first.find("\"circle_probe_weakest_side\"") != std::string::npos);
     assert(first.find("\"endpoint_2\"") != std::string::npos);
     assert(first.find("\"wire_2\"") != std::string::npos);
     assert(first.find("\"net_2\"") != std::string::npos);

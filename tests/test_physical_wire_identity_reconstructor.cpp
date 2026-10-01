@@ -155,6 +155,36 @@ int main() {
         assert(!any_wire_touches(artifacts.wires, "ep-c"));
     }
 
+    // AP-DIAG-029: an existing geometric endpoint is already a
+    // legitimate Wire boundary. Segment-sharing through a splice must be
+    // sufficient to reconstruct the endpoint-to-endpoint physical Wire;
+    // semantic ConductorBoundaryResolution is not required to invent or
+    // validate that boundary because no new endpoint is being created.
+    {
+        std::vector<TopologyNode> nodes = {
+            make_node("n-a", TopologyNodeType::ConductorEnd),
+            make_node("n-splice", TopologyNodeType::Splice),
+            make_node("n-b", TopologyNodeType::ConductorEnd)};
+        std::vector<TopologyEdge> edges = {
+            make_edge("e1", "n-a", "n-splice", "segA"),
+            make_edge("e2", "n-splice", "n-b", "segA")};
+        std::vector<ConductorSegment> segments = {make_segment("segA")};
+        std::vector<EndpointCandidate> endpoints = {
+            make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b")};
+        endpoints[0].kind = EndpointKind::GeometricConductorEnd;
+        endpoints[1].kind = EndpointKind::GeometricConductorEnd;
+
+        const auto artifacts = reconstructor.reconstruct(
+            nodes, edges, endpoints, segments, {}, "src", 0);
+        assert(artifacts.wires.size() == 1);
+        const auto* wire = find_wire_between(artifacts.wires, "ep-a", "ep-b");
+        assert(wire != nullptr);
+        assert(wire->identity_status == WireIdentityStatus::Resolved);
+        assert(wire->identity_evidence_ids.size() == 1);
+        assert(wire->identity_evidence_ids[0] == "segA");
+        assert(wire->topology_edges.size() == 2);
+    }
+
     // 4. Three-way splice with insufficient physical continuity evidence
     // (all three branches have distinct conductor segments) -> no
     // invented branch pairing, physical identity remains unresolved for

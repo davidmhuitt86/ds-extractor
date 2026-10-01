@@ -13,7 +13,7 @@
     "source_id": "samples/trx300ODG.png",
     "image_width": 898,
     "image_height": 549,
-    "commit": "3119d99c067a72b3067ca2fac267b1e48f2d4a23",
+    "commit": "2e29a392f3782f29e397388dbb07779f26fc2736",
     "circular_candidates": 22,
     "known_false_rejected": 4,
     "known_false_remaining": 17,
@@ -190,24 +190,19 @@
     }
   ],
   "findings": [
-    "Candidate size alone does not separate the rejected and surviving false-positive populations.",
-    "The four AP-DIAG-023 rejections include 7x9 and 10x11 candidates while same-scale false positives remain elsewhere.",
-    "The five known genuine circles survive the adaptive probe.",
-    "The current bounded_by_crossing_lines predicate measures four-sided local straight-line continuity; AP-DIAG-023 changed probe distance only.",
-    "The structured audit does not expose the per-candidate continuity measurements or raster neighborhoods needed for a causal discriminator."
+    "Instrumented extraction completed on extraction-results commit 2e29a392f3782f29e397388dbb07779f26fc2736.",
+    "All five known genuine circular candidates remain and 17 of 21 known false candidates remain.",
+    "Probe distance, weakest-side continuity, circularity, aspect ratio, edge support, and interior density have overlapping ranges between the known-real and known-false populations.",
+    "The pair at (511,448) and (532,448) are both 11x13 with weakest-side continuity 0, yet one is known genuine and the other known false; this demonstrates that another scalar threshold is insufficient.",
+    "Collateral extraction populations remain unchanged from AP-DIAG-023.",
+    "The remaining discriminator requires contextual/local raster evidence rather than another global size or continuity threshold."
   ],
   "required_next_evidence": [
-    "per-candidate adaptive probe distance",
-    "top-left/top-right/bottom-left/bottom-right continuity measurements",
-    "weakest-side continuity",
-    "contour area and perimeter",
-    "circularity",
-    "aspect ratio",
-    "enclosing-circle center and radius",
-    "edge support",
-    "interior density",
-    "local horizontal and vertical run lengths",
-    "candidate-local raster crop"
+    "per-candidate corner-level top-left/top-right/bottom-left/bottom-right probe measurements",
+    "local horizontal and vertical run lengths immediately outside each candidate side",
+    "candidate-local raster crop",
+    "local connected-component/contour neighborhood identity",
+    "spatial relationship to nearby conductors and symbols"
   ],
   "instrumentation": {
     "purpose": "capture existing circle detector measurements for forensic comparison",
@@ -234,6 +229,6 @@
       "237123ecf600a73290f78a2579f7ad006b4be85f",
       "0596faddbe7d8d21113069772c42f49cab7d2a33"
     ],
-    "real_extraction_with_instrumentation": "PENDING_LOCAL_EXECUTION"
+    "real_extraction_with_instrumentation": "COMPLETE"
   }
 }

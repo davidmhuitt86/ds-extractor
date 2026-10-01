@@ -1,6 +1,6 @@
 {
   "ap": "AP-DIAG-028",
-  "status": "implemented_awaiting_fresh_extraction",
+  "status": "verified_closed",
   "source": {
     "id": "samples/trx300ODG.png",
     "width": 898,
@@ -87,5 +87,34 @@
     "shape_detector_thresholds_changed": false,
     "new_stage": "CircleContextClassifier",
     "placement": "after conductor detection and component candidate construction"
+  },
+  "verification": {
+    "fresh_audit_ref": "extraction-results:artifacts/audit/extraction_audit.json",
+    "circular_symbol_components": 5,
+    "false_circle_survivors": 0,
+    "genuine_retained": 5,
+    "line_grid_rejected": 14,
+    "contextual_rejected": 3,
+    "collateral_counts_unchanged": {
+      "terminal_candidates": 18,
+      "connectors": 2,
+      "connector_terminals": 1,
+      "conductor_segments": 230,
+      "endpoint_candidates": 192,
+      "wires": 37,
+      "topology_nodes": 533,
+      "topology_edges": 643,
+      "electrical_nets": 12
+    },
+    "validation_errors": 0,
+    "unreferenced_conductor_segments": 0,
+    "invalid_wires": 0
+  },
+  "next_ap": {
+    "id": "AP-DIAG-029",
+    "focus": "endpoint-to-wire reconstruction gap",
+    "current_zero_wire_endpoints": 118,
+    "topology_edges_unowned_by_wire": 602,
+    "fully_unresolved_wires": 28
   }
 }

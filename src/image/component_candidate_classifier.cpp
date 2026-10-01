@@ -84,6 +84,10 @@ std::vector<ComponentCandidate> ComponentCandidateClassifier::classify(
         candidate.circle_local_density_3x3 = shape.circle_local_density_3x3;
         candidate.circle_local_density_7x7 = shape.circle_local_density_7x7;
         candidate.circle_local_ring_density = shape.circle_local_ring_density;
+        candidate.circle_probe_long_run_count = shape.circle_probe_long_run_count;
+        candidate.circle_probe_max_run_fraction = shape.circle_probe_max_run_fraction;
+        candidate.circle_local_horizontal_line_density = shape.circle_local_horizontal_line_density;
+        candidate.circle_local_vertical_line_density = shape.circle_local_vertical_line_density;
         result.push_back(std::move(candidate));
     }
 

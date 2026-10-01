@@ -2,7 +2,7 @@
 
 ## Status
 
-**IMPLEMENTED — awaiting fresh Release extraction verification**
+**CLOSED — verified by fresh Release extraction**
 
 This AP closes the forensic comparison phase and implements the smallest contextual classifier supported by the corrected AP-DIAG-027 evidence.
 
@@ -54,8 +54,31 @@ Added circle_context_classifier.hpp, circle_context_classifier.cpp, and test_cir
 
 The unit regression covers long-run rejection, direct conductor intersection acceptance, endpoint-within-5-px acceptance, nearby-but-unattached rejection, and pass-through of non-circle candidates.
 
-## Verification Gate
+## Verification Result
 
-The implementation is not closed until a fresh clean Release extraction is published and the audit confirms 22 baseline circles reduce to 5 retained genuine circles: 14 rejected by line/grid evidence and 3 rejected by conductor-context evidence.
+Fresh published Release extraction verified the expected classification result:
 
-No final extraction-fidelity conclusion is claimed before that fresh artifact is inspected.
+- circular symbols: **5**
+- false circle survivors: **0**
+- 14 baseline line/grid false survivors rejected
+- 3 baseline ambiguous false survivors rejected
+- all 5 source-confirmed genuine circles retained
+
+Collateral population check:
+
+- terminal candidates: 18 — unchanged
+- connectors: 2 — unchanged
+- connector terminals: 1 — unchanged
+- conductor segments: 230 — unchanged
+- endpoint candidates: 192 — unchanged
+- wires: 37 — unchanged
+- topology nodes: 533 — unchanged
+- topology edges: 643 — unchanged
+- electrical nets: 12 — unchanged
+- validation errors: 0
+
+The published audit also reports zero unreferenced conductor segments and zero invalid wires.
+
+**AP-DIAG-028 is closed.**
+
+The remaining major diagnostic population is the pre-existing reconstruction gap: 118 endpoint candidates currently have zero Wire membership, 602 topology edges are not owned by a Wire, and 28 Wires remain fully unresolved. Those are carried forward to the next AP rather than being attributed to the circle classifier.

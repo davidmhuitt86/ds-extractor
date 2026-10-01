@@ -1,0 +1,49 @@
+{
+  "ap_id": "AP-DIAG-029",
+  "status": "implemented_verification_pending",
+  "source": {
+    "branch": "extraction-results",
+    "artifact": "artifacts/audit/extraction_audit.json",
+    "source_id": "C:\\dev\\ds-extractor\\samples\\trx300ODG.png",
+    "page": 0,
+    "width": 898,
+    "height": 549
+  },
+  "baseline_counts": {
+    "endpoint_candidates": 192,
+    "wires": 37,
+    "topology_nodes": 533,
+    "topology_edges": 643,
+    "conductor_segments": 230,
+    "electrical_nets": 12
+  },
+  "zero_wire_partition": {
+    "total": 118,
+    "geometric": 111,
+    "component_terminal": 7,
+    "adjacent_crossing": 54,
+    "adjacent_splice": 42,
+    "adjacent_continuation": 22
+  },
+  "forensic_replay": {
+    "rule": "degree-2 continuation; at distribution/crossing continue only on exact arriving ConductorSegment match; stop only at an existing EndpointCandidate",
+    "zero_endpoints_reaching_existing_endpoint": 82,
+    "unique_pairs": 41,
+    "disjoint_endpoint_count": 82,
+    "shared_candidate_path_edges": 0,
+    "pairs_touching_existing_wire": 0,
+    "remaining_without_pair": 36
+  },
+  "implementation": {
+    "eligibility": "existing EndpointCandidate kind other than Splice/Unresolved",
+    "semantic_boundary_required": false,
+    "topology_mutation": false,
+    "new_endpoint_creation": false
+  },
+  "projection": {
+    "wires": 78,
+    "zero_wire_endpoints": 36,
+    "note": "forensic projection; requires local extraction verification"
+  },
+  "next_focus": "remaining 36 zero-Wire endpoints and independent electrical-net resolution gap"
+}

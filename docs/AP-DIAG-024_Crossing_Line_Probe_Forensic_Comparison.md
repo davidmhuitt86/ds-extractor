@@ -2,7 +2,7 @@
 
 ## Status
 
-**DIAGNOSTIC — EVIDENCE INSTRUMENTATION IMPLEMENTED; REAL EXTRACTION PENDING**
+**DIAGNOSTIC — FORENSIC EXTRACTION COMPLETE; DISCRIMINATOR NOT YET IDENTIFIED**
 
 ## Objective
 
@@ -106,9 +106,32 @@ AP-DIAG-023 changed only the extension distance. It did not change what constitu
 
 The 4/21 improvement therefore confirms that probe scale participates in the failure, but the 17 survivors demonstrate that another geometric property controls the remaining cases.
 
+## Real extraction forensic results
+
+The instrumented extraction was published at extraction-results commit `2e29a392f3782f29e397388dbb07779f26fc2736`.
+
+The audit contains 22 circular candidates: 17 known false positives and 5 known genuine circular symbols. The four AP-DIAG-023 rejected false candidates are absent from the accepted-circle evidence set because forensic fields are emitted only for accepted Circle candidates.
+
+Measured population ranges show no single currently exposed scalar separates the two classes:
+
+| Measurement | 5 genuine | 17 false survivors |
+|---|---:|---:|
+| Probe distance | 13–24 | 7–22 |
+| Weakest side | 0–0.0476 | 0–0.3333 |
+| Circularity | 0.6807–0.9194 | 0.7349–0.9273 |
+| Aspect ratio | 1.05–1.3333 | 1.00–1.2857 |
+| Edge support | 0.6944–1.0 | 0.7083–1.0 |
+| Interior density | 0–0.24 | 0–0.28 |
+
+All five genuine candidates have probe distance >= 13, but three false survivors also do. Weakest-side <= 0.05 contains all five genuine candidates but also seven false survivors.
+
+The strongest evidence against another scalar threshold is the pair at `(511,448)` and `(532,448)`: both are 11x13 candidates with weakest-side continuity 0, while the first is known genuine and the second is known false. Their circularity and edge-support values also overlap substantially. The remaining discriminator therefore requires contextual/local evidence rather than another global size or continuity threshold.
+
+Collateral populations remain unchanged: wires 37, topology edges 643, electrical nets 12, terminal candidates 18, connectors 2, connector terminals 1, validation errors 0, and validation warnings 34.
+
 ## What remains undetermined
 
-The available structured extraction artifact does not expose the per-candidate eight continuity measurements, contour pixels, or normalized raster neighborhood required to identify the common property of the 17 survivors.
+The structured extraction artifact now exposes aggregate side-continuity measurements and circle metrics, but still does not expose individual corner measurements, local horizontal/vertical run lengths, or candidate-local raster crops required to identify the common property of the remaining 17 false positives.
 
 Therefore this AP does **not** infer a new threshold, morphology rule, or detector criterion.
 
@@ -154,7 +177,7 @@ Implementation commits:
 
 ## Disposition
 
-**AP-DIAG-024 remains diagnostic and open pending a real TRX300 extraction with the new evidence fields.**
+**AP-DIAG-024 remains diagnostic and open.** The real extraction is complete, but the evidence does not justify another detector tuning change. The next diagnostic increment should expose corner-level probe measurements and candidate-local raster context. No production threshold should be changed from the current evidence.
 
 No detector threshold, morphology, topology, wire, endpoint, connector, or net-resolution behavior was intentionally changed by this AP. The existing AP-DIAG-023 classification predicate remains unchanged; the new data exists solely to expose its measurements for forensic comparison.
 

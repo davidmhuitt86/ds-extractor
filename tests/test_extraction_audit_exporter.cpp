@@ -52,6 +52,10 @@ int main() {
     assert(first.find("\"circle_probe_run_top_left\"") != std::string::npos);
     assert(first.find("\"circle_local_density_7x7\"") != std::string::npos);
     assert(first.find("\"circle_local_ring_density\"") != std::string::npos);
+    assert(first.find("\"circle_probe_long_run_count\"") != std::string::npos);
+    assert(first.find("\"circle_probe_max_run_fraction\"") != std::string::npos);
+    assert(first.find("\"circle_local_horizontal_line_density\"") != std::string::npos);
+    assert(first.find("\"circle_local_vertical_line_density\"") != std::string::npos);
     assert(first.find("\"endpoint_2\"") != std::string::npos);
     assert(first.find("\"wire_2\"") != std::string::npos);
     assert(first.find("\"net_2\"") != std::string::npos);

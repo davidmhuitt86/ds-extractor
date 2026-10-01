@@ -57,6 +57,18 @@ std::vector<ComponentCandidate> ComponentCandidateClassifier::classify(
         candidate.shape_ids.push_back(shape.id);
         candidate.bounds = shape.bounds;
         candidate.confidence = classify_confidence(shape);
+        candidate.circle_probe_evidence = shape.circle_probe_evidence;
+        candidate.circle_probe_distance = shape.circle_probe_distance;
+        candidate.circle_probe_top = shape.circle_probe_top;
+        candidate.circle_probe_bottom = shape.circle_probe_bottom;
+        candidate.circle_probe_left = shape.circle_probe_left;
+        candidate.circle_probe_right = shape.circle_probe_right;
+        candidate.circle_probe_weakest_side = shape.circle_probe_weakest_side;
+        candidate.circle_circularity = shape.circle_circularity;
+        candidate.circle_aspect_ratio = shape.circle_aspect_ratio;
+        candidate.circle_radius = shape.circle_radius;
+        candidate.circle_edge_support = shape.circle_edge_support;
+        candidate.circle_interior_density = shape.circle_interior_density;
         result.push_back(std::move(candidate));
     }
 

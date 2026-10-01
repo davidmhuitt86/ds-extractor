@@ -21,7 +21,16 @@
       "circle_local_vertical_line_density"
     ],
     "classification_logic_changed": false,
-    "real_extraction": "PENDING_LOCAL_EXECUTION"
+    "real_extraction": "PENDING_LOCAL_EXECUTION",
+    "implementation_commits": [
+      "69480b6e4af1538384152592d1f5078cad6a353b",
+      "22a42ec9194645c2ad4ebf073314dc5870a09874",
+      "0fd1a9cbd0e91072c0109a4fc6c5c45e6ea99bc5",
+      "d9348745b07fc88d023d8b152a161e1646b954b6",
+      "b671106470c960185f95ced1dcb6c208c63abb55",
+      "21bc2b6f8c41936b578e1f7ce1d4a77031c33362",
+      "91e044ae8ac61f7a51b010f34a8371c7e2b65efe"
+    ]
   },
   "controlled_pair": {
     "genuine": {
@@ -37,5 +46,9 @@
       "height": 13
     }
   },
-  "required_next_action": "Run clean Release extraction, publish extraction-results, and compare all five known genuine candidates against the seventeen known false survivors before any tuning."
+  "required_next_action": "Run clean Release extraction, publish extraction-results, and compare all five known genuine candidates against the seventeen known false survivors before any tuning.",
+  "implementation": {
+    "main_head": "c4b8233431e45a2723ae6a7ac61a98d2feccf432",
+    "classification_logic_changed": false
+  }
 }

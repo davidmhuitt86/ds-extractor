@@ -1,0 +1,41 @@
+{
+  "ap_id": "AP-DIAG-025",
+  "schema_version": 1,
+  "status": "DIAGNOSTIC_OPEN",
+  "classification_logic_changed": false,
+  "baseline": {
+    "prior_ap": "AP-DIAG-024B",
+    "source_id": "samples/trx300ODG.png",
+    "image_width": 898,
+    "image_height": 549,
+    "known_genuine_candidates": 5,
+    "known_false_survivors": 17
+  },
+  "instrumentation": {
+    "purpose": "capture structural raster context around accepted circular candidates",
+    "corner_patch_geometry_corrected": true,
+    "fields": [
+      "circle_probe_long_run_count",
+      "circle_probe_max_run_fraction",
+      "circle_local_horizontal_line_density",
+      "circle_local_vertical_line_density"
+    ],
+    "classification_logic_changed": false,
+    "real_extraction": "PENDING_LOCAL_EXECUTION"
+  },
+  "controlled_pair": {
+    "genuine": {
+      "x": 511,
+      "y": 448,
+      "width": 11,
+      "height": 13
+    },
+    "false": {
+      "x": 532,
+      "y": 448,
+      "width": 11,
+      "height": 13
+    }
+  },
+  "required_next_action": "Run clean Release extraction, publish extraction-results, and compare all five known genuine candidates against the seventeen known false survivors before any tuning."
+}

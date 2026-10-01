@@ -1,0 +1,91 @@
+{
+  "ap": "AP-DIAG-028",
+  "status": "implemented_awaiting_fresh_extraction",
+  "source": {
+    "id": "samples/trx300ODG.png",
+    "width": 898,
+    "height": 549
+  },
+  "baseline": {
+    "circle_candidates": 22,
+    "genuine": 5,
+    "false": 17,
+    "obvious_false_line_grid": 14,
+    "ambiguous_false": 3
+  },
+  "rules": {
+    "max_run_fraction_reject_at_or_above": 0.75,
+    "max_conductor_endpoint_distance_px": 5,
+    "attachment": [
+      "segment_intersects_candidate_bounds",
+      "segment_endpoint_within_candidate_bounds_distance"
+    ]
+  },
+  "genuine_candidates": [
+    {
+      "x": 511,
+      "y": 448,
+      "attachment": "endpoint_within_approximately_4_5_px",
+      "max_run_fraction": 0.0769231
+    },
+    {
+      "x": 357,
+      "y": 462,
+      "attachment": "segment_intersects_bounds",
+      "max_run_fraction": 0.117647
+    },
+    {
+      "x": 761,
+      "y": 361,
+      "attachment": "segment_intersects_bounds",
+      "max_run_fraction": 0.380952
+    },
+    {
+      "x": 77,
+      "y": 83,
+      "attachment": "segment_intersects_bounds",
+      "max_run_fraction": 0.125
+    },
+    {
+      "x": 90,
+      "y": 98,
+      "attachment": "segment_intersects_bounds",
+      "max_run_fraction": 0.0952381
+    }
+  ],
+  "ambiguous_false_candidates": [
+    {
+      "x": 344,
+      "y": 69,
+      "w": 9,
+      "h": 8,
+      "max_run_fraction": 0,
+      "attachment": false
+    },
+    {
+      "x": 357,
+      "y": 69,
+      "w": 9,
+      "h": 9,
+      "max_run_fraction": 0,
+      "attachment": false
+    },
+    {
+      "x": 532,
+      "y": 448,
+      "w": 11,
+      "h": 13,
+      "max_run_fraction": 0.0769231,
+      "attachment": false
+    }
+  ],
+  "expected_fresh_extraction": {
+    "circular_symbol_components": 5,
+    "false_circle_survivors": 0
+  },
+  "classifier_change": {
+    "shape_detector_thresholds_changed": false,
+    "new_stage": "CircleContextClassifier",
+    "placement": "after conductor detection and component candidate construction"
+  }
+}

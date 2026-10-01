@@ -44,7 +44,7 @@ int main() {
     {
         const auto c = circle(100, 100);
         const auto out = classifier.classify({c}, {
-            segment(94, 40, 94, 94)});
+            segment(97, 40, 97, 97)});
         assert(out.size() == 1);
     }
 

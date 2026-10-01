@@ -2,7 +2,7 @@
 
 ## Status
 
-**DIAGNOSTIC — NO DETECTOR CHANGE**
+**DIAGNOSTIC — EVIDENCE INSTRUMENTATION IMPLEMENTED; REAL EXTRACTION PENDING**
 
 ## Objective
 
@@ -129,10 +129,33 @@ The next diagnostic evidence required is a per-candidate raster probe record con
 
 The five genuine circles must be included in that same record set so the eventual discriminator is derived from both populations.
 
+## Evidence instrumentation
+
+AP-DIAG-024 adds additive forensic fields to circular ShapeRegion and ComponentCandidate records. For every accepted Circle candidate, the extraction audit can now retain:
+
+- adaptive probe distance;
+- top, bottom, left, and right continuity values;
+- weakest-side continuity;
+- circularity;
+- aspect ratio;
+- enclosing-circle radius;
+- edge support;
+- interior density.
+
+These fields are observational only. They do not alter the Circle acceptance decision.
+
+Implementation commits:
+
+- model evidence fields: `bf215bd703cde2080ba7dbab741f46fd43620f91`
+- ShapeRegion evidence capture: `d572732647059e24684282eaae73984efd122003`, `76f953739b88aa14ce13d98dd46bb0b44cff0ff3`, `28cc01c5f1694e338938a1d8a0668bd536ff813a`
+- candidate propagation: `01d1ab09753a1458a354ef6fdb18cf16aaabeb0f0`
+- audit serialization: `237123ecf600a73290f78a2579f7ad006b4be85f`
+- regression serialization assertions: `0596faddbe7d8d21113069772c42f49cab7d2a33`
+
 ## Disposition
 
-**AP-DIAG-024 remains diagnostic and open.**
+**AP-DIAG-024 remains diagnostic and open pending a real TRX300 extraction with the new evidence fields.**
 
-No detector source, threshold, morphology, topology, wire, endpoint, connector, or net-resolution logic was changed by this AP.
+No detector threshold, morphology, topology, wire, endpoint, connector, or net-resolution behavior was intentionally changed by this AP. The existing AP-DIAG-023 classification predicate remains unchanged; the new data exists solely to expose its measurements for forensic comparison.
 
 The evidence does **not** justify another tuning change yet.

@@ -99,7 +99,8 @@ void add_region(
     const cv::Rect& bounds,
     double confidence,
     const std::string& source_id,
-    int page) {
+    int page,
+    const ShapeRegion* forensic = nullptr) {
 
     if (bounds.width <= 0 || bounds.height <= 0)
         return;
@@ -136,6 +137,20 @@ void add_region(
     region.role = role;
     region.bounds = to_box(bounds);
     region.confidence = confidence;
+    if (forensic != nullptr) {
+        region.circle_probe_evidence = forensic->circle_probe_evidence;
+        region.circle_probe_distance = forensic->circle_probe_distance;
+        region.circle_probe_top = forensic->circle_probe_top;
+        region.circle_probe_bottom = forensic->circle_probe_bottom;
+        region.circle_probe_left = forensic->circle_probe_left;
+        region.circle_probe_right = forensic->circle_probe_right;
+        region.circle_probe_weakest_side = forensic->circle_probe_weakest_side;
+        region.circle_circularity = forensic->circle_circularity;
+        region.circle_aspect_ratio = forensic->circle_aspect_ratio;
+        region.circle_radius = forensic->circle_radius;
+        region.circle_edge_support = forensic->circle_edge_support;
+        region.circle_interior_density = forensic->circle_interior_density;
+    }
 
     result.regions.push_back(std::move(region));
 }

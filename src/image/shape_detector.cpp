@@ -150,6 +150,21 @@ void add_region(
         region.circle_radius = forensic->circle_radius;
         region.circle_edge_support = forensic->circle_edge_support;
         region.circle_interior_density = forensic->circle_interior_density;
+        region.circle_probe_corner_top_left = forensic->circle_probe_corner_top_left;
+        region.circle_probe_corner_top_right = forensic->circle_probe_corner_top_right;
+        region.circle_probe_corner_bottom_left = forensic->circle_probe_corner_bottom_left;
+        region.circle_probe_corner_bottom_right = forensic->circle_probe_corner_bottom_right;
+        region.circle_probe_run_top_left = forensic->circle_probe_run_top_left;
+        region.circle_probe_run_top_right = forensic->circle_probe_run_top_right;
+        region.circle_probe_run_bottom_left = forensic->circle_probe_run_bottom_left;
+        region.circle_probe_run_bottom_right = forensic->circle_probe_run_bottom_right;
+        region.circle_probe_run_left_top = forensic->circle_probe_run_left_top;
+        region.circle_probe_run_left_bottom = forensic->circle_probe_run_left_bottom;
+        region.circle_probe_run_right_top = forensic->circle_probe_run_right_top;
+        region.circle_probe_run_right_bottom = forensic->circle_probe_run_right_bottom;
+        region.circle_local_density_3x3 = forensic->circle_local_density_3x3;
+        region.circle_local_density_7x7 = forensic->circle_local_density_7x7;
+        region.circle_local_ring_density = forensic->circle_local_ring_density;
     }
 
     result.regions.push_back(std::move(region));
@@ -479,23 +494,57 @@ struct CrossingLineProbeEvidence {
     double left = 0.0;
     double right = 0.0;
     double weakest_side = 0.0;
+    double corner_top_left = 0.0;
+    double corner_top_right = 0.0;
+    double corner_bottom_left = 0.0;
+    double corner_bottom_right = 0.0;
+    int run_top_left = 0;
+    int run_top_right = 0;
+    int run_bottom_left = 0;
+    int run_bottom_right = 0;
+    int run_left_top = 0;
+    int run_left_bottom = 0;
+    int run_right_top = 0;
+    int run_right_bottom = 0;
+    double local_density_3x3 = 0.0;
+    double local_density_7x7 = 0.0;
+    double local_ring_density = 0.0;
 };
+
+int outward_run_horizontal(const cv::Mat& binary, int y, int start_x, int direction, int max_run) {
+    if (y < 0 || y >= binary.rows || direction == 0 || max_run <= 0) return 0;
+    int run = 0;
+    for (int i = 0; i < max_run; ++i) {
+        const int x = start_x + direction * i;
+        if (x < 0 || x >= binary.cols || binary.at<std::uint8_t>(y, x) == 0) break;
+        ++run;
+    }
+    return run;
+}
+
+int outward_run_vertical(const cv::Mat& binary, int x, int start_y, int direction, int max_run) {
+    if (x < 0 || x >= binary.cols || direction == 0 || max_run <= 0) return 0;
+    int run = 0;
+    for (int i = 0; i < max_run; ++i) {
+        const int y = start_y + direction * i;
+        if (y < 0 || y >= binary.rows || binary.at<std::uint8_t>(y, x) == 0) break;
+        ++run;
+    }
+    return run;
+}
+
+double corner_patch_density(const cv::Mat& binary, int x, int y, int radius) {
+    return region_density(binary, cv::Rect(x - radius, y - radius, radius, radius));
+}
 
 CrossingLineProbeEvidence measure_crossing_line_probe(
     const cv::Mat& binary,
     const cv::Rect& bounds,
     const ShapeDetectorConfig& config) {
 
-    // AP-DIAG-023: the fixed maximum probe distance is too large for
-    // tightly-spaced switch-matrix cells. Keep the configured distance as
-    // the ceiling, but never probe farther than the candidate's own
-    // largest dimension. This preserves the existing four-sided continuity
-    // test while keeping the probe inside the local grid scale.
-    const int far = (std::max)(
-        1,
-        (std::min)(
-            config.circle_crossing_probe_distance,
-            (std::max)(bounds.width, bounds.height)));
+    const int far = (std::max)(1, (std::min)(
+        config.circle_crossing_probe_distance,
+        (std::max)(bounds.width, bounds.height)));
     const int thickness = config.circle_crossing_probe_thickness;
 
     const double top = (std::min)(
@@ -511,11 +560,28 @@ CrossingLineProbeEvidence measure_crossing_line_probe(
         col_line_continuity(binary, bounds.x + bounds.width, bounds.y - far, bounds.y, thickness),
         col_line_continuity(binary, bounds.x + bounds.width, bounds.y + bounds.height, bounds.y + bounds.height + far, thickness));
 
-    const double weakest_side =
-        (std::min)((std::min)(top, bottom), (std::min)(left, right));
+    const double weakest_side = (std::min)((std::min)(top, bottom), (std::min)(left, right));
+
+    const cv::Rect outer3(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
+    const cv::Rect outer7(bounds.x - 7, bounds.y - 7, bounds.width + 14, bounds.height + 14);
 
     return CrossingLineProbeEvidence{
-        far, top, bottom, left, right, weakest_side};
+        far, top, bottom, left, right, weakest_side,
+        corner_patch_density(binary, bounds.x, bounds.y, 3),
+        corner_patch_density(binary, bounds.x + bounds.width, bounds.y, 3),
+        corner_patch_density(binary, bounds.x, bounds.y + bounds.height, 3),
+        corner_patch_density(binary, bounds.x + bounds.width, bounds.y + bounds.height, 3),
+        outward_run_horizontal(binary, bounds.y, bounds.x - 1, -1, far),
+        outward_run_horizontal(binary, bounds.y, bounds.x + bounds.width, 1, far),
+        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x - 1, -1, far),
+        outward_run_horizontal(binary, bounds.y + bounds.height, bounds.x + bounds.width, 1, far),
+        outward_run_vertical(binary, bounds.x, bounds.y - 1, -1, far),
+        outward_run_vertical(binary, bounds.x, bounds.y + bounds.height, 1, far),
+        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y - 1, -1, far),
+        outward_run_vertical(binary, bounds.x + bounds.width, bounds.y + bounds.height, 1, far),
+        ring_density(binary, outer3, 3),
+        ring_density(binary, outer7, 7),
+        ring_density(binary, outer7, 3)};
 }
 
 void detect_circles(
@@ -614,6 +680,21 @@ void detect_circles(
         forensic_region.circle_radius = radius;
         forensic_region.circle_edge_support = edge_support;
         forensic_region.circle_interior_density = interior_density;
+        forensic_region.circle_probe_corner_top_left = probe.corner_top_left;
+        forensic_region.circle_probe_corner_top_right = probe.corner_top_right;
+        forensic_region.circle_probe_corner_bottom_left = probe.corner_bottom_left;
+        forensic_region.circle_probe_corner_bottom_right = probe.corner_bottom_right;
+        forensic_region.circle_probe_run_top_left = probe.run_top_left;
+        forensic_region.circle_probe_run_top_right = probe.run_top_right;
+        forensic_region.circle_probe_run_bottom_left = probe.run_bottom_left;
+        forensic_region.circle_probe_run_bottom_right = probe.run_bottom_right;
+        forensic_region.circle_probe_run_left_top = probe.run_left_top;
+        forensic_region.circle_probe_run_left_bottom = probe.run_left_bottom;
+        forensic_region.circle_probe_run_right_top = probe.run_right_top;
+        forensic_region.circle_probe_run_right_bottom = probe.run_right_bottom;
+        forensic_region.circle_local_density_3x3 = probe.local_density_3x3;
+        forensic_region.circle_local_density_7x7 = probe.local_density_7x7;
+        forensic_region.circle_local_ring_density = probe.local_ring_density;
 
         const cv::Rect image_rect(
             0, 0, normalized.cols, normalized.rows);

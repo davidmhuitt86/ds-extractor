@@ -247,7 +247,16 @@ PhysicalWireIdentityArtifacts PhysicalWireIdentityReconstructor::reconstruct(
         if (adjacency_it == adjacency.end() || adjacency_it->second.size() != 1) {
             continue;
         }
-        if (!has_resolved_boundary(endpoint.id)) {
+        // AP-DIAG-029: Pass 2 is extending the identity of an
+        // already-established EndpointCandidate. It is not inventing a new
+        // boundary. A semantic ConductorBoundaryResolution is therefore
+        // useful evidence when present, but must not be a prerequisite for
+        // physical endpoint-to-endpoint reconstruction: geometric and
+        // component-terminal endpoints are already authoritative endpoint
+        // objects, and their physical pairing can be established solely by
+        // the existing conductor-segment-sharing rule.
+        if (endpoint.kind == EndpointKind::Splice ||
+            endpoint.kind == EndpointKind::Unresolved) {
             continue;
         }
         endpoint_by_node.emplace(endpoint.node_id, endpoint.id);

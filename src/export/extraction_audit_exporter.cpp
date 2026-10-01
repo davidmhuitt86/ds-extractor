@@ -227,6 +227,21 @@ void ExtractionAuditExporter::export_json(
            <<",\"circle_radius\":"<<v.circle_radius
            <<",\"circle_edge_support\":"<<v.circle_edge_support
            <<",\"circle_interior_density\":"<<v.circle_interior_density
+           <<",\"circle_probe_corner_top_left\":"<<v.circle_probe_corner_top_left
+           <<",\"circle_probe_corner_top_right\":"<<v.circle_probe_corner_top_right
+           <<",\"circle_probe_corner_bottom_left\":"<<v.circle_probe_corner_bottom_left
+           <<",\"circle_probe_corner_bottom_right\":"<<v.circle_probe_corner_bottom_right
+           <<",\"circle_probe_run_top_left\":"<<v.circle_probe_run_top_left
+           <<",\"circle_probe_run_top_right\":"<<v.circle_probe_run_top_right
+           <<",\"circle_probe_run_bottom_left\":"<<v.circle_probe_run_bottom_left
+           <<",\"circle_probe_run_bottom_right\":"<<v.circle_probe_run_bottom_right
+           <<",\"circle_probe_run_left_top\":"<<v.circle_probe_run_left_top
+           <<",\"circle_probe_run_left_bottom\":"<<v.circle_probe_run_left_bottom
+           <<",\"circle_probe_run_right_top\":"<<v.circle_probe_run_right_top
+           <<",\"circle_probe_run_right_bottom\":"<<v.circle_probe_run_right_bottom
+           <<",\"circle_local_density_3x3\":"<<v.circle_local_density_3x3
+           <<",\"circle_local_density_7x7\":"<<v.circle_local_density_7x7
+           <<",\"circle_local_ring_density\":"<<v.circle_local_ring_density
            <<",\"semantic_labels\":";
         strings(out,v.semantic_labels); out<<"}";
     }

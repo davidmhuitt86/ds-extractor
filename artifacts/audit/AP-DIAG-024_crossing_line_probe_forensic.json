@@ -208,5 +208,32 @@
     "interior density",
     "local horizontal and vertical run lengths",
     "candidate-local raster crop"
-  ]
+  ],
+  "instrumentation": {
+    "purpose": "capture existing circle detector measurements for forensic comparison",
+    "classification_logic_changed": false,
+    "fields": [
+      "circle_probe_distance",
+      "circle_probe_top",
+      "circle_probe_bottom",
+      "circle_probe_left",
+      "circle_probe_right",
+      "circle_probe_weakest_side",
+      "circle_circularity",
+      "circle_aspect_ratio",
+      "circle_radius",
+      "circle_edge_support",
+      "circle_interior_density"
+    ],
+    "implementation_commits": [
+      "bf215bd703cde2080ba7dbab741f46fd43620f91",
+      "d572732647059e24684282eaae73984efd122003",
+      "76f953739b88aa14ce13d98dd46bb0b44cff0ff3",
+      "28cc01c5f1694e338938a1d8a0668bd536ff813a",
+      "01d1ab09753a1458a354ef6fdb18cf16aaabeb0f0",
+      "237123ecf600a73290f78a2579f7ad006b4be85f",
+      "0596faddbe7d8d21113069772c42f49cab7d2a33"
+    ],
+    "real_extraction_with_instrumentation": "PENDING_LOCAL_EXECUTION"
+  }
 }

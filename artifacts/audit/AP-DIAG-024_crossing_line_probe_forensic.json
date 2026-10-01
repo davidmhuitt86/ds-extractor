@@ -1,0 +1,212 @@
+{
+  "ap_id": "AP-DIAG-024",
+  "schema_version": 1,
+  "status": "DIAGNOSTIC_OPEN",
+  "detector_changes": false,
+  "baseline": {
+    "ap_diag_019_false_circular_candidates": 21,
+    "ap_diag_019_real_circular_candidates": 5,
+    "ap_diag_020_commit": "72feb34b91d45b956d7a5bf38d38ada664de79df",
+    "ap_diag_023_implementation_commit": "dd5dc209d35786d6d36ffe54745ec9726f771c21"
+  },
+  "extraction": {
+    "source_id": "samples/trx300ODG.png",
+    "image_width": 898,
+    "image_height": 549,
+    "commit": "3119d99c067a72b3067ca2fac267b1e48f2d4a23",
+    "circular_candidates": 22,
+    "known_false_rejected": 4,
+    "known_false_remaining": 17,
+    "known_real_remaining": 5,
+    "wires": 37,
+    "topology_edges": 643,
+    "electrical_nets": 12,
+    "terminal_candidates": 18,
+    "connectors": 2,
+    "connector_terminals": 1,
+    "validation_errors": 0,
+    "validation_warnings": 34
+  },
+  "rejected_false_candidates": [
+    {
+      "x": 411,
+      "y": 346,
+      "width": 10,
+      "height": 9
+    },
+    {
+      "x": 477,
+      "y": 304,
+      "width": 7,
+      "height": 9
+    },
+    {
+      "x": 516,
+      "y": 199,
+      "width": 10,
+      "height": 10
+    },
+    {
+      "x": 516,
+      "y": 209,
+      "width": 10,
+      "height": 11
+    }
+  ],
+  "surviving_false_candidates": [
+    {
+      "x": 485,
+      "y": 249,
+      "width": 22,
+      "height": 20
+    },
+    {
+      "x": 618,
+      "y": 249,
+      "width": 19,
+      "height": 18
+    },
+    {
+      "x": 532,
+      "y": 448,
+      "width": 11,
+      "height": 13
+    },
+    {
+      "x": 420,
+      "y": 259,
+      "width": 11,
+      "height": 9
+    },
+    {
+      "x": 507,
+      "y": 209,
+      "width": 9,
+      "height": 11
+    },
+    {
+      "x": 466,
+      "y": 190,
+      "width": 11,
+      "height": 9
+    },
+    {
+      "x": 561,
+      "y": 468,
+      "width": 8,
+      "height": 10
+    },
+    {
+      "x": 421,
+      "y": 249,
+      "width": 10,
+      "height": 10
+    },
+    {
+      "x": 517,
+      "y": 189,
+      "width": 9,
+      "height": 10
+    },
+    {
+      "x": 526,
+      "y": 304,
+      "width": 9,
+      "height": 9
+    },
+    {
+      "x": 806,
+      "y": 434,
+      "width": 7,
+      "height": 9
+    },
+    {
+      "x": 181,
+      "y": 329,
+      "width": 9,
+      "height": 9
+    },
+    {
+      "x": 843,
+      "y": 434,
+      "width": 8,
+      "height": 9
+    },
+    {
+      "x": 357,
+      "y": 69,
+      "width": 9,
+      "height": 9
+    },
+    {
+      "x": 344,
+      "y": 69,
+      "width": 9,
+      "height": 8
+    },
+    {
+      "x": 806,
+      "y": 355,
+      "width": 7,
+      "height": 7
+    },
+    {
+      "x": 712,
+      "y": 434,
+      "width": 7,
+      "height": 6
+    }
+  ],
+  "real_candidates": [
+    {
+      "x": 511,
+      "y": 448,
+      "width": 11,
+      "height": 13
+    },
+    {
+      "x": 357,
+      "y": 462,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "x": 761,
+      "y": 361,
+      "width": 21,
+      "height": 17
+    },
+    {
+      "x": 77,
+      "y": 83,
+      "width": 18,
+      "height": 24
+    },
+    {
+      "x": 90,
+      "y": 98,
+      "width": 20,
+      "height": 21
+    }
+  ],
+  "findings": [
+    "Candidate size alone does not separate the rejected and surviving false-positive populations.",
+    "The four AP-DIAG-023 rejections include 7x9 and 10x11 candidates while same-scale false positives remain elsewhere.",
+    "The five known genuine circles survive the adaptive probe.",
+    "The current bounded_by_crossing_lines predicate measures four-sided local straight-line continuity; AP-DIAG-023 changed probe distance only.",
+    "The structured audit does not expose the per-candidate continuity measurements or raster neighborhoods needed for a causal discriminator."
+  ],
+  "required_next_evidence": [
+    "per-candidate adaptive probe distance",
+    "top-left/top-right/bottom-left/bottom-right continuity measurements",
+    "weakest-side continuity",
+    "contour area and perimeter",
+    "circularity",
+    "aspect ratio",
+    "enclosing-circle center and radius",
+    "edge support",
+    "interior density",
+    "local horizontal and vertical run lengths",
+    "candidate-local raster crop"
+  ]
+}

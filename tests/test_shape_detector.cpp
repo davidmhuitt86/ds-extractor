@@ -104,6 +104,10 @@ int main() {
             assert(region.circle_local_density_3x3 >= 0.0);
             assert(region.circle_local_density_7x7 >= 0.0);
             assert(region.circle_local_ring_density >= 0.0);
+            assert(region.circle_probe_long_run_count >= 0);
+            assert(region.circle_probe_max_run_fraction >= 0.0);
+            assert(region.circle_local_horizontal_line_density >= 0.0);
+            assert(region.circle_local_vertical_line_density >= 0.0);
             break;
         }
         assert(found_circle_forensic);

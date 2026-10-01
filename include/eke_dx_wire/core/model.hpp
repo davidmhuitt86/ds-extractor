@@ -323,6 +323,12 @@ struct ComponentCandidate {
     double circle_local_density_3x3 = 0.0;
     double circle_local_density_7x7 = 0.0;
     double circle_local_ring_density = 0.0;
+    // AP-DIAG-025: additive structural-context evidence propagated from
+    // ShapeDetector. Observational only; never used for classification.
+    int circle_probe_long_run_count = 0;
+    double circle_probe_max_run_fraction = 0.0;
+    double circle_local_horizontal_line_density = 0.0;
+    double circle_local_vertical_line_density = 0.0;
 
     // Resolved human-readable labels are semantic enrichment. They do not
     // establish geometry, topology, or component identity by themselves.

@@ -166,6 +166,10 @@ void add_region(
         region.circle_local_density_3x3 = forensic->circle_local_density_3x3;
         region.circle_local_density_7x7 = forensic->circle_local_density_7x7;
         region.circle_local_ring_density = forensic->circle_local_ring_density;
+        region.circle_probe_long_run_count = forensic->circle_probe_long_run_count;
+        region.circle_probe_max_run_fraction = forensic->circle_probe_max_run_fraction;
+        region.circle_local_horizontal_line_density = forensic->circle_local_horizontal_line_density;
+        region.circle_local_vertical_line_density = forensic->circle_local_vertical_line_density;
     }
 
     result.regions.push_back(std::move(region));

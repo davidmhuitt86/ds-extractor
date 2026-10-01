@@ -638,7 +638,7 @@ void detect_circles(
             confidence,
             source_id,
             page,
-            forensic_region);
+            &forensic_region);
     }
 }
 

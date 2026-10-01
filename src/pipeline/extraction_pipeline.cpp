@@ -11,6 +11,7 @@
 #include "eke_dx_wire/image/connector_geometry_detector.hpp"
 #include "eke_dx_wire/image/ground_approach_conductor_recovery.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
+#include "eke_dx_wire/image/circle_context_classifier.hpp"
 #include "eke_dx_wire/image/diagram_furniture_classifier.hpp"
 #include "eke_dx_wire/image/symbol_geometry_extractor.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
@@ -105,6 +106,18 @@ WireModel ExtractionPipeline::run(
     detected.shapes = shapes;
 
     ComponentCandidateClassifier component_classifier;
+
+    // AP-DIAG-028: shape-level Circle acceptance is intentionally followed
+    // by a conductor-context gate. The forensic baseline showed 14 false
+    // survivors with max_run_fraction == 1.0 and three additional ambiguous
+    // survivors with no conductor intersection/endpoint approach, while all
+    // five source-confirmed circles satisfy the combined evidence rule.
+    CircleContextClassifier circle_context_classifier;
+    const std::vector<ComponentCandidate> context_candidates =
+        circle_context_classifier.classify(
+            component_classifier.classify(shapes),
+            detected.conductor_segments);
+
     // AP-GEOMETRY: legend/color-key tables, switch-continuity charts, and
     // other tabular diagram content are drawn with the same small
     // circle/rectangle primitives as real circuit symbols, so this
@@ -112,7 +125,7 @@ WireModel ExtractionPipeline::run(
     // downstream stage treats them as circuit components.
     DiagramFurnitureClassifier furniture_classifier(config_.diagram_furniture);
     const std::vector<ComponentCandidate> component_candidates =
-        furniture_classifier.classify(component_classifier.classify(shapes));
+        furniture_classifier.classify(context_candidates);
 
     // AP-GEOMETRY-006: determine whether line-like geometry is actually
     // owned by a graphical object before it can enter conductor topology.

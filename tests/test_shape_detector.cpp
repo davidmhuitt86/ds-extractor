@@ -200,6 +200,34 @@ int main() {
         assert(circle_near(result_with_lead, 80, 100, 6));
     }
 
+    // AP-DIAG-026 regression: forensic structural measurements must
+    // observe thin raster conductors using the same thickness-aware
+    // semantics as the production crossing-line probe. The lead touches
+    // the circle at its top bounding-box side, so accepted Circle evidence
+    // must expose non-zero outward-run and local line-support measurements.
+    {
+        cv::Mat image(160, 160, CV_8UC1, cv::Scalar(255));
+        cv::circle(image, {80, 100}, 16, cv::Scalar(0), 2);
+        cv::line(image, {40, 84}, {120, 84}, cv::Scalar(0), 2);
+
+        const auto result =
+            ShapeDetector().detect(image, "fixture-ap-diag-026", 0);
+
+        bool found = false;
+        for (const auto& region : result.regions) {
+            if (region.kind != ShapeKind::Circle ||
+                !region.circle_probe_evidence)
+                continue;
+
+            found = true;
+            assert(region.circle_probe_max_run_fraction > 0.0);
+            assert(region.circle_probe_long_run_count > 0);
+            assert(region.circle_local_horizontal_line_density > 0.0);
+            break;
+        }
+        assert(found);
+    }
+
     // Determinism: running the crossing-detection path twice against the
     // same input must produce the same rejection outcome and the same
     // accepted-region count, not something order- or memory-dependent.

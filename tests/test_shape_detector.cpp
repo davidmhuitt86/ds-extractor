@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cassert>
+#include <cmath>
 
 using namespace eke::dx::wire;
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-**DIAGNOSTIC — FORENSIC EXTRACTION COMPLETE; DISCRIMINATOR NOT YET IDENTIFIED**
+**DIAGNOSTIC — LOCAL-CONTEXT INSTRUMENTATION IMPLEMENTED; EXTRACTION PENDING**
 
 ## Objective
 
@@ -128,6 +128,31 @@ All five genuine candidates have probe distance >= 13, but three false survivors
 The strongest evidence against another scalar threshold is the pair at `(511,448)` and `(532,448)`: both are 11x13 candidates with weakest-side continuity 0, while the first is known genuine and the second is known false. Their circularity and edge-support values also overlap substantially. The remaining discriminator therefore requires contextual/local evidence rather than another global size or continuity threshold.
 
 Collateral populations remain unchanged: wires 37, topology edges 643, electrical nets 12, terminal candidates 18, connectors 2, connector terminals 1, validation errors 0, and validation warnings 34.
+
+## AP-DIAG-024B local-context instrumentation
+
+The next evidence increment is implemented without changing Circle classification.
+
+For each accepted circular candidate, the audit now captures:
+
+- four corner-patch densities immediately outside the candidate;
+- eight outward straight-run lengths, one for each corner/side direction;
+- 3x3 and 7x7 local exterior ring densities;
+- a wider local ring-density measurement.
+
+The measurements are propagated through ShapeRegion and ComponentCandidate and serialized into the structured audit artifact. They are observational only; the existing AP-DIAG-023 crossing-line acceptance predicate remains unchanged.
+
+Implementation commits:
+
+- ShapeRegion fields: `5ffa317f3fd516dc782dbb85a4b7fa922a29a84d`
+- ComponentCandidate fields: `f2fb994eeaaa6dc5b3162a2d7bfc4794a5a5aad4`
+- local raster instrumentation: `1f7668438f1706b2d5cb1dba4886519494d22daf`
+- candidate propagation: `53553c53d3675b66487bdd01f96c9dc6b7992357`
+- audit serialization: `bbf88058e265f9050d35badfe2b28049588239fc`
+- serialization regression coverage: `5837edc1f1580908ed110c5b0ec3be0c89a2b528`
+- detector forensic capture regression: `192878c7a33b7b033da5fff798eb16c98853208b`
+
+This increment must be built and executed locally before any interpretation is made.
 
 ## What remains undetermined
 

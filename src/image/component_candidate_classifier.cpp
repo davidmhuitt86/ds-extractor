@@ -69,6 +69,21 @@ std::vector<ComponentCandidate> ComponentCandidateClassifier::classify(
         candidate.circle_radius = shape.circle_radius;
         candidate.circle_edge_support = shape.circle_edge_support;
         candidate.circle_interior_density = shape.circle_interior_density;
+        candidate.circle_probe_corner_top_left = shape.circle_probe_corner_top_left;
+        candidate.circle_probe_corner_top_right = shape.circle_probe_corner_top_right;
+        candidate.circle_probe_corner_bottom_left = shape.circle_probe_corner_bottom_left;
+        candidate.circle_probe_corner_bottom_right = shape.circle_probe_corner_bottom_right;
+        candidate.circle_probe_run_top_left = shape.circle_probe_run_top_left;
+        candidate.circle_probe_run_top_right = shape.circle_probe_run_top_right;
+        candidate.circle_probe_run_bottom_left = shape.circle_probe_run_bottom_left;
+        candidate.circle_probe_run_bottom_right = shape.circle_probe_run_bottom_right;
+        candidate.circle_probe_run_left_top = shape.circle_probe_run_left_top;
+        candidate.circle_probe_run_left_bottom = shape.circle_probe_run_left_bottom;
+        candidate.circle_probe_run_right_top = shape.circle_probe_run_right_top;
+        candidate.circle_probe_run_right_bottom = shape.circle_probe_run_right_bottom;
+        candidate.circle_local_density_3x3 = shape.circle_local_density_3x3;
+        candidate.circle_local_density_7x7 = shape.circle_local_density_7x7;
+        candidate.circle_local_ring_density = shape.circle_local_ring_density;
         result.push_back(std::move(candidate));
     }
 

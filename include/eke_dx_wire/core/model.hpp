@@ -290,6 +290,22 @@ struct ComponentCandidate {
     BoundingBox bounds {};
     ConfidenceClass confidence = ConfidenceClass::Unresolved;
 
+    // AP-DIAG-024: additive forensic evidence for circular candidates.
+    // These fields record the measurements already used by ShapeDetector;
+    // they do not participate in classification or downstream semantics.
+    bool circle_probe_evidence = false;
+    int circle_probe_distance = 0;
+    double circle_probe_top = 0.0;
+    double circle_probe_bottom = 0.0;
+    double circle_probe_left = 0.0;
+    double circle_probe_right = 0.0;
+    double circle_probe_weakest_side = 0.0;
+    double circle_circularity = 0.0;
+    double circle_aspect_ratio = 0.0;
+    double circle_radius = 0.0;
+    double circle_edge_support = 0.0;
+    double circle_interior_density = 0.0;
+
     // Resolved human-readable labels are semantic enrichment. They do not
     // establish geometry, topology, or component identity by themselves.
     std::vector<std::string> semantic_labels;

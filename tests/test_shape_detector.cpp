@@ -87,6 +87,28 @@ int main() {
     assert(result.exclusion_mask.at<std::uint8_t>(50, 130) == 0);
     assert(result.exclusion_mask.at<std::uint8_t>(67, 220) == 255);
 
+    // AP-DIAG-024B: accepted Circle regions expose local-context evidence
+    // without changing the existing classification outcome.
+    {
+        bool found_circle_forensic = false;
+        for (const auto& region : result.regions) {
+            if (region.kind != ShapeKind::Circle || !region.circle_probe_evidence)
+                continue;
+            found_circle_forensic = true;
+            assert(region.circle_probe_corner_top_left >= 0.0);
+            assert(region.circle_probe_corner_top_right >= 0.0);
+            assert(region.circle_probe_corner_bottom_left >= 0.0);
+            assert(region.circle_probe_corner_bottom_right >= 0.0);
+            assert(region.circle_probe_run_top_left >= 0);
+            assert(region.circle_probe_run_right_bottom >= 0);
+            assert(region.circle_local_density_3x3 >= 0.0);
+            assert(region.circle_local_density_7x7 >= 0.0);
+            assert(region.circle_local_ring_density >= 0.0);
+            break;
+        }
+        assert(found_circle_forensic);
+    }
+
     const auto circle_near = [](
         const ShapeDetectionArtifacts& artifacts, int cx, int cy, int tol) {
         return std::any_of(

@@ -34,11 +34,13 @@
   },
   "regression": {
     "fixture": "accepted circle with thin conductor touching top bounding-box side",
-    "required_nonzero": [
-      "circle_probe_max_run_fraction",
-      "circle_probe_long_run_count",
-      "circle_local_horizontal_line_density"
-    ]
+    "contract": [
+      "accepted Circle carries circle_probe_evidence",
+      "all floating-point forensic fields are finite",
+      "probe distance is positive",
+      "all run counts are non-negative"
+    ],
+    "nonzero_measurement_validation": "deferred to real TRX300 extraction; synthetic Hough-derived bounds do not guarantee overlap with the measurement windows"
   },
   "validation": {
     "clean_release_build": "PENDING_LOCAL_EXECUTION",

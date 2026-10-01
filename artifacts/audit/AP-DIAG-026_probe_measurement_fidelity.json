@@ -1,0 +1,50 @@
+{
+  "ap_id": "AP-DIAG-026",
+  "schema_version": 1,
+  "status": "IMPLEMENTED_VALIDATION_PENDING",
+  "classification_logic_changed": false,
+  "baseline": {
+    "prior_ap": "AP-DIAG-025",
+    "source_id": "samples/trx300ODG.png",
+    "image_width": 898,
+    "image_height": 549,
+    "known_genuine_candidates": 5,
+    "known_false_survivors": 17,
+    "prior_circular_candidate_count": 22,
+    "prior_structural_measurements": "all four AP-DIAG-025 fields were zero for all 22 candidates"
+  },
+  "root_cause": [
+    "AP-DIAG-025 outward runs sampled one exact raster pixel rather than the production probe's thickness-aware band.",
+    "AP-DIAG-025 local line density used morphological opening that can erase thin conductor strokes."
+  ],
+  "implementation": {
+    "classification_logic_changed": false,
+    "production_behavior_changed": false,
+    "measurement_semantics": "forensic-only measurements now use circle_crossing_probe_thickness",
+    "implementation_commits": [
+      "4e9c31154b059b168b79c4876d8f6b4458ba29e2",
+      "d51161df2e5e70cd7230aebcc06b75c6587fab85"
+    ],
+    "fields_repaired": [
+      "circle_probe_long_run_count",
+      "circle_probe_max_run_fraction",
+      "circle_local_horizontal_line_density",
+      "circle_local_vertical_line_density"
+    ]
+  },
+  "regression": {
+    "fixture": "accepted circle with thin conductor touching top bounding-box side",
+    "required_nonzero": [
+      "circle_probe_max_run_fraction",
+      "circle_probe_long_run_count",
+      "circle_local_horizontal_line_density"
+    ]
+  },
+  "validation": {
+    "clean_release_build": "PENDING_LOCAL_EXECUTION",
+    "ctest": "PENDING_LOCAL_EXECUTION",
+    "real_extraction": "PENDING_LOCAL_EXECUTION",
+    "population_comparison": "PENDING_LOCAL_EXECUTION"
+  },
+  "required_next_action": "Run clean Release build, full CTest, real extraction, publish extraction-results, then compare repaired structural measurements across the 5 known genuine and 17 known false circular candidates before any classifier tuning."
+}

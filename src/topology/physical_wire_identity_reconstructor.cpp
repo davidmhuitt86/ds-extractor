@@ -205,6 +205,22 @@ PhysicalWireIdentityArtifacts PhysicalWireIdentityReconstructor::reconstruct(
         if (end_it != boundary_by_endpoint.end()) {
             wire.identity_evidence_ids.push_back(end_it->second->id);
         }
+
+        // A base-reconstructed Wire has already established endpoint-to-
+        // endpoint physical identity. Preserve the same conductor-segment
+        // evidence used by Pass 2 so geometric endpoints without semantic
+        // boundary resolutions still retain the evidence that justified the
+        // physical identity (AP-DIAG-029).
+        for (const auto& segment_id : wire.conductor_segments) {
+            if (!segment_id.empty()) {
+                wire.identity_evidence_ids.push_back(segment_id);
+            }
+        }
+        std::sort(wire.identity_evidence_ids.begin(), wire.identity_evidence_ids.end());
+        wire.identity_evidence_ids.erase(
+            std::unique(wire.identity_evidence_ids.begin(), wire.identity_evidence_ids.end()),
+            wire.identity_evidence_ids.end());
+
         claimed_by_base_wire.insert(wire.start_endpoint);
         claimed_by_base_wire.insert(wire.end_endpoint);
         result.wires.push_back(std::move(wire));

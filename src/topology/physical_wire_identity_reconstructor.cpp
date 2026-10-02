@@ -49,6 +49,7 @@ void walk_from(
     const std::map<std::string, std::vector<AdjacentEdge>>& adjacency,
     const std::unordered_map<std::string, const TopologyEdge*>& edge_by_id,
     const std::unordered_map<std::string, std::string>& endpoint_by_node,
+    const std::unordered_set<std::string>& distribution_nodes,
     std::set<std::pair<std::string, std::string>>& expanded_ambiguities,
     std::vector<WalkOutcome>& outcomes) {
 
@@ -81,12 +82,22 @@ void walk_from(
         if (next == nullptr) {
             return;
         }
+        if (distribution_nodes.contains(current_node)) {
+            const auto previous_it = edge_by_id.find(previous_edge);
+            const auto next_it = edge_by_id.find(next->edge_id);
+            if (previous_it == edge_by_id.end() ||
+                next_it == edge_by_id.end() ||
+                previous_it->second->conductor_segment.empty() ||
+                previous_it->second->conductor_segment != next_it->second->conductor_segment) {
+                return;
+            }
+        }
         auto next_path = path_edges;
         next_path.push_back(next->edge_id);
         walk_from(
             next->other_node, next->edge_id, visited_nodes,
             std::move(next_path), distribution_segment_evidence_ids,
-            conflicted_so_far, adjacency, edge_by_id, endpoint_by_node,
+            conflicted_so_far, adjacency, edge_by_id, endpoint_by_node, distribution_nodes,
             expanded_ambiguities, outcomes);
         return;
     }
@@ -256,6 +267,13 @@ PhysicalWireIdentityArtifacts PhysicalWireIdentityReconstructor::reconstruct(
     // the AP-DIAG-029 geometric-endpoint case without allowing unanchored
     // geometric ends at an unresolved distribution to seed additional
     // candidate identities.
+    std::unordered_set<std::string> distribution_nodes;
+    for (const auto& node : nodes) {
+        if (node.type == TopologyNodeType::Splice || node.type == TopologyNodeType::Junction) {
+            distribution_nodes.insert(node.id);
+        }
+    }
+
     std::unordered_map<std::string, std::string> endpoint_by_node;
     std::vector<const EndpointCandidate*> eligible_endpoints;
     for (const auto& endpoint : endpoints) {
@@ -311,7 +329,7 @@ PhysicalWireIdentityArtifacts PhysicalWireIdentityReconstructor::reconstruct(
     for (const auto* endpoint : eligible_endpoints) {
         const auto outcomes = walk_forward(
             *endpoint, adjacency, edge_by_id, endpoint_by_node,
-            expanded_ambiguities);
+            distribution_nodes, expanded_ambiguities);
         for (const auto& outcome : outcomes) {
             if (outcome.other_endpoint_id.empty() ||
                 outcome.other_endpoint_id == endpoint->id) {

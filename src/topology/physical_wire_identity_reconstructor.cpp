@@ -156,7 +156,7 @@ void walk_from(
             match->other_node, match->edge_id, visited_nodes,
             std::move(next_path), std::move(next_evidence),
             conflicted_so_far || branch_conflict, adjacency, edge_by_id,
-            endpoint_by_node, expanded_ambiguities, outcomes);
+            endpoint_by_node, distribution_nodes, expanded_ambiguities, outcomes);
     }
 }
 
@@ -165,6 +165,7 @@ std::vector<WalkOutcome> walk_forward(
     const std::map<std::string, std::vector<AdjacentEdge>>& adjacency,
     const std::unordered_map<std::string, const TopologyEdge*>& edge_by_id,
     const std::unordered_map<std::string, std::string>& endpoint_by_node,
+    const std::unordered_set<std::string>& distribution_nodes,
     std::set<std::pair<std::string, std::string>>& expanded_ambiguities) {
 
     std::vector<WalkOutcome> outcomes;
@@ -177,7 +178,7 @@ std::vector<WalkOutcome> walk_forward(
     walk_from(
         first.other_node, first.edge_id, visited,
         std::vector<std::string>{first.edge_id}, {}, false, adjacency,
-        edge_by_id, endpoint_by_node, expanded_ambiguities, outcomes);
+        edge_by_id, endpoint_by_node, distribution_nodes, expanded_ambiguities, outcomes);
     return outcomes;
 }
 

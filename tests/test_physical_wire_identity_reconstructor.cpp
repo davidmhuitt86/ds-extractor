@@ -185,6 +185,32 @@ int main() {
         assert(wire->topology_edges.size() == 2);
     }
 
+    // AP-DIAG-032: a degree-2 Splice is still a distribution boundary,
+    // not an unconditional continuation. If its two incident edges carry
+    // different ConductorSegments, there is no physical-continuity evidence
+    // allowing Pass 1 to pair the endpoint boundaries. This must remain
+    // unresolved rather than allowing the legacy degree-2 traversal to
+    // invent an endpoint-to-endpoint Wire.
+    {
+        std::vector<TopologyNode> nodes = {
+            make_node("n-a", TopologyNodeType::ConductorEnd),
+            make_node("n-splice", TopologyNodeType::Splice),
+            make_node("n-b", TopologyNodeType::ConductorEnd)};
+        std::vector<TopologyEdge> edges = {
+            make_edge("e1", "n-a", "n-splice", "segA"),
+            make_edge("e2", "n-splice", "n-b", "segB")};
+        std::vector<ConductorSegment> segments = {
+            make_segment("segA"), make_segment("segB")};
+        std::vector<EndpointCandidate> endpoints = {
+            make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b")};
+        std::vector<ConductorBoundaryResolution> boundaries = {
+            make_resolved_boundary("ep-a"), make_resolved_boundary("ep-b")};
+
+        const auto artifacts = reconstructor.reconstruct(
+            nodes, edges, endpoints, segments, boundaries, "src", 0);
+        assert(artifacts.wires.empty());
+    }
+
     // 4. Three-way splice with insufficient physical continuity evidence
     // (all three branches have distinct conductor segments) -> no
     // invented branch pairing, physical identity remains unresolved for

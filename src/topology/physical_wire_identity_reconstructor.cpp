@@ -276,7 +276,7 @@ PhysicalWireIdentityArtifacts PhysicalWireIdentityReconstructor::reconstruct(
         // resolved-boundary requirement. This prevents a bare geometric
         // conductor end at an unresolved distribution from creating a new
         // identity without boundary evidence.
-        const boundary_it = boundary_by_endpoint.find(endpoint.id);
+        const auto boundary_it = boundary_by_endpoint.find(endpoint.id);
         if (boundary_it == boundary_by_endpoint.end() ||
             boundary_it->second->boundary_status != ConductorBoundaryStatus::Resolved) {
             continue;

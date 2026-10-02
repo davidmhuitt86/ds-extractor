@@ -132,6 +132,25 @@ WireReconstructionArtifacts WireReconstructor::reconstruct(
                 }
             }
 
+            // A degree-2 Splice/Junction is still a distribution node.
+            // Unlike a generic Continuation node, it may only be traversed
+            // when the conductor-segment evidence agrees across the node.
+            // Otherwise Pass 1 would manufacture a Wire between unrelated
+            // conductor segments simply because the node has degree two.
+            if (current_node != endpoint.node_id &&
+                node_is_distribution(current_node)) {
+                const auto previous_it = edge_by_id.find(previous_edge);
+                const auto next_it = edge_by_id.find(next != nullptr ? next->edge_id : "");
+                if (previous_it == edge_by_id.end() ||
+                    next_it == edge_by_id.end() ||
+                    previous_it->second->conductor_segment.empty() ||
+                    previous_it->second->conductor_segment !=
+                        next_it->second->conductor_segment) {
+                    result.unresolved_nodes.push_back(current_node);
+                    break;
+                }
+            }
+
             if (next == nullptr) {
                 break;
             }

@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-10-03T16:05:37Z",
+  "generated_at": "2026-10-03T18:07:47Z",
   "source_id": "C:\\dev\\ds-extractor\\samples\\trx300ODG.png",
   "page": 0,
   "image_width": 898,
   "image_height": 549,
   "layers": {
-    "wires": 37,
+    "wires": 78,
     "wire_colors": 230,
     "symbols": 13,
     "terminals": 18,
@@ -22,15 +22,15 @@
   },
   "electrical_nets": 12,
   "validation_errors": 0,
-  "validation_warnings": 34,
+  "validation_warnings": 72,
   "validation_warning_codes": {
     "NET-ROLE-UNRESOLVED": 6,
-    "WIRE-GEOMETRIC-ENDPOINTS": 28
+    "WIRE-GEOMETRIC-ENDPOINTS": 66
   },
   "coverage_summary": {
     "conductor_segments_shared": 0,
     "conductor_segments_unreferenced": 0,
-    "endpoints_zero_wire": 118,
+    "endpoints_zero_wire": 36,
     "wires_invalid": 0,
     "components_real_without_terminal_evidence": 2,
     "components_diagram_furniture": 0,
@@ -42,9 +42,9 @@
     "components_without_symbol_geometry": 1,
     "wires_with_color_resolved": 0,
     "wires_with_color_conflicted": 0,
-    "wires_with_component_association_resolved": 9,
-    "wires_fully_unresolved": 28,
-    "findings_total": 1065,
+    "wires_with_component_association_resolved": 12,
+    "wires_fully_unresolved": 59,
+    "findings_total": 573,
     "see": "artifacts/audit/extraction_audit.json#coverage"
   }
 }

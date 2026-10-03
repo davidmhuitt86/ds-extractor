@@ -555,8 +555,8 @@ int main() {
             make_segment("segA"), make_segment("segC")};
         std::vector<EndpointCandidate> endpoints = {
             make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b")};
-        std::vector<ConductorBoundaryResolution> boundaries = {
-            make_resolved_boundary("ep-a")};
+        // Neither endpoint has semantic boundary resolution.
+        std::vector<ConductorBoundaryResolution> boundaries;
 
         const auto artifacts = reconstructor.reconstruct(
             nodes, edges, endpoints, segments, boundaries, "src", 0);

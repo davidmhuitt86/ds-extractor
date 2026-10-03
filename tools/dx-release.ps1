@@ -70,8 +70,17 @@ try {
     Step "Pulling latest main"
     Invoke-Checked "git" @("pull", "--ff-only", "origin", "main")
 
-    Step "Configuring Release build"
-    Invoke-Checked "cmake" @("-S", ".", "-B", "build")
+    $buildCache = Join-Path $repoRoot "build\CMakeCache.txt"
+    if (-not (Test-Path $buildCache)) {
+        Step "Configuring Release build (build tree not initialized)"
+        Invoke-Checked "cmake" @("-S", ".", "-B", "build")
+    }
+    elseif ($CleanFirst) {
+        Step "Using existing CMake build tree for clean Release build"
+    }
+    else {
+        Step "Using existing CMake build tree (incremental)"
+    }
 
     if ($CleanFirst) {
         Step "Building Release (clean-first)"

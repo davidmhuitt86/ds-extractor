@@ -211,6 +211,40 @@ int main() {
         assert(artifacts.wires.empty());
     }
 
+    // AP-DIAG-035 regression: Pass 2 must recover an existing pair of
+    // geometric endpoints through a distribution node even when neither
+    // endpoint has semantic boundary resolution. The splice has three
+    // branches so Pass 1 cannot reconstruct the pair on its own; exact
+    // segment-sharing evidence authorizes the Pass-2 identity.
+    {
+        std::vector<TopologyNode> nodes = {
+            make_node("n-a", TopologyNodeType::ConductorEnd),
+            make_node("n-splice", TopologyNodeType::Splice),
+            make_node("n-b", TopologyNodeType::ConductorEnd),
+            make_node("n-c", TopologyNodeType::ConductorEnd)};
+        std::vector<TopologyEdge> edges = {
+            make_edge("e1", "n-a", "n-splice", "segA"),
+            make_edge("e2", "n-splice", "n-b", "segA"),
+            make_edge("e3", "n-splice", "n-c", "segC")};
+        std::vector<ConductorSegment> segments = {
+            make_segment("segA"), make_segment("segC")};
+        std::vector<EndpointCandidate> endpoints = {
+            make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b"),
+            make_endpoint("ep-c", "n-c")};
+        std::vector<ConductorBoundaryResolution> boundaries;
+
+        const auto artifacts = reconstructor.reconstruct(
+            nodes, edges, endpoints, segments, boundaries, "src", 0);
+        assert(artifacts.wires.size() == 1);
+        const auto* wire = find_wire_between(artifacts.wires, "ep-a", "ep-b");
+        assert(wire != nullptr);
+        assert(wire->identity_status == WireIdentityStatus::Resolved);
+        assert(wire->topology_edges.size() == 2);
+        assert(wire->identity_evidence_ids.size() == 1);
+        assert(wire->identity_evidence_ids[0] == "segA");
+        assert(!any_wire_touches(artifacts.wires, "ep-c"));
+    }
+
     // 4. Three-way splice with insufficient physical continuity evidence
     // (all three branches have distinct conductor segments) -> no
     // invented branch pairing, physical identity remains unresolved for

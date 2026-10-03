@@ -255,19 +255,23 @@ PhysicalWireIdentityArtifacts PhysicalWireIdentityReconstructor::reconstruct(
             });
     }
 
-    // A "true endpoint" for Pass 2 is a degree-1 endpoint that was
-    // not already reconstructed by Pass 1 and has an explicit resolved
-    // conductor boundary. Pass 2 is allowed to extend an endpoint that
-    // already exists; it is not allowed to promote an otherwise-unclaimed
-    // bare geometric end into a new Wire boundary.
+    // Pass 2 starts only from existing EndpointCandidates that were not
+    // already claimed by Pass 1 and are true degree-1 endpoints. The
+    // EndpointCandidate itself is authoritative: this pass establishes
+    // physical endpoint-to-endpoint identity using the existing topology
+    // and exact ConductorSegment-sharing evidence. It does not invent or
+    // promote a new endpoint.
     //
-    // AP-DIAG-029: an existing geometric endpoint does not need a semantic
-    // ConductorBoundaryResolution when Pass 1 has already established that
-    // endpoint as part of an endpoint-to-endpoint Wire. Such endpoints are
-    // filtered above by claimed_by_base_wire. This distinction preserves
-    // the AP-DIAG-029 geometric-endpoint case without allowing unanchored
-    // geometric ends at an unresolved distribution to seed additional
-    // candidate identities.
+    // AP-DIAG-029: an existing geometric/component-terminal endpoint does
+    // not require a ConductorBoundaryResolution to seed Pass 2. Requiring
+    // semantic boundary evidence here suppresses legitimate endpoint
+    // pairings that were already geometrically established by the endpoint
+    // detector but not semantically attributed yet.
+    //
+    // AP-DIAG-032: unsafe degree-two distribution continuation is separately
+    // blocked in walk_from() by requiring identical ConductorSegment IDs
+    // across Splice/Junction nodes. Boundary resolution is not the
+    // mechanism used to prevent that false-positive case.
     std::unordered_set<std::string> distribution_nodes;
     for (const auto& node : nodes) {
         if (node.type == TopologyNodeType::Splice || node.type == TopologyNodeType::Junction) {
@@ -285,21 +289,10 @@ PhysicalWireIdentityArtifacts PhysicalWireIdentityReconstructor::reconstruct(
         if (adjacency_it == adjacency.end() || adjacency_it->second.size() != 1) {
             continue;
         }
-        // AP-DIAG-029: once Pass 1 has already established an endpoint
-        // as part of a physical Wire, its existing EndpointCandidate is
-        // authoritative and no semantic boundary is required. Such
-        // endpoints never reach this loop because claimed_by_base_wire
-        // filtered them above.
-        //
-        // For a genuinely new Pass-2 seed, however, retain the explicit
-        // resolved-boundary requirement. This prevents a bare geometric
-        // conductor end at an unresolved distribution from creating a new
-        // identity without boundary evidence.
-        const auto boundary_it = boundary_by_endpoint.find(endpoint.id);
-        if (boundary_it == boundary_by_endpoint.end() ||
-            boundary_it->second->boundary_status != ConductorBoundaryStatus::Resolved) {
-            continue;
-        }
+        // AP-DIAG-029: the EndpointCandidate is already an established
+        // physical endpoint. Semantic boundary resolution is optional here;
+        // Pass 2 uses only existing endpoint identity plus topology and
+        // exact conductor-segment-sharing evidence.
         if (endpoint.kind == EndpointKind::Splice ||
             endpoint.kind == EndpointKind::Unresolved) {
             continue;

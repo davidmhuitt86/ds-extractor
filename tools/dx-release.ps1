@@ -4,7 +4,11 @@
 # The PowerShell window remains open after the GUI is relaunched.
 
 [CmdletBinding()]
-param()
+param(
+    # Normal releases use the existing build tree and compile only what CMake/MSBuild
+    # determines is stale. Use -CleanFirst for an explicit clean rebuild.
+    [switch]$CleanFirst
+)
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
@@ -69,8 +73,16 @@ try {
     Step "Configuring Release build"
     Invoke-Checked "cmake" @("-S", ".", "-B", "build")
 
-    Step "Building Release (clean-first)"
-    Invoke-Checked "cmake" @("--build", "build", "--config", "Release", "--clean-first", "--parallel", "1")
+    if ($CleanFirst) {
+        Step "Building Release (clean-first)"
+        $buildArguments = @("--build", "build", "--config", "Release", "--clean-first", "--parallel", "1")
+    }
+    else {
+        Step "Building Release (incremental)"
+        $buildArguments = @("--build", "build", "--config", "Release", "--parallel", "1")
+    }
+
+    Invoke-Checked "cmake" $buildArguments
 
     Step "Running Release tests"
     & ctest --test-dir build -C Release --output-on-failure
@@ -104,7 +116,12 @@ try {
     Write-Host " DX-EXTRACTOR RELEASE VALIDATION COMPLETE" -ForegroundColor Green
     Write-Host "========================================" -ForegroundColor Green
     Write-Host "Pulled latest main."
-    Write-Host "Release build completed."
+    if ($CleanFirst) {
+        Write-Host "Clean Release build completed."
+    }
+    else {
+        Write-Host "Incremental Release build completed."
+    }
     Write-Host "All Release tests passed."
     Write-Host "GUI relaunched."
     Write-Host ""

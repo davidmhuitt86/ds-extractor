@@ -535,11 +535,10 @@ int main() {
         assert(artifacts.wires[0].identity_status == WireIdentityStatus::Resolved);
     }
 
-    // A bare geometric conductor end (no AP-WIRE-030 Resolved boundary)
-    // is never treated as a new Wire boundary by the extended pass: with
-    // an unresolved boundary on one side, no wire crosses the splice even
-    // though the segment-sharing evidence itself would otherwise justify
-    // it.
+    // AP-DIAG-035: semantic boundary resolution is not required when
+    // Pass 2 is pairing already-existing endpoint candidates. One endpoint
+    // has no AP-WIRE-030 resolution, but exact shared-segment evidence across
+    // the three-way splice still establishes the physical identity ep-a->ep-b.
     {
         std::vector<TopologyNode> nodes = {
             make_node("n-a", TopologyNodeType::ConductorEnd),
@@ -556,12 +555,17 @@ int main() {
             make_endpoint("ep-a", "n-a"), make_endpoint("ep-b", "n-b")};
         std::vector<ConductorBoundaryResolution> boundaries = {
             make_resolved_boundary("ep-a")};
-        // ep-b has no ConductorBoundaryResolution at all - i.e. never
-        // reached AP-WIRE-030's Resolved state.
+        // ep-b intentionally has no ConductorBoundaryResolution.
 
         const auto artifacts = reconstructor.reconstruct(
             nodes, edges, endpoints, segments, boundaries, "src", 0);
-        assert(artifacts.wires.empty());
+        assert(artifacts.wires.size() == 1);
+        const auto* wire = find_wire_between(artifacts.wires, "ep-a", "ep-b");
+        assert(wire != nullptr);
+        assert(wire->identity_status == WireIdentityStatus::Resolved);
+        assert(wire->topology_edges.size() == 2);
+        assert(wire->identity_evidence_ids.size() == 1);
+        assert(wire->identity_evidence_ids[0] == "segA");
     }
 
     // Deterministic output across repeated calls on identical input.

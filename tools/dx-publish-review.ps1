@@ -31,19 +31,25 @@ $reviewPath = Join-Path $repoRoot $reviewRelative
 $auditRelative = "artifacts/audit/extraction_audit.json"
 $auditPath = Join-Path $repoRoot $auditRelative
 $worktreePath = Join-Path ([System.IO.Path]::GetTempPath()) ("dx-extraction-results-" + [guid]::NewGuid().ToString("N"))
+$publishBranch = "dx-publish-" + [guid]::NewGuid().ToString("N")
 $worktreeAdded = $false
 
-# The GUI launches this script in a window with no -NoExit, so on any exit
-# (success or failure) the window closes immediately and nothing printed to
-# it is readable. A transcript is kept here so a failure can always be
-# diagnosed afterward instead of only flashing past on screen.
+# The GUI launches this script in a normal PowerShell window. Keep the window
+# open after completion so the extraction/publish log remains visible.
+# A transcript is also retained for postmortem diagnosis.
 $logPath = Join-Path ([System.IO.Path]::GetTempPath()) "dx-publish-review.log"
 Start-Transcript -Path $logPath -Append | Out-Null
+
+function Wait-ForClose([string]$Message) {
+    Write-Host ""
+    Write-Host $Message -ForegroundColor Yellow
+    Read-Host "Press Enter to close"
+}
 
 function Fail([string]$Message) {
     Write-Host "[DX-REVIEW] FAILED: $Message" -ForegroundColor Red
     Write-Host "[DX-REVIEW] Full log: $logPath" -ForegroundColor Yellow
-    Read-Host "Press Enter to close"
+    Wait-ForClose "Review publisher stopped with an error."
     exit 1
 }
 
@@ -82,17 +88,23 @@ try {
     }
     Write-Host "[DX-REVIEW] Integrity check passed: review and audit agree" -ForegroundColor Green
 
-    Write-Host "[DX-REVIEW] Fetching $resultsBranch"
-    Invoke-Checked "git" @("fetch", "origin", $resultsBranch)
+    # Never use a pre-existing local extraction-results branch. Always build the
+    # temporary worktree from the freshly fetched remote ref so stale local refs
+    # cannot publish old results or cause a non-fast-forward push.
+    Write-Host "[DX-REVIEW] Fetching latest remote refs"
+    Invoke-Checked "git" @("fetch", "origin", "--prune")
 
-    git show-ref --verify --quiet ("refs/heads/" + $resultsBranch)
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "[DX-REVIEW] Creating temporary worktree from local $resultsBranch"
-        Invoke-Checked "git" @("worktree", "add", $worktreePath, $resultsBranch)
+    $remoteRef = "refs/remotes/origin/$resultsBranch"
+    git show-ref --verify --quiet $remoteRef
+    $remoteExists = ($LASTEXITCODE -eq 0)
+
+    if ($remoteExists) {
+        Write-Host "[DX-REVIEW] Creating temporary worktree from origin/$resultsBranch"
+        Invoke-Checked "git" @("worktree", "add", "-b", $publishBranch, $worktreePath, ("origin/" + $resultsBranch))
     }
     else {
-        Write-Host "[DX-REVIEW] Creating local tracking branch $resultsBranch"
-        Invoke-Checked "git" @("worktree", "add", "-b", $resultsBranch, $worktreePath, ("origin/" + $resultsBranch))
+        Write-Host "[DX-REVIEW] Remote $resultsBranch does not exist; creating initial publication from main"
+        Invoke-Checked "git" @("worktree", "add", "-b", $publishBranch, $worktreePath, "HEAD")
     }
     $worktreeAdded = $true
 
@@ -128,7 +140,7 @@ try {
             # delay makes the two distinguishable without requiring a keypress
             # on every single extraction.
             Write-Host "[DX-REVIEW] No extraction-result changes to publish." -ForegroundColor Yellow
-            Start-Sleep -Seconds 3
+            Wait-ForClose "Extraction results are already current."
             return
         }
 
@@ -139,12 +151,12 @@ try {
         Invoke-Checked "git" @("commit", "-m", $message)
 
         Write-Host "[DX-REVIEW] Pushing $resultsBranch"
-        Invoke-Checked "git" @("push", "origin", $resultsBranch)
+        Invoke-Checked "git" @("push", "origin", ("HEAD:refs/heads/" + $resultsBranch))
 
         $sha = (git rev-parse HEAD).Trim()
         Write-Host "[DX-REVIEW] Published extraction results: $sha" -ForegroundColor Green
-        Write-Host "[DX-REVIEW] Main was not modified."
-        Start-Sleep -Seconds 3
+        Write-Host "[DX-REVIEW] Main was not modified." -ForegroundColor Green
+        Wait-ForClose "Extraction results published successfully."
     }
     finally {
         Pop-Location
@@ -160,6 +172,13 @@ finally {
         }
         catch {
             Write-Host "[DX-REVIEW] WARNING: temporary worktree cleanup failed: $worktreePath" -ForegroundColor Yellow
+        }
+
+        try {
+            git branch -D $publishBranch 2>$null
+        }
+        catch {
+            Write-Host "[DX-REVIEW] WARNING: temporary branch cleanup failed: $publishBranch" -ForegroundColor Yellow
         }
     }
     Stop-Transcript | Out-Null

@@ -143,7 +143,10 @@ try {
 
     Push-Location $worktreePath
     try {
-        $pathsToStage = @($reviewRelative, $auditRelative, $spliceRelative)
+        $pathsToStage = @($reviewRelative, $auditRelative)
+        if (Test-Path $splicePath) {
+            $pathsToStage += $spliceRelative
+        }
         & git add -A -f -- @pathsToStage
         if ($LASTEXITCODE -ne 0) {
             throw "git add failed."

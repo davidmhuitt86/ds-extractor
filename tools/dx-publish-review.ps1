@@ -5,6 +5,7 @@
 # for review:
 #   artifacts/extraction_review
 #   artifacts/audit/extraction_audit.json
+#   artifacts/audit/AP-DIAG-042_exact_production_replay.json (when present)
 #   artifacts/splice_reconciliation (when the diagnostic tool has been run)
 
 [CmdletBinding()]
@@ -30,8 +31,10 @@ $resultsBranch = "extraction-results"
 $reviewRelative = "artifacts/extraction_review"
 $reviewPath = Join-Path $repoRoot $reviewRelative
 $auditRelative = "artifacts/audit/extraction_audit.json"
+$ap042Relative = "artifacts/audit/AP-DIAG-042_exact_production_replay.json"
 $spliceRelative = "artifacts/splice_reconciliation"
 $auditPath = Join-Path $repoRoot $auditRelative
+$ap042Path = Join-Path $repoRoot $ap042Relative
 $splicePath = Join-Path $repoRoot $spliceRelative
 $spliceToolPath = Join-Path $PSScriptRoot "dx-splice-reconciliation.ps1"
 $worktreePath = Join-Path ([System.IO.Path]::GetTempPath()) ("dx-extraction-results-" + [guid]::NewGuid().ToString("N"))
@@ -134,12 +137,16 @@ try {
 
     ${destination} = Join-Path $worktreePath $reviewRelative
     $auditDestination = Join-Path $worktreePath $auditRelative
+    $ap042Destination = Join-Path $worktreePath $ap042Relative
     $spliceDestination = Join-Path $worktreePath $spliceRelative
     if (Test-Path $destination) {
         Remove-Item -LiteralPath $destination -Recurse -Force
     }
     if (Test-Path $spliceDestination) {
         Remove-Item -LiteralPath $spliceDestination -Recurse -Force
+    }
+    if (Test-Path $ap042Destination -PathType Leaf) {
+        Remove-Item -LiteralPath $ap042Destination -Force
     }
     New-Item -ItemType Directory -Path $destination -Force | Out-Null
     New-Item -ItemType Directory -Path (Split-Path -Parent $auditDestination) -Force | Out-Null
@@ -152,6 +159,11 @@ try {
     Copy-Item -Path (Join-Path $reviewPath "*") -Destination $destination -Recurse -Force
     Copy-Item -LiteralPath $auditPath -Destination $auditDestination -Force
 
+    if (Test-Path $ap042Path -PathType Leaf) {
+        Write-Host "[DX-REVIEW] Copying optional AP-DIAG-042 exact replay artifact"
+        Copy-Item -LiteralPath $ap042Path -Destination $ap042Destination -Force
+    }
+
     if (Test-Path $splicePath) {
         Write-Host "[DX-REVIEW] Copying optional splice reconciliation artifacts"
         New-Item -ItemType Directory -Path $spliceDestination -Force | Out-Null
@@ -161,6 +173,19 @@ try {
     Push-Location $worktreePath
     try {
         $pathsToStage = @($reviewRelative, $auditRelative)
+
+        # Stage AP-DIAG-042 when a current report exists, or when the
+        # extraction-results branch already tracks one so that a missing
+        # current report removes the stale published artifact.
+        $ap042Tracked = $false
+        & git ls-files --error-unmatch -- $ap042Relative 2>$null
+        if ($LASTEXITCODE -eq 0) {
+            $ap042Tracked = $true
+        }
+        if ((Test-Path $ap042Path -PathType Leaf) -or $ap042Tracked) {
+            $pathsToStage += $ap042Relative
+        }
+
         if (Test-Path $splicePath) {
             $pathsToStage += $spliceRelative
         }

@@ -143,6 +143,12 @@ add_executable(dx-audit-residual-splice-object-mask
     tools/ap_diag_041_residual_splice_object_mask.cpp)
 target_link_libraries(dx-audit-residual-splice-object-mask PRIVATE eke_dx_wire)
 
+# AP-DIAG-042: exact production PhysicalWireIdentityReconstructor replay
+# with stop instrumentation. Diagnostic only; production extraction unchanged.
+add_executable(dx-audit-exact-production-replay
+    tools/ap_diag_042_exact_production_replay.cpp)
+target_link_libraries(dx-audit-exact-production-replay PRIVATE eke_dx_wire)
+
 if(WIN32)
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire

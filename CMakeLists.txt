@@ -136,6 +136,13 @@ target_link_libraries(dx-extract PRIVATE eke_dx_wire)
 add_executable(dx-audit-component-semantic tools/component_semantic_audit.cpp)
 target_link_libraries(dx-audit-component-semantic PRIVATE eke_dx_wire)
 
+# AP-DIAG-041: diagnostic-only counterfactual audit of residual terminal-Splice
+# locations with established component/connector boundary geometry excluded
+# before conductor topology. This does not participate in production extraction.
+add_executable(dx-audit-residual-splice-object-mask
+    tools/ap_diag_041_residual_splice_object_mask.cpp)
+target_link_libraries(dx-audit-residual-splice-object-mask PRIVATE eke_dx_wire)
+
 if(WIN32)
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire

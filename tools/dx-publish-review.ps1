@@ -5,6 +5,7 @@
 # for review:
 #   artifacts/extraction_review
 #   artifacts/audit/extraction_audit.json
+#   artifacts/splice_reconciliation (when the diagnostic tool has been run)
 
 [CmdletBinding()]
 param()
@@ -29,7 +30,9 @@ $resultsBranch = "extraction-results"
 $reviewRelative = "artifacts/extraction_review"
 $reviewPath = Join-Path $repoRoot $reviewRelative
 $auditRelative = "artifacts/audit/extraction_audit.json"
+$spliceRelative = "artifacts/splice_reconciliation"
 $auditPath = Join-Path $repoRoot $auditRelative
+$splicePath = Join-Path $repoRoot $spliceRelative
 $worktreePath = Join-Path ([System.IO.Path]::GetTempPath()) ("dx-extraction-results-" + [guid]::NewGuid().ToString("N"))
 $publishBranch = "dx-publish-" + [guid]::NewGuid().ToString("N")
 $worktreeAdded = $false
@@ -68,6 +71,10 @@ try {
 
     if (-not (Test-Path $reviewPath)) {
         Fail "Review directory does not exist: $reviewPath"
+    }
+
+    if (Test-Path $splicePath) {
+        Write-Host "[DX-REVIEW] Found optional splice reconciliation artifacts"
     }
 
     if (-not (Test-Path $auditPath -PathType Leaf)) {
@@ -110,8 +117,12 @@ try {
 
     ${destination} = Join-Path $worktreePath $reviewRelative
     $auditDestination = Join-Path $worktreePath $auditRelative
+    $spliceDestination = Join-Path $worktreePath $spliceRelative
     if (Test-Path $destination) {
         Remove-Item -LiteralPath $destination -Recurse -Force
+    }
+    if (Test-Path $spliceDestination) {
+        Remove-Item -LiteralPath $spliceDestination -Recurse -Force
     }
     New-Item -ItemType Directory -Path $destination -Force | Out-Null
     New-Item -ItemType Directory -Path (Split-Path -Parent $auditDestination) -Force | Out-Null
@@ -124,14 +135,21 @@ try {
     Copy-Item -Path (Join-Path $reviewPath "*") -Destination $destination -Recurse -Force
     Copy-Item -LiteralPath $auditPath -Destination $auditDestination -Force
 
+    if (Test-Path $splicePath) {
+        Write-Host "[DX-REVIEW] Copying optional splice reconciliation artifacts"
+        New-Item -ItemType Directory -Path $spliceDestination -Force | Out-Null
+        Copy-Item -Path (Join-Path $splicePath "*") -Destination $spliceDestination -Recurse -Force
+    }
+
     Push-Location $worktreePath
     try {
-        & git add -A -f -- $reviewRelative $auditRelative
+        $pathsToStage = @($reviewRelative, $auditRelative, $spliceRelative)
+        & git add -A -f -- @pathsToStage
         if ($LASTEXITCODE -ne 0) {
             throw "git add failed."
         }
 
-        & git diff --cached --quiet -- $reviewRelative $auditRelative
+        & git diff --cached --quiet -- @pathsToStage
         if ($LASTEXITCODE -eq 0) {
             # No diff is a legitimate, expected outcome (e.g. a code change that
             # doesn't alter extraction output) - not a failure. But without any

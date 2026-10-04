@@ -98,9 +98,6 @@ try {
 
     Write-Host "[DX-REVIEW] Splice reconciliation artifacts ready" -ForegroundColor Green
 
-        Fail "Structured extraction audit does not exist: $auditPath"
-    }
-
     # AP-DIAG-017A integrity guard: the review tree and the structured audit
     # must be internally complete and must agree with each other (same
     # source identity, same population counts) before anything is staged,

@@ -84,12 +84,14 @@ struct ReplayContext {
 };
 
 void walk_from_exact(
-    const std::string& /*start_endpoint_id*/,
+    const std::string& start_endpoint_id,
     const std::string& current_node,
     const std::string& previous_edge,
     std::unordered_set<std::string> visited_nodes,
     ReplayContext& context,
     WalkTrace& trace) {
+
+    (void)start_endpoint_id;
 
     if (!visited_nodes.insert(current_node).second) {
         trace.other_stop = true;

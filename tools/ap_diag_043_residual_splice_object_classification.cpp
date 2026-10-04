@@ -8,6 +8,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <limits>
 #include <map>
 #include <regex>
@@ -293,7 +294,7 @@ std::vector<ReplayMapping> load_replay_mapping(
     const std::string text = buffer.str();
 
     const std::regex pattern(
-        R"("endpoint_id":"([^"]+)","class":"splice_stop","terminal_splices":\["([^"]+)")");
+        R"rx("endpoint_id":"([^"]+)","class":"splice_stop","terminal_splices":\["([^"]+)")rx");
 
     std::vector<ReplayMapping> result;
     for (std::sregex_iterator it(text.begin(), text.end(), pattern), end;

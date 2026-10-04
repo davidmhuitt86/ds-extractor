@@ -36,8 +36,16 @@ if (-not (Test-Path -LiteralPath $AuditPath -PathType Leaf)) {
 if ($Pad -lt 8) { throw "Pad must be >= 8." }
 if ($Scale -lt 1) { throw "Scale must be >= 1." }
 
-Add-Type -AssemblyName System.Drawing
-Add-Type -AssemblyName System.Drawing.Common -ErrorAction SilentlyContinue
+# Windows PowerShell 5.1/.NET Framework provides System.Drawing directly.
+# PowerShell 7 on Windows may use System.Drawing.Common, but requiring that
+# assembly makes the diagnostic tool fail on systems where the assembly is
+# not installed. Load it only when available.
+try {
+    Add-Type -AssemblyName System.Drawing -ErrorAction Stop
+}
+catch {
+    Add-Type -AssemblyName System.Drawing.Common -ErrorAction Stop
+}
 
 $audit = Get-Content -Raw -LiteralPath $AuditPath | ConvertFrom-Json
 $nodes = @($audit.objects.topology_nodes)

@@ -324,11 +324,19 @@ run_exact_replay(
         traces.push_back(std::move(trace));
     }
 
-    std::set<std::pair<std::string, std::string>> result;
+    std::set<std::pair<std::string, std::string>> pass2_pairs;
     for (const auto& pair : context.candidate_pairs)
-        result.insert(pair);
+        pass2_pairs.insert(pair);
 
-    pass2_count = result.size();
+    pass2_count = pass2_pairs.size();
+
+    // The replay population is the union of the unchanged Pass-1 WireModel
+    // pairs and the newly reconstructed Pass-2 endpoint pairs. This must be
+    // compared as one population; comparing Pass-2 alone would incorrectly
+    // report every Pass-1 wire as a missing model pair.
+    std::set<std::pair<std::string, std::string>> replay_pairs =
+        wire_pairs(base.wires);
+    replay_pairs.insert(pass2_pairs.begin(), pass2_pairs.end());
 
     // Re-derive the residual set exactly as PhysicalWireIdentityReconstructor:
     // final endpoint incidence is base wires plus the unique Pass-2 pairs.
@@ -338,7 +346,7 @@ run_exact_replay(
         claimed.insert(wire.start_endpoint);
         claimed.insert(wire.end_endpoint);
     }
-    for (const auto& pair : result) {
+    for (const auto& pair : pass2_pairs) {
         claimed.insert(pair.first);
         claimed.insert(pair.second);
     }
@@ -348,7 +356,7 @@ run_exact_replay(
             residual_ids.insert(endpoint.id);
     }
 
-    return result;
+    return replay_pairs;
 }
 
 std::string stop_class_for_trace(
@@ -374,7 +382,7 @@ ReplaySummary summarize(
     ReplaySummary result;
     result.pass1_wires = pass1;
     result.pass2_candidate_pairs = pass2;
-    result.unique_replay_pairs = pass1 + pass2;
+    result.unique_replay_pairs = replay_pairs.size();
     result.model_wires = model.wires.size();
     result.residual_endpoints = residual_ids.size();
 

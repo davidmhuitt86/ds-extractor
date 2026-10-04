@@ -1,0 +1,790 @@
+﻿{
+    "schema_version":  1,
+    "source_image":  "C:\\dev\\ds-extractor\\artifacts\\extraction_review\\00_source.png",
+    "audit":  "C:\\dev\\ds-extractor\\artifacts\\audit\\extraction_audit.json",
+    "source_dimensions":  {
+                              "width":  898,
+                              "height":  549
+                          },
+    "crop_padding":  32,
+    "annotation_scale":  4,
+    "residual_zero_wire_endpoints":  36,
+    "terminal_splices":  35,
+    "entries":  [
+                    {
+                        "ordinal":  1,
+                        "splice_id":  "topology-node-a0258d569629ede3",
+                        "x":  649.5,
+                        "y":  349,
+                        "crop":  {
+                                     "left":  617,
+                                     "top":  317,
+                                     "width":  66,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-46301e597766bda3",
+                                                   "x":  649.5,
+                                                   "y":  65
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-001.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-001.png"
+                    },
+                    {
+                        "ordinal":  2,
+                        "splice_id":  "topology-node-3ccf88832c67546d",
+                        "x":  659,
+                        "y":  348.5,
+                        "crop":  {
+                                     "left":  627,
+                                     "top":  316,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-78731d54607e9c48",
+                                                   "x":  659,
+                                                   "y":  65
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-002.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-002.png"
+                    },
+                    {
+                        "ordinal":  3,
+                        "splice_id":  "topology-node-18527bdc36d35bee",
+                        "x":  443,
+                        "y":  55,
+                        "crop":  {
+                                     "left":  411,
+                                     "top":  23,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-3d9d2cd900273173",
+                                                   "x":  443,
+                                                   "y":  81
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-003.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-003.png"
+                    },
+                    {
+                        "ordinal":  4,
+                        "splice_id":  "topology-node-c91b9a89d8076f97",
+                        "x":  543.5,
+                        "y":  249,
+                        "crop":  {
+                                     "left":  511,
+                                     "top":  217,
+                                     "width":  66,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-5d4f44b822c136c3",
+                                                   "x":  543.5,
+                                                   "y":  101
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-004.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-004.png"
+                    },
+                    {
+                        "ordinal":  5,
+                        "splice_id":  "topology-node-615f0062183b9e00",
+                        "x":  101,
+                        "y":  259.5,
+                        "crop":  {
+                                     "left":  69,
+                                     "top":  227,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-77841acb99be942e",
+                                                   "x":  101,
+                                                   "y":  117
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-005.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-005.png"
+                    },
+                    {
+                        "ordinal":  6,
+                        "splice_id":  "topology-node-ad6a6ae39f30d46e",
+                        "x":  430,
+                        "y":  170,
+                        "crop":  {
+                                     "left":  398,
+                                     "top":  138,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-b4cfc5a0b3a80757",
+                                                   "x":  247.5,
+                                                   "y":  123
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-006.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-006.png"
+                    },
+                    {
+                        "ordinal":  7,
+                        "splice_id":  "topology-node-5e7cc02973509cc0",
+                        "x":  506.5,
+                        "y":  111,
+                        "crop":  {
+                                     "left":  474,
+                                     "top":  79,
+                                     "width":  66,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-380e7e2fb206f121",
+                                                   "x":  256.5,
+                                                   "y":  123
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-007.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-007.png"
+                    },
+                    {
+                        "ordinal":  8,
+                        "splice_id":  "topology-node-4d0b8eea5df9d5ec",
+                        "x":  534,
+                        "y":  303.5,
+                        "crop":  {
+                                     "left":  502,
+                                     "top":  271,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-ad3ee7f315fb590b",
+                                                   "x":  167.5,
+                                                   "y":  127
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-008.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-008.png"
+                    },
+                    {
+                        "ordinal":  9,
+                        "splice_id":  "topology-node-d7bafbe8fe5645f9",
+                        "x":  466,
+                        "y":  146.5,
+                        "crop":  {
+                                     "left":  434,
+                                     "top":  114,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-e60662c0b2bbe2df",
+                                                   "x":  276,
+                                                   "y":  146.5
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-009.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-009.png"
+                    },
+                    {
+                        "ordinal":  10,
+                        "splice_id":  "topology-node-56616faabc8a3576",
+                        "x":  772,
+                        "y":  266.5,
+                        "crop":  {
+                                     "left":  740,
+                                     "top":  234,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-8cdaff132e185cd3",
+                                                   "x":  853,
+                                                   "y":  263.5
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-010.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-010.png"
+                    },
+                    {
+                        "ordinal":  11,
+                        "splice_id":  "topology-node-fa5655f70256cbf2",
+                        "x":  776,
+                        "y":  276,
+                        "crop":  {
+                                     "left":  744,
+                                     "top":  244,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-929fcb0a2cb0ceec",
+                                                   "x":  853,
+                                                   "y":  280
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-011.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-011.png"
+                    },
+                    {
+                        "ordinal":  12,
+                        "splice_id":  "topology-node-5b70538b51f80f6f",
+                        "x":  81,
+                        "y":  315,
+                        "crop":  {
+                                     "left":  49,
+                                     "top":  283,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-b49a68e3a3854273",
+                                                   "x":  37,
+                                                   "y":  315
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-012.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-012.png"
+                    },
+                    {
+                        "ordinal":  13,
+                        "splice_id":  "topology-node-0cc07bef487a04ae",
+                        "x":  81,
+                        "y":  319.5,
+                        "crop":  {
+                                     "left":  49,
+                                     "top":  287,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-82d609e2bb380ce3",
+                                                   "x":  44,
+                                                   "y":  319.5
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-013.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-013.png"
+                    },
+                    {
+                        "ordinal":  14,
+                        "splice_id":  "topology-node-93241ecbb0d2b296",
+                        "x":  100,
+                        "y":  329,
+                        "crop":  {
+                                     "left":  68,
+                                     "top":  297,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-44c72c36ed8e5c1d",
+                                                   "x":  133,
+                                                   "y":  329
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-014.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-014.png"
+                    },
+                    {
+                        "ordinal":  15,
+                        "splice_id":  "topology-node-4fd79c002e1fe899",
+                        "x":  185.5,
+                        "y":  106,
+                        "crop":  {
+                                     "left":  153,
+                                     "top":  74,
+                                     "width":  66,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-8a7e911ef603cce4",
+                                                   "x":  618,
+                                                   "y":  332
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-015.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-015.png"
+                    },
+                    {
+                        "ordinal":  16,
+                        "splice_id":  "topology-node-6f44bb012ab62deb",
+                        "x":  81,
+                        "y":  338.5,
+                        "crop":  {
+                                     "left":  49,
+                                     "top":  306,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-2f1d1e70c596fed6",
+                                                   "x":  53,
+                                                   "y":  338.5
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-016.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-016.png"
+                    },
+                    {
+                        "ordinal":  17,
+                        "splice_id":  "topology-node-932099cbb0cf9ac0",
+                        "x":  100,
+                        "y":  338,
+                        "crop":  {
+                                     "left":  68,
+                                     "top":  306,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-0ee7ca42a5bc55b0",
+                                                   "x":  221,
+                                                   "y":  338
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-017.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-017.png"
+                    },
+                    {
+                        "ordinal":  18,
+                        "splice_id":  "topology-node-5b81698b5206a804",
+                        "x":  81,
+                        "y":  343,
+                        "crop":  {
+                                     "left":  49,
+                                     "top":  311,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-4363b53c52c781aa",
+                                                   "x":  52,
+                                                   "y":  343
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-018.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-018.png"
+                    },
+                    {
+                        "ordinal":  19,
+                        "splice_id":  "topology-node-ad55e7e39f1f4ccb",
+                        "x":  430,
+                        "y":  111,
+                        "crop":  {
+                                     "left":  398,
+                                     "top":  79,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-5b0a3f1b2a6df437",
+                                                   "x":  390,
+                                                   "y":  345
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-019.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-019.png"
+                    },
+                    {
+                        "ordinal":  20,
+                        "splice_id":  "topology-node-c1e095345fceb2ee",
+                        "x":  370,
+                        "y":  354.5,
+                        "crop":  {
+                                     "left":  338,
+                                     "top":  322,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-8e66a6f431356e2e",
+                                                   "x":  452,
+                                                   "y":  354.5
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-020.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-020.png"
+                    },
+                    {
+                        "ordinal":  21,
+                        "splice_id":  "topology-node-e4ab0e25fa1f64df",
+                        "x":  371,
+                        "y":  373,
+                        "crop":  {
+                                     "left":  339,
+                                     "top":  341,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-394f095cf0d65bda",
+                                                   "x":  766.5,
+                                                   "y":  361
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-021.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-021.png"
+                    },
+                    {
+                        "ordinal":  22,
+                        "splice_id":  "topology-node-6d934f98bb040ab8",
+                        "x":  347,
+                        "y":  354.5,
+                        "crop":  {
+                                     "left":  315,
+                                     "top":  322,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-674d2416cf9d0e45",
+                                                   "x":  347,
+                                                   "y":  378
+                                               },
+                                               {
+                                                   "id":  "endpoint-candidate-d6e4fe48ba90bae2",
+                                                   "x":  298,
+                                                   "y":  354.5
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-022.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-022.png"
+                    },
+                    {
+                        "ordinal":  23,
+                        "splice_id":  "topology-node-837697def6f1f66e",
+                        "x":  649,
+                        "y":  406,
+                        "crop":  {
+                                     "left":  617,
+                                     "top":  374,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-7ea2558214540f63",
+                                                   "x":  617.5,
+                                                   "y":  382
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-023.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-023.png"
+                    },
+                    {
+                        "ordinal":  24,
+                        "splice_id":  "topology-node-3ec459a726d6e1e3",
+                        "x":  516,
+                        "y":  187,
+                        "crop":  {
+                                     "left":  484,
+                                     "top":  155,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-1b0e23308bbcac90",
+                                                   "x":  516,
+                                                   "y":  385
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-024.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-024.png"
+                    },
+                    {
+                        "ordinal":  25,
+                        "splice_id":  "topology-node-2b2113cb29ee0541",
+                        "x":  491.5,
+                        "y":  337,
+                        "crop":  {
+                                     "left":  459,
+                                     "top":  305,
+                                     "width":  66,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-a7966b5bf439b3d5",
+                                                   "x":  467,
+                                                   "y":  434
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-025.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-025.png"
+                    },
+                    {
+                        "ordinal":  26,
+                        "splice_id":  "topology-node-577a666407d50842",
+                        "x":  347,
+                        "y":  364,
+                        "crop":  {
+                                     "left":  315,
+                                     "top":  332,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-8f6c1527f0e5837e",
+                                                   "x":  270,
+                                                   "y":  435
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-026.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-026.png"
+                    },
+                    {
+                        "ordinal":  27,
+                        "splice_id":  "topology-node-9862d8a7a833a993",
+                        "x":  347,
+                        "y":  373.5,
+                        "crop":  {
+                                     "left":  315,
+                                     "top":  341,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-2199366113b34ed5",
+                                                   "x":  280,
+                                                   "y":  435
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-027.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-027.png"
+                    },
+                    {
+                        "ordinal":  28,
+                        "splice_id":  "topology-node-422f078c647946ec",
+                        "x":  608.5,
+                        "y":  351.5,
+                        "crop":  {
+                                     "left":  576,
+                                     "top":  319,
+                                     "width":  66,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-e46bded49461ccc6",
+                                                   "x":  357.5,
+                                                   "y":  451
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-028.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-028.png"
+                    },
+                    {
+                        "ordinal":  29,
+                        "splice_id":  "topology-node-44e6482964ef480c",
+                        "x":  506.5,
+                        "y":  414,
+                        "crop":  {
+                                     "left":  474,
+                                     "top":  382,
+                                     "width":  66,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-4474ff922c8d5c62",
+                                                   "x":  506.5,
+                                                   "y":  453
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-029.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-029.png"
+                    },
+                    {
+                        "ordinal":  30,
+                        "splice_id":  "topology-node-9844a5c1d5b7ae5a",
+                        "x":  476.5,
+                        "y":  161.5,
+                        "crop":  {
+                                     "left":  444,
+                                     "top":  129,
+                                     "width":  66,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-d871d6f6d830098d",
+                                                   "x":  364.5,
+                                                   "y":  462
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-030.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-030.png"
+                    },
+                    {
+                        "ordinal":  31,
+                        "splice_id":  "topology-node-7548d184ce6f954a",
+                        "x":  82,
+                        "y":  467,
+                        "crop":  {
+                                     "left":  50,
+                                     "top":  435,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-05765e87213e4769",
+                                                   "x":  38,
+                                                   "y":  467
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-031.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-031.png"
+                    },
+                    {
+                        "ordinal":  32,
+                        "splice_id":  "topology-node-7545c484ce6d495c",
+                        "x":  82,
+                        "y":  472,
+                        "crop":  {
+                                     "left":  50,
+                                     "top":  440,
+                                     "width":  65,
+                                     "height":  65,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-b1e3cad2233997ba",
+                                                   "x":  54,
+                                                   "y":  472
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-032.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-032.png"
+                    },
+                    {
+                        "ordinal":  33,
+                        "splice_id":  "topology-node-ab13517fe31e5873",
+                        "x":  471.5,
+                        "y":  451.5,
+                        "crop":  {
+                                     "left":  439,
+                                     "top":  419,
+                                     "width":  66,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-4cd3caf1f00a2014",
+                                                   "x":  471.5,
+                                                   "y":  481
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-033.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-033.png"
+                    },
+                    {
+                        "ordinal":  34,
+                        "splice_id":  "topology-node-e72ec07df26ddd99",
+                        "x":  82,
+                        "y":  490.5,
+                        "crop":  {
+                                     "left":  50,
+                                     "top":  458,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-42c07521ebad58bf",
+                                                   "x":  44,
+                                                   "y":  490.5
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-034.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-034.png"
+                    },
+                    {
+                        "ordinal":  35,
+                        "splice_id":  "topology-node-cd76457de3ef9d66",
+                        "x":  82,
+                        "y":  495.5,
+                        "crop":  {
+                                     "left":  50,
+                                     "top":  463,
+                                     "width":  65,
+                                     "height":  66,
+                                     "pad_requested":  32
+                                 },
+                        "zero_endpoints":  [
+                                               {
+                                                   "id":  "endpoint-candidate-731fc50f6af550f4",
+                                                   "x":  36,
+                                                   "y":  495.5
+                                               }
+                                           ],
+                        "raw_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\raw\\splice-035.png",
+                        "annotated_crop":  "C:\\dev\\ds-extractor\\artifacts\\splice_reconciliation\\annotated\\splice-035.png"
+                    }
+                ]
+}

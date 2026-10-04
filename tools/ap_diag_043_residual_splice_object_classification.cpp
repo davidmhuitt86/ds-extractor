@@ -827,5 +827,7 @@ int main(int argc, char** argv) {
             << "[AP-DIAG-043] ERROR: "
             << e.what() << "\n";
         return 1;
-    }
+    };
 }
+
+} // namespace eke::dx::wire

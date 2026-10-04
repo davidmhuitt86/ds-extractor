@@ -149,6 +149,13 @@ add_executable(dx-audit-exact-production-replay
     tools/ap_diag_042_exact_production_replay.cpp)
 target_link_libraries(dx-audit-exact-production-replay PRIVATE eke_dx_wire)
 
+# AP-DIAG-043: classify the 35 exact production residual terminal-Splice
+# locations against recognized component/connector bounds and local source
+# raster evidence. Diagnostic only; production extraction unchanged.
+add_executable(dx-audit-residual-splice-object-classification
+    tools/ap_diag_043_residual_splice_object_classification.cpp)
+target_link_libraries(dx-audit-residual-splice-object-classification PRIVATE eke_dx_wire)
+
 if(WIN32)
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire

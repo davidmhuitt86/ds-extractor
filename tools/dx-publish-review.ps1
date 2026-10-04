@@ -67,6 +67,39 @@ function Invoke-Checked([string]$File, [string[]]$Arguments) {
     }
 }
 
+function Test-Ap042Current([string]$AuditFile, [string]$Ap042File) {
+    if (-not (Test-Path $Ap042File -PathType Leaf)) {
+        return @{ Present = $false; Current = $false; Reason = "AP-DIAG-042 report is not present." }
+    }
+
+    try {
+        $audit = Get-Content -Raw -LiteralPath $AuditFile | ConvertFrom-Json
+        $ap042 = Get-Content -Raw -LiteralPath $Ap042File | ConvertFrom-Json
+    }
+    catch {
+        return @{ Present = $true; Current = $false; Reason = "AP-DIAG-042 report could not be parsed: $($_.Exception.Message)" }
+    }
+
+    $checks = @(
+        @{ Name = "model_wires"; Audit = [int]$audit.counts.wires; Report = [int]$ap042.pipeline.model_wires },
+        @{ Name = "model_endpoints"; Audit = [int]$audit.counts.endpoint_candidates; Report = [int]$ap042.pipeline.model_endpoints },
+        @{ Name = "model_nodes"; Audit = [int]$audit.counts.topology_nodes; Report = [int]$ap042.pipeline.model_nodes },
+        @{ Name = "model_edges"; Audit = [int]$audit.counts.topology_edges; Report = [int]$ap042.pipeline.model_edges }
+    )
+
+    foreach ($check in $checks) {
+        if ($check.Audit -ne $check.Report) {
+            return @{
+                Present = $true
+                Current = $false
+                Reason = "AP-DIAG-042 $($check.Name)=$($check.Report) does not match current audit $($check.Audit)."
+            }
+        }
+    }
+
+    return @{ Present = $true; Current = $true; Reason = "AP-DIAG-042 population matches current extraction audit." }
+}
+
 try {
     $branch = (git rev-parse --abbrev-ref HEAD).Trim()
     if ($branch -ne "main") {
@@ -166,9 +199,16 @@ try {
     Copy-Item -Path (Join-Path $reviewPath "*") -Destination $destination -Recurse -Force
     Copy-Item -LiteralPath $auditPath -Destination $auditDestination -Force
 
-    if (Test-Path $ap042Path -PathType Leaf) {
-        Write-Host "[DX-REVIEW] Copying optional AP-DIAG-042 exact replay artifact"
+    $ap042State = Test-Ap042Current -AuditFile $auditPath -Ap042File $ap042Path
+    if ($ap042State.Present -and $ap042State.Current) {
+        Write-Host "[DX-REVIEW] Copying current AP-DIAG-042 exact replay artifact"
         Copy-Item -LiteralPath $ap042Path -Destination $ap042Destination -Force
+    }
+    elseif ($ap042State.Present) {
+        # A stale diagnostic must never be published beside a newer extraction.
+        # Leave the current extraction publication intact; regenerate AP-DIAG-042
+        # against that extraction and rerun this publisher afterward.
+        Write-Host "[DX-REVIEW] WARNING: skipping stale AP-DIAG-042 artifact: $($ap042State.Reason)" -ForegroundColor Yellow
     }
 
     if (Test-Path $splicePath) {

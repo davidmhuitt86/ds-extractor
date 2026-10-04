@@ -1,4 +1,3 @@
-#include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
 
 #include <opencv2/imgcodecs.hpp>
@@ -8,13 +7,14 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
+#include <limits>
 #include <map>
 #include <regex>
 #include <set>
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace fs = std::filesystem;
@@ -72,23 +72,19 @@ struct Summary {
 std::string json_escape(const std::string& value) {
     std::string result;
     result.reserve(value.size());
+
     for (const char ch : value) {
         switch (ch) {
-        case '\': result += "\\"; break;
-        case '"': result += "\""; break;
+        case '\\': result += "\\\\"; break;
+        case '"': result += "\\\""; break;
         case '\n': result += "\\n"; break;
         case '\r': result += "\\r"; break;
         case '\t': result += "\\t"; break;
         default: result += ch; break;
         }
     }
-    return result;
-}
 
-double distance(Point2D a, Point2D b) {
-    const double dx = a.x - b.x;
-    const double dy = a.y - b.y;
-    return std::sqrt(dx * dx + dy * dy);
+    return result;
 }
 
 double point_to_rect_distance(Point2D p, const BoundingBox& r) {
@@ -116,11 +112,6 @@ double point_to_rect_distance(Point2D p, const BoundingBox& r) {
     return std::sqrt(dx * dx + dy * dy);
 }
 
-bool inside(Point2D p, const BoundingBox& r) {
-    return p.x >= r.x && p.x <= r.x + r.width &&
-           p.y >= r.y && p.y <= r.y + r.height;
-}
-
 double dark_density(
     const cv::Mat& gray,
     int cx,
@@ -134,6 +125,7 @@ double dark_density(
 
     std::size_t dark = 0U;
     std::size_t total = 0U;
+
     for (int y = top; y <= bottom; ++y) {
         for (int x = left; x <= right; ++x) {
             ++total;
@@ -160,9 +152,11 @@ double ray_support(
     for (int t = 5; t <= 18; ++t) {
         const int x = cx + dx * t;
         const int y = cy + dy * t;
+
         for (int w = -1; w <= 1; ++w) {
             int sx = x;
             int sy = y;
+
             if (dx != 0)
                 sy += w;
             else
@@ -234,15 +228,24 @@ ObjectMatch nearest_component(
             best = d;
             result.id = component.id;
             result.distance = d;
-            result.kind = component.kind == ComponentCandidateKind::Enclosure
-                ? "enclosure"
-                : component.kind == ComponentCandidateKind::CircularSymbol
-                    ? "circular_symbol"
-                    : component.kind == ComponentCandidateKind::ChassisGround
-                        ? "chassis_ground"
-                        : component.kind == ComponentCandidateKind::PrimitiveSymbol
-                            ? "primitive_symbol"
-                            : "unknown";
+
+            switch (component.kind) {
+            case ComponentCandidateKind::Enclosure:
+                result.kind = "enclosure";
+                break;
+            case ComponentCandidateKind::CircularSymbol:
+                result.kind = "circular_symbol";
+                break;
+            case ComponentCandidateKind::ChassisGround:
+                result.kind = "chassis_ground";
+                break;
+            case ComponentCandidateKind::PrimitiveSymbol:
+                result.kind = "primitive_symbol";
+                break;
+            default:
+                result.kind = "unknown";
+                break;
+            }
         }
     }
 
@@ -318,6 +321,7 @@ const EndpointCandidate* find_endpoint(
         [&](const EndpointCandidate& endpoint) {
             return endpoint.id == id;
         });
+
     return it == model.endpoint_candidates.end() ? nullptr : &*it;
 }
 
@@ -331,6 +335,7 @@ const TopologyNode* find_node(
         [&](const TopologyNode& node) {
             return node.id == id;
         });
+
     return it == model.nodes.end() ? nullptr : &*it;
 }
 
@@ -339,13 +344,15 @@ ClassificationRecord classify(
     const cv::Mat& gray,
     const ReplayMapping& mapping) {
 
-    const EndpointCandidate* endpoint = find_endpoint(model, mapping.endpoint_id);
+    const EndpointCandidate* endpoint =
+        find_endpoint(model, mapping.endpoint_id);
     if (!endpoint)
         throw std::runtime_error(
             "AP-DIAG-042 endpoint not found in current model: " +
             mapping.endpoint_id);
 
-    const TopologyNode* node = find_node(model, mapping.splice_id);
+    const TopologyNode* node =
+        find_node(model, mapping.splice_id);
     if (!node)
         throw std::runtime_error(
             "AP-DIAG-042 terminal Splice not found in current model: " +
@@ -383,25 +390,33 @@ ClassificationRecord classify(
 
     std::set<std::string> segments;
     std::map<std::string, std::size_t> segment_counts;
+
     for (const auto& edge : model.edges) {
-        if (edge.from_node == node->id || edge.to_node == node->id) {
-            ++record.degree;
-            if (!edge.conductor_segment.empty()) {
-                segments.insert(edge.conductor_segment);
-                ++segment_counts[edge.conductor_segment];
-            }
+        if (edge.from_node != node->id && edge.to_node != node->id)
+            continue;
+
+        ++record.degree;
+
+        if (!edge.conductor_segment.empty()) {
+            segments.insert(edge.conductor_segment);
+            ++segment_counts[edge.conductor_segment];
         }
     }
 
     record.unique_segments = segments.size();
+
     for (const auto& [segment, count] : segment_counts) {
+        (void)segment;
         if (count > 1U)
             record.repeated_segment_incidents += count;
     }
 
-    record.nearest_component = nearest_component(model, node->position);
-    record.nearest_connector = nearest_connector(model, node->position);
-    record.ink = measure_ink(gray, node->position);
+    record.nearest_component =
+        nearest_component(model, node->position);
+    record.nearest_connector =
+        nearest_connector(model, node->position);
+    record.ink =
+        measure_ink(gray, node->position);
 
     const bool component_hit = record.nearest_component.matched;
     const bool connector_hit = record.nearest_connector.matched;
@@ -421,8 +436,7 @@ ClassificationRecord classify(
     } else if (dot) {
         record.classification = "REAL_SPLICE_CANDIDATE";
         record.basis.push_back("compact_filled_center_ink");
-        if (record.node_type == "splice")
-            record.basis.push_back("topology_node_type_splice");
+        record.basis.push_back("no_object_bounds_within_threshold");
     } else if (crossing) {
         record.classification = "CROSSING_CANDIDATE";
         record.basis.push_back("bidirectional_axis_ink");
@@ -433,7 +447,8 @@ ClassificationRecord classify(
     }
 
     if (record.degree <= 2U)
-        record.basis.push_back("degree_" + std::to_string(record.degree));
+        record.basis.push_back(
+            "degree_" + std::to_string(record.degree));
 
     if (record.repeated_segment_incidents > 0U)
         record.basis.push_back("repeated_conductor_segment");
@@ -457,7 +472,8 @@ void write_report(
     std::ofstream out(report_path);
     if (!out)
         throw std::runtime_error(
-            "Unable to create AP-DIAG-043 report: " + report_path.string());
+            "Unable to create AP-DIAG-043 report: " +
+            report_path.string());
 
     out << "{\n"
         << "  \"schema_version\": 1,\n"
@@ -472,7 +488,8 @@ void write_report(
         << "  },\n"
         << "  \"population\": {\n"
         << "    \"current_model_wires\": " << model.wires.size() << ",\n"
-        << "    \"current_model_endpoints\": " << model.endpoint_candidates.size() << ",\n"
+        << "    \"current_model_endpoints\": "
+        << model.endpoint_candidates.size() << ",\n"
         << "    \"current_model_nodes\": " << model.nodes.size() << ",\n"
         << "    \"current_model_edges\": " << model.edges.size() << ",\n"
         << "    \"terminal_splice_records\": " << summary.total << "\n"
@@ -489,12 +506,15 @@ void write_report(
 
     for (std::size_t i = 0; i < records.size(); ++i) {
         const auto& record = records[i];
+
         out << "    {\n"
-            << "      \"endpoint_id\": \"" << json_escape(record.endpoint_id) << "\",\n"
-            << "      \"splice_id\": \"" << json_escape(record.splice_id) << "\",\n"
+            << "      \"endpoint_id\": \""
+            << json_escape(record.endpoint_id) << "\",\n"
+            << "      \"splice_id\": \""
+            << json_escape(record.splice_id) << "\",\n"
             << "      \"node_type\": \"" << record.node_type << "\",\n"
-            << "      \"node_position\": {\"x\": " << record.node_x
-            << ", \"y\": " << record.node_y << "},\n"
+            << "      \"node_position\": {\"x\": "
+            << record.node_x << ", \"y\": " << record.node_y << "},\n"
             << "      \"degree\": " << record.degree << ",\n"
             << "      \"unique_segments\": " << record.unique_segments << ",\n"
             << "      \"repeated_segment_incidents\": "
@@ -503,36 +523,49 @@ void write_report(
             << "        \"matched\": "
             << (record.nearest_component.matched ? "true" : "false") << ",\n"
             << "        \"distance\": " << record.nearest_component.distance << ",\n"
-            << "        \"id\": \"" << json_escape(record.nearest_component.id) << "\",\n"
+            << "        \"id\": \""
+            << json_escape(record.nearest_component.id) << "\",\n"
             << "        \"kind\": \"" << record.nearest_component.kind << "\"\n"
             << "      },\n"
             << "      \"nearest_connector\": {\n"
             << "        \"matched\": "
             << (record.nearest_connector.matched ? "true" : "false") << ",\n"
             << "        \"distance\": " << record.nearest_connector.distance << ",\n"
-            << "        \"id\": \"" << json_escape(record.nearest_connector.id) << "\"\n"
+            << "        \"id\": \""
+            << json_escape(record.nearest_connector.id) << "\"\n"
             << "      },\n"
             << "      \"ink\": {\n"
-            << "        \"center_density_5x5\": " << record.ink.center_density_5x5 << ",\n"
-            << "        \"center_density_9x9\": " << record.ink.center_density_9x9 << ",\n"
-            << "        \"local_density_17x17\": " << record.ink.local_density_17x17 << ",\n"
-            << "        \"horizontal_support\": " << record.ink.horizontal_support << ",\n"
-            << "        \"vertical_support\": " << record.ink.vertical_support << ",\n"
-            << "        \"axis_support\": " << record.ink.axis_support << "\n"
+            << "        \"center_density_5x5\": "
+            << record.ink.center_density_5x5 << ",\n"
+            << "        \"center_density_9x9\": "
+            << record.ink.center_density_9x9 << ",\n"
+            << "        \"local_density_17x17\": "
+            << record.ink.local_density_17x17 << ",\n"
+            << "        \"horizontal_support\": "
+            << record.ink.horizontal_support << ",\n"
+            << "        \"vertical_support\": "
+            << record.ink.vertical_support << ",\n"
+            << "        \"axis_support\": "
+            << record.ink.axis_support << "\n"
             << "      },\n"
-            << "      \"classification\": \"" << record.classification << "\",\n"
+            << "      \"classification\": \""
+            << record.classification << "\",\n"
             << "      \"basis\": [";
 
         for (std::size_t j = 0; j < record.basis.size(); ++j) {
             if (j != 0U)
                 out << ", ";
-            out << "\"" << json_escape(record.basis[j]) << "\"";
+            out << "\""
+                << json_escape(record.basis[j])
+                << "\"";
         }
 
         out << "]\n"
             << "    }";
+
         if (i + 1U != records.size())
             out << ",";
+
         out << "\n";
     }
 
@@ -554,16 +587,23 @@ void write_crop(
     const int right = (std::min)(source.cols, cx + pad + 1);
     const int bottom = (std::min)(source.rows, cy + pad + 1);
 
-    cv::Mat crop = source(cv::Rect(left, top, right - left, bottom - top)).clone();
+    cv::Mat crop = source(
+        cv::Rect(left, top, right - left, bottom - top)).clone();
+
     cv::Mat scaled;
-    cv::resize(crop, scaled, cv::Size(), scale, scale, cv::INTER_NEAREST);
+    cv::resize(
+        crop, scaled, cv::Size(), scale, scale, cv::INTER_NEAREST);
 
     const int local_x = (cx - left) * scale;
     const int local_y = (cy - top) * scale;
 
     cv::circle(
-        scaled, {local_x, local_y}, 5 * scale,
-        cv::Scalar(0, 0, 255), 2 * scale, cv::LINE_AA);
+        scaled,
+        {local_x, local_y},
+        5 * scale,
+        cv::Scalar(0, 0, 255),
+        2 * scale,
+        cv::LINE_AA);
 
     cv::putText(
         scaled,
@@ -588,32 +628,51 @@ void write_contact_sheet(
     const int tile_height = 220;
     const int columns = 5;
     const int rows =
-        static_cast<int>((crops.size() + columns - 1U) / columns);
+        static_cast<int>(
+            (crops.size() + columns - 1U) / columns);
 
-    cv::Mat sheet(rows * tile_height, columns * tile_width, CV_8UC3,
-                  cv::Scalar(255, 255, 255));
+    cv::Mat sheet(
+        rows * tile_height,
+        columns * tile_width,
+        CV_8UC3,
+        cv::Scalar(255, 255, 255));
 
     for (std::size_t i = 0; i < crops.size(); ++i) {
-        cv::Mat image = cv::imread(crops[i].string(), cv::IMREAD_COLOR);
+        cv::Mat image =
+            cv::imread(crops[i].string(), cv::IMREAD_COLOR);
         if (image.empty())
             throw std::runtime_error(
                 "Unable to read AP-DIAG-043 crop for contact sheet: " +
                 crops[i].string());
 
         cv::Mat resized;
-        cv::resize(image, resized, cv::Size(tile_width, tile_height));
-        const int x = static_cast<int>(i % columns) * tile_width;
-        const int y = static_cast<int>(i / columns) * tile_height;
-        resized.copyTo(sheet(cv::Rect(x, y, tile_width, tile_height)));
+        cv::resize(
+            image,
+            resized,
+            cv::Size(tile_width, tile_height));
+
+        const int x =
+            static_cast<int>(i % columns) * tile_width;
+        const int y =
+            static_cast<int>(i / columns) * tile_height;
+
+        resized.copyTo(
+            sheet(
+                cv::Rect(x, y, tile_width, tile_height)));
     }
 
     if (!cv::imwrite(path.string(), sheet))
         throw std::runtime_error(
-            "Unable to write AP-DIAG-043 contact sheet: " + path.string());
+            "Unable to write AP-DIAG-043 contact sheet: " +
+            path.string());
 }
 
-void bump_summary(Summary& summary, const std::string& classification) {
+void bump_summary(
+    Summary& summary,
+    const std::string& classification) {
+
     ++summary.total;
+
     if (classification == "CONNECTOR_BODY_CANDIDATE")
         ++summary.connector_body;
     else if (classification == "COMPONENT_BODY_CANDIDATE")
@@ -641,10 +700,12 @@ int main(int argc, char** argv) {
 
         const fs::path image_path = argv[1];
         const fs::path output_dir = argv[2];
+
         const fs::path ap042_path =
             output_dir / "AP-DIAG-042_exact_production_replay.json";
         const fs::path report_path =
-            output_dir / "AP-DIAG-043_residual_splice_object_classification.json";
+            output_dir /
+            "AP-DIAG-043_residual_splice_object_classification.json";
         const fs::path crop_dir =
             fs::path("artifacts") / "residual_splice_classification";
 
@@ -653,6 +714,7 @@ int main(int argc, char** argv) {
 
         const std::vector<ReplayMapping> mappings =
             load_replay_mapping(ap042_path);
+
         if (mappings.size() != 35U) {
             throw std::runtime_error(
                 "Expected exactly 35 AP-DIAG-042 splice-stop mappings; found " +
@@ -660,23 +722,29 @@ int main(int argc, char** argv) {
                 ". Run AP-DIAG-042 against the current extraction first.");
         }
 
-        const cv::Mat source = cv::imread(
-            image_path.string(), cv::IMREAD_COLOR);
+        const cv::Mat source =
+            cv::imread(image_path.string(), cv::IMREAD_COLOR);
+
         if (source.empty())
             throw std::runtime_error(
-                "Unable to load source image: " + image_path.string());
+                "Unable to load source image: " +
+                image_path.string());
 
         cv::Mat gray;
         cv::cvtColor(source, gray, cv::COLOR_BGR2GRAY);
 
         ExtractionPipeline pipeline;
         const WireModel model =
-            pipeline.run(image_path.string(), image_path.string());
+            pipeline.run(
+                image_path.string(),
+                image_path.string());
 
-        if (model.wires.size() != 77U)
+        if (model.wires.size() != 77U) {
             throw std::runtime_error(
-                "Current pipeline model is not the expected 77-wire TRX300 baseline; found " +
+                "Current pipeline model is not the expected 77-wire " 
+                "TRX300 baseline; found " +
                 std::to_string(model.wires.size()));
+        }
 
         std::vector<ClassificationRecord> records;
         records.reserve(mappings.size());
@@ -688,51 +756,75 @@ int main(int argc, char** argv) {
         for (std::size_t i = 0; i < mappings.size(); ++i) {
             const ClassificationRecord record =
                 classify(model, gray, mappings[i]);
+
             bump_summary(summary, record.classification);
             records.push_back(record);
 
             std::ostringstream name;
-            name << "splice-" << std::setfill('0') << std::setw(3)
-                 << (i + 1U) << ".png";
-            const fs::path crop_path = crop_dir / name.str();
-            write_crop(source, record, crop_path, 32, 4);
+            name << "splice-"
+                 << std::setfill('0')
+                 << std::setw(3)
+                 << (i + 1U)
+                 << ".png";
+
+            const fs::path crop_path =
+                crop_dir / name.str();
+
+            write_crop(
+                source,
+                record,
+                crop_path,
+                32,
+                4);
+
             crop_paths.push_back(crop_path);
         }
 
-        write_report(report_path, model, records, summary);
+        write_report(
+            report_path,
+            model,
+            records,
+            summary);
+
+        const fs::path contact_sheet =
+            crop_dir / "AP-DIAG-043_contact_sheet.png";
+
         write_contact_sheet(
             crop_paths,
-            crop_dir / "AP-DIAG-043_contact_sheet.png");
+            contact_sheet);
 
         std::cout
-            << "[AP-DIAG-043] Current model wires              : "
+            << "[AP-DIAG-043] Current model wires       : "
             << model.wires.size() << "\n"
-            << "[AP-DIAG-043] Current model endpoints          : "
+            << "[AP-DIAG-043] Current model endpoints   : "
             << model.endpoint_candidates.size() << "\n"
-            << "[AP-DIAG-043] Current topology nodes           : "
+            << "[AP-DIAG-043] Current topology nodes    : "
             << model.nodes.size() << "\n"
-            << "[AP-DIAG-043] Terminal Splice mappings         : "
+            << "[AP-DIAG-043] Terminal Splice mappings  : "
             << summary.total << "\n"
-            << "[AP-DIAG-043] Connector-body candidates        : "
+            << "[AP-DIAG-043] Connector-body candidates : "
             << summary.connector_body << "\n"
-            << "[AP-DIAG-043] Component-body candidates        : "
+            << "[AP-DIAG-043] Component-body candidates : "
             << summary.component_body << "\n"
-            << "[AP-DIAG-043] Ambiguous object candidates      : "
+            << "[AP-DIAG-043] Ambiguous objects         : "
             << summary.ambiguous_object << "\n"
-            << "[AP-DIAG-043] Crossing candidates              : "
+            << "[AP-DIAG-043] Crossing candidates       : "
             << summary.crossing_candidate << "\n"
-            << "[AP-DIAG-043] Real-splice candidates            : "
+            << "[AP-DIAG-043] Real-splice candidates    : "
             << summary.real_splice_candidate << "\n"
-            << "[AP-DIAG-043] Undetermined                    : "
+            << "[AP-DIAG-043] Undetermined               : "
             << summary.undetermined << "\n"
-            << "[AP-DIAG-043] Report: " << report_path.string() << "\n"
+            << "[AP-DIAG-043] Report: "
+            << report_path.string() << "\n"
             << "[AP-DIAG-043] Contact sheet: "
-            << (crop_dir / "AP-DIAG-043_contact_sheet.png").string() << "\n"
+            << contact_sheet.string() << "\n"
             << "[AP-DIAG-043] Diagnostic only; no production source modified.\n";
 
         return 0;
     } catch (const std::exception& e) {
-        std::cerr << "[AP-DIAG-043] ERROR: " << e.what() << "\n";
+        std::cerr
+            << "[AP-DIAG-043] ERROR: "
+            << e.what() << "\n";
         return 1;
     }
 }

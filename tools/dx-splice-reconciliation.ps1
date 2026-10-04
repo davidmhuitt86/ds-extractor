@@ -230,7 +230,12 @@ $annotatedDir = Join-Path $outFull "annotated"
 
 New-Item -ItemType Directory -Force -Path $rawDir, $annotatedDir | Out-Null
 
-$source = New-Object System.Drawing.Bitmap($sourceFull)
+$source = New-Object -TypeName System.Drawing.Bitmap -ArgumentList $sourceFull
+if ($audit.source.image_width -and $audit.source.image_height) {
+    if ($source.Width -ne [int]$audit.source.image_width -or $source.Height -ne [int]$audit.source.image_height) {
+        throw "Source image dimensions ($($source.Width)x$($source.Height)) do not match audit dimensions ($($audit.source.image_width)x$($audit.source.image_height))."
+    }
+}
 try {
     $manifestEntries = New-Object System.Collections.ArrayList
     $rawBitmaps = New-Object System.Collections.ArrayList
@@ -243,7 +248,7 @@ try {
         $width = $right - $left + 1
         $height = $bottom - $top + 1
 
-        $rawCrop = New-Object System.Drawing.Bitmap($width, $height)
+        $rawCrop = New-Object -TypeName System.Drawing.Bitmap -ArgumentList $width, $height
         try {
             $g = [System.Drawing.Graphics]::FromImage($rawCrop)
             try {
@@ -260,10 +265,7 @@ try {
 
             $rawCrop.Save($rawPath, [System.Drawing.Imaging.ImageFormat]::Png)
 
-            $annotated = New-Object System.Drawing.Bitmap(
-                [int]($width * $Scale),
-                [int]($height * $Scale)
-            )
+            $annotated = New-Object -TypeName System.Drawing.Bitmap -ArgumentList ([int]($width * $Scale)), ([int]($height * $Scale))
             try {
                 $ga = [System.Drawing.Graphics]::FromImage($annotated)
                 try {
@@ -289,7 +291,7 @@ try {
                     $font = New-Object System.Drawing.Font("Consolas", [single][math]::Max(8, 9*$Scale), [System.Drawing.FontStyle]::Bold)
                     $brush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::Red)
                     try {
-                        $label = "#{0}  {1}\n({2:0.0},{3:0.0})" -f $entry.ordinal, $entry.splice_id, $entry.x, $entry.y
+                        $label = "#{0}  {1}`n({2:0.0},{3:0.0})" -f $entry.ordinal, $entry.splice_id, $entry.x, $entry.y
                         $ga.DrawString($label, $font, $brush, 2*$Scale, 2*$Scale)
                     }
                     finally {
@@ -341,7 +343,7 @@ try {
     $bitmaps = @()
     try {
         foreach ($m in $manifestEntries) {
-            $bmp = New-Object System.Drawing.Bitmap([string]$m.annotated_crop)
+            $bmp = New-Object -TypeName System.Drawing.Bitmap -ArgumentList ([string]$m.annotated_crop)
             $bitmaps += $bmp
             $cellW = [math]::Max($cellW, $bmp.Width)
             $cellH = [math]::Max($cellH, $bmp.Height)
@@ -350,7 +352,7 @@ try {
         $rows = [int][math]::Ceiling($bitmaps.Count / [double]$cols)
         if ($rows -lt 1) { $rows = 1 }
 
-        $sheet = New-Object System.Drawing.Bitmap([int]($cols*$cellW), [int]($rows*$cellH))
+        $sheet = New-Object -TypeName System.Drawing.Bitmap -ArgumentList ([int]($cols*$cellW)), ([int]($rows*$cellH))
         try {
             $gs = [System.Drawing.Graphics]::FromImage($sheet)
             try {

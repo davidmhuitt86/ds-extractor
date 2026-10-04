@@ -48,40 +48,6 @@ struct ReplaySummary {
     std::size_t replay_extra_model_pairs = 0U;
 };
 
-std::unordered_map<std::string, std::vector<AdjacentEdge>>
-build_adjacency(const std::vector<TopologyEdge>& edges) {
-    std::unordered_map<std::string, std::vector<AdjacentEdge>> result;
-    result.reserve(edges.size() * 2U);
-    for (const auto& edge : edges) {
-        result[edge.from_node].push_back({edge.id, edge.to_node});
-        result[edge.to_node].push_back({edge.id, edge.from_node});
-    }
-    for (auto& [node_id, incident] : result) {
-        (void)node_id;
-        std::sort(
-            incident.begin(),
-            incident.end(),
-            [](const AdjacentEdge& a, const AdjacentEdge& b) {
-                return a.edge_id < b.edge_id;
-            });
-    }
-    return result;
-}
-
-const TopologyNode* find_node(
-    const std::unordered_map<std::string, const TopologyNode*>& nodes,
-    const std::string& id) {
-    const auto it = nodes.find(id);
-    return it == nodes.end() ? nullptr : it->second;
-}
-
-const TopologyEdge* find_edge(
-    const std::unordered_map<std::string, const TopologyEdge*>& edges,
-    const std::string& id) {
-    const auto it = edges.find(id);
-    return it == edges.end() ? nullptr : it->second;
-}
-
 std::unordered_set<std::string> wire_endpoint_ids(
     const std::vector<Wire>& wires) {
     std::unordered_set<std::string> result;
@@ -106,11 +72,6 @@ std::set<std::pair<std::string, std::string>> wire_pairs(
     return result;
 }
 
-bool is_distribution_node(const TopologyNode& node) {
-    return node.type == TopologyNodeType::Splice ||
-           node.type == TopologyNodeType::Junction;
-}
-
 struct ReplayContext {
     std::map<std::string, std::vector<AdjacentEdge>> adjacency;
     std::unordered_map<std::string, const TopologyEdge*> edge_by_id;
@@ -123,7 +84,7 @@ struct ReplayContext {
 };
 
 void walk_from_exact(
-    const std::string& start_endpoint_id,
+    const std::string& /*start_endpoint_id*/,
     const std::string& current_node,
     const std::string& previous_edge,
     std::unordered_set<std::string> visited_nodes,

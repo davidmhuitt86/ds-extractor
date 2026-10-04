@@ -33,6 +33,7 @@ $auditRelative = "artifacts/audit/extraction_audit.json"
 $spliceRelative = "artifacts/splice_reconciliation"
 $auditPath = Join-Path $repoRoot $auditRelative
 $splicePath = Join-Path $repoRoot $spliceRelative
+$spliceToolPath = Join-Path $PSScriptRoot "dx-splice-reconciliation.ps1"
 $worktreePath = Join-Path ([System.IO.Path]::GetTempPath()) ("dx-extraction-results-" + [guid]::NewGuid().ToString("N"))
 $publishBranch = "dx-publish-" + [guid]::NewGuid().ToString("N")
 $worktreeAdded = $false
@@ -73,11 +74,30 @@ try {
         Fail "Review directory does not exist: $reviewPath"
     }
 
-    if (Test-Path $splicePath) {
-        Write-Host "[DX-REVIEW] Found optional splice reconciliation artifacts"
+    if (-not (Test-Path $auditPath -PathType Leaf)) {
+        Fail "Structured extraction audit does not exist: $auditPath"
     }
 
-    if (-not (Test-Path $auditPath -PathType Leaf)) {
+    if (-not (Test-Path $spliceToolPath -PathType Leaf)) {
+        Fail "Splice reconciliation tool does not exist: $spliceToolPath"
+    }
+
+    # AP-DIAG-040: generate the source-level reconciliation artifacts from
+    # the current extraction review before staging. This makes diagnostic
+    # evidence publication deterministic and removes the possibility of a
+    # successful publish silently omitting the reconciliation tree.
+    Write-Host "[DX-REVIEW] Generating splice reconciliation artifacts"
+    & $spliceToolPath
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Splice reconciliation tool failed with exit code $LASTEXITCODE."
+    }
+
+    if (-not (Test-Path $splicePath)) {
+        Fail "Splice reconciliation tool completed without creating: $splicePath"
+    }
+
+    Write-Host "[DX-REVIEW] Splice reconciliation artifacts ready" -ForegroundColor Green
+
         Fail "Structured extraction audit does not exist: $auditPath"
     }
 

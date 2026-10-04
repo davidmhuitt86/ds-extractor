@@ -147,11 +147,16 @@ try {
     if (Test-Path $spliceDestination) {
         Remove-Item -LiteralPath $spliceDestination -Recurse -Force
     }
-    if (Test-Path $ap042Destination -PathType Leaf) {
-        Remove-Item -LiteralPath $ap042Destination -Force
+    # The audit directory is publisher-owned: rebuild it from exactly the
+    # current structured audit plus the optional AP-DIAG-042 report. This makes
+    # stale diagnostic files removable without relying on pathspec matching
+    # against files that may not exist in the current worktree.
+    $auditDirectory = Split-Path -Parent $auditDestination
+    if (Test-Path $auditDirectory) {
+        Remove-Item -LiteralPath $auditDirectory -Recurse -Force
     }
     New-Item -ItemType Directory -Path $destination -Force | Out-Null
-    New-Item -ItemType Directory -Path (Split-Path -Parent $auditDestination) -Force | Out-Null
+    New-Item -ItemType Directory -Path $auditDirectory -Force | Out-Null
 
     Write-Host "[DX-REVIEW] Replacing extraction results"
     # -LiteralPath disables wildcard expansion entirely, so a trailing "*"
@@ -174,19 +179,11 @@ try {
 
     Push-Location $worktreePath
     try {
-        $pathsToStage = @($reviewRelative, $auditRelative)
-
-        # Stage AP-DIAG-042 when a current report exists, or when the
-        # extraction-results branch already tracks one so that a missing
-        # current report removes the stale published artifact.
-        $ap042Tracked = $false
-        & git ls-files --error-unmatch -- $ap042Relative 2>$null
-        if ($LASTEXITCODE -eq 0) {
-            $ap042Tracked = $true
-        }
-        if ((Test-Path $ap042Path -PathType Leaf) -or $ap042Tracked) {
-            $pathsToStage += $ap042Relative
-        }
+        # Stage the complete publisher-owned audit directory. Because the
+        # worktree audit directory was rebuilt above, this includes the current
+        # extraction_audit.json and AP-DIAG-042 when present, while also staging
+        # deletion of any stale audit artifacts from the previous publication.
+        $pathsToStage = @($reviewRelative, "artifacts/audit")
 
         if (Test-Path $splicePath) {
             $pathsToStage += $spliceRelative

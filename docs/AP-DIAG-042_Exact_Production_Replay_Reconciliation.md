@@ -66,8 +66,10 @@ The report contains:
 - current canonical WireModel counts;
 - Pass-1 WireReconstructor count;
 - exact replay Pass-2 candidate-pair count;
-- total replay endpoint-pair count;
-- replay-vs-model missing/extra pair counts;
+- total unique replay endpoint-pair count, defined as the union of unchanged Pass-1
+  pairs and reconstructed Pass-2 candidate pairs;
+- replay-vs-model missing/extra pair counts computed against that full replay
+  population;
 - residual endpoint count;
 - residual stop classifications;
 - terminal Splice stop-event count;

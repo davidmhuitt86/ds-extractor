@@ -26,6 +26,7 @@ struct WalkTrace {
     std::string start_endpoint_id;
     std::vector<std::string> terminal_splice_ids;
     std::vector<std::string> endpoint_outcomes;
+    bool other_stop = false;
     std::size_t ambiguity_events = 0U;
 };
 
@@ -113,6 +114,7 @@ bool is_distribution_node(const TopologyNode& node) {
 struct ReplayContext {
     std::map<std::string, std::vector<AdjacentEdge>> adjacency;
     std::unordered_map<std::string, const TopologyEdge*> edge_by_id;
+    std::unordered_map<std::string, const TopologyNode*> node_by_id;
     std::unordered_map<std::string, std::string> endpoint_by_node;
     std::unordered_set<std::string> distribution_nodes;
     std::set<std::pair<std::string, std::string>> expanded_ambiguities;
@@ -128,8 +130,10 @@ void walk_from_exact(
     ReplayContext& context,
     WalkTrace& trace) {
 
-    if (!visited_nodes.insert(current_node).second)
+    if (!visited_nodes.insert(current_node).second) {
+        trace.other_stop = true;
         return;
+    }
 
     const auto terminal_it = context.endpoint_by_node.find(current_node);
     if (terminal_it != context.endpoint_by_node.end()) {
@@ -138,8 +142,10 @@ void walk_from_exact(
     }
 
     const auto adjacency_it = context.adjacency.find(current_node);
-    if (adjacency_it == context.adjacency.end())
+    if (adjacency_it == context.adjacency.end()) {
+        trace.other_stop = true;
         return;
+    }
 
     const auto& incident = adjacency_it->second;
 
@@ -151,8 +157,10 @@ void walk_from_exact(
                 break;
             }
         }
-        if (next == nullptr)
+        if (next == nullptr) {
+            trace.other_stop = true;
             return;
+        }
 
         if (context.distribution_nodes.contains(current_node)) {
             const auto previous_it = context.edge_by_id.find(previous_edge);
@@ -162,13 +170,13 @@ void walk_from_exact(
                 previous_it->second->conductor_segment.empty() ||
                 previous_it->second->conductor_segment !=
                     next_it->second->conductor_segment) {
-                const auto* node = find_node(
-                    [&]() {
-                        static std::unordered_map<std::string, const TopologyNode*> empty;
-                        return empty;
-                    }(),
-                    current_node);
-                (void)node;
+                const auto node_it = context.node_by_id.find(current_node);
+                if (node_it != context.node_by_id.end() &&
+                    node_it->second->type == TopologyNodeType::Splice) {
+                    trace.terminal_splice_ids.push_back(current_node);
+                } else {
+                    trace.other_stop = true;
+                }
                 return;
             }
         }
@@ -186,6 +194,7 @@ void walk_from_exact(
     const auto previous_edge_it = context.edge_by_id.find(previous_edge);
     if (previous_edge_it == context.edge_by_id.end() ||
         previous_edge_it->second->conductor_segment.empty()) {
+        trace.other_stop = true;
         return;
     }
 
@@ -206,6 +215,13 @@ void walk_from_exact(
     }
 
     if (matches.empty()) {
+        const auto node_it = context.node_by_id.find(current_node);
+        if (node_it != context.node_by_id.end() &&
+            node_it->second->type == TopologyNodeType::Splice) {
+            trace.terminal_splice_ids.push_back(current_node);
+        } else {
+            trace.other_stop = true;
+        }
         return;
     }
 
@@ -256,10 +272,9 @@ run_exact_replay(
             });
     }
 
-    std::unordered_map<std::string, const TopologyNode*> node_by_id;
-    node_by_id.reserve(model.nodes.size());
+    context.node_by_id.reserve(model.nodes.size());
     for (const auto& node : model.nodes) {
-        node_by_id.emplace(node.id, &node);
+        context.node_by_id.emplace(node.id, &node);
         if (node.type == TopologyNodeType::Splice ||
             node.type == TopologyNodeType::Junction) {
             context.distribution_nodes.insert(node.id);
@@ -409,14 +424,12 @@ ReplaySummary summarize(
         if (!residual_ids.contains(trace.start_endpoint_id))
             continue;
 
-        const std::string stop_class = stop_class_for_trace(trace);
-        if (stop_class == "splice_stop") {
+        if (!trace.terminal_splice_ids.empty())
             ++result.residual_with_splice_stop;
-        } else if (stop_class == "endpoint_outcome") {
+        else if (!trace.endpoint_outcomes.empty())
             ++result.residual_with_endpoint_outcome;
-        } else {
+        else
             ++result.residual_with_other_stop;
-        }
 
         for (const auto& splice_id : trace.terminal_splice_ids) {
             terminal_splice_ids.insert(splice_id);

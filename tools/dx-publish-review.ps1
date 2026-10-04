@@ -85,22 +85,6 @@ try {
         Fail "Splice reconciliation tool does not exist: $spliceToolPath"
     }
 
-    # AP-DIAG-040: generate the source-level reconciliation artifacts from
-    # the current extraction review before staging. This makes diagnostic
-    # evidence publication deterministic and removes the possibility of a
-    # successful publish silently omitting the reconciliation tree.
-    Write-Host "[DX-REVIEW] Generating splice reconciliation artifacts"
-    & $spliceToolPath
-    if ($LASTEXITCODE -ne 0) {
-        Fail "Splice reconciliation tool failed with exit code $LASTEXITCODE."
-    }
-
-    if (-not (Test-Path $splicePath)) {
-        Fail "Splice reconciliation tool completed without creating: $splicePath"
-    }
-
-    Write-Host "[DX-REVIEW] Splice reconciliation artifacts ready" -ForegroundColor Green
-
     # AP-DIAG-017A integrity guard: the review tree and the structured audit
     # must be internally complete and must agree with each other (same
     # source identity, same population counts) before anything is staged,
@@ -114,6 +98,24 @@ try {
         Fail "Artifact integrity check failed: $($integrity.Reason)"
     }
     Write-Host "[DX-REVIEW] Integrity check passed: review and audit agree" -ForegroundColor Green
+
+    # AP-DIAG-040: only generate source-level reconciliation artifacts after
+    # the publication integrity gate passes. The reconciliation tool consumes
+    # extraction_audit.json directly; running it first can generate apparently
+    # valid diagnostic crops from a stale or malformed review/audit pair before
+    # the publisher rejects that pair. Integrity is therefore a hard preflight
+    # barrier for every downstream publication diagnostic.
+    Write-Host "[DX-REVIEW] Generating splice reconciliation artifacts"
+    & $spliceToolPath
+    if ($LASTEXITCODE -ne 0) {
+        Fail "Splice reconciliation tool failed with exit code $LASTEXITCODE."
+    }
+
+    if (-not (Test-Path $splicePath)) {
+        Fail "Splice reconciliation tool completed without creating: $splicePath"
+    }
+
+    Write-Host "[DX-REVIEW] Splice reconciliation artifacts ready" -ForegroundColor Green
 
     # Never use a pre-existing local extraction-results branch. Always build the
     # temporary worktree from the freshly fetched remote ref so stale local refs

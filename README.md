@@ -133,3 +133,30 @@ The review publisher is:
 
 It stages only the extraction-review artifacts and publishes the review commit to main. It is intended to make extraction AARs repeatable without manually taking GUI screenshots.
 
+
+
+## AP engineering acceptance
+
+All AP changes follow the normative rules in:
+
+    docs/AP_ENGINEERING_RULES.md
+
+The required AP workflow is:
+
+    1. Inspect and record the baseline.
+    2. Make one bounded change.
+    3. Run the pre-commit validation:
+
+       .\tools\dx-ap-preflight.ps1
+
+    4. Review the complete diff.
+    5. Commit only after preflight passes.
+    6. Run committed-state acceptance:
+
+       .\tools\dx-ap-gate.ps1
+
+    7. Record the resulting known-good checkpoint before starting another AP.
+
+The preflight performs a clean Release build and complete Release CTest against the proposed working tree. The AP gate repeats the acceptance against the committed HEAD and requires a clean working tree.
+
+An AP is not complete when code merely compiles or a diagnostic executable exits successfully. Build, tests, AP-specific validation, artifacts, and relevant production metrics must all satisfy the AP acceptance criteria.

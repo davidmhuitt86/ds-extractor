@@ -690,7 +690,7 @@ void bump_summary(
 
 } // namespace
 
-int main(int argc, char** argv) {
+int run_ap_diag_043(int argc, char** argv) {
     try {
         if (argc < 3) {
             std::cerr
@@ -831,3 +831,7 @@ int main(int argc, char** argv) {
 }
 
 } // namespace eke::dx::wire
+
+int main(int argc, char** argv) {
+    return eke::dx::wire::run_ap_diag_043(argc, argv);
+}

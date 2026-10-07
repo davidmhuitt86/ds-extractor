@@ -8,17 +8,17 @@ No production extraction logic is modified.
 
 ## Objective
 
-Map the 19 manually verified splice locations in the TRX300 source diagram against the exact current production extraction.
+Map the 19 manually verified splice locations in the TRX300 diagram against the exact current production extraction **without hard-coding source-image coordinates from the annotated screenshot**.
 
-The ground-truth coordinates were taken from a crop of the same 898x549 TRX300 diagram used by the extraction pipeline and are treated as source-image coordinates.
+The user-provided annotated image is a separate resized/cropped rendering of the same diagram. It is therefore treated as an evidence image, not as a canonical source-coordinate system.
 
 ## Ground truth
 
-There are exactly 19 manually verified source splice locations:
+There are exactly 19 manually verified source splice locations.
 
-- SPLICE-01 through SPLICE-19
+The diagnostic derives those 19 locations from the yellow marks in the annotated image, then registers the annotated image to the canonical production source image.
 
-The diagnostic compares those locations with:
+The diagnostic compares those registered locations with:
 
 - current endpoint candidates
 - current topology nodes
@@ -26,38 +26,56 @@ The diagnostic compares those locations with:
 
 Association threshold: 6 pixels.
 
-## Expected diagnostic question
+## Registration and marker detection
 
-The diagnostic does not change production behavior. It establishes which of the 19 source splices currently reach the residual population and which do not.
+The annotated image is supplied as an explicit runtime input:
 
-It also maps every one of the 35 residual records to its nearest ground-truth splice and reports whether that distance is within the association threshold.
+1. Detect yellow annotation pixels in HSV space.
+2. Locate exactly 19 marker centers using a fixed-size yellow-density window and non-maximum suppression.
+3. Remove yellow pixels from the annotation image for registration so the markings do not become registration features.
+4. Search a bounded isotropic scale range and translation window using normalized template correlation against the canonical source.
+5. Reject the diagnostic if fewer/more than 19 markers are detected or if registration confidence is below the required threshold.
+6. Transform the 19 annotation-space marker centers into canonical 898x549 source coordinates.
+7. Only then associate them with production endpoint/topology/residual objects.
 
-This produces the evidence needed to distinguish:
-
-- source splices represented by current residual topology
-- source splices missed by the current pipeline
-- residual topology that does not correspond to a source splice
+This makes the annotation image itself the provenance for the ground truth rather than manually transcribed coordinates.
 
 ## Invocation
 
-    .\\build\\Release\\dx-audit-splice-ground-truth.exe samples\\trx300ODG.png artifacts\\audit
+    .\\build\\Release\\dx-audit-splice-ground-truth.exe samples\\trx300ODG.png "<annotated-image>" artifacts\\audit
+
+Example using the user-provided annotation:
+
+    .\\build\\Release\\dx-audit-splice-ground-truth.exe samples\\trx300ODG.png "Screenshot 2026-10-07 001715.png" artifacts\\audit
 
 ## Output
 
     artifacts/audit/AP-DIAG-044_splice_ground_truth.json
+
+The report records:
+
+- detected annotation-space marker positions
+- registration scale, translation, and score
+- transformed canonical source positions
+- nearest endpoint and topology node
+- nearest residual node
+- 19-source-splice coverage
+- residual-to-ground-truth associations
 
 ## Acceptance
 
 The diagnostic is accepted only after:
 
 1. It builds cleanly.
-2. The exact TRX300 source is accepted as 898x549.
+2. The canonical TRX300 source is accepted as 898x549.
 3. The current production replay remains at 77 model wires.
 4. All 35 AP-DIAG-042 residual mappings are consumed.
-5. All 19 ground-truth splice records are emitted.
-6. The report explicitly identifies ground-truth splice coverage.
-7. Every residual is mapped to its nearest ground-truth splice.
-8. No production extraction source is modified.
-9. Clean Release build, full CTest, and the AP acceptance gate pass.
+5. Exactly 19 annotation markers are detected.
+6. Registration meets the required confidence threshold.
+7. All 19 registered ground-truth splice records are emitted.
+8. The report explicitly identifies ground-truth splice coverage.
+9. Every residual is mapped to its nearest ground-truth splice.
+10. No production extraction source is modified.
+11. Clean Release build, full CTest, and the AP acceptance gate pass.
 
-No production AP may be selected from the diagnostic until the generated report has been reviewed.
+No production AP may be selected from the diagnostic until the generated report and the registered source positions have been reviewed.

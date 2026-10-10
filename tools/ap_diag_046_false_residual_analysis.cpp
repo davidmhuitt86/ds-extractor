@@ -64,8 +64,9 @@ std::string classify(const Record&r){
  if(r.endpoint_node_distance>kAssocPx)return"ENDPOINT_NODE_SEPARATION_CANDIDATE";
  return"OTHER_TOPOLOGY_CANDIDATE";
 }
-void basis(Record&r){r.basis={"node_type_"+r.node_type,"topology_degree_"+std::to_string(r.degree),
- "endpoint_node_distance_"+(r.endpoint_node_distance>kAssocPx?"gt_6px":"le_6px")};
+void basis(Record&r){r.basis={std::string("node_type_")+r.node_type,
+ std::string("topology_degree_")+std::to_string(r.degree),
+ std::string("endpoint_node_distance_")+(r.endpoint_node_distance>kAssocPx?"gt_6px":"le_6px")};
  if(r.connector.matched)r.basis.push_back("connector_bounds_within_3px");
  if(r.component.matched)r.basis.push_back("component_bounds_within_3px");
  if(r.node_type=="crossing")r.basis.push_back("production_node_is_crossing");

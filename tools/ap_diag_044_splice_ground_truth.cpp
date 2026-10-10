@@ -607,7 +607,7 @@ int main(int argc, char** argv) {
 
         for (std::size_t i = 0; i < detected.size(); ++i) {
             markers.push_back({
-                "SPLICE-" +
+                std::string("SPLICE-") +
                     (i + 1U < 10U ? "0" : "") +
                     std::to_string(i + 1U),
                 detected[i].annotation_position,
@@ -629,7 +629,7 @@ int main(int argc, char** argv) {
 
         for (std::size_t i = 0; i < markers.size(); ++i) {
             markers[i].id =
-                "SPLICE-" +
+                std::string("SPLICE-") +
                 (i + 1U < 10U ? "0" : "") +
                 std::to_string(i + 1U);
         }

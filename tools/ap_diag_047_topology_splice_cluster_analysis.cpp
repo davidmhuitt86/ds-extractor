@@ -62,7 +62,7 @@ struct NodeEvidence {
     bool residual_matches_ground_truth = false;
 };
 
-double distance(Point2D a, Point2D b) {
+double point_distance(Point2D a, Point2D b) {
     return std::hypot(a.x - b.x, a.y - b.y);
 }
 
@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
             if (item.node->type != TopologyNodeType::Splice) continue;
             splice_ids.push_back(id);
             for (const auto& gt : ground_truth) {
-                const double d = distance(item.node->position, gt.position);
+                const double d = point_distance(item.node->position, gt.position);
                 if (d < item.nearest_ground_truth_distance) {
                     item.nearest_ground_truth_distance = d;
                     item.nearest_ground_truth_id = gt.id;
@@ -252,7 +252,7 @@ int main(int argc, char** argv) {
             for (const auto& residual : residuals) {
                 const auto node_it = evidence.find(residual.node_id);
                 if (node_it == evidence.end()) continue;
-                const double d = distance(item.node->position, node_it->second.node->position);
+                const double d = point_distance(item.node->position, node_it->second.node->position);
                 if (d < item.nearest_residual_distance) {
                     item.nearest_residual_distance = d;
                     item.nearest_residual_id = residual.node_id;
@@ -279,7 +279,7 @@ int main(int argc, char** argv) {
                 cluster.push_back(queue[q]);
                 for (const auto& candidate_id : splice_ids) {
                     if (visited.contains(candidate_id)) continue;
-                    if (distance(current.node->position, evidence.at(candidate_id).node->position) <= kClusterRadiusPx) {
+                    if (point_distance(current.node->position, evidence.at(candidate_id).node->position) <= kClusterRadiusPx) {
                         visited.insert(candidate_id);
                         queue.push_back(candidate_id);
                     }
@@ -301,7 +301,7 @@ int main(int argc, char** argv) {
         double minimum_distinct_splice_distance = std::numeric_limits<double>::infinity();
         for (std::size_t i = 0; i < splice_ids.size(); ++i) {
             for (std::size_t j = i + 1; j < splice_ids.size(); ++j) {
-                const double d = distance(evidence.at(splice_ids[i]).node->position,
+                const double d = point_distance(evidence.at(splice_ids[i]).node->position,
                                           evidence.at(splice_ids[j]).node->position);
                 minimum_distinct_splice_distance = std::min(minimum_distinct_splice_distance, d);
             }
@@ -363,7 +363,7 @@ int main(int argc, char** argv) {
             for (const auto& [id, item] : evidence) {
                 if (item.node->type == TopologyNodeType::Splice) continue;
                 for (const auto& splice_id : cluster) {
-                    if (distance(item.node->position, evidence.at(splice_id).node->position) <= kClusterRadiusPx) {
+                    if (point_distance(item.node->position, evidence.at(splice_id).node->position) <= kClusterRadiusPx) {
                         nearby_non_splice_nodes.insert(id);
                         break;
                     }
@@ -437,7 +437,7 @@ int main(int argc, char** argv) {
             for (std::size_t j = i + 1; j < splice_ids.size(); ++j) {
                 const auto& a = evidence.at(splice_ids[i]);
                 const auto& b = evidence.at(splice_ids[j]);
-                const double d = distance(a.node->position, b.node->position);
+                const double d = point_distance(a.node->position, b.node->position);
                 if (d > kExactDuplicateRadiusPx) continue;
                 out << (first ? "" : ", ") << "{\"node_a\": \"" << escape_json(splice_ids[i])
                     << "\", \"node_b\": \"" << escape_json(splice_ids[j]) << "\", \"distance_px\": " << d << "}";
@@ -450,7 +450,7 @@ int main(int argc, char** argv) {
             for (std::size_t j = i + 1; j < splice_ids.size(); ++j) {
                 const auto& a = evidence.at(splice_ids[i]);
                 const auto& b = evidence.at(splice_ids[j]);
-                const double d = distance(a.node->position, b.node->position);
+                const double d = point_distance(a.node->position, b.node->position);
                 if (d > kGroundTruthRadiusPx) continue;
                 out << (first ? "" : ", ") << "{\"node_a\": \"" << escape_json(splice_ids[i])
                     << "\", \"node_b\": \"" << escape_json(splice_ids[j]) << "\", \"distance_px\": " << d << "}";

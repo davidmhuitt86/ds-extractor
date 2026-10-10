@@ -292,8 +292,6 @@ int main(int argc, char** argv) {
 
         std::size_t clustered_nodes = 0;
         std::size_t multi_node_clusters = 0;
-        std::size_t residual_nodes_in_clusters = 0;
-        std::size_t false_residual_nodes_in_clusters = 0;
         double minimum_distinct_splice_distance = std::numeric_limits<double>::infinity();
         for (std::size_t i = 0; i < splice_ids.size(); ++i) {
             for (std::size_t j = i + 1; j < splice_ids.size(); ++j) {
@@ -334,7 +332,6 @@ int main(int argc, char** argv) {
             clustered_nodes += cluster.size();
             Point2D centroid{};
             std::set<std::string> segments;
-            std::set<std::string> nearby_endpoints;
             std::set<std::string> nearby_non_splice_nodes;
             std::set<std::string> gt_ids;
             std::set<std::string> residual_ids;
@@ -345,15 +342,13 @@ int main(int argc, char** argv) {
                 centroid.x += item.node->position.x;
                 centroid.y += item.node->position.y;
                 segments.insert(item.segments.begin(), item.segments.end());
-                nearby_endpoints.insert(item.endpoint_ids.begin(), item.endpoint_ids.end());
                 if (!item.nearest_ground_truth_id.empty() &&
                     item.nearest_ground_truth_distance <= kGroundTruthRadiusPx)
                     gt_ids.insert(item.nearest_ground_truth_id);
                 if (item.residual) {
                     residual_ids.insert(id);
-                    ++residual_nodes_in_clusters;
                     if (item.residual_matches_ground_truth) has_true_residual = true;
-                    else { has_false_residual = true; ++false_residual_nodes_in_clusters; }
+                    else { has_false_residual = true; }
                 }
             }
             centroid.x /= static_cast<double>(cluster.size());

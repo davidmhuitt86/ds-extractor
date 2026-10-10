@@ -33,7 +33,7 @@ struct Record {
  Object component,connector; Ink ink; std::string classification; std::vector<std::string> basis;
 };
 double dist(Point2D a,Point2D b){return std::hypot(a.x-b.x,a.y-b.y);}
-std::string esc(const std::string& s){std::string o;for(char c:s){switch(c){case '\\':o+="\\\\";
+std::string esc(const std::string& s){std::string o;for(char c:s){switch(c){case '\\':o+="\\\\\";break;
 case '"':o+="\\\"";break;case '\n':o+="\\n";break;case '\r':o+="\\r";break;case '\t':o+="\\t";break;default:o+=c;}}return o;}
 std::vector<Residual> load(const fs::path& p){
  std::ifstream in(p);if(!in)throw std::runtime_error("Unable to open AP-DIAG-044 report: "+p.string());

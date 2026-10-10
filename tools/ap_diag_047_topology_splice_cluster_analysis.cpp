@@ -51,6 +51,8 @@ struct NodeEvidence {
     const TopologyNode* node = nullptr;
     std::size_t degree = 0;
     std::set<std::string> segments;
+    std::vector<std::string> incident_edge_ids;
+    std::set<std::string> adjacent_node_ids;
     std::vector<std::string> endpoint_ids;
     double nearest_ground_truth_distance = std::numeric_limits<double>::infinity();
     std::string nearest_ground_truth_id;
@@ -214,10 +216,14 @@ int main(int argc, char** argv) {
             if (from != evidence.end()) {
                 ++from->second.degree;
                 from->second.segments.insert(edge.conductor_segment);
+                from->second.incident_edge_ids.push_back(edge.id);
+                from->second.adjacent_node_ids.insert(edge.to_node);
             }
             if (to != evidence.end()) {
                 ++to->second.degree;
                 to->second.segments.insert(edge.conductor_segment);
+                to->second.incident_edge_ids.push_back(edge.id);
+                to->second.adjacent_node_ids.insert(edge.from_node);
             }
         }
         for (const auto& endpoint : model.endpoint_candidates) {
@@ -389,9 +395,16 @@ int main(int argc, char** argv) {
                     << "}, \"type\": \"" << node_type(item.node->type)
                     << "\", \"degree\": " << item.degree
                     << ", \"unique_conductor_segments\": " << item.segments.size()
-                    << ", \"incident_conductor_segments\": [";
+                    << ", \"incident_edge_ids\": [";
+                for (std::size_t ei = 0; ei < item.incident_edge_ids.size(); ++ei)
+                    out << (ei ? ", " : "") << "\\"" << escape_json(item.incident_edge_ids[ei]) << "\\"";
+                out << "], \"incident_conductor_segments\": [";
                 std::size_t si = 0;
                 for (const auto& segment : item.segments) out << (si++ ? ", " : "") << "\"" << escape_json(segment) << "\"";
+                out << "], \"adjacent_node_ids\": [";
+                std::size_t ai = 0;
+                for (const auto& adjacent : item.adjacent_node_ids)
+                    out << (ai++ ? ", " : "") << "\\"" << escape_json(adjacent) << "\\"";
                 out << "], \"endpoint_ids\": [";
                 for (std::size_t ei = 0; ei < item.endpoint_ids.size(); ++ei)
                     out << (ei ? ", " : "") << "\"" << escape_json(item.endpoint_ids[ei]) << "\"";

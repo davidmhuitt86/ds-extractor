@@ -83,7 +83,7 @@ std::vector<GroundTruth> load_missed_ground_truth(const fs::path& path) {
     const std::string text = buffer.str();
 
     const std::regex record(
-        R"rx("id":"(SPLICE-[0-9]+)".*?"source_position":\{"x":([0-9eE+.-]+),"y":([0-9eE+.-]+)\}.*?"residual_within_threshold":(true|false))rx");
+        R"rx("id"\s*:\s*"(SPLICE-[0-9]+)"[\s\S]*?"source_position"\s*:\s*\{\s*"x"\s*:\s*([0-9eE+.-]+)\s*,\s*"y"\s*:\s*([0-9eE+.-]+)\s*\}[\s\S]*?"residual_within_threshold"\s*:\s*(true|false))rx");
 
     std::vector<GroundTruth> result;
     for (std::sregex_iterator it(text.begin(), text.end(), record), end;

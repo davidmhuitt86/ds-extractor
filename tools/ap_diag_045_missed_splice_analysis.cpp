@@ -561,7 +561,7 @@ int run(int argc, char** argv) {
     for (std::size_t i = 0; i < records.size(); ++i) {
         const fs::path crop =
             crop_dir /
-            ("missed-" +
+            (std::string("missed-") +
              (i < 9U ? "00" : "0") +
              std::to_string(i + 1U) +
              ".png");

@@ -92,7 +92,7 @@ int main(int argc,char** argv) {
                 if(edge.from_node==node.id || edge.to_node==node.id) {
                     ++degree; edges.push_back(edge.id);
                     adjacent.insert(edge.from_node==node.id?edge.to_node:edge.from_node);
-                    if(!edge.conductor_segment_id.empty()) segments.insert(edge.conductor_segment_id);
+                    if(!edge.conductor_segment.empty()) segments.insert(edge.conductor_segment);
                 }
             }
             if(!first) out << ",\n"; first=false;

@@ -62,7 +62,7 @@ std::string json_escape(const std::string& value) {
     for (const char ch : value) {
         switch (ch) {
         case '\\': out += "\\\\"; break;
-        case '"': out += "\\""; break;
+        case '"': out += "\\\""; break;
         case '\n': out += "\\n"; break;
         case '\r': out += "\\r"; break;
         case '\t': out += "\\t"; break;

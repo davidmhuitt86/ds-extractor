@@ -30,7 +30,7 @@ The 12 px radius is deliberately an observational neighborhood chosen to surface
 
 For each spatial cluster:
 - stable cluster ID, centroid, member count, and crop;
-- every member Splice node ID, exact position, graph degree, unique incident conductor-segment IDs, endpoint-candidate IDs, residual status, and nearest ground-truth/residual associations;
+- every member Splice node ID, exact position, graph degree, incident topology-edge IDs, adjacent topology-node IDs, unique incident conductor-segment IDs, endpoint-candidate IDs, residual status, and nearest ground-truth/residual associations;
 - nearby non-Splice topology nodes within 12 px of any cluster member, with type, position, and degree;
 - ground-truth splice IDs within 6 px;
 - whether the cluster contains any ground-truth-matched residual and/or false residual.

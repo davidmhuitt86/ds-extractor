@@ -156,6 +156,25 @@ add_executable(dx-audit-residual-splice-object-classification
     tools/ap_diag_043_residual_splice_object_classification.cpp)
 target_link_libraries(dx-audit-residual-splice-object-classification PRIVATE eke_dx_wire)
 
+# AP-DIAG-044: map the 19 manually verified TRX300 source splice locations
+# against the exact production endpoint/topology/residual population.
+# Diagnostic only; production extraction unchanged.
+add_executable(dx-audit-splice-ground-truth
+    tools/ap_diag_044_splice_ground_truth.cpp)
+target_link_libraries(dx-audit-splice-ground-truth PRIVATE eke_dx_wire)
+
+# AP-DIAG-045: analyze the 9 manually verified source splices that are
+# absent from the current AP-DIAG-042 residual population. Diagnostic only.
+add_executable(dx-audit-missed-splice-analysis
+    tools/ap_diag_045_missed_splice_analysis.cpp)
+target_link_libraries(dx-audit-missed-splice-analysis PRIVATE eke_dx_wire)
+
+# AP-DIAG-046: analyze the 25 AP-DIAG-044 residuals that do not correspond
+# to manually verified source splices. Diagnostic only; production extraction unchanged.
+add_executable(dx-audit-false-residual-analysis
+    tools/ap_diag_046_false_residual_analysis.cpp)
+target_link_libraries(dx-audit-false-residual-analysis PRIVATE eke_dx_wire)
+
 if(WIN32)
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire

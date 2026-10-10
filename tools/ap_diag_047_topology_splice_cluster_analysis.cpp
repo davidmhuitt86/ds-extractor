@@ -397,14 +397,14 @@ int main(int argc, char** argv) {
                     << ", \"unique_conductor_segments\": " << item.segments.size()
                     << ", \"incident_edge_ids\": [";
                 for (std::size_t ei = 0; ei < item.incident_edge_ids.size(); ++ei)
-                    out << (ei ? ", " : "") << "\\"" << escape_json(item.incident_edge_ids[ei]) << "\\"";
+                    out << (ei ? ", " : "") << "\"" << escape_json(item.incident_edge_ids[ei]) << "\"";
                 out << "], \"incident_conductor_segments\": [";
                 std::size_t si = 0;
                 for (const auto& segment : item.segments) out << (si++ ? ", " : "") << "\"" << escape_json(segment) << "\"";
                 out << "], \"adjacent_node_ids\": [";
                 std::size_t ai = 0;
                 for (const auto& adjacent : item.adjacent_node_ids)
-                    out << (ai++ ? ", " : "") << "\\"" << escape_json(adjacent) << "\\"";
+                    out << (ai++ ? ", " : "") << "\"" << escape_json(adjacent) << "\"";
                 out << "], \"endpoint_ids\": [";
                 for (std::size_t ei = 0; ei < item.endpoint_ids.size(); ++ei)
                     out << (ei ? ", " : "") << "\"" << escape_json(item.endpoint_ids[ei]) << "\"";

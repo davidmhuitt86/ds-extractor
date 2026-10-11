@@ -108,7 +108,7 @@ TopologyArtifacts TopologyReconstructor::reconstruct(
     TopologyArtifacts result;
 
     std::vector<const ConductorSegment*> ordered_segments;
-    ordered_segments.reserve(ordered_segments.size());
+    ordered_segments.reserve(segments.size());
     for (const auto& segment : segments) {
         ordered_segments.push_back(&segment);
     }
@@ -234,7 +234,7 @@ TopologyArtifacts TopologyReconstructor::reconstruct(
         return *it;
     };
 
-    for (std::size_t i = 0; i < segments.size(); ++i) {
+    for (std::size_t i = 0; i < ordered_segments.size(); ++i) {
         auto& points = work[i].points;
 
         const bool horizontal =
@@ -273,7 +273,7 @@ TopologyArtifacts TopologyReconstructor::reconstruct(
             edge.id = stable_id("topology-edge", canonical.str());
             edge.from_node = a.id;
             edge.to_node = b.id;
-            edge.conductor_segment = segments[i].id;
+            edge.conductor_segment = ordered_segments[i]->id;
             result.edges.push_back(std::move(edge));
         }
     }

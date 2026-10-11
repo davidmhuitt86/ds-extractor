@@ -205,16 +205,21 @@ RunSnapshot snapshot_model(
         const auto to_it = snapshot.node_position_by_id.find(edge.to_node);
         const auto segment_it = snapshot.segment_geometry_by_id.find(edge.conductor_segment);
         if (from_it == snapshot.node_position_by_id.end() ||
-            to_it == snapshot.node_position_by_id.end() ||
-            segment_it == snapshot.segment_geometry_by_id.end()) {
-            snapshot.edge_geometry_keys.push_back("UNRESOLVED:" + edge.id);
+            to_it == snapshot.node_position_by_id.end()) {
+            snapshot.edge_geometry_keys.push_back("UNRESOLVED_NODE_REFERENCE:" + edge.id);
             continue;
         }
+        const std::string segment_key =
+            edge.conductor_segment.empty()
+                ? std::string("<no-conductor-segment>")
+                : segment_it != snapshot.segment_geometry_by_id.end()
+                    ? segment_it->second
+                    : std::string("<missing-conductor-segment-geometry>");
         std::string a = from_it->second;
         std::string b = to_it->second;
         if (b < a) std::swap(a, b);
         snapshot.edge_geometry_keys.push_back(
-            segment_it->second + "|" + a + "<->" + b);
+            segment_key + "|" + a + "<->" + b);
     }
 
     for (const auto& wire : model.wires) {
@@ -402,6 +407,11 @@ int main(int argc, char** argv) {
         const std::string source_hash = fnv1a_file_hash(source_path);
         const std::string basename_source_id = source_path.filename().string();
         const std::string path_source_id = source_path.string();
+        if (basename_source_id == path_source_id) {
+            throw std::runtime_error(
+                "Pass a source path with a directory component (for example samples\\\\trx300ODG.png) "
+                "so basename and full-path source_id variants are distinct.");
+        }
 
         // The only intended input difference between these sequential runs is source_id.
         ExtractionPipeline pipeline;
@@ -424,6 +434,12 @@ int main(int argc, char** argv) {
         }
         const bool segment_sequence_equal =
             basename_snapshot.segment_geometry_sequence == path_snapshot.segment_geometry_sequence;
+        const bool has_segment_sequence_divergence = !segment_sequence_equal;
+        if (has_segment_sequence_divergence &&
+            first_segment_order_divergence == segment_common_count &&
+            segment_count_a != segment_count_b) {
+            first_segment_order_divergence = segment_common_count;
+        }
         const bool segment_geometry_multiset_equal =
             same_multiset(basename_snapshot.segment_geometry_sequence,
                           path_snapshot.segment_geometry_sequence);
@@ -464,7 +480,7 @@ int main(int argc, char** argv) {
             << "    \"normalized_segment_geometry_sequence_equal\":"
             << (segment_sequence_equal ? "true" : "false") << ",\n"
             << "    \"first_segment_sequence_divergence_index\":";
-        if (first_segment_order_divergence < segment_common_count)
+        if (has_segment_sequence_divergence)
             out << first_segment_order_divergence;
         else
             out << "null";

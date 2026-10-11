@@ -360,16 +360,18 @@ void write_key_list(
     write_string_array(out, values);
 }
 
-std::vector<std::tuple<std::string, std::string, std::string>> node_type_differences(
+std::vector<std::tuple<std::string, std::string, std::string, bool, bool>> node_type_differences(
     const RunSnapshot& a,
     const RunSnapshot& b) {
-    std::vector<std::tuple<std::string, std::string, std::string>> result;
+    std::vector<std::tuple<std::string, std::string, std::string, bool, bool>> result;
     for (const auto& [position, type_a] : a.node_type_at_position) {
         const auto it = b.node_type_at_position.find(position);
         if (it == b.node_type_at_position.end()) continue;
         if (type_a.type != it->second.type ||
             type_a.electrically_connective != it->second.electrically_connective) {
-            result.emplace_back(position, type_a.type, it->second.type);
+            result.emplace_back(position, type_a.type, it->second.type,
+                                type_a.electrically_connective,
+                                it->second.electrically_connective);
         }
     }
     return result;
@@ -377,14 +379,17 @@ std::vector<std::tuple<std::string, std::string, std::string>> node_type_differe
 
 void write_node_type_differences(
     std::ostream& out,
-    const std::vector<std::tuple<std::string, std::string, std::string>>& diffs) {
+    const std::vector<std::tuple<std::string, std::string, std::string, bool, bool>>& diffs) {
     out << "[";
     for (std::size_t i = 0; i < diffs.size(); ++i) {
         if (i) out << ",";
         out << "{\"position_key\":\"" << json_escape(std::get<0>(diffs[i]))
             << "\",\"basename_source_id_type\":\"" << json_escape(std::get<1>(diffs[i]))
             << "\",\"path_source_id_type\":\"" << json_escape(std::get<2>(diffs[i]))
-            << "\"}";
+            << "\",\"basename_source_id_electrically_connective\":"
+            << (std::get<3>(diffs[i]) ? "true" : "false")
+            << ",\"path_source_id_electrically_connective\":"
+            << (std::get<4>(diffs[i]) ? "true" : "false") << "}";
     }
     out << "]";
 }

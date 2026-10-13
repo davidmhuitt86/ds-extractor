@@ -249,7 +249,8 @@ void write_text(
         first = false;
         out << "\n    {\"id\":\"" << esc(t.id)
             << "\",\"kind_numeric\":" << static_cast<int>(t.kind)
-            << ",\"confidence\":" << t.confidence << ",\"bounds\":";
+            << ",\"confidence_numeric\":" << static_cast<int>(t.confidence)
+            << ",\"bounds\":";
         write_box(out, t.bounds);
         out << "}";
     }

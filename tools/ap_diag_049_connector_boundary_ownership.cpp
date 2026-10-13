@@ -142,6 +142,11 @@ bool box_in_focus(const BoundingBox& b, const Focus& f) {
            static_cast<double>(b.y + b.height) >= f.y;
 }
 
+bool point_in_focus(const Point2D& p, const Focus& f) {
+    return p.x >= f.x && p.x <= f.x + f.width &&
+           p.y >= f.y && p.y <= f.y + f.height;
+}
+
 bool segment_in_focus(const Segment2D& s, const Focus& f) {
     const double left = (std::min)(s.a.x, s.b.x);
     const double right = (std::max)(s.a.x, s.b.x);
@@ -315,6 +320,126 @@ void write_connector_boundary_resolutions(
         out << ",\"effective_bounds\":";
         write_box(out, boundary.effective_bounds);
         out << "}";
+    }
+    if (!first) out << "\n  ";
+    out << "]";
+}
+
+void write_connector_pins(
+    std::ostream& out, const WireModel& model, const Focus& focus) {
+    out << "[";
+    bool first = true;
+    for (const auto& pin : model.connector_pins) {
+        if (!point_in_focus(pin.position, focus))
+            continue;
+        if (!first) out << ",";
+        first = false;
+        out << "\n    {\"id\":\"" << esc(pin.id)
+            << "\",\"connector_id\":\"" << esc(pin.connector_id)
+            << "\",\"x\":" << pin.position.x
+            << ",\"y\":" << pin.position.y
+            << ",\"ordinal\":" << pin.ordinal
+            << ",\"confidence\":\"" << confidence_name(pin.confidence)
+            << "\",\"conductor_crossing_evidence_ids\":[";
+        for (std::size_t i = 0; i < pin.conductor_crossing_evidence_ids.size(); ++i) {
+            if (i) out << ",";
+            out << "\"" << esc(pin.conductor_crossing_evidence_ids[i]) << "\"";
+        }
+        out << "]}";
+    }
+    if (!first) out << "\n  ";
+    out << "]";
+}
+
+void write_connector_crossings(
+    std::ostream& out, const WireModel& model, const Focus& focus) {
+    out << "[";
+    bool first = true;
+    for (const auto& crossing : model.connector_conductor_crossing_evidence) {
+        if (!point_in_focus(crossing.crossing_point, focus))
+            continue;
+        if (!first) out << ",";
+        first = false;
+        const char* interaction =
+            crossing.interaction == ConnectorConductorInteractionKind::Termination
+                ? "termination"
+                : crossing.interaction == ConnectorConductorInteractionKind::PassThrough
+                    ? "pass_through" : "unknown";
+        out << "\n    {\"id\":\"" << esc(crossing.id)
+            << "\",\"connector_id\":\"" << esc(crossing.connector_id)
+            << "\",\"pin_id\":\"" << esc(crossing.pin_id)
+            << "\",\"conductor_segment_id\":\"" << esc(crossing.conductor_segment_id)
+            << "\",\"interaction\":\"" << interaction
+            << "\",\"x\":" << crossing.crossing_point.x
+            << ",\"y\":" << crossing.crossing_point.y
+            << ",\"confidence\":\"" << confidence_name(crossing.confidence)
+            << "\",\"stage\":\"" << esc(crossing.provenance.stage) << "\"}";
+    }
+    if (!first) out << "\n  ";
+    out << "]";
+}
+
+void write_connector_associations(
+    std::ostream& out, const WireModel& model, const Focus& focus) {
+    out << "[";
+    bool first = true;
+    for (const auto& association : model.connector_terminal_associations) {
+        const auto pin = std::find_if(
+            model.connector_pins.begin(), model.connector_pins.end(),
+            [&](const ConnectorPin& candidate) {
+                return candidate.id == association.pin_id;
+            });
+        if (pin == model.connector_pins.end() ||
+            !point_in_focus(pin->position, focus))
+            continue;
+        if (!first) out << ",";
+        first = false;
+        const char* status =
+            association.status == ConnectorTerminalAssociationStatus::Resolved
+                ? "resolved"
+                : association.status == ConnectorTerminalAssociationStatus::Conflicted
+                    ? "conflicted" : "unresolved";
+        out << "\n    {\"id\":\"" << esc(association.id)
+            << "\",\"connector_id\":\"" << esc(association.connector_id)
+            << "\",\"pin_id\":\"" << esc(association.pin_id)
+            << "\",\"endpoint_id\":\"" << esc(association.endpoint_id)
+            << "\",\"status\":\"" << status
+            << "\",\"confidence\":\"" << confidence_name(association.confidence)
+            << "\",\"evidence_ids\":[";
+        for (std::size_t i = 0; i < association.evidence_ids.size(); ++i) {
+            if (i) out << ",";
+            out << "\"" << esc(association.evidence_ids[i]) << "\"";
+        }
+        out << "]}";
+    }
+    if (!first) out << "\n  ";
+    out << "]";
+}
+
+void write_connector_terminals(
+    std::ostream& out, const WireModel& model, const Focus& focus) {
+    out << "[";
+    bool first = true;
+    for (const auto& terminal : model.connector_terminals) {
+        if (!point_in_focus(terminal.position, focus))
+            continue;
+        if (!first) out << ",";
+        first = false;
+        const char* status =
+            terminal.status == ConnectorTerminalStatus::Resolved
+                ? "resolved"
+                : terminal.status == ConnectorTerminalStatus::Conflicted
+                    ? "conflicted" : "unresolved";
+        out << "\n    {\"id\":\"" << esc(terminal.id)
+            << "\",\"connector_id\":\"" << esc(terminal.connector_id)
+            << "\",\"endpoint_id\":\"" << esc(terminal.endpoint_id)
+            << "\",\"x\":" << terminal.position.x
+            << ",\"y\":" << terminal.position.y
+            << ",\"terminal_name\":\"" << esc(terminal.terminal_name)
+            << "\",\"function_label\":\"" << esc(terminal.function_label)
+            << "\",\"wire_color\":\"" << esc(terminal.wire_color)
+            << "\",\"confidence\":\"" << confidence_name(terminal.confidence)
+            << "\",\"status\":\"" << status << "\"}";
     }
     if (!first) out << "\n  ";
     out << "]";
@@ -627,6 +752,10 @@ int main(int argc, char** argv) {
             << ",\"production_nodes\":" << model.nodes.size()
             << ",\"production_edges\":" << model.edges.size()
             << ",\"production_connector_candidates\":" << model.connector_candidates.size()
+            << ",\"production_connector_pins\":" << model.connector_pins.size()
+            << ",\"production_connector_crossings\":" << model.connector_conductor_crossing_evidence.size()
+            << ",\"production_connector_terminal_associations\":" << model.connector_terminal_associations.size()
+            << ",\"production_connector_terminals\":" << model.connector_terminals.size()
             << "},\n"
             << "  \"shape_regions_near_focus\":";
         write_shapes(out, shapes.regions, focus);
@@ -641,6 +770,14 @@ int main(int argc, char** argv) {
             out, ownership.connector_boundaries, focus);
         out << ",\n  \"production_connector_candidates_near_focus\":";
         write_connector_candidates(out, model.connector_candidates, focus);
+        out << ",\n  \"production_connector_pins_near_focus\":";
+        write_connector_pins(out, model, focus);
+        out << ",\n  \"production_connector_crossings_near_focus\":";
+        write_connector_crossings(out, model, focus);
+        out << ",\n  \"production_connector_terminal_associations_near_focus\":";
+        write_connector_associations(out, model, focus);
+        out << ",\n  \"production_connector_terminals_near_focus\":";
+        write_connector_terminals(out, model, focus);
         out << ",\n  \"raw_morphology_segments_near_focus\":";
         write_raw_segments(
             out, detected.conductor_segments, ownership, evidence,

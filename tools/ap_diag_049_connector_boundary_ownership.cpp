@@ -285,8 +285,8 @@ void write_connector_candidates(
         out << "\n    {\"id\":\"" << esc(c.id)
             << "\",\"component_candidate_id\":\"" << esc(c.component_candidate_id)
             << "\",\"topology_numeric\":" << static_cast<int>(c.topology)
-            << ",\"confidence_numeric\":" << static_cast<int>(c.confidence)
-            << ",\"bounds\":";
+            << ",\"confidence\":\"" << confidence_name(c.confidence)
+            << "\",\"bounds\":";
         write_box(out, c.bounds);
         out << "}";
     }

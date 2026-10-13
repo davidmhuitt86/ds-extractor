@@ -1,6 +1,7 @@
 #pragma once
 
 #include "eke_dx_wire/core/model.hpp"
+#include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
 
 #include <vector>
@@ -25,9 +26,20 @@ struct GeometryOwnershipConfig {
     double component_boundary_tolerance_px = 2.0;
 };
 
+// Effective connector bounds are used only when conductor geometry provides
+// independent evidence of a complete rectilinear housing frame. Otherwise the
+// detector's original bounds remain authoritative.
+struct ConnectorBoundaryResolution {
+    std::string connector_region_id;
+    BoundingBox detected_bounds {};
+    BoundingBox effective_bounds {};
+    bool reconstructed_from_rectangular_strokes = false;
+};
+
 struct GeometryOwnershipArtifacts {
     std::vector<ConductorSegment> conductor_candidates;
     std::vector<RejectedGeometryEvidence> rejected;
+    std::vector<ConnectorBoundaryResolution> connector_boundaries;
 };
 
 class GeometryOwnershipClassifier {
@@ -38,7 +50,8 @@ public:
     [[nodiscard]] GeometryOwnershipArtifacts classify(
         const std::vector<ConductorSegment>& candidates,
         const std::vector<ComponentCandidate>& components,
-        const std::vector<TextRegion>& text_regions) const;
+        const std::vector<TextRegion>& text_regions,
+        const std::vector<ShapeRegion>& connector_regions = {}) const;
 
 private:
     GeometryOwnershipConfig config_;

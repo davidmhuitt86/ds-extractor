@@ -294,6 +294,32 @@ void write_connector_candidates(
     out << "]";
 }
 
+void write_connector_boundary_resolutions(
+    std::ostream& out,
+    const std::vector<ConnectorBoundaryResolution>& boundaries,
+    const Focus& focus) {
+    out << "[";
+    bool first = true;
+    for (const auto& boundary : boundaries) {
+        if (!box_in_focus(boundary.effective_bounds, focus) &&
+            !box_in_focus(boundary.detected_bounds, focus)) {
+            continue;
+        }
+        if (!first) out << ",";
+        first = false;
+        out << "\n    {\"id\":\"" << esc(boundary.connector_region_id)
+            << "\",\"reconstructed_from_rectangular_strokes\":"
+            << (boundary.reconstructed_from_rectangular_strokes ? "true" : "false")
+            << ",\"detected_bounds\":";
+        write_box(out, boundary.detected_bounds);
+        out << ",\"effective_bounds\":";
+        write_box(out, boundary.effective_bounds);
+        out << "}";
+    }
+    if (!first) out << "\n  ";
+    out << "]";
+}
+
 void write_raw_segments(
     std::ostream& out,
     const std::vector<ConductorSegment>& raw,
@@ -302,6 +328,7 @@ void write_raw_segments(
     const std::vector<ConductorSegment>& normalized_segments,
     const std::vector<ComponentCandidate>& components,
     const std::vector<ShapeRegion>& connector_regions,
+    const std::vector<ConnectorBoundaryResolution>& boundary_resolutions,
     const Focus& focus,
     double tolerance) {
 
@@ -364,7 +391,16 @@ void write_raw_segments(
         bool first_connector = true;
         bool connector_box_overlap = false;
         for (const auto& c : connector_regions) {
-            if (traces_boundary(s.geometry, c.bounds, tolerance)) {
+            const auto resolved = std::find_if(
+                boundary_resolutions.begin(), boundary_resolutions.end(),
+                [&](const ConnectorBoundaryResolution& boundary) {
+                    return boundary.connector_region_id == c.id;
+                });
+            const BoundingBox effective_bounds =
+                resolved != boundary_resolutions.end()
+                    ? resolved->effective_bounds
+                    : c.bounds;
+            if (traces_boundary(s.geometry, effective_bounds, tolerance)) {
                 if (!first_connector) out << ",";
                 first_connector = false;
                 out << "\"" << esc(c.id) << "\"";
@@ -373,9 +409,10 @@ void write_raw_segments(
             const double sx1 = (std::max)(s.geometry.a.x, s.geometry.b.x);
             const double sy0 = (std::min)(s.geometry.a.y, s.geometry.b.y);
             const double sy1 = (std::max)(s.geometry.a.y, s.geometry.b.y);
-            if (sx0 <= c.bounds.x + c.bounds.width &&
-                sx1 >= c.bounds.x && sy0 <= c.bounds.y + c.bounds.height &&
-                sy1 >= c.bounds.y) {
+            if (sx0 <= effective_bounds.x + effective_bounds.width &&
+                sx1 >= effective_bounds.x &&
+                sy0 <= effective_bounds.y + effective_bounds.height &&
+                sy1 >= effective_bounds.y) {
                 connector_box_overlap = true;
             }
         }
@@ -535,19 +572,20 @@ int main(int argc, char** argv) {
         DiagramFurnitureClassifier furniture_classifier(config.diagram_furniture);
         const auto components = furniture_classifier.classify(context_candidates);
 
+        // Match the canonical pipeline: connector geometry is available
+        // before ownership, where line-supported housing-frame geometry is
+        // resolved by the exact production classifier.
+        ConnectorGeometryDetector connector_detector(config.connectors);
+        const auto connector_regions =
+            connector_detector.detect(normalized, source_path.string(), 0);
         GeometryOwnershipClassifier ownership_classifier(config.geometry_ownership);
         const auto ownership = ownership_classifier.classify(
-            detected.conductor_segments, components, text.regions);
+            detected.conductor_segments, components, text.regions,
+            connector_regions.regions);
         ConductorEvidenceEvaluator evaluator(config.conductor_evidence);
         const auto evidence = evaluator.evaluate(ownership.conductor_candidates, normalized);
         ConductorNormalizer normalizer(config.geometry);
         const auto normalized_segments = normalizer.normalize(evidence.accepted);
-
-        // Diagnostic observes connector bodies before topology; production
-        // currently invokes this detector after topology/endpoint reconstruction.
-        ConnectorGeometryDetector connector_detector(config.connectors);
-        const auto connector_regions =
-            connector_detector.detect(normalized, source_path.string(), 0);
 
         ExtractionPipeline pipeline(config);
         const WireModel model = pipeline.run(source_path.string(), source_path.string());
@@ -567,8 +605,9 @@ int main(int argc, char** argv) {
             << "\",\"width\":" << normalized.cols << ",\"height\":" << normalized.rows << "},\n"
             << "  \"focus_region\":{\"x\":" << focus.x << ",\"y\":" << focus.y
             << ",\"width\":" << focus.width << ",\"height\":" << focus.height << "},\n"
-            << "  \"stage_order\":{\"ownership_precedes_topology\":true,"
-            << "\"connector_geometry_detector_runs_after_topology_in_production\":true,"
+            << "  \"stage_order\":{\"connector_geometry_precedes_ownership\":true,"
+            << "\"ownership_precedes_topology\":true,"
+            << "\"connector_geometry_detector_runs_after_topology_in_production\":false,"
             << "\"diagnostic_runs_connector_detector_early_for_comparison\":true,"
             << "\"ownership_boundary_tolerance_px\":"
             << config.geometry_ownership.component_boundary_tolerance_px << "},\n"
@@ -596,12 +635,16 @@ int main(int argc, char** argv) {
         write_text(out, text.regions, focus);
         out << ",\n  \"connector_geometry_regions_near_focus\":";
         write_connector_regions(out, connector_regions.regions, focus);
+        out << ",\n  \"connector_boundary_resolutions_near_focus\":";
+        write_connector_boundary_resolutions(
+            out, ownership.connector_boundaries, focus);
         out << ",\n  \"production_connector_candidates_near_focus\":";
         write_connector_candidates(out, model.connector_candidates, focus);
         out << ",\n  \"raw_morphology_segments_near_focus\":";
         write_raw_segments(
             out, detected.conductor_segments, ownership, evidence,
-            normalized_segments, components, connector_regions.regions, focus,
+            normalized_segments, components, connector_regions.regions,
+            ownership.connector_boundaries, focus,
             config.geometry_ownership.component_boundary_tolerance_px);
         out << ",\n  \"production_normalized_segments_near_focus\":";
         write_normalized_segments(out, model.conductor_segments, focus);

@@ -84,6 +84,16 @@ std::string component_kind(ComponentCandidateKind value) {
     return "unknown";
 }
 
+std::string confidence_name(ConfidenceClass value) {
+    switch (value) {
+    case ConfidenceClass::High: return "high";
+    case ConfidenceClass::Medium: return "medium";
+    case ConfidenceClass::Low: return "low";
+    case ConfidenceClass::Unresolved: return "unresolved";
+    }
+    return "unknown";
+}
+
 std::string rejection_class(RejectedGeometryClass value) {
     switch (value) {
     case RejectedGeometryClass::ComponentAssociated: return "component_associated";
@@ -214,7 +224,8 @@ void write_components(
         first = false;
         out << "\n    {\"id\":\"" << esc(c.id)
             << "\",\"kind\":\"" << component_kind(c.kind)
-            << "\",\"confidence\":" << c.confidence << ",\"shape_ids\":[";
+            << "\",\"confidence\":\"" << confidence_name(c.confidence)
+            << "\",\"shape_ids\":[";
         for (std::size_t i = 0; i < c.shape_ids.size(); ++i) {
             if (i) out << ",";
             out << "\"" << esc(c.shape_ids[i]) << "\"";

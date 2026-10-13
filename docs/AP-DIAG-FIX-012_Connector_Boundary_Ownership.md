@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation proposed; awaiting local Windows Release build, full CTest, and canonical TRX300 extraction/artifact review.
+Implementation proposed on a branch stacked on AP-DIAG-049; awaiting local Windows Release build, full CTest, and canonical TRX300 extraction/artifact review.
 
 ## Root cause established by AP-DIAG-049
 
@@ -36,7 +36,8 @@ Required assertions:
 
 Run from the repository root in Windows PowerShell:
 
-    git pull --ff-only
+    git fetch origin
+    git switch --track origin/ap/ap-diag-fix-012-connector-boundary-ownership
     cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
     cmake --build build --config Release --clean-first --parallel 1
     if ($LASTEXITCODE -ne 0) { throw "Clean Release build failed." }
@@ -55,7 +56,7 @@ Run from the repository root in Windows PowerShell:
 
 ## Extraction review requirements
 
-- Verify boundary resolution reports the detected bounds and the evidence-supported effective bounds.
+- Verify boundary resolution reports the detected bounds and the evidence-supported effective bounds. The diagnostic JSON should also state production_logic_modified=false for the diagnostic itself and production_logic_modified_by_ap_diag_fix_012_branch=true for this stacked implementation branch.
 - Confirm the connector's housing strokes no longer appear in normalized conductor segments or topology edges.
 - Confirm lead segments ending on the boundary remain present and are observed as connector interactions.
 - Compare all counts and IDs against the AP-DIAG-049 baseline. Explain every changed node/edge/wire/endpoint in the focus area; raw count reductions alone are not proof.

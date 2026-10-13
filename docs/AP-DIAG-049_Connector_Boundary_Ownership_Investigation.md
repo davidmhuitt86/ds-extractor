@@ -73,7 +73,7 @@ Validate that the output parses:
 
 ## Review questions / acceptance requirements
 
-1. Confirm source width/height are 898x549 and the report declares production_logic_modified=false.
+1. Confirm source width/height are 898x549 and the report declares production_logic_modified=false for the diagnostic itself, plus production_logic_modified_by_ap_diag_fix_012_branch=true when run on the stacked implementation branch.
 2. Identify the candidate segment(s) with endpoints or geometry matching the reported connector-left boundary around (347, 351)--(347, 378).
 3. Determine whether the matching segment was retained by the actual shape-derived component ownership classifier and, if not rejected, whether it is later accepted as conductor evidence and present in the production normalized segments.
 4. Compare component_boundary_trace_ids with connector_geometry_boundary_trace_ids. If the segment traces a connector region but not a component candidate and is retained by ownership, that supports a stage-availability gap as the explanation. If it is already rejected or a component candidate boundary owns it, investigate the exact reason instead of presuming a defect.

@@ -600,6 +600,7 @@ int main(int argc, char** argv) {
             << "  \"ap\":\"AP-DIAG-049\",\n"
             << "  \"status\":\"diagnostic_only\",\n"
             << "  \"production_logic_modified\":false,\n"
+            << "  \"production_logic_modified_by_ap_diag_fix_012_branch\":true,\n"
             << "  \"source\":{\"path\":\"" << esc(source_path.string())
             << "\",\"source_id\":\"" << esc(source_path.string())
             << "\",\"width\":" << normalized.cols << ",\"height\":" << normalized.rows << "},\n"

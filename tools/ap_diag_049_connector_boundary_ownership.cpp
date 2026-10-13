@@ -205,7 +205,8 @@ void write_shapes(
         out << "\n    {\"id\":\"" << esc(s.id)
             << "\",\"kind\":\"" << shape_kind(s.kind)
             << "\",\"role\":\"" << shape_role(s.role)
-            << "\",\"confidence\":" << s.confidence << ",\"bounds\":";
+            << "\",\"confidence_numeric\":" << static_cast<int>(s.confidence)
+            << ",\"bounds\":";
         write_box(out, s.bounds);
         out << "}";
     }
@@ -267,7 +268,7 @@ void write_connector_regions(
         out << "\n    {\"id\":\"" << esc(c.id)
             << "\",\"bounds\":";
         write_box(out, c.bounds);
-        out << ",\"confidence\":" << c.confidence << "}";
+        out << ",\"confidence_numeric\":" << static_cast<int>(c.confidence) << "}";
     }
     if (!first) out << "\n  ";
     out << "]";

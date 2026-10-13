@@ -205,8 +205,7 @@ void write_shapes(
         out << "\n    {\"id\":\"" << esc(s.id)
             << "\",\"kind\":\"" << shape_kind(s.kind)
             << "\",\"role\":\"" << shape_role(s.role)
-            << "\",\"confidence_numeric\":" << static_cast<int>(s.confidence)
-            << ",\"bounds\":";
+            << "\",\"confidence\":" << s.confidence << ",\"bounds\":";
         write_box(out, s.bounds);
         out << "}";
     }
@@ -249,8 +248,7 @@ void write_text(
         first = false;
         out << "\n    {\"id\":\"" << esc(t.id)
             << "\",\"kind_numeric\":" << static_cast<int>(t.kind)
-            << ",\"confidence_numeric\":" << static_cast<int>(t.confidence)
-            << ",\"bounds\":";
+            << ",\"confidence\":" << t.confidence << ",\"bounds\":";
         write_box(out, t.bounds);
         out << "}";
     }
@@ -269,7 +267,7 @@ void write_connector_regions(
         out << "\n    {\"id\":\"" << esc(c.id)
             << "\",\"bounds\":";
         write_box(out, c.bounds);
-        out << ",\"confidence_numeric\":" << static_cast<int>(c.confidence) << "}";
+        out << ",\"confidence\":" << c.confidence << "}";
     }
     if (!first) out << "\n  ";
     out << "]";

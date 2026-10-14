@@ -194,6 +194,12 @@ add_executable(dx-audit-source-id-invariance
     tools/ap_diag_048b_source_id_invariance.cpp)
 target_link_libraries(dx-audit-source-id-invariance PRIVATE eke_dx_wire)
 
+# AP-DIAG-049: inspect connector-body boundary ownership before topology.
+# Diagnostic only; production extraction logic remains unchanged.
+add_executable(dx-audit-connector-boundary-ownership
+    tools/ap_diag_049_connector_boundary_ownership.cpp)
+target_link_libraries(dx-audit-connector-boundary-ownership PRIVATE eke_dx_wire)
+
 if(WIN32)
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire

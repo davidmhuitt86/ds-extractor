@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <sstream>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 
@@ -71,6 +72,22 @@ std::string point_key(Point2D p) {
     return out.str();
 }
 
+// Segment processing order must not depend on source-derived stable IDs.
+// ConductorNormalizer includes source_id in each segment ID and sorts by ID;
+// TopologyReconstructor's snap clustering preserves the first representative
+// it encounters, so accepting caller order here made geometry vary with
+// source_id. Canonicalize each segment by its undirected geometry instead.
+using SegmentGeometryKey = std::tuple<double, double, double, double>;
+
+SegmentGeometryKey canonical_segment_geometry_key(const Segment2D& geometry) {
+    Point2D a = geometry.a;
+    Point2D b = geometry.b;
+    if (b.x < a.x || (b.x == a.x && b.y < a.y)) {
+        std::swap(a, b);
+    }
+    return {a.x, a.y, b.x, b.y};
+}
+
 Point2D intersection(const Segment2D& a, const Segment2D& b) {
     if (a.is_horizontal()) {
         return {b.a.x, a.a.y};
@@ -89,19 +106,32 @@ TopologyArtifacts TopologyReconstructor::reconstruct(
     int page) const {
 
     TopologyArtifacts result;
-    std::vector<SegmentWork> work(segments.size());
 
-    for (std::size_t i = 0; i < segments.size(); ++i) {
-        add_split_point(work[i], segments[i].geometry.a, true,
+    std::vector<const ConductorSegment*> ordered_segments;
+    ordered_segments.reserve(segments.size());
+    for (const auto& segment : segments) {
+        ordered_segments.push_back(&segment);
+    }
+    std::sort(
+        ordered_segments.begin(), ordered_segments.end(),
+        [](const ConductorSegment* a, const ConductorSegment* b) {
+            return canonical_segment_geometry_key(a->geometry) <
+                   canonical_segment_geometry_key(b->geometry);
+        });
+
+    std::vector<SegmentWork> work(ordered_segments.size());
+
+    for (std::size_t i = 0; i < ordered_segments.size(); ++i) {
+        add_split_point(work[i], ordered_segments[i]->geometry.a, true,
                         config_.snap_tolerance);
-        add_split_point(work[i], segments[i].geometry.b, true,
+        add_split_point(work[i], ordered_segments[i]->geometry.b, true,
                         config_.snap_tolerance);
     }
 
-    for (std::size_t i = 0; i < segments.size(); ++i) {
-        for (std::size_t j = i + 1; j < segments.size(); ++j) {
-            const auto& a = segments[i].geometry;
-            const auto& b = segments[j].geometry;
+    for (std::size_t i = 0; i < ordered_segments.size(); ++i) {
+        for (std::size_t j = i + 1; j < ordered_segments.size(); ++j) {
+            const auto& a = ordered_segments[i]->geometry;
+            const auto& b = ordered_segments[j]->geometry;
 
             const bool perpendicular =
                 (a.is_horizontal(config_.intersection_tolerance) &&
@@ -204,11 +234,11 @@ TopologyArtifacts TopologyReconstructor::reconstruct(
         return *it;
     };
 
-    for (std::size_t i = 0; i < segments.size(); ++i) {
+    for (std::size_t i = 0; i < ordered_segments.size(); ++i) {
         auto& points = work[i].points;
 
         const bool horizontal =
-            segments[i].geometry.is_horizontal(config_.intersection_tolerance);
+            ordered_segments[i]->geometry.is_horizontal(config_.intersection_tolerance);
 
         std::sort(
             points.begin(), points.end(),
@@ -237,13 +267,13 @@ TopologyArtifacts TopologyReconstructor::reconstruct(
 
             std::ostringstream canonical;
             canonical << source_id << ":" << page << ":"
-                      << segments[i].id << ":" << a.id << ":" << b.id;
+                      << ordered_segments[i]->id << ":" << a.id << ":" << b.id;
 
             TopologyEdge edge;
             edge.id = stable_id("topology-edge", canonical.str());
             edge.from_node = a.id;
             edge.to_node = b.id;
-            edge.conductor_segment = segments[i].id;
+            edge.conductor_segment = ordered_segments[i]->id;
             result.edges.push_back(std::move(edge));
         }
     }

@@ -972,9 +972,9 @@ bool diagnostic_segment_rect_overlap(
         return true;
     };
     return clip(-dx, segment.a.x - bounds.x) &&
-           clip(dx, segment.a.x - bounds.x - (-bounds.width)) &&
+           clip(dx, bounds.x + bounds.width - segment.a.x) &&
            clip(-dy, segment.a.y - bounds.y) &&
-           clip(dy, segment.a.y - bounds.y - (-bounds.height)) &&
+           clip(dy, bounds.y + bounds.height - segment.a.y) &&
            t1 >= t0;
 }
 

@@ -44,8 +44,9 @@ association status, an empty endpoint reference, missing connector/pin/endpoint
 references, or a resolved association whose expected terminal object was not
 found.
 
-The new `connector_terminal_materialization_audit_near_focus` array audits each
-association whose pin lies in the focus region. It records the expected stable
+The new `connector_terminal_materialization_audit` array audits every
+connector-terminal association across the source and records `pin_in_focus` so
+the investigated connector can be separated from other source locations. It records the expected stable
 terminal ID, whether that terminal actually exists, association and pin
 confidence, connector/pin/endpoint reference presence, available crossing
 evidence (segment ID, interaction, confidence, location, provenance stage),
@@ -82,6 +83,8 @@ Run from the repository root in Windows PowerShell:
     $r.production_connector_crossings_near_focus | Format-List
     $r.production_connector_terminal_associations_near_focus | Format-List
     $r.production_connector_terminals_near_focus | Format-List
+    $r.population | Select-Object production_connector_associations_resolved, production_connector_associations_unresolved, production_connector_associations_conflicted, production_connector_associations_materialized, production_connector_association_materialization_outcomes | Format-List
+    $r.connector_terminal_materialization_audit | ConvertTo-Json -Depth 10
     $r.raw_morphology_segments_near_focus | Format-List
     $r.production_topology_near_focus | ConvertTo-Json -Depth 8
     git diff --check

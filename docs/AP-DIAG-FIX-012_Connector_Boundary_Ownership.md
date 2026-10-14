@@ -76,14 +76,19 @@ The diagnostic now serializes full-source inventories (not only objects near the
 
 The new `connector_observation_gate_audit_all` array has one record per detected connector geometry region. It maps the detector region to the expected stable production connector ID, reports detected and effective bounds, and indicates whether a rectangular-stroke boundary was reconstructed and whether a production connector candidate exists.
 
-For each region it compares three observation gates over the current post-ownership normalized conductor segments:
-- `legacy_gate_interaction_count`: detected bounds and the previous minimum 3 px overlap rule.
-- `effective_bounds_strict_gate_interaction_count`: resolved effective bounds but still the previous minimum 3 px overlap rule.
-- `current_gate_interaction_count`: effective bounds and the new rule that also admits a terminating endpoint within the existing 2 px expanded-boundary margin even when in-bounds overlap is under 3 px.
+For each region it compares four gate populations over the current post-ownership normalized conductor segments:
+- `legacy_gate_interaction_count`: detected bounds and the prior minimum 3 px overlap rule.
+- `effective_bounds_strict_gate_interaction_count`: resolved effective bounds with the minimum 3 px overlap rule still enforced.
+- `prior_unrestricted_gate_interaction_count`: the previous AP-DIAG-FIX-012 behavior, which admitted a termination contact under the effective bounds even if the overlap was under 3 px, regardless of whether a rectangular frame had been reconstructed.
+- `current_gate_interaction_count`: the corrected production policy. An overlap of at least 3 px is accepted normally; below that threshold, termination contact is accepted only when the connector housing boundary was reconstructed from the complete rectangular-stroke evidence.
 
-The record contains `newly_admitted_segments` with each segment ID, overlap values, endpoint-nearness flags, and an admission reason. This is a diagnostic counterfactual, not a baseline replay: `counterfactual_reuses_current_normalized_segments` is deliberately true. It isolates the gate/bounds difference while holding the current normalized conductor population constant. It must not be represented as a complete reconstruction of the pre-fix production model.
+The first execution of this audit identified the candidate at detected bounds `(90,98,20,21)` as having no reconstructed boundary, with one legacy interaction and two interactions under the unrestricted termination-contact rule. Its second interaction came from `normalized-conductor-segment-008f738f891842bc` at only 2 px overlap. That segment caused the region to meet the two-interaction candidate threshold only under the unrestricted exception. This is not enough evidence to assert the geometry can never be a real connector; it is enough to show that the exception was broadening recognition without the independent boundary evidence required for this AP.
 
-Use these results to determine whether an off-focus candidate existed under the legacy gate or is admitted only by the new termination-contact exception. Do not change production code based only on the global candidate count.
+Production now uses the shared `connector_observation_passes_overlap_gate` policy: the short-contact exception requires `reconstructed_from_rectangular_strokes=true`. The target connector continues to qualify because its frame was reconstructed; regions without that evidence retain the legacy 3 px floor. A focused regression assertion was added to `test_connector_geometry_detector` for short contacts both with and without reconstructed-boundary evidence.
+
+The audit also reports `suppressed_without_reconstructed_boundary_count` and `suppressed_without_reconstructed_boundary_segments` so the former unrestricted behavior can be directly inspected. `newly_admitted_segments` records segments newly admitted by the corrected policy relative to the legacy detected-bounds gate.
+
+This is a diagnostic counterfactual, not a baseline replay: `counterfactual_reuses_current_normalized_segments` is deliberately true. It isolates the overlap/bounds policy while holding the current normalized conductor population constant. It must not be represented as a complete reconstruction of the pre-fix production model.
 
 ## Required local validation
 

@@ -689,10 +689,25 @@ void write_connector_association_audit(
             for (std::size_t i = 0; i < supporting_edges.size(); ++i) {
                 if (i) out << ",";
                 const auto& edge = *supporting_edges[i];
+                const auto from_node = std::find_if(
+                    model.nodes.begin(), model.nodes.end(),
+                    [&](const TopologyNode& node) { return node.id == edge.from_node; });
+                const auto to_node = std::find_if(
+                    model.nodes.begin(), model.nodes.end(),
+                    [&](const TopologyNode& node) { return node.id == edge.to_node; });
                 out << "{\"edge_id\":\"" << esc(edge.id)
                     << "\",\"conductor_segment_id\":\"" << esc(edge.conductor_segment)
-                    << "\",\"from_type\":\"" << node_type(edge.from_type)
-                    << "\",\"to_type\":\"" << node_type(edge.to_type) << "\"}";
+                    << "\",\"from_node_id\":\"" << esc(edge.from_node)
+                    << "\",\"to_node_id\":\"" << esc(edge.to_node) << "\"";
+                if (from_node != model.nodes.end())
+                    out << ",\"from_node_position\":{\"x\":" << from_node->position.x
+                        << ",\"y\":" << from_node->position.y
+                        << "},\"from_type\":\"" << node_type(from_node->type) << "\"";
+                if (to_node != model.nodes.end())
+                    out << ",\"to_node_position\":{\"x\":" << to_node->position.x
+                        << ",\"y\":" << to_node->position.y
+                        << "},\"to_type\":\"" << node_type(to_node->type) << "\"";
+                out << "}";
             }
             out << "]}";
         }

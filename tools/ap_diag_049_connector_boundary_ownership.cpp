@@ -263,11 +263,12 @@ void write_text(
 }
 
 void write_connector_regions(
-    std::ostream& out, const std::vector<ShapeRegion>& regions, const Focus& focus) {
+    std::ostream& out, const std::vector<ShapeRegion>& regions, const Focus& focus,
+    bool include_all = false) {
     out << "[";
     bool first = true;
     for (const auto& c : regions) {
-        if (!box_in_focus(c.bounds, focus)) continue;
+        if (!include_all && !box_in_focus(c.bounds, focus)) continue;
         if (!first) out << ",";
         first = false;
         out << "\n    {\"id\":\"" << esc(c.id)
@@ -281,11 +282,11 @@ void write_connector_regions(
 
 void write_connector_candidates(
     std::ostream& out, const std::vector<ConnectorCandidate>& connectors,
-    const Focus& focus) {
+    const Focus& focus, bool include_all = false) {
     out << "[";
     bool first = true;
     for (const auto& c : connectors) {
-        if (!box_in_focus(c.bounds, focus)) continue;
+        if (!include_all && !box_in_focus(c.bounds, focus)) continue;
         if (!first) out << ",";
         first = false;
         out << "\n    {\"id\":\"" << esc(c.id)
@@ -303,11 +304,12 @@ void write_connector_candidates(
 void write_connector_boundary_resolutions(
     std::ostream& out,
     const std::vector<ConnectorBoundaryResolution>& boundaries,
-    const Focus& focus) {
+    const Focus& focus, bool include_all = false) {
     out << "[";
     bool first = true;
     for (const auto& boundary : boundaries) {
-        if (!box_in_focus(boundary.effective_bounds, focus) &&
+        if (!include_all &&
+            !box_in_focus(boundary.effective_bounds, focus) &&
             !box_in_focus(boundary.detected_bounds, focus)) {
             continue;
         }
@@ -327,11 +329,12 @@ void write_connector_boundary_resolutions(
 }
 
 void write_connector_pins(
-    std::ostream& out, const WireModel& model, const Focus& focus) {
+    std::ostream& out, const WireModel& model, const Focus& focus,
+    bool include_all = false) {
     out << "[";
     bool first = true;
     for (const auto& pin : model.connector_pins) {
-        if (!point_in_focus(pin.position, focus))
+        if (!include_all && !point_in_focus(pin.position, focus))
             continue;
         if (!first) out << ",";
         first = false;
@@ -353,11 +356,12 @@ void write_connector_pins(
 }
 
 void write_connector_crossings(
-    std::ostream& out, const WireModel& model, const Focus& focus) {
+    std::ostream& out, const WireModel& model, const Focus& focus,
+    bool include_all = false) {
     out << "[";
     bool first = true;
     for (const auto& crossing : model.connector_conductor_crossing_evidence) {
-        if (!point_in_focus(crossing.crossing_point, focus))
+        if (!include_all && !point_in_focus(crossing.crossing_point, focus))
             continue;
         if (!first) out << ",";
         first = false;
@@ -381,7 +385,8 @@ void write_connector_crossings(
 }
 
 void write_connector_associations(
-    std::ostream& out, const WireModel& model, const Focus& focus) {
+    std::ostream& out, const WireModel& model, const Focus& focus,
+    bool include_all = false) {
     out << "[";
     bool first = true;
     for (const auto& association : model.connector_terminal_associations) {
@@ -391,7 +396,7 @@ void write_connector_associations(
                 return candidate.id == association.pin_id;
             });
         if (pin == model.connector_pins.end() ||
-            !point_in_focus(pin->position, focus))
+            (!include_all && !point_in_focus(pin->position, focus)))
             continue;
         if (!first) out << ",";
         first = false;
@@ -720,11 +725,12 @@ void write_connector_association_audit(
 
 
 void write_connector_terminals(
-    std::ostream& out, const WireModel& model, const Focus& focus) {
+    std::ostream& out, const WireModel& model, const Focus& focus,
+    bool include_all = false) {
     out << "[";
     bool first = true;
     for (const auto& terminal : model.connector_terminals) {
-        if (!point_in_focus(terminal.position, focus))
+        if (!include_all && !point_in_focus(terminal.position, focus))
             continue;
         if (!first) out << ",";
         first = false;
@@ -945,6 +951,173 @@ void write_production_graph(
     out << "]\n  }";
 }
 
+bool diagnostic_segment_rect_overlap(
+    const Segment2D& segment, const BoundingBox& bounds,
+    double& t0, double& t1) {
+    const double dx = segment.b.x - segment.a.x;
+    const double dy = segment.b.y - segment.a.y;
+    t0 = 0.0;
+    t1 = 1.0;
+    auto clip = [&](double p, double q) {
+        if (std::abs(p) < 1e-9)
+            return q >= 0.0;
+        const double r = q / p;
+        if (p < 0.0) {
+            if (r > t1) return false;
+            if (r > t0) t0 = r;
+        } else {
+            if (r < t0) return false;
+            if (r < t1) t1 = r;
+        }
+        return true;
+    };
+    return clip(-dx, segment.a.x - bounds.x) &&
+           clip(dx, segment.a.x - bounds.x - (-bounds.width)) &&
+           clip(-dy, segment.a.y - bounds.y) &&
+           clip(dy, segment.a.y - bounds.y - (-bounds.height)) &&
+           t1 >= t0;
+}
+
+bool diagnostic_point_in_bounds(
+    const Point2D& point, const BoundingBox& bounds, double margin) {
+    return point.x >= bounds.x - margin &&
+           point.x <= bounds.x + bounds.width + margin &&
+           point.y >= bounds.y - margin &&
+           point.y <= bounds.y + bounds.height + margin;
+}
+
+void write_connector_observation_gate_audit(
+    std::ostream& out,
+    const std::vector<ShapeRegion>& regions,
+    const GeometryOwnershipArtifacts& ownership,
+    const WireModel& model) {
+    out << "[";
+    bool first_region = true;
+    constexpr double kMinimumOverlapPx = 3.0;
+    constexpr double kBoundaryMarginPx = 2.0;
+    constexpr std::size_t kMinimumInteractions = 2;
+
+    for (const auto& region : regions) {
+        const auto boundary = std::find_if(
+            ownership.connector_boundaries.begin(),
+            ownership.connector_boundaries.end(),
+            [&](const ConnectorBoundaryResolution& item) {
+                return item.connector_region_id == region.id;
+            });
+        const BoundingBox effective_bounds =
+            boundary == ownership.connector_boundaries.end()
+                ? region.bounds : boundary->effective_bounds;
+        const bool boundary_reconstructed =
+            boundary != ownership.connector_boundaries.end() &&
+            boundary->reconstructed_from_rectangular_strokes;
+        const std::string connector_id = stable_id("connector", region.id);
+        const bool candidate_present = std::any_of(
+            model.connector_candidates.begin(), model.connector_candidates.end(),
+            [&](const ConnectorCandidate& candidate) {
+                return candidate.id == connector_id;
+            });
+
+        std::size_t legacy_count = 0;
+        std::size_t effective_strict_count = 0;
+        std::size_t current_count = 0;
+        std::size_t legacy_to_current_additions = 0;
+        std::ostringstream newly_admitted;
+        newly_admitted << "[";
+        bool first_added = true;
+
+        for (const auto& segment : model.conductor_segments) {
+            double old_t0 = 0.0, old_t1 = 0.0;
+            const bool intersects_detected = diagnostic_segment_rect_overlap(
+                segment.geometry, region.bounds, old_t0, old_t1);
+            const double old_overlap = intersects_detected
+                ? segment.geometry.length() * (old_t1 - old_t0) : 0.0;
+            const bool legacy_accepted =
+                intersects_detected && old_overlap >= kMinimumOverlapPx;
+            if (legacy_accepted) ++legacy_count;
+
+            double new_t0 = 0.0, new_t1 = 0.0;
+            const bool intersects_effective = diagnostic_segment_rect_overlap(
+                segment.geometry, effective_bounds, new_t0, new_t1);
+            const double new_overlap = intersects_effective
+                ? segment.geometry.length() * (new_t1 - new_t0) : 0.0;
+            const bool strict_effective_accepted =
+                intersects_effective && new_overlap >= kMinimumOverlapPx;
+            if (strict_effective_accepted) ++effective_strict_count;
+
+            const bool a_near = diagnostic_point_in_bounds(
+                segment.geometry.a, effective_bounds, kBoundaryMarginPx);
+            const bool b_near = diagnostic_point_in_bounds(
+                segment.geometry.b, effective_bounds, kBoundaryMarginPx);
+            const bool termination_contact = a_near != b_near;
+            const bool current_accepted = intersects_effective &&
+                (new_overlap >= kMinimumOverlapPx || termination_contact);
+            if (current_accepted) ++current_count;
+
+            if (current_accepted && !legacy_accepted) {
+                ++legacy_to_current_additions;
+                if (!first_added) newly_admitted << ",";
+                first_added = false;
+                std::string reason;
+                if (!intersects_detected || new_overlap >= kMinimumOverlapPx) {
+                    reason = "effective_bounds_changed";
+                }
+                if (new_overlap < kMinimumOverlapPx && termination_contact) {
+                    if (!reason.empty()) reason += "+";
+                    reason += "termination_contact_exception";
+                }
+                newly_admitted
+                    << "{\"segment_id\":\"" << esc(segment.id)
+                    << "\",\"detected_bounds_intersects\":"
+                    << (intersects_detected ? "true" : "false")
+                    << ",\"detected_bounds_overlap_px\":" << old_overlap
+                    << ",\"effective_bounds_intersects\":"
+                    << (intersects_effective ? "true" : "false")
+                    << ",\"effective_bounds_overlap_px\":" << new_overlap
+                    << ",\"a_near_effective_bounds\":"
+                    << (a_near ? "true" : "false")
+                    << ",\"b_near_effective_bounds\":"
+                    << (b_near ? "true" : "false")
+                    << ",\"termination_contact\":"
+                    << (termination_contact ? "true" : "false")
+                    << ",\"admission_reason\":\"" << esc(reason) << "\"}";
+            }
+        }
+        newly_admitted << "]";
+
+        if (!first_region) out << ",";
+        first_region = false;
+        out << "\n  {\"connector_region_id\":\"" << esc(region.id)
+            << "\",\"production_connector_id\":\"" << esc(connector_id)
+            << "\",\"detected_bounds\":";
+        write_box(out, region.bounds);
+        out << ",\"effective_bounds\":";
+        write_box(out, effective_bounds);
+        out << ",\"boundary_reconstructed_from_rectangular_strokes\":"
+            << (boundary_reconstructed ? "true" : "false")
+            << ",\"production_candidate_present\":"
+            << (candidate_present ? "true" : "false")
+            << ",\"counterfactual_reuses_current_normalized_segments\":true"
+            << ",\"minimum_overlap_px\":" << kMinimumOverlapPx
+            << ",\"termination_endpoint_margin_px\":" << kBoundaryMarginPx
+            << ",\"minimum_interactions\":" << kMinimumInteractions
+            << ",\"legacy_gate_interaction_count\":" << legacy_count
+            << ",\"effective_bounds_strict_gate_interaction_count\":"
+            << effective_strict_count
+            << ",\"current_gate_interaction_count\":" << current_count
+            << ",\"legacy_gate_would_meet_minimum\":"
+            << (legacy_count >= kMinimumInteractions ? "true" : "false")
+            << ",\"effective_bounds_strict_gate_would_meet_minimum\":"
+            << (effective_strict_count >= kMinimumInteractions ? "true" : "false")
+            << ",\"current_gate_would_meet_minimum\":"
+            << (current_count >= kMinimumInteractions ? "true" : "false")
+            << ",\"newly_admitted_segment_count\":" << legacy_to_current_additions
+            << ",\"newly_admitted_segments\":" << newly_admitted.str() << "}";
+    }
+    if (!first_region) out << "\n";
+    out << "]";
+}
+
+
 } // namespace
 
 int main(int argc, char** argv) {
@@ -1104,6 +1277,24 @@ int main(int argc, char** argv) {
         write_connector_associations(out, model, focus);
         out << ",\n  \"production_connector_terminals_near_focus\":";
         write_connector_terminals(out, model, focus);
+        out << ",\n  \"connector_geometry_regions_all\":";
+        write_connector_regions(out, connector_regions.regions, focus, true);
+        out << ",\n  \"connector_boundary_resolutions_all\":";
+        write_connector_boundary_resolutions(
+            out, ownership.connector_boundaries, focus, true);
+        out << ",\n  \"production_connector_candidates_all\":";
+        write_connector_candidates(out, model.connector_candidates, focus, true);
+        out << ",\n  \"production_connector_pins_all\":";
+        write_connector_pins(out, model, focus, true);
+        out << ",\n  \"production_connector_crossings_all\":";
+        write_connector_crossings(out, model, focus, true);
+        out << ",\n  \"production_connector_terminal_associations_all\":";
+        write_connector_associations(out, model, focus, true);
+        out << ",\n  \"production_connector_terminals_all\":";
+        write_connector_terminals(out, model, focus, true);
+        out << ",\n  \"connector_observation_gate_audit_all\":";
+        write_connector_observation_gate_audit(
+            out, connector_regions.regions, ownership, model);
         out << ",\n  \"connector_terminal_materialization_audit\":";
         write_connector_association_audit(out, model, focus);
         out << ",\n  \"raw_morphology_segments_near_focus\":";

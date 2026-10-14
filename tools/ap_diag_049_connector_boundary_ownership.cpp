@@ -588,7 +588,7 @@ void write_connector_association_audit(
             << "\",\"connector_id\":\"" << esc(association.connector_id)
             << "\",\"pin_id\":\"" << esc(association.pin_id)
             << "\",\"pin_in_focus\":" << (pin_in_focus ? "true" : "false")
-            << ",\"association_status\":\"" 
+            << ",\"association_status\":\""
             << association_status_name(association.status)
             << "\",\"association_confidence\":\""
             << confidence_name(association.confidence)

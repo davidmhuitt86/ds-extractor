@@ -582,9 +582,12 @@ WireModel ExtractionPipeline::run(
         association.evidence_ids =
             pin.conductor_crossing_evidence_ids;
 
-        if (matches.size() == 1 &&
-            (matches.front()->kind == EndpointKind::GeometricConductorEnd ||
-             matches.front()->kind == EndpointKind::ConnectorTerminal)) {
+        // This pass has only geometric endpoint candidates. Their semantic
+        // kinds are reconstructed later, so eligibility must not depend on the
+        // provisional EndpointCandidate.kind here. Record only a unique,
+        // conductor-supported geometric association; semantic compatibility
+        // is checked after endpoint semantics have been finalized.
+        if (matches.size() == 1) {
             association.endpoint_id = matches.front()->id;
             association.status =
                 ConnectorTerminalAssociationStatus::Resolved;
@@ -601,16 +604,6 @@ WireModel ExtractionPipeline::run(
         model.connector_terminal_associations.push_back(
             std::move(association));
     }
-
-    ConnectorTerminalModelBuilder connector_terminal_builder;
-    const ConnectorModelArtifacts connector_artifacts =
-        connector_terminal_builder.build_native(
-            model.connector_candidates,
-            model.connector_pins,
-            model.connector_terminal_associations,
-            model.endpoint_candidates);
-    model.connector_candidates = connector_artifacts.connectors;
-    model.connector_terminals = connector_artifacts.terminals;
 
     // AP-DIAG-FIX-006: TerminalLocationDetector::has_ownership_evidence()
     // accepts an associated RejectedGeometryEvidence entry as sufficient
@@ -702,10 +695,54 @@ WireModel ExtractionPipeline::run(
         model.endpoint_candidates,
         model.engineering_object_semantics);
 
-    // AP-WIRE-020: materialize explicit connector and connector-terminal
-    // Connector-native materialization was completed above. The historical
-    // component-based builder remains unchanged and is not invoked for
-    // ConnectorBody candidates.
+    // AP-PIPE-002: geometric pin association is computed earlier, but endpoint
+    // semantic identity is authoritative only after EndpointSemanticReconstructor
+    // and EngineeringObjectSemanticApplier have run. Reconcile the associations
+    // now, then materialize connector terminals from those finalized endpoints.
+    for (auto& association : model.connector_terminal_associations) {
+        if (association.status !=
+            ConnectorTerminalAssociationStatus::Resolved) {
+            continue;
+        }
+
+        const auto endpoint_it = std::find_if(
+            model.endpoint_candidates.begin(),
+            model.endpoint_candidates.end(),
+            [&association](const EndpointCandidate& endpoint) {
+                return endpoint.id == association.endpoint_id;
+            });
+
+        if (endpoint_it == model.endpoint_candidates.end()) {
+            association.status =
+                ConnectorTerminalAssociationStatus::Unresolved;
+            association.endpoint_id.clear();
+            continue;
+        }
+
+        if (endpoint_it->kind != EndpointKind::GeometricConductorEnd &&
+            endpoint_it->kind != EndpointKind::ConnectorTerminal) {
+            association.status =
+                endpoint_it->kind == EndpointKind::Unresolved
+                    ? ConnectorTerminalAssociationStatus::Unresolved
+                    : ConnectorTerminalAssociationStatus::Conflicted;
+            association.evidence_ids.push_back(endpoint_it->id);
+            association.endpoint_id.clear();
+        }
+    }
+
+    ConnectorTerminalModelBuilder connector_terminal_builder;
+    const ConnectorModelArtifacts connector_artifacts =
+        connector_terminal_builder.build_native(
+            model.connector_candidates,
+            model.connector_pins,
+            model.connector_terminal_associations,
+            model.endpoint_candidates);
+    model.connector_candidates = connector_artifacts.connectors;
+    model.connector_terminals = connector_artifacts.terminals;
+
+    // AP-WIRE-020: Connector-native materialization is completed here.
+    // The historical component-based builder remains unchanged and is not
+    // invoked for ConnectorBody candidates.
 
     // AP-WIRE-030: resolve each endpoint's Conductor Boundary and
     // engineering-terminal association from already-produced evidence

@@ -84,5 +84,52 @@ int main() {
         }
     }
 
+    // AP-PIPE-002: connector-native terminal materialization must consume
+    // finalized endpoint semantics, not the provisional geometric default.
+    {
+        ConnectorCandidate native_connector;
+        native_connector.id = "native-connector";
+        native_connector.bounds = BoundingBox{100, 100, 30, 20};
+
+        ConnectorPin pin;
+        pin.id = "native-pin";
+        pin.connector_id = native_connector.id;
+        pin.position = Point2D{100, 110};
+
+        ConnectorTerminalAssociationEvidence association;
+        association.id = "association-endpoint-1";
+        association.connector_id = native_connector.id;
+        association.pin_id = pin.id;
+        association.endpoint_id = endpoint.id;
+        association.status = ConnectorTerminalAssociationStatus::Resolved;
+
+        EndpointCandidate semantic_endpoint = endpoint;
+        semantic_endpoint.kind = EndpointKind::GeometricConductorEnd;
+
+        const auto geometric_result = builder.build_native(
+            {native_connector}, {pin}, {association}, {semantic_endpoint});
+        assert(geometric_result.connectors.size() == 1);
+        assert(geometric_result.terminals.size() == 1);
+        assert(geometric_result.terminals[0].endpoint_id == endpoint.id);
+
+        semantic_endpoint.kind = EndpointKind::Ground;
+        const auto ground_result = builder.build_native(
+            {native_connector}, {pin}, {association}, {semantic_endpoint});
+        assert(ground_result.connectors.size() == 1);
+        assert(ground_result.terminals.empty());
+
+        semantic_endpoint.kind = EndpointKind::ComponentTerminal;
+        const auto component_result = builder.build_native(
+            {native_connector}, {pin}, {association}, {semantic_endpoint});
+        assert(component_result.connectors.size() == 1);
+        assert(component_result.terminals.empty());
+
+        semantic_endpoint.kind = EndpointKind::Unresolved;
+        const auto unresolved_result = builder.build_native(
+            {native_connector}, {pin}, {association}, {semantic_endpoint});
+        assert(unresolved_result.connectors.size() == 1);
+        assert(unresolved_result.terminals.empty());
+    }
+
     return 0;
 }

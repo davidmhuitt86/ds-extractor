@@ -1070,11 +1070,11 @@ void write_connector_observation_gate_audit(
                 if (!first_suppressed) suppressed_without_boundary_evidence << ",";
                 first_suppressed = false;
                 suppressed_without_boundary_evidence
-                    << "{\\"segment_id\\":\\"" << esc(segment.id)
-                    << "\\",\\"effective_bounds_overlap_px\\":" << new_overlap
-                    << ",\\"termination_contact\\":"
+                    << "{\"segment_id\":\"" << esc(segment.id)
+                    << "\",\"effective_bounds_overlap_px\":" << new_overlap
+                    << ",\"termination_contact\":"
                     << (termination_contact ? "true" : "false")
-                    << ",\\"admission_reason\\":\\"termination_contact_without_reconstructed_boundary\\"}";
+                    << ",\"admission_reason\":\"termination_contact_without_reconstructed_boundary\"}";
             }
 
             if (current_accepted && !legacy_accepted) {

@@ -1081,7 +1081,7 @@ int main(int argc, char** argv) {
         write_connector_associations(out, model, focus);
         out << ",\n  \"production_connector_terminals_near_focus\":";
         write_connector_terminals(out, model, focus);
-        out << ",\n  "connector_terminal_materialization_audit_near_focus":";
+        out << ",\n  \"connector_terminal_materialization_audit_near_focus\":";
         write_connector_association_audit(out, model, focus);
         out << ",\n  \"raw_morphology_segments_near_focus\":";
         write_raw_segments(

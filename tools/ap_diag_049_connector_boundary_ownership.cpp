@@ -1,4 +1,5 @@
 #include "eke_dx_wire/pipeline/extraction_pipeline.hpp"
+#include "eke_dx_wire/core/ids.hpp"
 
 #include "eke_dx_wire/image/image_loader.hpp"
 #include "eke_dx_wire/image/normalizer.hpp"
@@ -416,6 +417,285 @@ void write_connector_associations(
     out << "]";
 }
 
+
+const ConnectorCandidate* find_connector_candidate(
+    const WireModel& model, const std::string& id) {
+    const auto it = std::find_if(model.connector_candidates.begin(),
+        model.connector_candidates.end(),
+        [&](const ConnectorCandidate& item) { return item.id == id; });
+    return it == model.connector_candidates.end() ? nullptr : &*it;
+}
+
+const ConnectorPin* find_connector_pin(
+    const WireModel& model, const std::string& id) {
+    const auto it = std::find_if(model.connector_pins.begin(),
+        model.connector_pins.end(),
+        [&](const ConnectorPin& item) { return item.id == id; });
+    return it == model.connector_pins.end() ? nullptr : &*it;
+}
+
+const EndpointCandidate* find_endpoint_candidate(
+    const WireModel& model, const std::string& id) {
+    const auto it = std::find_if(model.endpoint_candidates.begin(),
+        model.endpoint_candidates.end(),
+        [&](const EndpointCandidate& item) { return item.id == id; });
+    return it == model.endpoint_candidates.end() ? nullptr : &*it;
+}
+
+const ConnectorTerminal* find_connector_terminal(
+    const WireModel& model, const std::string& id) {
+    const auto it = std::find_if(model.connector_terminals.begin(),
+        model.connector_terminals.end(),
+        [&](const ConnectorTerminal& item) { return item.id == id; });
+    return it == model.connector_terminals.end() ? nullptr : &*it;
+}
+
+std::string association_status_name(ConnectorTerminalAssociationStatus value) {
+    switch (value) {
+    case ConnectorTerminalAssociationStatus::Resolved: return "resolved";
+    case ConnectorTerminalAssociationStatus::Unresolved: return "unresolved";
+    case ConnectorTerminalAssociationStatus::Conflicted: return "conflicted";
+    }
+    return "unknown";
+}
+
+std::string terminal_role_name(TerminalRole value) {
+    switch (value) {
+    case TerminalRole::Unknown: return "unknown";
+    case TerminalRole::ComponentTerminal: return "component_terminal";
+    case TerminalRole::ConnectorTerminal: return "connector_terminal";
+    case TerminalRole::GroundTerminal: return "ground_terminal";
+    case TerminalRole::PowerSource: return "power_source";
+    case TerminalRole::ExternalConnection: return "external_connection";
+    }
+    return "unknown";
+}
+
+const char* connector_interaction_name(ConnectorConductorInteractionKind value) {
+    switch (value) {
+    case ConnectorConductorInteractionKind::PassThrough: return "pass_through";
+    case ConnectorConductorInteractionKind::Termination: return "termination";
+    case ConnectorConductorInteractionKind::Unknown: return "unknown";
+    }
+    return "unknown";
+}
+
+bool contains_id(const std::vector<std::string>& ids, const std::string& id) {
+    return std::find(ids.begin(), ids.end(), id) != ids.end();
+}
+
+std::string terminal_materialization_outcome(
+    const ConnectorTerminalAssociationEvidence& association,
+    const WireModel& model,
+    std::string& expected_terminal_id) {
+    expected_terminal_id.clear();
+    if (association.status == ConnectorTerminalAssociationStatus::Unresolved)
+        return "association_status_unresolved";
+    if (association.status == ConnectorTerminalAssociationStatus::Conflicted)
+        return "association_status_conflicted";
+    if (association.endpoint_id.empty())
+        return "endpoint_id_empty";
+
+    expected_terminal_id = stable_id(
+        "connector-terminal", association.id + ":" + association.endpoint_id);
+
+    // An actual object is authoritative. Endpoint semantic reconstruction
+    // runs later and can alter the endpoint snapshot after materialization.
+    if (find_connector_terminal(model, expected_terminal_id) != nullptr)
+        return "materialized";
+    if (find_connector_candidate(model, association.connector_id) == nullptr)
+        return "connector_reference_missing";
+    if (find_connector_pin(model, association.pin_id) == nullptr)
+        return "pin_reference_missing";
+    if (find_endpoint_candidate(model, association.endpoint_id) == nullptr)
+        return "endpoint_reference_missing";
+
+    // Do not infer the earlier builder-stage endpoint-kind failure from the
+    // later endpoint snapshot. Preserve the discrepancy as an audit finding.
+    return "resolved_association_terminal_missing";
+}
+
+struct ConnectorAssociationAuditCounts {
+    std::size_t resolved = 0;
+    std::size_t unresolved = 0;
+    std::size_t conflicted = 0;
+    std::size_t materialized = 0;
+    std::size_t association_status_unresolved = 0;
+    std::size_t association_status_conflicted = 0;
+    std::size_t endpoint_id_empty = 0;
+    std::size_t connector_reference_missing = 0;
+    std::size_t pin_reference_missing = 0;
+    std::size_t endpoint_reference_missing = 0;
+    std::size_t resolved_association_terminal_missing = 0;
+};
+
+ConnectorAssociationAuditCounts count_connector_associations(const WireModel& model) {
+    ConnectorAssociationAuditCounts counts;
+    for (const auto& association : model.connector_terminal_associations) {
+        switch (association.status) {
+        case ConnectorTerminalAssociationStatus::Resolved: ++counts.resolved; break;
+        case ConnectorTerminalAssociationStatus::Unresolved: ++counts.unresolved; break;
+        case ConnectorTerminalAssociationStatus::Conflicted: ++counts.conflicted; break;
+        }
+        std::string expected_id;
+        const std::string outcome =
+            terminal_materialization_outcome(association, model, expected_id);
+        if (outcome == "materialized") ++counts.materialized;
+        else if (outcome == "association_status_unresolved")
+            ++counts.association_status_unresolved;
+        else if (outcome == "association_status_conflicted")
+            ++counts.association_status_conflicted;
+        else if (outcome == "endpoint_id_empty") ++counts.endpoint_id_empty;
+        else if (outcome == "connector_reference_missing")
+            ++counts.connector_reference_missing;
+        else if (outcome == "pin_reference_missing") ++counts.pin_reference_missing;
+        else if (outcome == "endpoint_reference_missing")
+            ++counts.endpoint_reference_missing;
+        else if (outcome == "resolved_association_terminal_missing")
+            ++counts.resolved_association_terminal_missing;
+    }
+    return counts;
+}
+
+void write_connector_association_audit(
+    std::ostream& out, const WireModel& model, const Focus& focus) {
+    out << "[";
+    bool first_association = true;
+    for (const auto& association : model.connector_terminal_associations) {
+        const ConnectorPin* pin = find_connector_pin(model, association.pin_id);
+        if (pin == nullptr || !point_in_focus(pin->position, focus))
+            continue;
+        if (!first_association) out << ",";
+        first_association = false;
+
+        std::string expected_terminal_id;
+        const std::string outcome = terminal_materialization_outcome(
+            association, model, expected_terminal_id);
+        const ConnectorCandidate* connector =
+            find_connector_candidate(model, association.connector_id);
+        const EndpointCandidate* selected_endpoint = association.endpoint_id.empty()
+            ? nullptr : find_endpoint_candidate(model, association.endpoint_id);
+        const ConnectorTerminal* terminal = expected_terminal_id.empty()
+            ? nullptr : find_connector_terminal(model, expected_terminal_id);
+
+        out << "\n    {\"association_id\":\"" << esc(association.id)
+            << "\",\"connector_id\":\"" << esc(association.connector_id)
+            << "\",\"pin_id\":\"" << esc(association.pin_id)
+            << "\",\"association_status\":\""
+            << association_status_name(association.status)
+            << "\",\"association_confidence\":\""
+            << confidence_name(association.confidence)
+            << "\",\"materialization_outcome\":\"" << outcome
+            << "\",\"materialization_reason\":\"" << outcome
+            << "\",\"expected_terminal_id\":\"" << esc(expected_terminal_id)
+            << "\",\"materialized_terminal_present\":" << (terminal ? "true" : "false")
+            << ",\"connector_reference_present\":" << (connector ? "true" : "false")
+            << ",\"pin_reference_present\":true"
+            << ",\"endpoint_reference_present\":"
+            << (selected_endpoint ? "true" : "false")
+            << ",\"pin_confidence\":\"" << confidence_name(pin->confidence) << "\"";
+
+        if (selected_endpoint != nullptr) {
+            const double dx = selected_endpoint->position.x - pin->position.x;
+            const double dy = selected_endpoint->position.y - pin->position.y;
+            out << ",\"selected_endpoint_snapshot_after_later_stages\":{"
+                << "\"id\":\"" << esc(selected_endpoint->id)
+                << "\",\"x\":" << selected_endpoint->position.x
+                << ",\"y\":" << selected_endpoint->position.y
+                << ",\"kind\":\"" << endpoint_kind(selected_endpoint->kind)
+                << "\",\"terminal_role\":\""
+                << terminal_role_name(selected_endpoint->terminal_role)
+                << "\",\"confidence\":\"" << confidence_name(selected_endpoint->confidence)
+                << "\",\"distance_to_pin_px\":" << std::hypot(dx, dy)
+                << ",\"incident_edge_count\":" << selected_endpoint->incident_edges.size()
+                << "}";
+        } else {
+            out << ",\"selected_endpoint_snapshot_after_later_stages\":null";
+        }
+
+        std::vector<std::string> pin_segment_ids;
+        out << ",\"crossing_evidence\":[";
+        bool first_crossing = true;
+        for (const auto& crossing_id : pin->conductor_crossing_evidence_ids) {
+            const auto crossing_it = std::find_if(
+                model.connector_conductor_crossing_evidence.begin(),
+                model.connector_conductor_crossing_evidence.end(),
+                [&](const ConnectorConductorCrossingEvidence& item) {
+                    return item.id == crossing_id;
+                });
+            if (crossing_it == model.connector_conductor_crossing_evidence.end())
+                continue;
+            const auto& crossing = *crossing_it;
+            if (!first_crossing) out << ",";
+            first_crossing = false;
+            out << "{\"id\":\"" << esc(crossing.id)
+                << "\",\"referenced_by_association\":"
+                << (contains_id(association.evidence_ids, crossing.id) ? "true" : "false")
+                << ",\"conductor_segment_id\":\"" << esc(crossing.conductor_segment_id)
+                << "\",\"interaction\":\"" << connector_interaction_name(crossing.interaction)
+                << "\",\"confidence\":\"" << confidence_name(crossing.confidence)
+                << "\",\"x\":" << crossing.crossing_point.x
+                << ",\"y\":" << crossing.crossing_point.y
+                << ",\"provenance_stage\":\"" << esc(crossing.provenance.stage) << "\"}";
+            pin_segment_ids.push_back(crossing.conductor_segment_id);
+        }
+        out << "]";
+
+        // Reconstruct the exact evidence gates used by the association stage:
+        // endpoint within 6 px and an incident topology edge on one of the
+        // conductor segments observed at this pin.
+        out << ",\"nearby_endpoint_candidates_within_6px\":[";
+        bool first_endpoint = true;
+        for (const auto& endpoint : model.endpoint_candidates) {
+            const double dx = endpoint.position.x - pin->position.x;
+            const double dy = endpoint.position.y - pin->position.y;
+            const double d = std::hypot(dx, dy);
+            if (d > 6.0) continue;
+
+            std::vector<const TopologyEdge*> supporting_edges;
+            for (const auto& edge_id : endpoint.incident_edges) {
+                const auto edge_it = std::find_if(
+                    model.edges.begin(), model.edges.end(),
+                    [&](const TopologyEdge& edge) { return edge.id == edge_id; });
+                if (edge_it != model.edges.end() &&
+                    contains_id(pin_segment_ids, edge_it->conductor_segment)) {
+                    supporting_edges.push_back(&*edge_it);
+                }
+            }
+
+            if (!first_endpoint) out << ",";
+            first_endpoint = false;
+            out << "{\"id\":\"" << esc(endpoint.id)
+                << "\",\"x\":" << endpoint.position.x
+                << ",\"y\":" << endpoint.position.y
+                << ",\"distance_to_pin_px\":" << d
+                << ",\"kind_after_later_stages\":\"" << endpoint_kind(endpoint.kind)
+                << "\",\"terminal_role_after_later_stages\":\""
+                << terminal_role_name(endpoint.terminal_role)
+                << "\",\"confidence_after_later_stages\":\""
+                << confidence_name(endpoint.confidence)
+                << "\",\"is_association_endpoint\":"
+                << (endpoint.id == association.endpoint_id ? "true" : "false")
+                << ",\"conductor_supported_by_pin_crossing_segments\":"
+                << (supporting_edges.empty() ? "false" : "true")
+                << ",\"supporting_incident_edges\":[";
+            for (std::size_t i = 0; i < supporting_edges.size(); ++i) {
+                if (i) out << ",";
+                const auto& edge = *supporting_edges[i];
+                out << "{\"edge_id\":\"" << esc(edge.id)
+                    << "\",\"conductor_segment_id\":\"" << esc(edge.conductor_segment)
+                    << "\",\"from_type\":\"" << node_type(edge.from_type)
+                    << "\",\"to_type\":\"" << node_type(edge.to_type) << "\"}";
+            }
+            out << "]}";
+        }
+        out << "]}";
+    }
+    if (!first_association) out << "\n  ";
+    out << "]";
+}
+
+
 void write_connector_terminals(
     std::ostream& out, const WireModel& model, const Focus& focus) {
     out << "[";
@@ -755,8 +1035,31 @@ int main(int argc, char** argv) {
             << ",\"production_connector_pins\":" << model.connector_pins.size()
             << ",\"production_connector_crossings\":" << model.connector_conductor_crossing_evidence.size()
             << ",\"production_connector_terminal_associations\":" << model.connector_terminal_associations.size()
-            << ",\"production_connector_terminals\":" << model.connector_terminals.size()
-            << "},\n"
+            << ",\"production_connector_terminals\":" << model.connector_terminals.size();
+        const ConnectorAssociationAuditCounts association_counts =
+            count_connector_associations(model);
+        out << ",\"production_connector_associations_resolved\":"
+            << association_counts.resolved
+            << ",\"production_connector_associations_unresolved\":"
+            << association_counts.unresolved
+            << ",\"production_connector_associations_conflicted\":"
+            << association_counts.conflicted
+            << ",\"production_connector_associations_materialized\":"
+            << association_counts.materialized
+            << ",\"production_connector_association_materialization_outcomes\":{"
+            << "\"association_status_unresolved\":"
+            << association_counts.association_status_unresolved
+            << ",\"association_status_conflicted\":"
+            << association_counts.association_status_conflicted
+            << ",\"endpoint_id_empty\":" << association_counts.endpoint_id_empty
+            << ",\"connector_reference_missing\":"
+            << association_counts.connector_reference_missing
+            << ",\"pin_reference_missing\":" << association_counts.pin_reference_missing
+            << ",\"endpoint_reference_missing\":"
+            << association_counts.endpoint_reference_missing
+            << ",\"resolved_association_terminal_missing\":"
+            << association_counts.resolved_association_terminal_missing
+            << "}},\n"
             << "  \"shape_regions_near_focus\":";
         write_shapes(out, shapes.regions, focus);
         out << ",\n  \"component_candidates_near_focus\":";
@@ -778,6 +1081,8 @@ int main(int argc, char** argv) {
         write_connector_associations(out, model, focus);
         out << ",\n  \"production_connector_terminals_near_focus\":";
         write_connector_terminals(out, model, focus);
+        out << ",\n  "connector_terminal_materialization_audit_near_focus":";
+        write_connector_association_audit(out, model, focus);
         out << ",\n  \"raw_morphology_segments_near_focus\":";
         write_raw_segments(
             out, detected.conductor_segments, ownership, evidence,

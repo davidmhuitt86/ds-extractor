@@ -2,7 +2,7 @@
 
 ## Status
 
-Connector-boundary ownership implementation and diagnostic audit extension are committed on a branch stacked on AP-DIAG-049. The maintainer reported a clean Release build and full CTest passing before the latest diagnostic-only audit extension. Rebuild and rerun the complete validation sequence against the latest branch head; this branch remains unaccepted pending evidence and topology review.
+Connector-boundary ownership, the global connector-observation gate audit, and the evidence-scoped short-contact policy are committed on a branch stacked on AP-DIAG-049. The supplied global audit showed that the unrestricted sub-3 px termination exception admitted a second off-focus interaction without reconstructed rectangular-frame evidence. The production gate and regression assertions are now narrowed accordingly. The latest source and diagnostic changes have not been built or executed locally; rebuild and rerun the complete validation sequence against the exact latest branch head. This branch remains unaccepted pending that evidence and topology review.
 
 ## Root cause established by AP-DIAG-049
 

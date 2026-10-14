@@ -563,8 +563,8 @@ void write_connector_association_audit(
     bool first_association = true;
     for (const auto& association : model.connector_terminal_associations) {
         const ConnectorPin* pin = find_connector_pin(model, association.pin_id);
-        if (pin == nullptr || !point_in_focus(pin->position, focus))
-            continue;
+        const bool pin_in_focus =
+            pin != nullptr && point_in_focus(pin->position, focus);
         if (!first_association) out << ",";
         first_association = false;
 
@@ -581,7 +581,8 @@ void write_connector_association_audit(
         out << "\n    {\"association_id\":\"" << esc(association.id)
             << "\",\"connector_id\":\"" << esc(association.connector_id)
             << "\",\"pin_id\":\"" << esc(association.pin_id)
-            << "\",\"association_status\":\""
+            << "\",\"pin_in_focus\":" << (pin_in_focus ? "true" : "false")
+            << ",\"association_status\":\"" 
             << association_status_name(association.status)
             << "\",\"association_confidence\":\""
             << confidence_name(association.confidence)
@@ -590,10 +591,13 @@ void write_connector_association_audit(
             << "\",\"expected_terminal_id\":\"" << esc(expected_terminal_id)
             << "\",\"materialized_terminal_present\":" << (terminal ? "true" : "false")
             << ",\"connector_reference_present\":" << (connector ? "true" : "false")
-            << ",\"pin_reference_present\":true"
+            << ",\"pin_reference_present\":" << (pin ? "true" : "false")
             << ",\"endpoint_reference_present\":"
-            << (selected_endpoint ? "true" : "false")
-            << ",\"pin_confidence\":\"" << confidence_name(pin->confidence) << "\"";
+            << (selected_endpoint ? "true" : "false");
+        if (pin != nullptr)
+            out << ",\"pin_confidence\":\"" << confidence_name(pin->confidence) << "\"";
+        else
+            out << ",\"pin_confidence\":null";
 
         if (selected_endpoint != nullptr) {
             const double dx = selected_endpoint->position.x - pin->position.x;
@@ -616,6 +620,7 @@ void write_connector_association_audit(
         std::vector<std::string> pin_segment_ids;
         out << ",\"crossing_evidence\":[";
         bool first_crossing = true;
+        if (pin != nullptr) {
         for (const auto& crossing_id : pin->conductor_crossing_evidence_ids) {
             const auto crossing_it = std::find_if(
                 model.connector_conductor_crossing_evidence.begin(),
@@ -639,6 +644,7 @@ void write_connector_association_audit(
                 << ",\"provenance_stage\":\"" << esc(crossing.provenance.stage) << "\"}";
             pin_segment_ids.push_back(crossing.conductor_segment_id);
         }
+        }
         out << "]";
 
         // Reconstruct the exact evidence gates used by the association stage:
@@ -646,6 +652,7 @@ void write_connector_association_audit(
         // conductor segments observed at this pin.
         out << ",\"nearby_endpoint_candidates_within_6px\":[";
         bool first_endpoint = true;
+        if (pin != nullptr) {
         for (const auto& endpoint : model.endpoint_candidates) {
             const double dx = endpoint.position.x - pin->position.x;
             const double dy = endpoint.position.y - pin->position.y;
@@ -688,6 +695,7 @@ void write_connector_association_audit(
                     << "\",\"to_type\":\"" << node_type(edge.to_type) << "\"}";
             }
             out << "]}";
+        }
         }
         out << "]}";
     }
@@ -1081,7 +1089,7 @@ int main(int argc, char** argv) {
         write_connector_associations(out, model, focus);
         out << ",\n  \"production_connector_terminals_near_focus\":";
         write_connector_terminals(out, model, focus);
-        out << ",\n  \"connector_terminal_materialization_audit_near_focus\":";
+        out << ",\n  \"connector_terminal_materialization_audit\":";
         write_connector_association_audit(out, model, focus);
         out << ",\n  \"raw_morphology_segments_near_focus\":";
         write_raw_segments(

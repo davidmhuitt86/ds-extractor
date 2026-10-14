@@ -16,7 +16,7 @@ The defect is not a reason to erase all geometry within a connector bounding box
 2. Pass connector body regions into the ownership classifier.
 3. Reconstruct an effective connector housing envelope only when raw morphology provides one near-edge vertical stroke, a parallel outer vertical stroke with matching top/bottom extent, and separate horizontal strokes connecting the same two verticals at both ends.
 4. Exclude only candidate segments that trace one of the reconstructed rectangle's four edges, using the existing narrow boundary-trace tolerance. No proximity-only suppression is added.
-5. Reuse the resolved bounds in downstream connector and pin observations, including leads that terminate exactly at the boundary and therefore have zero in-bounds overlap.
+5. Reuse the resolved bounds downstream for connector and pin observations. Permit a sub-3 px termination contact only when the complete rectangular-stroke housing boundary was reconstructed; otherwise retain the legacy 3 px overlap floor.
 6. Extend AP-DIAG-049 output to report detected versus effective connector bounds and to run the boundary-aware ownership path. Also serialize production pins, conductor-crossing observations, terminal associations, and connector terminals so every interaction can be traced to its source segment and endpoint. The diagnostic itself does not modify production logic.
 
 If the four-sided frame cannot be established, the detector bounds are not expanded and no additional connector-boundary suppression is applied.
@@ -56,11 +56,11 @@ refer to a conductor segment observed at the pin. Endpoint kind/role/confidence
 are labelled as snapshots after later semantic stages; they must not be
 mistaken for the earlier endpoint values consumed by the terminal builder.
 
-This is diagnostic-only. It does not adjust confidence, status, topology,
-terminal creation, or extraction thresholds. In particular, it records the
-low-confidence/unknown-interaction situation rather than changing it. Review
-the association status counts and evidence before deciding whether a production
-semantic rule needs a separate AP.
+The association-materialization audit itself is diagnostic-only. It does not
+adjust confidence/status or terminal creation. The separate gate correction
+requires reconstructed rectangular-stroke boundary evidence before admitting
+sub-3 px termination contacts; otherwise, the legacy 3 px overlap floor remains
+in force.
 
 ## Global connector-candidate gate audit added 2026-10-14
 

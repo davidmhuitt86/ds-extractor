@@ -181,6 +181,10 @@ add_executable(dx-audit-topology-splice-clusters
     tools/ap_diag_047_topology_splice_cluster_analysis.cpp)
 target_link_libraries(dx-audit-topology-splice-clusters PRIVATE eke_dx_wire)
 
+add_executable(dx-audit-symbol-boundary-splices
+    tools/ap_diag_048_symbol_boundary_splices.cpp)
+target_link_libraries(dx-audit-symbol-boundary-splices PRIVATE eke_dx_wire)
+
 if(WIN32)
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire

@@ -9,6 +9,7 @@
 #include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/connector_geometry_detector.hpp"
+#include "eke_dx_wire/image/connector_observation_gate.hpp"
 #include "eke_dx_wire/image/ground_approach_conductor_recovery.hpp"
 #include "eke_dx_wire/image/component_candidate_classifier.hpp"
 #include "eke_dx_wire/image/circle_context_classifier.hpp"
@@ -353,6 +354,9 @@ WireModel ExtractionPipeline::run(
             [&](const ConnectorBoundaryResolution& boundary) {
                 return boundary.connector_region_id == region.id;
             });
+        const bool boundary_reconstructed_from_rectangular_strokes =
+            resolved_boundary != ownership.connector_boundaries.end() &&
+            resolved_boundary->reconstructed_from_rectangular_strokes;
         const BoundingBox connector_bounds =
             resolved_boundary != ownership.connector_boundaries.end()
                 ? resolved_boundary->effective_bounds
@@ -442,8 +446,13 @@ WireModel ExtractionPipeline::run(
             // single geometric point, so its in-bounds overlap may be zero.
             // Preserve that evidence when one endpoint is at the boundary;
             // ordinary pass-through candidates still need measurable overlap.
-            if (overlap < 3.0 && !termination_contact)
+            if (!connector_observation_passes_overlap_gate(
+                    overlap,
+                    termination_contact,
+                    boundary_reconstructed_from_rectangular_strokes,
+                    3.0)) {
                 continue;
+            }
 
             const ConnectorConductorInteractionKind interaction =
                 (a_near != b_near)

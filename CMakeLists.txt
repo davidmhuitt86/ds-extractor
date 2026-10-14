@@ -175,6 +175,12 @@ add_executable(dx-audit-false-residual-analysis
     tools/ap_diag_046_false_residual_analysis.cpp)
 target_link_libraries(dx-audit-false-residual-analysis PRIVATE eke_dx_wire)
 
+# AP-DIAG-047: cluster nearby production Splice topology nodes and report
+# node/edge/ground-truth evidence. Diagnostic only; production extraction unchanged.
+add_executable(dx-audit-topology-splice-clusters
+    tools/ap_diag_047_topology_splice_cluster_analysis.cpp)
+target_link_libraries(dx-audit-topology-splice-clusters PRIVATE eke_dx_wire)
+
 if(WIN32)
     add_executable(dx-extractor-gui src/gui/main.cpp)
     target_link_libraries(dx-extractor-gui PRIVATE eke_dx_wire

@@ -11,6 +11,7 @@
 #include "eke_dx_wire/image/conductor_normalizer.hpp"
 #include "eke_dx_wire/image/text_region_detector.hpp"
 #include "eke_dx_wire/image/connector_geometry_detector.hpp"
+#include "eke_dx_wire/image/connector_observation_gate.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/morphology_detector.hpp"
 
@@ -1019,11 +1020,15 @@ void write_connector_observation_gate_audit(
 
         std::size_t legacy_count = 0;
         std::size_t effective_strict_count = 0;
+        std::size_t prior_unrestricted_count = 0;
         std::size_t current_count = 0;
         std::size_t legacy_to_current_additions = 0;
         std::ostringstream newly_admitted;
         newly_admitted << "[";
         bool first_added = true;
+        std::ostringstream suppressed_without_boundary_evidence;
+        suppressed_without_boundary_evidence << "[";
+        bool first_suppressed = true;
 
         for (const auto& segment : model.conductor_segments) {
             double old_t0 = 0.0, old_t1 = 0.0;
@@ -1049,9 +1054,28 @@ void write_connector_observation_gate_audit(
             const bool b_near = diagnostic_point_in_bounds(
                 segment.geometry.b, effective_bounds, kBoundaryMarginPx);
             const bool termination_contact = a_near != b_near;
-            const bool current_accepted = intersects_effective &&
+            const bool prior_unrestricted_accepted = intersects_effective &&
                 (new_overlap >= kMinimumOverlapPx || termination_contact);
+            if (prior_unrestricted_accepted) ++prior_unrestricted_count;
+
+            const bool current_accepted = intersects_effective &&
+                connector_observation_passes_overlap_gate(
+                    new_overlap,
+                    termination_contact,
+                    boundary_reconstructed,
+                    kMinimumOverlapPx);
             if (current_accepted) ++current_count;
+
+            if (prior_unrestricted_accepted && !current_accepted) {
+                if (!first_suppressed) suppressed_without_boundary_evidence << ",";
+                first_suppressed = false;
+                suppressed_without_boundary_evidence
+                    << "{\\"segment_id\\":\\"" << esc(segment.id)
+                    << "\\",\\"effective_bounds_overlap_px\\":" << new_overlap
+                    << ",\\"termination_contact\\":"
+                    << (termination_contact ? "true" : "false")
+                    << ",\\"admission_reason\\":\\"termination_contact_without_reconstructed_boundary\\"}";
+            }
 
             if (current_accepted && !legacy_accepted) {
                 ++legacy_to_current_additions;
@@ -1083,6 +1107,7 @@ void write_connector_observation_gate_audit(
             }
         }
         newly_admitted << "]";
+        suppressed_without_boundary_evidence << "]";
 
         if (!first_region) out << ",";
         first_region = false;
@@ -1103,15 +1128,24 @@ void write_connector_observation_gate_audit(
             << ",\"legacy_gate_interaction_count\":" << legacy_count
             << ",\"effective_bounds_strict_gate_interaction_count\":"
             << effective_strict_count
+            << ",\"prior_unrestricted_gate_interaction_count\":"
+            << prior_unrestricted_count
             << ",\"current_gate_interaction_count\":" << current_count
             << ",\"legacy_gate_would_meet_minimum\":"
             << (legacy_count >= kMinimumInteractions ? "true" : "false")
             << ",\"effective_bounds_strict_gate_would_meet_minimum\":"
             << (effective_strict_count >= kMinimumInteractions ? "true" : "false")
+            << ",\"prior_unrestricted_gate_would_meet_minimum\":"
+            << (prior_unrestricted_count >= kMinimumInteractions ? "true" : "false")
             << ",\"current_gate_would_meet_minimum\":"
             << (current_count >= kMinimumInteractions ? "true" : "false")
             << ",\"newly_admitted_segment_count\":" << legacy_to_current_additions
-            << ",\"newly_admitted_segments\":" << newly_admitted.str() << "}";
+            << ",\"newly_admitted_segments\":" << newly_admitted.str()
+            << ",\"suppressed_without_reconstructed_boundary_count\":"
+            << (prior_unrestricted_count > current_count
+                    ? prior_unrestricted_count - current_count : 0)
+            << ",\"suppressed_without_reconstructed_boundary_segments\":"
+            << suppressed_without_boundary_evidence.str() << "}";
     }
     if (!first_region) out << "\n";
     out << "]";

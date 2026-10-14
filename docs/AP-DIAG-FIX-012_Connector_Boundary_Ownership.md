@@ -62,6 +62,29 @@ low-confidence/unknown-interaction situation rather than changing it. Review
 the association status counts and evidence before deciding whether a production
 semantic rule needs a separate AP.
 
+## Global connector-candidate gate audit added 2026-10-14
+
+The diagnostic now serializes full-source inventories (not only objects near the focus region):
+
+- `connector_geometry_regions_all`
+- `connector_boundary_resolutions_all`
+- `production_connector_candidates_all`
+- `production_connector_pins_all`
+- `production_connector_crossings_all`
+- `production_connector_terminal_associations_all`
+- `production_connector_terminals_all`
+
+The new `connector_observation_gate_audit_all` array has one record per detected connector geometry region. It maps the detector region to the expected stable production connector ID, reports detected and effective bounds, and indicates whether a rectangular-stroke boundary was reconstructed and whether a production connector candidate exists.
+
+For each region it compares three observation gates over the current post-ownership normalized conductor segments:
+- `legacy_gate_interaction_count`: detected bounds and the previous minimum 3 px overlap rule.
+- `effective_bounds_strict_gate_interaction_count`: resolved effective bounds but still the previous minimum 3 px overlap rule.
+- `current_gate_interaction_count`: effective bounds and the new rule that also admits a terminating endpoint within the existing 2 px expanded-boundary margin even when in-bounds overlap is under 3 px.
+
+The record contains `newly_admitted_segments` with each segment ID, overlap values, endpoint-nearness flags, and an admission reason. This is a diagnostic counterfactual, not a baseline replay: `counterfactual_reuses_current_normalized_segments` is deliberately true. It isolates the gate/bounds difference while holding the current normalized conductor population constant. It must not be represented as a complete reconstruction of the pre-fix production model.
+
+Use these results to determine whether an off-focus candidate existed under the legacy gate or is admitted only by the new termination-contact exception. Do not change production code based only on the global candidate count.
+
 ## Required local validation
 
 Run from the repository root in Windows PowerShell:

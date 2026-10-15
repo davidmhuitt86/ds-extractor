@@ -415,6 +415,11 @@ if(DX_WIRE_BUILD_TESTS)
     target_link_libraries(dx-wire-test-ground-approach-recovery-production PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-ground-approach-recovery-production COMMAND dx-wire-test-ground-approach-recovery-production)
 
+    add_executable(dx-wire-test-connector-interaction-propagation tests/test_connector_interaction_propagation.cpp)
+    target_compile_definitions(dx-wire-test-connector-interaction-propagation PRIVATE DX_WIRE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_link_libraries(dx-wire-test-connector-interaction-propagation PRIVATE eke_dx_wire)
+    add_test(NAME dx-wire-test-connector-interaction-propagation COMMAND dx-wire-test-connector-interaction-propagation)
+
     add_executable(dx-wire-test-ground-approach-conductor-recovery tests/test_ground_approach_conductor_recovery.cpp)
     target_link_libraries(dx-wire-test-ground-approach-conductor-recovery PRIVATE eke_dx_wire)
     add_test(NAME dx-wire-test-ground-approach-conductor-recovery COMMAND dx-wire-test-ground-approach-conductor-recovery)

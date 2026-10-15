@@ -452,7 +452,7 @@ WireModel ExtractionPipeline::run(
                 }
             }
             if (!duplicate)
-                observations.push_back({segment.id, position, overlap});
+                observations.push_back({segment.id, position, overlap, interaction});
         }
 
         std::sort(

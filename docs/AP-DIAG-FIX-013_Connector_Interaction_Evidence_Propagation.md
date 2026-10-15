@@ -2,8 +2,8 @@
 
 ## Status
 
-Implementation committed for review. A clean Windows Release build and full
-CTest run are required before acceptance.
+**ACCEPTED.** Windows Release build and full CTest passed, as confirmed by
+the maintainer on 2026-10-15. Merged into `main` through PR #45.
 
 ## Defect
 
@@ -36,8 +36,12 @@ Added `dx-wire-test-connector-interaction-propagation`. It runs the canonical
 The test reports the resulting count of each classification without asserting
 specific connector, pin, Wire, or ElectricalNet totals.
 
-## Validation status
+## Validation record
 
-Repository changes are prepared, but the Windows/OpenCV Release build and
-CTest results have not yet been run for this commit. Do not mark this AP
-accepted until those checks pass.
+- Windows Release build: PASS (maintainer-confirmed, 2026-10-15).
+- Full CTest suite: PASS (maintainer-confirmed, 2026-10-15).
+- Pull request: [#45](https://github.com/davidmhuitt86/ds-extractor/pull/45), merged.
+- Squash merge commit on `main`: `9f962966500effe671323795ede25ca27c7aab9a`.
+
+The passing build and test results were reported by the maintainer; they were
+not executed by GitHub Actions.

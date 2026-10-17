@@ -1,4 +1,5 @@
 #include "eke_dx_wire/image/connector_geometry_detector.hpp"
+#include "eke_dx_wire/image/connector_observation_gate.hpp"
 
 #include <opencv2/imgproc.hpp>
 
@@ -134,6 +135,31 @@ int main() {
     cv::polylines(stub, stub_body, true, cv::Scalar(0), 2);
     const auto stub_result = detector.detect(stub, "synthetic-stub", 0);
     assert(stub_result.regions.empty());
+
+    // AP-DIAG-FIX-012 regression: sub-threshold endpoint contact is
+    // accepted only when the connector housing boundary was independently
+    // reconstructed from matching rectangular strokes. A short overlap or
+    // endpoint coincidence alone must not promote unrelated geometry.
+    {
+        assert(connector_observation_passes_overlap_gate(
+            3.0, false, false));
+        assert(connector_observation_passes_overlap_gate(
+            3.5, true, false));
+        assert(!connector_observation_passes_overlap_gate(
+            2.0, true, false));
+        assert(!connector_observation_passes_overlap_gate(
+            0.0, false, true));
+        assert(connector_observation_passes_overlap_gate(
+            2.0, true, true));
+        assert(connector_observation_passes_overlap_gate(
+            0.0, true, true));
+        assert(!connector_observation_passes_overlap_gate(
+            2.0, false, true));
+        assert(!connector_observation_passes_overlap_gate(
+            2.0, true, false, 2.5));
+        assert(connector_observation_passes_overlap_gate(
+            2.5, false, false, 2.5));
+    }
 
     std::cout << "connector geometry detector tests passed\n";
     return 0;

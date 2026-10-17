@@ -1,5 +1,6 @@
 #include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
 
+#include <algorithm>
 #include <cassert>
 
 using namespace eke::dx::wire;
@@ -196,6 +197,108 @@ int main() {
 
         assert(nearby_result.conductor_candidates.size() == 1);
         assert(nearby_result.rejected.empty());
+    }
+
+
+    // AP-DIAG-FIX-012: the connector detector can return the notched body
+    // bounds while omitting an outer housing wall. Reconstruct that larger
+    // frame only when two matching vertical strokes and both connecting caps
+    // are present, then reject only the four outline strokes. Real conductors
+    // that terminate at the wall and a nearby unconnected vertical remain.
+    {
+        ShapeRegion connector_region;
+        connector_region.id = "connector-body-fixture";
+        connector_region.kind = ShapeKind::ConnectorBody;
+        connector_region.bounds = {355, 352, 17, 26};
+        connector_region.confidence = 0.90;
+
+        const std::vector<ConductorSegment> local_geometry{
+            segment("housing-top", {347, 351.5}, {371, 351.5}),
+            segment("housing-bottom", {347, 377.5}, {371, 377.5}),
+            segment("housing-left", {347, 351}, {347, 378}),
+            segment("housing-right", {371, 351}, {371, 378}),
+            segment("lead-left-top", {298, 354.5}, {347, 354.5}),
+            segment("lead-left-middle", {269, 364}, {347, 364}),
+            segment("lead-left-bottom", {279, 373.5}, {347, 373.5}),
+            segment("lead-right-top", {370, 354.5}, {452, 354.5}),
+            segment("lead-right-bottom", {370, 373}, {555, 373}),
+            // Nearby and parallel, but not connected to the housing caps.
+            segment("unrelated-nearby-vertical", {340, 351}, {340, 378})
+        };
+
+        const auto resolved = GeometryOwnershipClassifier(config).classify(
+            local_geometry, {}, {}, {connector_region});
+
+        assert(resolved.connector_boundaries.size() == 1);
+        const auto& boundary = resolved.connector_boundaries.front();
+        assert(boundary.connector_region_id == "connector-body-fixture");
+        assert(boundary.reconstructed_from_rectangular_strokes);
+        assert(boundary.detected_bounds.x == 355);
+        assert(boundary.effective_bounds.x == 347);
+        assert(boundary.effective_bounds.y == 351);
+        assert(boundary.effective_bounds.width == 25);
+        assert(boundary.effective_bounds.height == 27);
+
+        assert(resolved.rejected.size() == 4);
+        for (const auto& evidence : resolved.rejected) {
+            assert(evidence.classification ==
+                   RejectedGeometryClass::ConnectorAssociated);
+            assert(evidence.associated_object_id == "connector-body-fixture");
+            assert(evidence.reason ==
+                   "graphical_object_ownership_connector_boundary");
+        }
+
+        assert(resolved.conductor_candidates.size() == 6);
+        const auto retained = [&](const char* id) {
+            return std::any_of(
+                resolved.conductor_candidates.begin(),
+                resolved.conductor_candidates.end(),
+                [&](const ConductorSegment& candidate) {
+                    return candidate.id == id;
+                });
+        };
+        assert(retained("lead-left-top"));
+        assert(retained("lead-left-middle"));
+        assert(retained("lead-left-bottom"));
+        assert(retained("lead-right-top"));
+        assert(retained("lead-right-bottom"));
+        assert(retained("unrelated-nearby-vertical"));
+
+        const auto rejected_id = [&](const char* id) {
+            return std::any_of(
+                resolved.rejected.begin(), resolved.rejected.end(),
+                [&](const RejectedGeometryEvidence& evidence) {
+                    return evidence.id == id;
+                });
+        };
+        assert(rejected_id("housing-top"));
+        assert(rejected_id("housing-bottom"));
+        assert(rejected_id("housing-left"));
+        assert(rejected_id("housing-right"));
+    }
+
+    // Without the two matching cap strokes, the detector bounds are not
+    // expanded and connector-near line geometry is not suppressed.
+    {
+        ShapeRegion connector_region;
+        connector_region.id = "connector-incomplete-frame";
+        connector_region.kind = ShapeKind::ConnectorBody;
+        connector_region.bounds = {355, 352, 17, 26};
+
+        const std::vector<ConductorSegment> incomplete_geometry{
+            segment("partial-left-wall", {347, 351}, {347, 378}),
+            segment("partial-right-wall", {371, 351}, {371, 378}),
+            segment("real-lead", {298, 364}, {347, 364})
+        };
+
+        const auto unresolved = GeometryOwnershipClassifier(config).classify(
+            incomplete_geometry, {}, {}, {connector_region});
+        assert(unresolved.connector_boundaries.size() == 1);
+        assert(!unresolved.connector_boundaries.front()
+                    .reconstructed_from_rectangular_strokes);
+        assert(unresolved.connector_boundaries.front().effective_bounds.x == 355);
+        assert(unresolved.conductor_candidates.size() == 3);
+        assert(unresolved.rejected.empty());
     }
 
     return 0;

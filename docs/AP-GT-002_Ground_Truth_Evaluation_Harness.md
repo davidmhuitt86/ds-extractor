@@ -70,6 +70,21 @@ To adjust provisional thresholds, use `--connector-iou 0.50` and `--terminal-rad
 
 ## Validation and scope
 
-The evaluator's 7 standard-library unit tests passed in the development environment against synthetic cases; an additional direct run against the uploaded 2026-10-18 audit reproduces the table above. The full C++/CMake build was not rerun because this change does not touch C++ production code or CMake targets. Windows validation is still required before treating the tool as accepted repository infrastructure.
+The evaluator's 9 standard-library unit tests passed in the development environment against synthetic cases; an additional direct run against the uploaded 2026-10-18 audit reproduces the table above. The full C++/CMake build was not rerun because this change does not touch C++ production code or CMake targets. Windows validation is still required before treating the tool as accepted repository infrastructure.
 
-This AP intentionally does not “fix” terminal recall. It makes the gap reproducible and records missing prediction interfaces so the follow-up production APs can be bounded and measured rather than changing multiple extraction stages at once.
+## Terminal-stage proximity diagnostic
+
+The report also examines each of the 127 annotated terminal points against four separate source inventories: all endpoint candidates, the scored/typed terminal predictions, normalized conductor segments, and endpoints of normalized conductor segments. This is **not** the terminal score. It asks whether local conductor geometry is present even when a corresponding model endpoint or typed terminal is not present nearby. A point lying along a segment body is not automatically turned into a terminal.
+
+For this audit, the nearest-geometry counts (many annotations may be near the same predicted object) are:
+
+| Geometry inventory | Within 2 px | Within 5 px | Within 8 px | Within 12 px |
+|---|---:|---:|---:|---:|
+| Any normalized conductor segment | 71 | 80 | 88 | 108 |
+| Any normalized conductor-segment endpoint | 33 | 45 | 65 | 92 |
+| Any endpoint candidate | 16 | 26 | 51 | 73 |
+| Typed terminal prediction | 9 | 12 | 13 | 17 |
+
+The difference between conductor-segment body proximity (80/127 within 5 px) and model endpoint-candidate proximity (26/127 within 5 px) is a useful investigation lead: for some annotated terminal locations, conductor ink is present nearby while the model has no endpoint candidate near the annotation. At the same time, only 45/127 annotations are within 5 px of a normalized segment endpoint, so not every mark can be assumed to correspond to an endpoint that merely lost its semantic type. The per-annotation report identifies the nearest segment, each segment endpoint, nearest endpoint candidate, and nearest typed terminal so individual cases can be reviewed before selecting a production fix. These distances do not prove a causal defect by themselves.
+
+This AP intentionally does not “fix” terminal recall. It makes the gap reproducible and separates missing geometry, missing endpoint candidates, and missing typed-terminal classifications as distinct hypotheses so the follow-up production AP can be bounded rather than changing multiple extraction stages at once.

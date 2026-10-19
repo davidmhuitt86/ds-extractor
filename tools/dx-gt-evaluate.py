@@ -305,6 +305,193 @@ def metric_for_points(
     return result
 
 
+
+
+
+def point_segment_distance(point: tuple[float, float], segment: dict[str, Any]) -> float | None:
+    """Distance to a normalized conductor segment exported as x1/y1/x2/y2."""
+    try:
+        ax, ay, bx, by = (float(segment[k]) for k in ("x1", "y1", "x2", "y2"))
+    except (KeyError, TypeError, ValueError):
+        return None
+    if not all(math.isfinite(v) for v in (ax, ay, bx, by)):
+        return None
+    px, py = point
+    dx, dy = bx - ax, by - ay
+    length_sq = dx * dx + dy * dy
+    if length_sq <= 1e-12:
+        return math.hypot(px - ax, py - ay)
+    t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / length_sq))
+    return math.hypot(px - (ax + t * dx), py - (ay + t * dy))
+
+
+def point_rect_boundary_distance(point: tuple[float, float], box: tuple[float, float, float, float]) -> float:
+    """Distance to a rectangle boundary; inside points use their nearest side."""
+    px, py = point
+    x, y, width, height = box
+    right, bottom = x + width, y + height
+    if x <= px <= right and y <= py <= bottom:
+        return min(px - x, right - px, py - y, bottom - py)
+    dx = x - px if px < x else px - right if px > right else 0.0
+    dy = y - py if py < y else py - bottom if py > bottom else 0.0
+    return math.hypot(dx, dy)
+
+
+def _nearest_record(
+    point: tuple[float, float],
+    items: list[dict[str, Any]],
+    get_point: Callable[[dict[str, Any]], tuple[float, float] | None],
+    get_metadata: Callable[[dict[str, Any]], dict[str, Any]],
+) -> dict[str, Any] | None:
+    ranked = []
+    for item in items:
+        xy = get_point(item)
+        if xy is None:
+            continue
+        distance = point_distance(point, xy)
+        ranked.append((distance, str(item.get("id", "")), item, xy))
+    if not ranked:
+        return None
+    distance, _, item, xy = min(ranked, key=lambda row: (row[0], row[1]))
+    return {
+        "id": str(item.get("id", "")),
+        "distance_px": round(distance, 4),
+        "position_xy_px": [round(xy[0], 4), round(xy[1], 4)],
+        **get_metadata(item),
+    }
+
+
+def terminal_stage_evidence(
+    truths: list[dict[str, Any]],
+    objects: dict[str, Any],
+    terminal_predictions: list[dict[str, Any]],
+    thresholds: list[float] | None = None,
+) -> dict[str, Any]:
+    """Diagnose whether ground-truth terminal points have upstream geometric support.
+
+    This is proximity evidence only, not a terminal detector score. The same
+    annotation may be near several upstream geometry objects.
+    """
+    thresholds = thresholds or [2.0, 5.0, 8.0, 12.0]
+    raw_endpoints = objects.get("endpoint_candidates", [])
+    endpoints = [x for x in raw_endpoints if isinstance(x, dict) and "x" in x and "y" in x] if isinstance(raw_endpoints, list) else []
+    raw_segments = objects.get("conductor_segments", [])
+    segments = [x for x in raw_segments if isinstance(x, dict)] if isinstance(raw_segments, list) else []
+    raw_components = objects.get("components", [])
+    components = get_bbox_predictions(raw_components, "components")
+    typed = terminal_predictions
+
+    segment_endpoint_items = []
+    for segment in segments:
+        for side, xkey, ykey in (("a", "x1", "y1"), ("b", "x2", "y2")):
+            try:
+                segment_endpoint_items.append({
+                    "id": f"{segment.get('id', '')}:{side}",
+                    "x": float(segment[xkey]),
+                    "y": float(segment[ykey]),
+                    "segment_id": segment.get("id", ""),
+                    "endpoint_side": side,
+                })
+            except (KeyError, TypeError, ValueError):
+                continue
+
+    points = [(truth, point_xy(truth, f"ground_truth.terminal[{truth.get('id')}]")) for truth in truths]
+    nearest_by_source: dict[str, list[dict[str, Any] | None]] = {
+        "all_endpoint_candidates": [],
+        "typed_terminal_predictions": [],
+        "normalized_conductor_segments": [],
+        "conductor_segment_endpoints": [],
+        "component_bounds": [],
+    }
+    per_annotation = []
+
+    for truth, point in points:
+        nearest_endpoint = _nearest_record(
+            point, endpoints,
+            lambda item: (float(item["x"]), float(item["y"])),
+            lambda item: {"kind": item.get("kind"), "terminal_role": item.get("terminal_role"), "confidence": item.get("confidence")},
+        )
+        nearest_typed = _nearest_record(
+            point, typed,
+            lambda item: item.get("point"),
+            lambda item: {"prediction_source": item.get("source"), "kind": item.get("kind")},
+        )
+        nearest_segment_endpoint = _nearest_record(
+            point, segment_endpoint_items,
+            lambda item: (float(item["x"]), float(item["y"])),
+            lambda item: {"segment_id": item.get("segment_id"), "endpoint_side": item.get("endpoint_side")},
+        )
+        nearest_segment = None
+        segment_distances = []
+        for seg in segments:
+            dist = point_segment_distance(point, seg)
+            if dist is not None:
+                segment_distances.append((dist, str(seg.get("id", "")), seg))
+        if segment_distances:
+            dist, seg_id, seg = min(segment_distances, key=lambda row: (row[0], row[1]))
+            nearest_segment = {"id": seg_id, "distance_px": round(dist, 4), "x1": seg.get("x1"), "y1": seg.get("y1"), "x2": seg.get("x2"), "y2": seg.get("y2")}
+
+        nearest_component = None
+        component_distances = []
+        for component in components:
+            box = component["bbox"]
+            dist = point_rect_boundary_distance(point, box)
+            component_distances.append((dist, component["id"], component, box))
+        if component_distances:
+            dist, component_id, component, box = min(component_distances, key=lambda row: (row[0], row[1]))
+            nearest_component = {"id": component_id, "distance_to_boundary_px": round(dist, 4), "bbox_xywh_px": [round(v, 4) for v in box], "kind": component["raw"].get("kind")}
+
+        nearest_by_source["all_endpoint_candidates"].append(nearest_endpoint)
+        nearest_by_source["typed_terminal_predictions"].append(nearest_typed)
+        nearest_by_source["normalized_conductor_segments"].append(nearest_segment)
+        nearest_by_source["conductor_segment_endpoints"].append(nearest_segment_endpoint)
+        nearest_by_source["component_bounds"].append(nearest_component)
+        per_annotation.append({
+            "ground_truth_id": truth["id"],
+            "point_xy_px": [round(point[0], 4), round(point[1], 4)],
+            "nearest_endpoint_candidate": nearest_endpoint,
+            "nearest_typed_terminal_prediction": nearest_typed,
+            "nearest_conductor_segment": nearest_segment,
+            "nearest_conductor_segment_endpoint": nearest_segment_endpoint,
+            "nearest_component_boundary": nearest_component,
+        })
+
+    counts = {
+        "all_endpoint_candidates": len(endpoints),
+        "typed_terminal_predictions": len(typed),
+        "normalized_conductor_segments": len(segments),
+        "conductor_segment_endpoints": len(segment_endpoint_items),
+        "component_bounds": len(components),
+    }
+    summary = {}
+    for source, records in nearest_by_source.items():
+        dists = [
+            record["distance_to_boundary_px"] if source == "component_bounds"
+            else record["distance_px"]
+            for record in records if record is not None
+        ]
+        summary[source] = {
+            "prediction_count": counts[source],
+            "ground_truth_annotations": len(truths),
+            "annotations_with_nearest_prediction": len(dists),
+            "nearest_distance_px": {
+                "min": round(min(dists), 4) if dists else None,
+                "median": round(sorted(dists)[len(dists) // 2], 4) if dists else None,
+                "max": round(max(dists), 4) if dists else None,
+            },
+            "nearest_within_px": {str(threshold): sum(1 for d in dists if d <= threshold) for threshold in thresholds},
+            "interpretation": "Proximity-only diagnostic; not a one-to-one detection metric and not evidence of electrical function.",
+        }
+    return {
+        "status": "diagnostic_only",
+        "thresholds_px": thresholds,
+        "source_inventory": counts,
+        "nearest_geometry_summary": summary,
+        "per_annotation_nearest_geometry": per_annotation,
+        "purpose": "Separate absence of local geometry from downstream endpoint/terminal classification gaps. A terminal marker close to a segment body but far from segment endpoints is evidence to inspect possible unsegmented pin/contact geometry, not permission to invent a terminal.",
+    }
+
+
 def unscored(reason: str, ground_truth_count: int) -> dict[str, Any]:
     return {
         "status": "unscored",
@@ -398,6 +585,7 @@ def evaluate(ground_truth: dict[str, Any], audit: dict[str, Any], connector_iou:
         "metrics": {
             "connector_localization": connector_metric,
             "terminal_localization": terminal_metrics,
+            "terminal_stage_evidence": terminal_stage_evidence(terminal_truth, objects, terminal_predictions),
             "diode_localization": diode_metric,
             "wire_color_label_localization": label_metric,
         },

@@ -94,6 +94,29 @@ class GroundTruthEvaluatorTests(unittest.TestCase):
         self.assertEqual(scored["true_positives"], 0)
         self.assertEqual(scored["recall"], 0.0)
 
+
+    def test_point_segment_distance_distinguishes_segment_body_from_endpoints(self) -> None:
+        segment = {"x1": 0, "y1": 0, "x2": 10, "y2": 0}
+        self.assertAlmostEqual(EVAL.point_segment_distance((5, 3), segment), 3.0)
+        self.assertAlmostEqual(EVAL.point_segment_distance((13, 0), segment), 3.0)
+
+    def test_stage_evidence_does_not_promote_segment_proximity_to_terminal(self) -> None:
+        truths = [{"id": "t1", "category": "terminal", "point_xy_px": [5, 0], "bbox_xywh_px": [4, -1, 3, 3]}]
+        objects = {
+            "endpoint_candidates": [{"id": "far-endpoint", "x": 50, "y": 50, "kind": "geometric", "terminal_role": "unknown"}],
+            "terminal_candidates": [],
+            "connector_terminals": [],
+            "conductor_segments": [{"id": "segment-1", "x1": 0, "y1": 0, "x2": 10, "y2": 0}],
+            "components": [],
+        }
+        predictions, _ = EVAL.get_terminal_predictions(objects)
+        diagnostic = EVAL.terminal_stage_evidence(truths, objects, predictions, [2.0, 5.0])
+        summary = diagnostic["nearest_geometry_summary"]
+        self.assertEqual(summary["normalized_conductor_segments"]["nearest_within_px"]["2.0"], 1)
+        self.assertEqual(summary["conductor_segment_endpoints"]["nearest_within_px"]["2.0"], 0)
+        self.assertEqual(summary["all_endpoint_candidates"]["nearest_within_px"]["5.0"], 0)
+        self.assertEqual(len(diagnostic["per_annotation_nearest_geometry"]), 1)
+
     def test_source_dimension_mismatch_fails_closed(self) -> None:
         gt = {"source": {"width": 100, "height": 100}, "annotations": []}
         audit = {"source": {"image_width": 101, "image_height": 100}, "objects": {}}

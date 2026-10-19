@@ -61,6 +61,21 @@ WireModel make_model(const std::string& source_id) {
     wire_color.wire_color = "red";
     model.wire_semantics.push_back(wire_color);
 
+    TextRegion text_region;
+    text_region.id = "text_region_1";
+    text_region.kind = TextRegionKind::WireLabel;
+    model.text_regions.push_back(text_region);
+    TextRecognitionEvidence ocr;
+    ocr.text_region_id = text_region.id;
+    ocr.raw_text = "R";
+    ocr.confidence = ConfidenceClass::High;
+    model.text_recognition_evidence.push_back(ocr);
+    SemanticAssociation association;
+    association.id = "association_1";
+    association.text_region_id = text_region.id;
+    association.target_id = endpoint.id;
+    model.semantic_associations.push_back(association);
+
     Wire wire;
     wire.id = "wire_1";
     wire.start_endpoint = endpoint.id;
@@ -110,9 +125,12 @@ int main() {
         assert(manifest.find("\"physical_terminal_candidates\": 1") != std::string::npos);
         assert(manifest.find("\"component_terminal_candidates\": 1") != std::string::npos);
         assert(manifest.find("\"ground_connection_candidates\": 1") != std::string::npos);
-        assert(manifest.find("\"semantic_associations\": 0") != std::string::npos);
-        assert(manifest.find("\"text_regions\": 0") != std::string::npos);
-        assert(manifest.find("\"ocr_observations\": 0") != std::string::npos);
+        assert(manifest.find("\"wire_colors\": 1") != std::string::npos);
+        assert(manifest.find("\"terminals\": 2") != std::string::npos);
+        assert(manifest.find("\"labels\": 1") != std::string::npos);
+        assert(manifest.find("\"semantic_associations\": 1") != std::string::npos);
+        assert(manifest.find("\"text_regions\": 1") != std::string::npos);
+        assert(manifest.find("\"ocr_observations\": 1") != std::string::npos);
         assert(manifest.find("Deprecated alias for conductor_segments") != std::string::npos);
         assert(manifest.find("includes ground-connection candidates") != std::string::npos);
     }

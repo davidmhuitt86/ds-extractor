@@ -27,5 +27,28 @@ The JSON preserves the supplied annotation image filenames and SHA-256 hashes fo
 ## Overlays
 Open the SVG files locally from a repository checkout to inspect annotations against `samples/trx300ODG.png`: `connectors.svg`, `diodes.svg`, `terminals.svg`, and `wire_color_labels.svg`. Every SVG mark has a `<title>` with its fixture ID.
 
+## Repeatable baseline evaluation
+
+The standard-library evaluator `tools/evaluate_trx300_ground_truth.py` scores the classes for which the extraction audit currently exports appropriate locations: connector boxes and typed terminal points. It uses maximum-cardinality one-to-one matching. Ground-connection candidates are explicitly excluded from terminal scoring.
+
+Run it from the repository root after a production extraction:
+
+```powershell
+python tools/evaluate_trx300_ground_truth.py `
+  --ground-truth tests/fixtures/trx300_ground_truth/ground_truth.json `
+  --audit artifacts/audit/extraction_audit.json `
+  --output artifacts/audit/TRX300-GT-001_evaluation.json
+```
+
+The defaults, IoU >= 0.50 for connector boxes and a 5 px terminal radius, are exploratory and **not frozen acceptance thresholds**. Change them with `--connector-iou` and `--terminal-radius` for sensitivity studies. The JSON report includes matches, false positives, misses, and unmatched IDs.
+
+Diode and wire-color-label classes are intentionally reported as `not_scored` until production output exports dedicated diode-location predictions and localized text/OCR observations. Do not substitute generic component boxes or endpoint wire-color fields as proxy predictions.
+
+Run evaluator unit tests from the repository root:
+
+```powershell
+python -m unittest discover -s tools/tests -p "test_evaluate_trx300_ground_truth.py" -v
+```
+
 ## Scope
-Fixture/data only; no production code changes. Detector evaluation and acceptance thresholds should be added separately after reviewing current predictions. Parsing this file is not a claim of detector accuracy.
+This fixture/evaluation helper does not change production detection logic. Detector thresholds should remain unfrozen until the annotations are reviewed and more than one representative source diagram is evaluated.

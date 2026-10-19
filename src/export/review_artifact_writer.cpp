@@ -456,7 +456,22 @@ void write_manifest(const WireModel& model, const fs::path& path) {
     if (!out)
         throw std::runtime_error("Unable to create review manifest: " + path.string());
 
+    const auto count_terminal_kind = [&](TerminalCandidateKind kind) {
+        return static_cast<std::size_t>(std::count_if(
+            model.terminal_candidates.begin(), model.terminal_candidates.end(),
+            [&](const TerminalCandidate& candidate) { return candidate.kind == kind; }));
+    };
+    const auto resolved_wire_colors = static_cast<std::size_t>(std::count_if(
+        model.wire_semantics.begin(), model.wire_semantics.end(),
+        [](const WireSemanticResolution& item) {
+            return item.wire_color_status == WireSemanticStatus::Resolved;
+        }));
+    const auto physical_terminal_candidates =
+        count_terminal_kind(TerminalCandidateKind::ComponentBoundary) +
+        count_terminal_kind(TerminalCandidateKind::ConnectorBoundary);
+
     out << "{" << '\n'
+        << "  \"schema_version\": 2," << '\n'
         << "  \"generated_at\": \"" << generation_timestamp() << "\"," << '\n'
         << "  \"source_id\": \"" << json_escape(model.source_id) << "\"," << '\n'
         << "  \"page\": " << model.page << "," << '\n'
@@ -464,19 +479,39 @@ void write_manifest(const WireModel& model, const fs::path& path) {
         << "  \"image_height\": " << model.image_height << "," << '\n'
         << "  \"layers\": {" << '\n'
         << "    \"wires\": " << model.wires.size() << "," << '\n'
+        // Legacy field retained for publication-integrity compatibility.
+        // Its historical meaning is conductor-segment count, not colors.
         << "    \"wire_colors\": " << model.conductor_segments.size() << "," << '\n'
+        << "    \"conductor_segments\": " << model.conductor_segments.size() << "," << '\n'
+        << "    \"wire_color_resolved_wires\": " << resolved_wire_colors << "," << '\n'
         << "    \"symbols\": " << model.component_candidates.size() << "," << '\n'
+        // Legacy field retained: this is all terminal candidates, including ground connections.
         << "    \"terminals\": " << model.terminal_candidates.size() << "," << '\n'
+        << "    \"terminal_candidates_total\": " << model.terminal_candidates.size() << "," << '\n'
+        << "    \"physical_terminal_candidates\": " << physical_terminal_candidates << "," << '\n'
+        << "    \"component_terminal_candidates\": " << count_terminal_kind(TerminalCandidateKind::ComponentBoundary) << "," << '\n'
+        << "    \"connector_boundary_candidates\": " << count_terminal_kind(TerminalCandidateKind::ConnectorBoundary) << "," << '\n'
+        << "    \"ground_connection_candidates\": " << count_terminal_kind(TerminalCandidateKind::GroundConnection) << "," << '\n'
+        << "    \"unknown_terminal_candidates\": " << count_terminal_kind(TerminalCandidateKind::Unknown) << "," << '\n'
         << "    \"connectors\": " << model.connector_candidates.size() << "," << '\n'
         << "    \"connector_terminals\": " << model.connector_terminals.size() << "," << '\n'
         << "    \"splices_and_junctions\": " << model.nodes.size() << "," << '\n'
         << "    \"grounds\": " << model.audit.ground_endpoints << "," << '\n'
+        // Legacy field retained: this is semantic-association count, not text-label count.
         << "    \"labels\": " << model.semantic_associations.size() << "," << '\n'
+        << "    \"semantic_associations\": " << model.semantic_associations.size() << "," << '\n'
+        << "    \"text_regions\": " << model.text_regions.size() << "," << '\n'
+        << "    \"ocr_observations\": " << model.text_recognition_evidence.size() << "," << '\n'
         << "    \"topology_edges\": " << model.edges.size() << "," << '\n'
         << "    \"component_bounds\": " << model.component_candidates.size() << "," << '\n'
         << "    \"endpoint_debug\": " << model.endpoint_candidates.size() << "," << '\n'
         << "    \"recognition\": " << model.component_symbol_recognitions.size() << "," << '\n'
         << "    \"symbol_geometry\": " << model.symbol_primitives.size() << '\n'
+        << "  }," << '\n'
+        << "  \"legacy_layer_field_semantics\": {" << '\n'
+        << "    \"wire_colors\": \"Deprecated alias for conductor_segments; not a color-recognition count\"," << '\n'
+        << "    \"terminals\": \"Deprecated alias for terminal_candidates_total; includes ground-connection candidates\"," << '\n'
+        << "    \"labels\": \"Deprecated alias for semantic_associations; not a text-region or OCR count\""<< '\n'
         << "  }," << '\n'
         << "  \"electrical_nets\": " << model.electrical_nets.size() << "," << '\n'
         << "  \"validation_errors\": " << model.audit.validation_errors << "," << '\n'

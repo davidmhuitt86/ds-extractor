@@ -489,10 +489,14 @@ void write_manifest(const WireModel& model, const fs::path& path) {
         << "    \"terminals\": " << model.terminal_candidates.size() << "," << '\n'
         << "    \"terminal_candidates_total\": " << model.terminal_candidates.size() << "," << '\n'
         << "    \"physical_terminal_candidates\": " << physical_terminal_candidates << "," << '\n'
-        << "    \"component_terminal_candidates\": " << count_terminal_kind(TerminalCandidateKind::ComponentBoundary) << "," << '\n'
-        << "    \"connector_boundary_candidates\": " << count_terminal_kind(TerminalCandidateKind::ConnectorBoundary) << "," << '\n'
-        << "    \"ground_connection_candidates\": " << count_terminal_kind(TerminalCandidateKind::GroundConnection) << "," << '\n'
-        << "    \"unknown_terminal_candidates\": " << count_terminal_kind(TerminalCandidateKind::Unknown) << "," << '\n'
+        << "    \"component_terminal_candidates\": "
+        << count_terminal_kind(TerminalCandidateKind::ComponentBoundary) << "," << '\n'
+        << "    \"connector_boundary_candidates\": "
+        << count_terminal_kind(TerminalCandidateKind::ConnectorBoundary) << "," << '\n'
+        << "    \"ground_connection_candidates\": "
+        << count_terminal_kind(TerminalCandidateKind::GroundConnection) << "," << '\n'
+        << "    \"unknown_terminal_candidates\": "
+        << count_terminal_kind(TerminalCandidateKind::Unknown) << "," << '\n'
         << "    \"connectors\": " << model.connector_candidates.size() << "," << '\n'
         << "    \"connector_terminals\": " << model.connector_terminals.size() << "," << '\n'
         << "    \"splices_and_junctions\": " << model.nodes.size() << "," << '\n'

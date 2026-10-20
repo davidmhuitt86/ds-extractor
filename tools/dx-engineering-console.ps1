@@ -116,7 +116,7 @@ function Start-Checks([string]$mode) {
     $live.Clear(); $live.AppendText("Starting $mode...`r`nRepository: $root`r`nLogs: $logDir`r`n`r`n")
     $status.Text="RUNNING — $mode"; foreach($b in @($all,$buildBtn,$testBtn,$art,$guardBtn)){$b.Enabled=$false}
     $ps=Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'
-    $args=@('-NoProfile','-ExecutionPolicy','Bypass','-File',$PSCommandPath,'-RepositoryRoot',$root,'-RunMode',$mode)
+    $args=@('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+$PSCommandPath+'"'),'-RepositoryRoot',('"'+$root+'"'),'-RunMode',$mode)
     $script:child=Start-Process -FilePath $ps -ArgumentList $args -WorkingDirectory $root -PassThru -RedirectStandardOutput $script:stdout -RedirectStandardError $script:stderr
     $timer.Start()
 }

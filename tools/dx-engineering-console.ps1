@@ -12,7 +12,7 @@ New-Item -ItemType Directory -Path $logDir -Force | Out-Null
 
 # Child-process mode is used by the GUI to run checks without blocking the window.
 if ($RunMode) {
-    $failed = $false
+    $script:failed = $false
     function Run-Check([string]$Name, [string]$Exe, [string[]]$Args) {
         Write-Output ""; Write-Output "===== $Name ====="
         Write-Output ("COMMAND: {0} {1}" -f $Exe, ($Args -join ' '))
@@ -31,11 +31,40 @@ if ($RunMode) {
         if (-not $script:failed) { Run-Check 'CTest Release suite' 'ctest.exe' @('--test-dir',$build,'-C','Release','--output-on-failure') }
     }
     if ($RunMode -in @('ALL','ARTIFACTS')) {
-        Write-Output ""; Write-Output '===== Review artifact JSON validation ====='
-        $py = if (Get-Command py.exe -ErrorAction SilentlyContinue) { 'py.exe' } else { 'python.exe' }
-        $code = 'import json,sys; from pathlib import Path; r=Path(sys.argv[1]); fs=[r/"artifacts/extraction_review/review_manifest.json",r/"artifacts/audit/extraction_audit.json"]; bad=False; exec("for p in fs:\\n if not p.is_file(): print(\\"FAIL: missing \\"+str(p)); bad=True; continue\\n try:\\n  d=json.loads(p.read_text(encoding=\\"utf-8-sig\\")); print(\\"VALID JSON: \\"+str(p));\\n  if not isinstance(d,dict): print(\\"FAIL: top-level JSON is not an object\\"); bad=True\\n except Exception as e: print(\\"FAIL: \\"+str(p)+\\": \\"+str(e)); bad=True"); sys.exit(1 if bad else 0)'
-        & $py -c $code $root 2>&1 | ForEach-Object { Write-Output $_.ToString() }
-        if ($LASTEXITCODE -ne 0) { $script:failed = $true }
+        Write-Output ""
+        Write-Output '===== Review artifact JSON validation ====='
+        $paths = @(
+            (Join-Path $root 'artifacts\extraction_review\review_manifest.json'),
+            (Join-Path $root 'artifacts\audit\extraction_audit.json')
+        )
+        foreach ($path in $paths) {
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+                Write-Output "FAIL: missing artifact: $path"
+                $script:failed = $true
+                continue
+            }
+            try {
+                $data = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+                if ($null -eq $data -or $data -is [System.Array]) {
+                    throw 'Top-level JSON value must be an object.'
+                }
+                Write-Output "VALID JSON: $path"
+                if ([IO.Path]::GetFileName($path) -eq 'review_manifest.json') {
+                    foreach ($field in @('source_id','page','image_width','image_height','layers')) {
+                        if ($null -eq $data.PSObject.Properties[$field]) {
+                            Write-Output "FAIL: manifest missing required field: $field"
+                            $script:failed = $true
+                        }
+                    }
+                    Write-Output "schema_version: $($data.schema_version)"
+                    Write-Output "source_id: $($data.source_id)"
+                }
+            } catch {
+                Write-Output "FAIL: invalid artifact JSON: $path"
+                Write-Output $_.Exception.Message
+                $script:failed = $true
+            }
+        }
     }
     if ($RunMode -in @('ALL','GUARD')) {
         $guard = Join-Path $root 'tools\tests\test-dx-publish-review-integrity.ps1'

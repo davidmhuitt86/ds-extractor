@@ -5,7 +5,7 @@
 param([string]$RepositoryRoot = (Split-Path -Parent $PSScriptRoot), [string]$RunMode = '')
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$root = [IO.Path]::GetFullPath($RepositoryRoot)
+$root = [System.IO.Path]::GetFullPath($RepositoryRoot)
 if (-not (Test-Path (Join-Path $root '.git'))) { throw "Not a Git repository: $root" }
 $logDir = Join-Path $root 'artifacts\engineering-console'
 New-Item -ItemType Directory -Path $logDir -Force | Out-Null
@@ -49,7 +49,7 @@ if ($RunMode) {
                     throw 'Top-level JSON value must be an object.'
                 }
                 Write-Output "VALID JSON: $path"
-                if ([IO.Path]::GetFileName($path) -eq 'review_manifest.json') {
+                if ([System.IO.Path]::GetFileName($path) -eq 'review_manifest.json') {
                     foreach ($field in @('source_id','page','image_width','image_height','layers')) {
                         if ($null -eq $data.PSObject.Properties[$field]) {
                             Write-Output "FAIL: manifest missing required field: $field"
@@ -76,25 +76,25 @@ if ($RunMode) {
 }
 
 # GUI mode
-Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-[Windows.Forms.Application]::EnableVisualStyles()
-$form = New-Object Windows.Forms.Form
+[System.Windows.Forms.Application]::EnableVisualStyles()
+$form = New-Object System.Windows.Forms.Form
 $form.Text = 'EKE-DX-WIRE Engineering Console'
 $form.StartPosition = 'CenterScreen'
-$form.Size = New-Object Drawing.Size(1050,720)
-$form.MinimumSize = New-Object Drawing.Size(850,580)
-$form.Font = New-Object Drawing.Font('Segoe UI',9)
-$top = New-Object Windows.Forms.Panel; $top.Dock = 'Top'; $top.Height = 85; $top.BackColor = [Drawing.Color]::FromArgb(29,42,61); $form.Controls.Add($top)
-$title = New-Object Windows.Forms.Label; $title.Text = 'DX-EXTRACTOR ENGINEERING CONSOLE'; $title.ForeColor = [Drawing.Color]::White; $title.Font = New-Object Drawing.Font('Segoe UI Semibold',15); $title.Location = New-Object Drawing.Point(18,12); $title.AutoSize = $true; $top.Controls.Add($title)
-$repoLabel = New-Object Windows.Forms.Label; $repoLabel.Text = "Repository: $root"; $repoLabel.ForeColor = [Drawing.Color]::White; $repoLabel.Location = New-Object Drawing.Point(20,50); $repoLabel.AutoSize = $true; $top.Controls.Add($repoLabel)
-$bar = New-Object Windows.Forms.FlowLayoutPanel; $bar.Dock = 'Top'; $bar.Height = 58; $bar.Padding = New-Object Windows.Forms.Padding(8); $form.Controls.Add($bar)
-function Button([string]$text,[int]$width=145) { $b=New-Object Windows.Forms.Button; $b.Text=$text; $b.Width=$width; $b.Height=32; $b.Margin=New-Object Windows.Forms.Padding(4); return $b }
+$form.Size = New-Object System.Drawing.Size(1050,720)
+$form.MinimumSize = New-Object System.Drawing.Size(850,580)
+$form.Font = New-Object System.Drawing.Font('Segoe UI',9)
+$top = New-Object System.Windows.Forms.Panel; $top.Dock = 'Top'; $top.Height = 85; $top.BackColor = [System.Drawing.Color]::FromArgb(29,42,61); $form.Controls.Add($top)
+$title = New-Object System.Windows.Forms.Label; $title.Text = 'DX-EXTRACTOR ENGINEERING CONSOLE'; $title.ForeColor = [System.Drawing.Color]::White; $title.Font = New-Object System.Drawing.Font('Segoe UI Semibold',15); $title.Location = New-Object System.Drawing.Point(18,12); $title.AutoSize = $true; $top.Controls.Add($title)
+$repoLabel = New-Object System.Windows.Forms.Label; $repoLabel.Text = "Repository: $root"; $repoLabel.ForeColor = [System.Drawing.Color]::White; $repoLabel.Location = New-Object System.Drawing.Point(20,50); $repoLabel.AutoSize = $true; $top.Controls.Add($repoLabel)
+$bar = New-Object System.Windows.Forms.FlowLayoutPanel; $bar.Dock = 'Top'; $bar.Height = 58; $bar.Padding = New-Object System.Windows.Forms.Padding(8); $form.Controls.Add($bar)
+function Button([string]$text,[int]$width=145) { $b=New-Object System.Windows.Forms.Button; $b.Text=$text; $b.Width=$width; $b.Height=32; $b.Margin=New-Object System.Windows.Forms.Padding(4); return $b }
 $all=Button 'RUN ALL CHECKS' 160; $buildBtn=Button 'BUILD' 90; $testBtn=Button 'RUN TESTS' 110; $art=Button 'VALIDATE ARTIFACTS' 155; $guardBtn=Button 'TEST GUARD' 110; $open=Button 'OPEN REPORTS' 125
 $bar.Controls.AddRange(@($all,$buildBtn,$testBtn,$art,$guardBtn,$open))
-$status=New-Object Windows.Forms.Label; $status.Dock='Top'; $status.Height=32; $status.Padding=New-Object Windows.Forms.Padding(12,7,0,0); $status.Text='READY — no checks running'; $form.Controls.Add($status)
-$live=New-Object Windows.Forms.RichTextBox; $live.Dock='Fill'; $live.ReadOnly=$true; $live.WordWrap=$false; $live.Font=New-Object Drawing.Font('Consolas',9); $live.BackColor=[Drawing.Color]::FromArgb(24,30,38); $live.ForeColor=[Drawing.Color]::FromArgb(220,230,240); $form.Controls.Add($live)
-$timer=New-Object Windows.Forms.Timer; $timer.Interval=500
+$status=New-Object System.Windows.Forms.Label; $status.Dock='Top'; $status.Height=32; $status.Padding=New-Object System.Windows.Forms.Padding(12,7,0,0); $status.Text='READY — no checks running'; $form.Controls.Add($status)
+$live=New-Object System.Windows.Forms.RichTextBox; $live.Dock='Fill'; $live.ReadOnly=$true; $live.WordWrap=$false; $live.Font=New-Object System.Drawing.Font('Consolas',9); $live.BackColor=[System.Drawing.Color]::FromArgb(24,30,38); $live.ForeColor=[System.Drawing.Color]::FromArgb(220,230,240); $form.Controls.Add($live)
+$timer=New-Object System.Windows.Forms.Timer; $timer.Interval=500
 $script:child=$null; $script:stdout=''; $script:stderr=''; $script:shownOut=0; $script:shownErr=0; $script:log=''; $script:report=''
 $timer.Add_Tick({
     if ($script:stdout -and (Test-Path $script:stdout)) { $t=Get-Content -LiteralPath $script:stdout -Raw -ErrorAction SilentlyContinue; if ($t.Length -gt $script:shownOut) { $live.AppendText($t.Substring($script:shownOut)); $script:shownOut=$t.Length; $live.SelectionStart=$live.TextLength; $live.ScrollToCaret() } }
@@ -126,5 +126,5 @@ $testBtn.Add_Click({Start-Checks 'TEST'})
 $art.Add_Click({Start-Checks 'ARTIFACTS'})
 $guardBtn.Add_Click({Start-Checks 'GUARD'})
 $open.Add_Click({Start-Process explorer.exe -ArgumentList "`"$logDir`""})
-$form.Add_FormClosing({ if ($script:child -and -not $script:child.HasExited) { $answer=[Windows.Forms.MessageBox]::Show('Checks are still running. Close the console and stop the child process?','Run in progress','YesNo','Warning'); if($answer -ne [Windows.Forms.DialogResult]::Yes){$_.Cancel=$true}else{try{$script:child.Kill()}catch{}} } })
+$form.Add_FormClosing({ if ($script:child -and -not $script:child.HasExited) { $answer=[System.Windows.Forms.MessageBox]::Show('Checks are still running. Close the console and stop the child process?','Run in progress','YesNo','Warning'); if($answer -ne [System.Windows.Forms.DialogResult]::Yes){$_.Cancel=$true}else{try{$script:child.Kill()}catch{}} } })
 [void]$form.ShowDialog()

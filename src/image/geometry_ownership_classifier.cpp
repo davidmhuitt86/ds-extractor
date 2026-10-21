@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <tuple>
 
 namespace eke::dx::wire {
 namespace {
@@ -183,6 +184,230 @@ double overlap_fraction(
     return segment_inside_length(segment, box) / length;
 }
 
+struct VerticalStrokeObservation {
+    double x = 0.0;
+    double top = 0.0;
+    double bottom = 0.0;
+    std::string id;
+};
+
+bool horizontal_cap_matches(
+    const ConductorSegment& candidate,
+    double x_a,
+    double x_b,
+    double y,
+    double tolerance) {
+
+    const double dx = candidate.geometry.b.x - candidate.geometry.a.x;
+    const double dy = candidate.geometry.b.y - candidate.geometry.a.y;
+    if (std::abs(dy) > tolerance ||
+        std::abs(dx) <= 2.0 * tolerance) {
+        return false;
+    }
+
+    const double x_min = (std::min)(
+        candidate.geometry.a.x, candidate.geometry.b.x);
+    const double x_max = (std::max)(
+        candidate.geometry.a.x, candidate.geometry.b.x);
+    const double expected_min = (std::min)(x_a, x_b);
+    const double expected_max = (std::max)(x_a, x_b);
+    const double center_y =
+        (candidate.geometry.a.y + candidate.geometry.b.y) * 0.5;
+
+    // A cap must span both observed vertical strokes and terminate near them.
+    // A long conductor that merely crosses the same y coordinate is not a cap.
+    return std::abs(center_y - y) <= tolerance &&
+           x_min >= expected_min - tolerance &&
+           x_min <= expected_min + tolerance &&
+           x_max >= expected_max - tolerance &&
+           x_max <= expected_max + tolerance;
+}
+
+bool has_horizontal_cap(
+    const std::vector<ConductorSegment>& candidates,
+    double x_a,
+    double x_b,
+    double y,
+    double tolerance,
+    double& best_y_error) {
+
+    bool found = false;
+    best_y_error = std::numeric_limits<double>::max();
+
+    for (const auto& candidate : candidates) {
+        const double dy =
+            std::abs(candidate.geometry.a.y - candidate.geometry.b.y);
+        if (dy > tolerance)
+            continue;
+
+        const double center_y =
+            (candidate.geometry.a.y + candidate.geometry.b.y) * 0.5;
+        if (!horizontal_cap_matches(
+                candidate, x_a, x_b, y, tolerance)) {
+            continue;
+        }
+
+        const double error = std::abs(center_y - y);
+        if (!found || error < best_y_error) {
+            found = true;
+            best_y_error = error;
+        }
+    }
+
+    return found;
+}
+
+ConnectorBoundaryResolution resolve_connector_boundary(
+    const ShapeRegion& region,
+    const std::vector<ConductorSegment>& candidates,
+    double tolerance) {
+
+    ConnectorBoundaryResolution result;
+    result.connector_region_id = region.id;
+    result.detected_bounds = region.bounds;
+    result.effective_bounds = region.bounds;
+
+    if (region.kind != ShapeKind::ConnectorBody ||
+        region.bounds.width <= 0 || region.bounds.height <= 0) {
+        return result;
+    }
+
+    const double left = static_cast<double>(region.bounds.x);
+    const double right =
+        static_cast<double>(region.bounds.x + region.bounds.width);
+    const double top = static_cast<double>(region.bounds.y);
+    const double bottom =
+        static_cast<double>(region.bounds.y + region.bounds.height);
+
+    std::vector<VerticalStrokeObservation> verticals;
+    for (const auto& candidate : candidates) {
+        const double dx =
+            std::abs(candidate.geometry.a.x - candidate.geometry.b.x);
+        const double dy =
+            std::abs(candidate.geometry.a.y - candidate.geometry.b.y);
+        if (dx > tolerance || dy < (std::max)(8.0, 2.0 * tolerance))
+            continue;
+
+        const double x =
+            (candidate.geometry.a.x + candidate.geometry.b.x) * 0.5;
+        const double y_min = (std::min)(
+            candidate.geometry.a.y, candidate.geometry.b.y);
+        const double y_max = (std::max)(
+            candidate.geometry.a.y, candidate.geometry.b.y);
+
+        // A candidate stroke must span the detected connector region's height.
+        // This excludes nearby vertical conductors that do not frame the body.
+        if (y_min > top + tolerance || y_max < bottom - tolerance)
+            continue;
+
+        verticals.push_back({x, y_min, y_max, candidate.id});
+    }
+
+    std::sort(
+        verticals.begin(), verticals.end(),
+        [](const VerticalStrokeObservation& a,
+           const VerticalStrokeObservation& b) {
+            return std::tie(a.x, a.top, a.bottom, a.id) <
+                   std::tie(b.x, b.top, b.bottom, b.id);
+        });
+
+    double best_score = std::numeric_limits<double>::max();
+    bool found_frame = false;
+    double best_left = left;
+    double best_right = right;
+    double best_top = top;
+    double best_bottom = bottom;
+
+    // Reconstruct an outer connector envelope only when:
+    //   1. one long vertical stroke lies along a detected bbox side;
+    //   2. a parallel stroke extends beyond the opposite bbox side;
+    //   3. the two strokes have matching vertical extent; and
+    //   4. separate horizontal strokes connect those same verticals at both
+    //      ends. This is direct frame evidence, not a proximity mask.
+    const double max_extension =
+        (std::max)(12.0, 1.5 * static_cast<double>(region.bounds.width));
+
+    for (const auto& anchor : verticals) {
+        const bool anchor_near_left =
+            std::abs(anchor.x - left) <= tolerance;
+        const bool anchor_near_right =
+            std::abs(anchor.x - right) <= tolerance;
+        if (anchor_near_left == anchor_near_right)
+            continue;
+
+        for (const auto& outer : verticals) {
+            if (std::abs(anchor.x - outer.x) <= 2.0 * tolerance)
+                continue;
+
+            const bool outer_is_opposite =
+                anchor_near_right
+                    ? outer.x < left - tolerance
+                    : outer.x > right + tolerance;
+            if (!outer_is_opposite)
+                continue;
+
+            const double extension =
+                anchor_near_right ? left - outer.x : outer.x - right;
+            if (extension > max_extension)
+                continue;
+
+            if (std::abs(anchor.top - outer.top) > tolerance ||
+                std::abs(anchor.bottom - outer.bottom) > tolerance) {
+                continue;
+            }
+
+            const double frame_top = (anchor.top + outer.top) * 0.5;
+            const double frame_bottom =
+                (anchor.bottom + outer.bottom) * 0.5;
+            double top_cap_error = 0.0;
+            double bottom_cap_error = 0.0;
+            if (!has_horizontal_cap(
+                    candidates, anchor.x, outer.x, frame_top,
+                    tolerance, top_cap_error) ||
+                !has_horizontal_cap(
+                    candidates, anchor.x, outer.x, frame_bottom,
+                    tolerance, bottom_cap_error)) {
+                continue;
+            }
+
+            const double score =
+                std::abs(anchor.top - outer.top) +
+                std::abs(anchor.bottom - outer.bottom) +
+                top_cap_error + bottom_cap_error +
+                extension * 0.001;
+            if (score >= best_score)
+                continue;
+
+            best_score = score;
+            found_frame = true;
+            best_left = (std::min)(
+                left, (std::min)(anchor.x, outer.x));
+            best_right = (std::max)(
+                right, (std::max)(anchor.x, outer.x));
+            best_top = (std::min)(
+                top, (std::min)(anchor.top, outer.top));
+            best_bottom = (std::max)(
+                bottom, (std::max)(anchor.bottom, outer.bottom));
+        }
+    }
+
+    if (!found_frame)
+        return result;
+
+    const int resolved_left = static_cast<int>(std::floor(best_left));
+    const int resolved_right = static_cast<int>(std::ceil(best_right));
+    const int resolved_top = static_cast<int>(std::floor(best_top));
+    const int resolved_bottom = static_cast<int>(std::ceil(best_bottom));
+
+    result.effective_bounds = {
+        resolved_left,
+        resolved_top,
+        resolved_right - resolved_left,
+        resolved_bottom - resolved_top};
+    result.reconstructed_from_rectangular_strokes = true;
+    return result;
+}
+
 RejectedGeometryClass rejected_class_for_component(
     ComponentCandidateKind kind) {
 
@@ -260,9 +485,27 @@ GeometryOwnershipClassifier::GeometryOwnershipClassifier(
 GeometryOwnershipArtifacts GeometryOwnershipClassifier::classify(
     const std::vector<ConductorSegment>& candidates,
     const std::vector<ComponentCandidate>& components,
-    const std::vector<TextRegion>& text_regions) const {
+    const std::vector<TextRegion>& text_regions,
+    const std::vector<ShapeRegion>& connector_regions) const {
 
     GeometryOwnershipArtifacts result;
+
+    result.connector_boundaries.reserve(connector_regions.size());
+    for (const auto& region : connector_regions) {
+        if (region.kind != ShapeKind::ConnectorBody)
+            continue;
+        result.connector_boundaries.push_back(
+            resolve_connector_boundary(
+                region, candidates,
+                config_.component_boundary_tolerance_px));
+    }
+    std::sort(
+        result.connector_boundaries.begin(),
+        result.connector_boundaries.end(),
+        [](const ConnectorBoundaryResolution& a,
+           const ConnectorBoundaryResolution& b) {
+            return a.connector_region_id < b.connector_region_id;
+        });
 
     for (const auto& candidate : candidates) {
         const ComponentCandidate* owner_component = nullptr;
@@ -386,6 +629,38 @@ GeometryOwnershipArtifacts GeometryOwnershipClassifier::classify(
             result.rejected.push_back(std::move(evidence));
             continue;
         }
+
+        // A connector's contour bounds can omit a notched side that is still
+        // part of the drawn housing. Only a boundary reconstructed from two
+        // matching vertical strokes and two connecting horizontal caps is
+        // strong enough to suppress that housing ink. Real leads that meet
+        // the outer boundary perpendicularly do not trace the rectangle edge.
+        bool connector_boundary_owned = false;
+        for (const auto& boundary : result.connector_boundaries) {
+            if (!boundary.reconstructed_from_rectangular_strokes ||
+                !segment_traces_component_boundary(
+                    candidate.geometry, boundary.effective_bounds,
+                    config_.component_boundary_tolerance_px)) {
+                continue;
+            }
+
+            RejectedGeometryEvidence evidence;
+            evidence.id = candidate.id;
+            evidence.geometry = candidate.geometry;
+            evidence.provenance = candidate.provenance;
+            evidence.classification = RejectedGeometryClass::ConnectorAssociated;
+            evidence.associated_object_id = boundary.connector_region_id;
+            evidence.reason =
+                "graphical_object_ownership_connector_boundary";
+            evidence.measurement =
+                config_.component_boundary_tolerance_px;
+            result.rejected.push_back(std::move(evidence));
+            connector_boundary_owned = true;
+            break;
+        }
+
+        if (connector_boundary_owned)
+            continue;
 
         result.conductor_candidates.push_back(candidate);
     }

@@ -7,6 +7,7 @@
 #include "eke_dx_wire/image/conductor_evidence_evaluator.hpp"
 #include "eke_dx_wire/image/rejected_geometry_classifier.hpp"
 #include "eke_dx_wire/image/geometry_ownership_classifier.hpp"
+#include "eke_dx_wire/image/connector_observation_gate.hpp"
 #include "eke_dx_wire/image/shape_detector.hpp"
 #include "eke_dx_wire/image/connector_geometry_detector.hpp"
 #include "eke_dx_wire/image/ground_approach_conductor_recovery.hpp"
@@ -127,6 +128,13 @@ WireModel ExtractionPipeline::run(
     const std::vector<ComponentCandidate> component_candidates =
         furniture_classifier.classify(context_candidates);
 
+    // AP-DIAG-FIX-012: connector-body geometry must be available before
+    // conductor ownership and topology. The resolved frame is reused by
+    // downstream connector/pin observations.
+    ConnectorGeometryDetector connector_geometry_detector(config_.connectors);
+    const ConnectorGeometryDetectionArtifacts connector_geometry =
+        connector_geometry_detector.detect(normalized, source_id, 0);
+
     // AP-GEOMETRY-006: determine whether line-like geometry is actually
     // owned by a graphical object before it can enter conductor topology.
     // Endpoint proximity alone is not ownership; real wires commonly
@@ -136,7 +144,8 @@ WireModel ExtractionPipeline::run(
         ownership_classifier.classify(
             detected.conductor_segments,
             component_candidates,
-            text_regions.regions);
+            text_regions.regions,
+            connector_geometry.regions);
 
     // AP-DIAG-FIX-007: AP-DIAG-AUDIT-006 established that
     // MorphologyWireDetector's fixed-orientation, fixed-minimum-length
@@ -306,11 +315,6 @@ WireModel ExtractionPipeline::run(
     model.edges = graph.edges;
     model.endpoint_candidates = endpoint_artifacts.candidates;
 
-    // AP-DIAG-IMPL-002: connector-native semantic observation.
-    ConnectorGeometryDetector connector_geometry_detector(config_.connectors);
-    const ConnectorGeometryDetectionArtifacts connector_geometry =
-        connector_geometry_detector.detect(normalized, source_id, 0);
-
     auto segment_rect_overlap = [](const Segment2D& segment,
                                    const BoundingBox& bounds,
                                    double& t0,
@@ -340,9 +344,22 @@ WireModel ExtractionPipeline::run(
     };
 
     for (const auto& region : connector_geometry.regions) {
+        const auto resolved_boundary = std::find_if(
+            ownership.connector_boundaries.begin(),
+            ownership.connector_boundaries.end(),
+            [&](const ConnectorBoundaryResolution& boundary) {
+                return boundary.connector_region_id == region.id;
+            });
+        const bool boundary_reconstructed_from_rectangular_strokes =
+            resolved_boundary != ownership.connector_boundaries.end() &&
+            resolved_boundary->reconstructed_from_rectangular_strokes;
+        const BoundingBox connector_bounds =
+            resolved_boundary != ownership.connector_boundaries.end()
+                ? resolved_boundary->effective_bounds
+                : region.bounds;
         ConnectorCandidate connector;
         connector.id = stable_id("connector", region.id);
-        connector.bounds = region.bounds;
+        connector.bounds = connector_bounds;
         connector.confidence =
             region.confidence >= 0.85
                 ? ConfidenceClass::High
@@ -377,18 +394,18 @@ WireModel ExtractionPipeline::run(
                 continue;
 
             const bool overlap =
-                region.bounds.x < component.bounds.x + component.bounds.width &&
-                region.bounds.x + region.bounds.width > component.bounds.x &&
-                region.bounds.y < component.bounds.y + component.bounds.height &&
-                region.bounds.y + region.bounds.height > component.bounds.y;
+                connector_bounds.x < component.bounds.x + component.bounds.width &&
+                connector_bounds.x + connector_bounds.width > component.bounds.x &&
+                connector_bounds.y < component.bounds.y + component.bounds.height &&
+                connector_bounds.y + connector_bounds.height > component.bounds.y;
             const bool near =
                 point_in_expanded_bounds(
-                    {static_cast<double>(region.bounds.x),
-                     static_cast<double>(region.bounds.y)},
+                    {static_cast<double>(connector_bounds.x),
+                     static_cast<double>(connector_bounds.y)},
                     component.bounds, 2.0) ||
                 point_in_expanded_bounds(
-                    {static_cast<double>(region.bounds.x + region.bounds.width),
-                     static_cast<double>(region.bounds.y + region.bounds.height)},
+                    {static_cast<double>(connector_bounds.x + connector_bounds.width),
+                     static_cast<double>(connector_bounds.y + connector_bounds.height)},
                     component.bounds, 2.0);
 
             if (overlap || near)
@@ -409,18 +426,27 @@ WireModel ExtractionPipeline::run(
             double t0 = 0.0;
             double t1 = 0.0;
             if (!segment_rect_overlap(
-                    segment.geometry, region.bounds, t0, t1))
+                    segment.geometry, connector_bounds, t0, t1))
                 continue;
 
             const double overlap =
                 segment.geometry.length() * (t1 - t0);
-            if (overlap < 3.0)
-                continue;
 
             const bool a_near =
-                point_in_expanded_bounds(segment.geometry.a, region.bounds, 2.0);
+                point_in_expanded_bounds(segment.geometry.a, connector_bounds, 2.0);
             const bool b_near =
-                point_in_expanded_bounds(segment.geometry.b, region.bounds, 2.0);
+                point_in_expanded_bounds(segment.geometry.b, connector_bounds, 2.0);
+            const bool termination_contact = a_near != b_near;
+
+            // Accept a sub-3 px termination contact only with evidence of a
+            // complete rectangular housing boundary.
+            if (!connector_observation_passes_overlap_gate(
+                    overlap,
+                    termination_contact,
+                    boundary_reconstructed_from_rectangular_strokes,
+                    3.0)) {
+                continue;
+            }
 
             const ConnectorConductorInteractionKind interaction =
                 (a_near != b_near)
@@ -520,7 +546,7 @@ WireModel ExtractionPipeline::run(
             crossing.confidence = pin.confidence;
             crossing.provenance.source_id = source_id;
             crossing.provenance.page = 0;
-            crossing.provenance.source_region = region.bounds;
+            crossing.provenance.source_region = connector_bounds;
             crossing.provenance.stage = "connector-geometry";
 
             pin.conductor_crossing_evidence_ids.push_back(crossing.id);

@@ -1,6 +1,6 @@
 # AP-DIAG-049 — Connector Boundary / Conductor Ownership Investigation
 
-Status: diagnostic-only implementation on a branch stacked on AP-DIAG-FIX-009; local Windows/OpenCV 5.0.0 build and report review pending.
+Status: baseline finding validated on Windows/OpenCV 5.0.0; AP-DIAG-FIX-012 implementation is proposed on a branch stacked on this diagnostic.
 
 ## User-provided source interpretation
 
@@ -16,7 +16,7 @@ No causal conclusion is accepted until the AP-DIAG-049 report is inspected. The 
 
 ## Existing production stage relationship
 
-In ExtractionPipeline::run() the current production order is:
+The validated baseline used this order:
 
 1. ShapeDetector and TextRegionDetector
 2. MorphologyWireDetector
@@ -26,7 +26,7 @@ In ExtractionPipeline::run() the current production order is:
 6. TopologyReconstructor, gap interpretation, endpoint reconstruction
 7. ConnectorGeometryDetector and downstream connector-native processing
 
-Therefore, connector regions from the separate ConnectorGeometryDetector are not passed into the earlier GeometryOwnershipClassifier call. Earlier shape-derived component candidates may still represent some connector-like bodies, so the diagnostic measures that rather than assuming the rectangle is absent from those candidates.
+AP-DIAG-FIX-012 proposes moving ConnectorGeometryDetector before GeometryOwnershipClassifier and supplying its regions to that classifier. The classifier reconstructs an expanded housing envelope only when raw morphology contains two compatible vertical strokes and both connecting horizontal caps. The same resolved bounds are then reused for connector terminal observation. The updated stage-order fields and connector_boundary_resolutions_near_focus array make that behavior auditable.
 
 ## Diagnostic contents
 
@@ -39,7 +39,7 @@ The target dx-audit-connector-boundary-ownership emits JSON describing:
 - Production normalized conductor segments, topology nodes/edges, and endpoint candidates near the region.
 - Total stage populations for context and reproducibility.
 
-The diagnostic's local boundary-trace calculation mirrors the narrow AP-DIAG-FIX-001 axis-aligned boundary check. This is observational only; it does not pass connector regions into the classifier, modify ownership, change a tolerance, suppress a segment, or merge topology nodes.
+The report now exercises the same connector-region-aware ownership classifier used by the production pipeline. Its local boundary-trace fields are observational; the actual accept/reject decision is made by GeometryOwnershipClassifier. This AP does not merge topology nodes, alter snap tolerances, or use coordinate-specific rules.
 
 The diagnostic recreates the relevant pre-topology stage inputs using default ExtractionConfig values. It separately runs the complete production pipeline under the same source path/source ID and reports that final model for comparison. No report count is hard-coded as an acceptance oracle.
 
@@ -73,7 +73,7 @@ Validate that the output parses:
 
 ## Review questions / acceptance requirements
 
-1. Confirm source width/height are 898x549 and the report declares production_logic_modified=false.
+1. Confirm source width/height are 898x549 and the report declares production_logic_modified=false for the diagnostic itself, plus production_logic_modified_by_ap_diag_fix_012_branch=true when run on the stacked implementation branch.
 2. Identify the candidate segment(s) with endpoints or geometry matching the reported connector-left boundary around (347, 351)--(347, 378).
 3. Determine whether the matching segment was retained by the actual shape-derived component ownership classifier and, if not rejected, whether it is later accepted as conductor evidence and present in the production normalized segments.
 4. Compare component_boundary_trace_ids with connector_geometry_boundary_trace_ids. If the segment traces a connector region but not a component candidate and is retained by ownership, that supports a stage-availability gap as the explanation. If it is already rejected or a component candidate boundary owns it, investigate the exact reason instead of presuming a defect.
@@ -83,8 +83,8 @@ Validate that the output parses:
 
 ## Scope / non-goals
 
-- Diagnostic only; no changes to production classes, thresholds, ownership logic, connector recognition, topology, or wire identity.
+- AP-DIAG-049 itself remains a diagnostic; the production correction is separately scoped as AP-DIAG-FIX-012.
 - No coordinate-specific rule for (347, 378).
 - No snap-tolerance adjustment or node merge.
-- No deletion of connector-boundary-like geometry until real conductor leads to connector pins are distinguished from the housing outline.
-- This AP does not accept AP-DIAG-FIX-009 or replace its source-ID invariance regression. A future production correction requires evidence from this report and a separate narrowly scoped implementation/test AP.
+- The implementation may reject only a line-supported four-sided connector housing frame; conductor leads ending at that frame must remain.
+- AP-DIAG-FIX-009 remains a separate source-ID invariance change and still needs its own acceptance gate.
